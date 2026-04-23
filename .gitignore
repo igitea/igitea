@@ -123,3 +123,5 @@ app.*.symbols
 .DS_Store
 .AppleDouble
 .LSOverride
+
+opencode.*
