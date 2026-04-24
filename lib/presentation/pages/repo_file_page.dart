@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_highlight/flutter_highlight.dart';
 import 'package:flutter_highlight/themes/github.dart';
@@ -119,8 +120,25 @@ class _RepoFilePageState extends State<RepoFilePage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final hasContent = _decodedContent != null;
     return Scaffold(
-      appBar: AppBar(title: Text(widget.name)),
+      appBar: AppBar(
+        title: Text(widget.name),
+        actions: [
+          if (hasContent)
+            IconButton(
+              icon: const Icon(Icons.copy),
+              tooltip: 'Copy code',
+              onPressed: () => _copyToClipboard(context),
+            ),
+          if (widget.downloadUrl != null)
+            IconButton(
+              icon: const Icon(Icons.download),
+              tooltip: 'Download file',
+              onPressed: () => _downloadFile(context),
+            ),
+        ],
+      ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
@@ -186,16 +204,31 @@ class _RepoFilePageState extends State<RepoFilePage> {
 
     if (_decodedContent != null) {
       final lang = _languageForHighlight(_fileExtension);
-      return SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(8),
-          child: HighlightView(
-            _decodedContent!,
-            language: lang,
-            theme: githubTheme,
-          ),
-        ),
+      return LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minWidth: constraints.maxWidth,
+                  minHeight: constraints.maxHeight,
+                ),
+                child: HighlightView(
+                  _decodedContent!,
+                  language: lang,
+                  theme: githubTheme,
+                  padding: const EdgeInsets.all(12),
+                  textStyle: const TextStyle(
+                    fontSize: 13,
+                    height: 1.4,
+                    fontFamily: 'monospace',
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
       );
     }
 
@@ -282,6 +315,29 @@ class _RepoFilePageState extends State<RepoFilePage> {
     if (bytes < 1024) return '$bytes B';
     if (bytes < 1024 * 1024) return '${(bytes / 1024).toStringAsFixed(1)} KB';
     return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+  }
+
+  Future<void> _copyToClipboard(BuildContext context) async {
+    if (_decodedContent == null) return;
+    await Clipboard.setData(ClipboardData(text: _decodedContent!));
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Copied to clipboard')),
+      );
+    }
+  }
+
+  Future<void> _downloadFile(BuildContext context) async {
+    if (widget.downloadUrl == null) return;
+    final uri = Uri.tryParse(widget.downloadUrl!);
+    if (uri != null) {
+      final success = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      if (!success && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to open download URL')),
+        );
+      }
+    }
   }
 
   Future<void> _launchUrl(String url) async {
