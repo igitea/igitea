@@ -1,5 +1,15 @@
 # 更新日志
 
+## [0.11.0] - 2026-04-24
+
+### 修复 — StateType 解析错误
+
+- `StateType.fromJson` 现在同时支持 `String` 和 `Map<String, dynamic>` 类型输入，以处理 Gitea API 返回 `"open"`/`"closed"` 字符串格式的 issue/PR 状态。
+- `StateType` 模型新增 `value` 字段，用于存储字符串状态。
+- 所有相关模型（Issue、PullRequest、NotificationSubject、Milestone）已更新，直接传入原始 json state 而非强制转换为 Map。
+- 所有 UI 代码更新为使用 `state?.value == 'open'` 替代 `state?.toString().contains('open')`。
+- 测试更新：248 个测试全部通过。
+
 ## [0.10.0] - 2026-04-24
 
 ### 新增 — 仓库详情页

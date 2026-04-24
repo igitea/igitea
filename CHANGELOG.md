@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.11.0] - 2026-04-24
+
+### Fixed — StateType Parsing Error
+
+- `StateType.fromJson` now accepts both `String` and `Map<String, dynamic>` to handle Gitea API returning issue/PR state as `"open"`/`"closed"` strings.
+- `StateType` model now has a `value` field to store the string state.
+- All models updated (Issue, PullRequest, NotificationSubject, Milestone) to pass raw json state without Map casting.
+- All UI code updated to use `state?.value == 'open'` instead of `state?.toString().contains('open')`.
+- Tests updated: 248 passing.
+
 ## [0.10.0] - 2026-04-24
 
 ### Added — Repo Detail Page
