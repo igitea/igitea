@@ -5,6 +5,7 @@ import '../state/user_notifier.dart';
 import '../widgets/user_avatar.dart';
 import 'issue_list_page.dart';
 import 'notification_page.dart';
+import 'repo_detail_page.dart';
 import 'repo_list_page.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -216,7 +217,15 @@ class _RepoSummary extends StatelessWidget {
             return Card(
               margin: const EdgeInsets.only(bottom: 8),
               child: ListTile(
-leading: repo.owner != null
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (_) => RepoDetailPage(
+                      owner: repo.owner?.login ?? '',
+                      repo: repo.name ?? '',
+                    ),
+                  ));
+                },
+                leading: repo.owner != null
                     ? UserAvatar(user: repo.owner!, radius: 16)
                     : Icon(
                         repo.private == true ? Icons.lock : Icons.public,

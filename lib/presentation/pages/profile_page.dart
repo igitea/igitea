@@ -8,6 +8,7 @@ import '../../data/models/generated/generated_models.dart';
 import '../state/user_notifier.dart';
 import '../widgets/org_avatar.dart';
 import '../widgets/user_avatar.dart';
+import 'repo_detail_page.dart';
 
 const _languageColors = <String, Color>{
   'Dart': Color(0xFF00B4AB),
@@ -472,99 +473,109 @@ class _RepoCard extends StatelessWidget {
     final theme = Theme.of(context);
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          repo.full_name ?? repo.name ?? '',
-                          style: theme.textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      if (repo.private == true) ...[
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.errorContainer,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            'Private',
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: theme.colorScheme.onErrorContainer,
-                            ),
-                          ),
-                        ),
-                      ],
-                      if (repo.archived == true) ...[
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.tertiaryContainer,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            'Archived',
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: theme.colorScheme.onTertiaryContainer,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-              ],
+      child: InkWell(
+        onTap: () {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (_) => RepoDetailPage(
+              owner: repo.owner?.login ?? '',
+              repo: repo.name ?? '',
             ),
-            if (repo.description != null && repo.description!.isNotEmpty) ...[
-              const SizedBox(height: 4),
-              Text(
-                repo.description!,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ],
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                if (repo.language != null && repo.language!.isNotEmpty) ...[
-                  Container(
-                    width: 10,
-                    height: 10,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: _languageColors[repo.language!] ?? const Color(0xFF8B949E),
+          ));
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            repo.full_name ?? repo.name ?? '',
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (repo.private == true) ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.errorContainer,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              'Private',
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: theme.colorScheme.onErrorContainer,
+                              ),
+                            ),
+                          ),
+                        ],
+                        if (repo.archived == true) ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.tertiaryContainer,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              'Archived',
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: theme.colorScheme.onTertiaryContainer,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
                   ),
-                  const SizedBox(width: 4),
-                  Text(repo.language!, style: theme.textTheme.bodySmall),
-                  const SizedBox(width: 12),
                 ],
-                Icon(Icons.star_outline, size: 14, color: theme.colorScheme.onSurfaceVariant),
-                const SizedBox(width: 2),
-                Text('${repo.stars_count ?? 0}', style: theme.textTheme.bodySmall),
-                const SizedBox(width: 12),
-                Icon(Icons.fork_right, size: 14, color: theme.colorScheme.onSurfaceVariant),
-                const SizedBox(width: 2),
-                Text('${repo.forks_count ?? 0}', style: theme.textTheme.bodySmall),
+              ),
+              if (repo.description != null && repo.description!.isNotEmpty) ...[
+                const SizedBox(height: 4),
+                Text(
+                  repo.description!,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ],
-            ),
-          ],
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  if (repo.language != null && repo.language!.isNotEmpty) ...[
+                    Container(
+                      width: 10,
+                      height: 10,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: _languageColors[repo.language!] ?? const Color(0xFF8B949E),
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(repo.language!, style: theme.textTheme.bodySmall),
+                    const SizedBox(width: 12),
+                  ],
+                  Icon(Icons.star_outline, size: 14, color: theme.colorScheme.onSurfaceVariant),
+                  const SizedBox(width: 2),
+                  Text('${repo.stars_count ?? 0}', style: theme.textTheme.bodySmall),
+                  const SizedBox(width: 12),
+                  Icon(Icons.fork_right, size: 14, color: theme.colorScheme.onSurfaceVariant),
+                  const SizedBox(width: 2),
+                  Text('${repo.forks_count ?? 0}', style: theme.textTheme.bodySmall),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

@@ -3,6 +3,7 @@ import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../state/repo_notifier.dart';
 import '../widgets/user_avatar.dart';
+import 'repo_detail_page.dart';
 
 class RepoListPage extends StatefulWidget {
   const RepoListPage({super.key});
@@ -120,102 +121,112 @@ class _RepoCard extends StatelessWidget {
     final theme = Theme.of(context);
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                if (repo.owner != null)
-                  UserAvatar(user: repo.owner!, radius: 14)
-                else
-                  Icon(
-                    repo.private == true ? Icons.lock : Icons.public,
-                    size: 18,
-                    color: theme.colorScheme.primary,
-                  ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          repo.full_name ?? repo.name ?? '',
-                          style: theme.textTheme.titleSmall,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      if (repo.private == true) ...[
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.errorContainer,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
+      child: InkWell(
+        onTap: () {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (_) => RepoDetailPage(
+              owner: repo.owner?.login ?? '',
+              repo: repo.name ?? '',
+            ),
+          ));
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  if (repo.owner != null)
+                    UserAvatar(user: repo.owner!, radius: 14)
+                  else
+                    Icon(
+                      repo.private == true ? Icons.lock : Icons.public,
+                      size: 18,
+                      color: theme.colorScheme.primary,
+                    ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Flexible(
                           child: Text(
-                            'Private',
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: theme.colorScheme.onErrorContainer,
+                            repo.full_name ?? repo.name ?? '',
+                            style: theme.textTheme.titleSmall,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (repo.private == true) ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.errorContainer,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              'Private',
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: theme.colorScheme.onErrorContainer,
+                              ),
                             ),
                           ),
-                        ),
+                        ],
                       ],
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            if (repo.description != null && repo.description!.isNotEmpty) ...[
-              const SizedBox(height: 4),
-              Text(
-                repo.description!,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.bodySmall,
-              ),
-            ],
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                if (repo.language != null) ...[
-                  Container(
-                    width: 10,
-                    height: 10,
-                    decoration: const BoxDecoration(
-                      color: Colors.blue,
-                      shape: BoxShape.circle,
                     ),
                   ),
-                  const SizedBox(width: 4),
-                  Text(repo.language!, style: theme.textTheme.labelSmall),
-                  const SizedBox(width: 12),
                 ],
-                Icon(
-                  Icons.star_outline,
-                  size: 14,
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-                const SizedBox(width: 2),
+              ),
+              if (repo.description != null && repo.description!.isNotEmpty) ...[
+                const SizedBox(height: 4),
                 Text(
-                  '${repo.stars_count ?? 0}',
-                  style: theme.textTheme.labelSmall,
-                ),
-                const SizedBox(width: 12),
-                Icon(
-                  GitHubFork.icon,
-                  size: 14,
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-                const SizedBox(width: 2),
-                Text(
-                  '${repo.forks_count ?? 0}',
-                  style: theme.textTheme.labelSmall,
+                  repo.description!,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: theme.textTheme.bodySmall,
                 ),
               ],
-            ),
-          ],
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  if (repo.language != null) ...[
+                    Container(
+                      width: 10,
+                      height: 10,
+                      decoration: const BoxDecoration(
+                        color: Colors.blue,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Text(repo.language!, style: theme.textTheme.labelSmall),
+                    const SizedBox(width: 12),
+                  ],
+                  Icon(
+                    Icons.star_outline,
+                    size: 14,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                  const SizedBox(width: 2),
+                  Text(
+                    '${repo.stars_count ?? 0}',
+                    style: theme.textTheme.labelSmall,
+                  ),
+                  const SizedBox(width: 12),
+                  Icon(
+                    GitHubFork.icon,
+                    size: 14,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                  const SizedBox(width: 2),
+                  Text(
+                    '${repo.forks_count ?? 0}',
+                    style: theme.textTheme.labelSmall,
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
