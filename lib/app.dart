@@ -36,6 +36,15 @@ class _IGiteaAppState extends State<IGiteaApp> {
       builder: (context, child) {
         final state = Injection.authNotifier.state;
 
+        if (state is AuthAuthenticated) {
+          Injection.updateAuth(
+            baseUrl: state.baseUrl,
+            token: state.token,
+            username: state.username,
+            password: state.password,
+          );
+        }
+
         Widget home;
         if (state is AuthAuthenticated) {
           home = const HomePage();
