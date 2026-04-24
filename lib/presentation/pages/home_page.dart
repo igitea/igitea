@@ -4,11 +4,8 @@ import '../../core/di/injection.dart';
 import '../../domain/entities/auth_state.dart';
 import 'dashboard_page.dart';
 import 'search_page.dart';
-import 'repo_list_page.dart';
-import 'issue_list_page.dart';
 import 'notification_page.dart';
 import 'profile_page.dart';
-import 'settings_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -21,23 +18,17 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
   static const _tabs = [
-    _TabData(Icons.search_outlined, Icons.search, 'Search'),
     _TabData(Icons.dashboard_outlined, Icons.dashboard, 'Dashboard'),
-    _TabData(Icons.source_outlined, Icons.source, 'Repositories'),
-    _TabData(Icons.bug_report_outlined, Icons.bug_report, 'Issues'),
+    _TabData(Icons.search_outlined, Icons.search, 'Search'),
     _TabData(Icons.notifications_outlined, Icons.notifications, 'Notifications'),
     _TabData(Icons.person_outline, Icons.person, 'Profile'),
-    _TabData(Icons.settings_outlined, Icons.settings, 'Settings'),
   ];
 
   static final _pages = <Widget>[
-    const SearchPage(),
     const DashboardPage(),
-    const RepoListPage(),
-    const IssueListPage(),
+    const SearchPage(),
     const NotificationPage(),
     const ProfilePage(),
-    const SettingsPage(),
   ];
 
   @override
@@ -121,10 +112,6 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       _selectedIndex = index;
     });
-  }
-
-  Future<void> _logout() async {
-    await Injection.authNotifier.logout();
   }
 }
 

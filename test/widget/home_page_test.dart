@@ -4,8 +4,8 @@ import 'package:igitea/core/di/injection.dart';
 import 'package:igitea/data/models/generated/generated_models.dart';
 import 'package:igitea/core/storage/auth_method_storage.dart';
 import 'package:igitea/domain/entities/auth_state.dart';
+import 'package:igitea/presentation/pages/dashboard_page.dart';
 import 'package:igitea/presentation/pages/home_page.dart';
-import 'package:igitea/presentation/pages/search_page.dart';
 
 void main() {
   setUp(() {
@@ -33,10 +33,8 @@ void main() {
       await tester.pumpWidget(testWidget());
       await tester.pumpAndSettle();
 
-      expect(find.text('Search'), findsAtLeast(1));
       expect(find.text('Dashboard'), findsAtLeast(1));
-      expect(find.text('Repositories'), findsAtLeast(1));
-      expect(find.text('Issues'), findsAtLeast(1));
+      expect(find.text('Search'), findsAtLeast(1));
       expect(find.text('Notifications'), findsAtLeast(1));
       expect(find.text('Profile'), findsAtLeast(1));
     });
@@ -50,26 +48,13 @@ void main() {
       expect(find.text('testuser'), findsOneWidget);
     });
 
-    testWidgets('shows sign out in settings tab', (tester) async {
+    testWidgets('shows dashboard as default tab', (tester) async {
       Injection.authNotifier.state = testAuthState;
 
       await tester.pumpWidget(testWidget());
       await tester.pumpAndSettle();
 
-      // Navigate to settings tab
-      await tester.tap(find.text('Settings'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Sign Out'), findsOneWidget);
-    });
-
-    testWidgets('shows search page as default tab', (tester) async {
-      Injection.authNotifier.state = testAuthState;
-
-      await tester.pumpWidget(testWidget());
-      await tester.pumpAndSettle();
-
-      expect(find.byType(SearchPage), findsOneWidget);
+      expect(find.byType(DashboardPage), findsOneWidget);
     });
 
     testWidgets('renders SizedBox.shrink when not authenticated', (

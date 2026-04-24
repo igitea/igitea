@@ -5,10 +5,11 @@ import '../../core/di/injection.dart';
 import '../../core/errors/failures.dart';
 import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
-import '../state/user_notifier.dart';
+import '../../domain/entities/auth_state.dart';
+import '../../presentation/state/theme_notifier.dart';
+import '../../presentation/state/user_notifier.dart';
 import '../widgets/org_avatar.dart';
 import '../widgets/user_avatar.dart';
-import 'repo_detail_page.dart';
 
 const _languageColors = <String, Color>{
   'Dart': Color(0xFF00B4AB),
@@ -104,7 +105,6 @@ class _ProfilePageState extends State<ProfilePage> {
             UserError(:final message) => _ErrorView(message: message, onRetry: _refresh),
             UserLoaded(:final user) => _ProfileContent(
               user: user,
-              repos: Injection.userNotifier.repos,
               orgs: _orgs,
               orgsLoading: _orgsLoading,
               onRefresh: _refresh,
@@ -161,14 +161,12 @@ class _ErrorView extends StatelessWidget {
 
 class _ProfileContent extends StatelessWidget {
   final User user;
-  final List<Repository> repos;
   final List<Organization> orgs;
   final bool orgsLoading;
   final VoidCallback onRefresh;
 
   const _ProfileContent({
     required this.user,
-    required this.repos,
     required this.orgs,
     required this.orgsLoading,
     required this.onRefresh,
@@ -186,20 +184,18 @@ class _ProfileContent extends StatelessWidget {
           _StatsRow(user: user),
           const SizedBox(height: 16),
           _InfoCards(user: user),
-          if (_hasOrgs) ...[
+          if (orgs.isNotEmpty) ...[
             const SizedBox(height: 16),
             _OrgsSection(orgs: orgs, loading: orgsLoading),
           ],
           const SizedBox(height: 16),
-          _ReposSection(repos: repos),
+          _SettingsSection(),
           const SizedBox(height: 24),
           _SignOutButton(),
         ],
       ),
     );
   }
-
-  bool get _hasOrgs => orgs.isNotEmpty;
 }
 
 class _UserHeader extends StatelessWidget {
@@ -423,160 +419,85 @@ class _OrgsSection extends StatelessWidget {
   }
 }
 
-class _ReposSection extends StatelessWidget {
-  final List<Repository> repos;
-
-  const _ReposSection({required this.repos});
-
+class _SettingsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    if (repos.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        child: Card(
-          child: Padding(
-            padding: const EdgeInsets.all(24),
-            child: Center(
-              child: Text('No repositories', style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              )),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Card(
+        child: Column(
+          children: [
+            ListenableBuilder(
+              listenable: Injection.themeNotifier,
+              builder: (context, _) {
+                return ListTile(
+                  leading: const Icon(Icons.palette_outlined),
+                  title: const Text('Theme'),
+                  subtitle: Text(_themeModeLabel(Injection.themeNotifier.themeMode)),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => _showThemeDialog(context),
+                );
+              },
             ),
-          ),
+            const Divider(height: 1),
+            ListenableBuilder(
+              listenable: Injection.authNotifier,
+              builder: (context, _) {
+                final state = Injection.authNotifier.state;
+                final server = state is AuthAuthenticated ? state.baseUrl : 'Not connected';
+                return ListTile(
+                  leading: const Icon(Icons.dns_outlined),
+                  title: const Text('Server'),
+                  subtitle: Text(server, style: theme.textTheme.bodySmall),
+                );
+              },
+            ),
+          ],
         ),
-      );
-    }
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text('Repositories', style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          )),
-        ),
-        const SizedBox(height: 8),
-        ...repos.map((repo) => _RepoCard(repo: repo)),
-      ],
+      ),
     );
   }
-}
 
-class _RepoCard extends StatelessWidget {
-  final Repository repo;
+  String _themeModeLabel(ThemeMode mode) {
+    switch (mode) {
+      case ThemeMode.light:
+        return 'Light';
+      case ThemeMode.dark:
+        return 'Dark';
+      case ThemeMode.system:
+        return 'System';
+    }
+  }
 
-  const _RepoCard({required this.repo});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      child: InkWell(
-        onTap: () {
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (_) => RepoDetailPage(
-              owner: repo.owner?.login ?? '',
-              repo: repo.name ?? '',
-            ),
-          ));
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Row(
-                      children: [
-                        Flexible(
-                          child: Text(
-                            repo.full_name ?? repo.name ?? '',
-                            style: theme.textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        if (repo.private == true) ...[
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.errorContainer,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              'Private',
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: theme.colorScheme.onErrorContainer,
-                              ),
-                            ),
-                          ),
-                        ],
-                        if (repo.archived == true) ...[
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.tertiaryContainer,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              'Archived',
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: theme.colorScheme.onTertiaryContainer,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              if (repo.description != null && repo.description!.isNotEmpty) ...[
-                const SizedBox(height: 4),
-                Text(
-                  repo.description!,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  if (repo.language != null && repo.language!.isNotEmpty) ...[
-                    Container(
-                      width: 10,
-                      height: 10,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: _languageColors[repo.language!] ?? const Color(0xFF8B949E),
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Text(repo.language!, style: theme.textTheme.bodySmall),
-                    const SizedBox(width: 12),
-                  ],
-                  Icon(Icons.star_outline, size: 14, color: theme.colorScheme.onSurfaceVariant),
-                  const SizedBox(width: 2),
-                  Text('${repo.stars_count ?? 0}', style: theme.textTheme.bodySmall),
-                  const SizedBox(width: 12),
-                  Icon(Icons.fork_right, size: 14, color: theme.colorScheme.onSurfaceVariant),
-                  const SizedBox(width: 2),
-                  Text('${repo.forks_count ?? 0}', style: theme.textTheme.bodySmall),
-                ],
-              ),
-            ],
+  void _showThemeDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => SimpleDialog(
+        title: const Text('Choose Theme'),
+        children: [
+          SimpleDialogOption(
+            onPressed: () {
+              Injection.themeNotifier.setThemeMode(ThemeMode.system);
+              Navigator.of(ctx).pop();
+            },
+            child: const Text('System'),
           ),
-        ),
+          SimpleDialogOption(
+            onPressed: () {
+              Injection.themeNotifier.setThemeMode(ThemeMode.light);
+              Navigator.of(ctx).pop();
+            },
+            child: const Text('Light'),
+          ),
+          SimpleDialogOption(
+            onPressed: () {
+              Injection.themeNotifier.setThemeMode(ThemeMode.dark);
+              Navigator.of(ctx).pop();
+            },
+            child: const Text('Dark'),
+          ),
+        ],
       ),
     );
   }
