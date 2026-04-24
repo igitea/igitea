@@ -10,19 +10,40 @@ class UserAvatar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final avatarUrl = user.avatar_url;
+    final fallbackInitial = (user.login ?? '?')[0].toUpperCase();
+
+    if (avatarUrl == null || avatarUrl.isEmpty) {
+      return _buildFallback(theme, fallbackInitial);
+    }
+
+    return ClipOval(
+      child: Image.network(
+        avatarUrl,
+        width: radius * 2,
+        height: radius * 2,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return _buildFallback(theme, fallbackInitial);
+        },
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return _buildFallback(theme, fallbackInitial);
+        },
+      ),
+    );
+  }
+
+  Widget _buildFallback(ThemeData theme, String initial) {
     return CircleAvatar(
       radius: radius,
-      backgroundImage:
-          user.avatar_url != null ? NetworkImage(user.avatar_url!) : null,
-      child: user.avatar_url == null
-          ? Text(
-              (user.login ?? '?')[0].toUpperCase(),
-              style: TextStyle(
-                fontSize: radius * 0.9,
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            )
-          : null,
+      child: Text(
+        initial,
+        style: TextStyle(
+          fontSize: radius * 0.9,
+          color: theme.colorScheme.onSurfaceVariant,
+        ),
+      ),
     );
   }
 }
