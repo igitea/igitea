@@ -115,6 +115,23 @@ abstract class RepoRepository {
   /// Delete a hook.
   Future<Either<Failure, void>> deleteHook(String owner, String repo, int id);
 
+  /// Get repository contents (files/directories).
+  Future<Either<Failure, List<ContentsResponse>>> getRepoContents(
+    String owner,
+    String repo, {
+    String? path,
+    String? ref,
+  });
+
+  /// List pull requests in a repository.
+  Future<Either<Failure, List<PullRequest>>> listPullRequests(
+    String owner,
+    String repo, {
+    String? state,
+    int? page,
+    int? limit,
+  });
+
   /// Search repositories.
   Future<Either<Failure, SearchResults>> searchRepos({
     String? q,

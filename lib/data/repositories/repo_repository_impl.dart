@@ -232,6 +232,42 @@ class RepoRepositoryImpl implements RepoRepository {
   }
 
   @override
+  Future<Either<Failure, List<ContentsResponse>>> getRepoContents(
+    String owner,
+    String repo, {
+    String? path,
+    String? ref,
+  }) async {
+    return execute(
+      () => _apiService.repoGetContents(
+        owner: owner,
+        repo: repo,
+        path: path,
+        ref: ref,
+      ),
+    );
+  }
+
+  @override
+  Future<Either<Failure, List<PullRequest>>> listPullRequests(
+    String owner,
+    String repo, {
+    String? state,
+    int? page,
+    int? limit,
+  }) async {
+    return execute(
+      () => _apiService.repoListPullRequests(
+        owner: owner,
+        repo: repo,
+        state: state,
+        page: page,
+        limit: limit,
+      ),
+    );
+  }
+
+  @override
   Future<Either<Failure, SearchResults>> searchRepos({
     String? q,
     int? uid,
