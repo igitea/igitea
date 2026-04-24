@@ -172,6 +172,86 @@ void main() {
       });
     });
 
+    group('getRepoContents', () {
+      test('returns Right with list of ContentsResponse on success', () async {
+        final mock = MockClient((request) async {
+          return http.Response(
+            jsonEncode([
+              {'name': 'README.md', 'type': 'file', 'path': 'README.md', 'size': 100},
+              {'name': 'src', 'type': 'dir', 'path': 'src', 'size': 0},
+            ]),
+            200,
+          );
+        });
+        repository = RepoRepositoryImpl(
+          apiService: GiteaApiService(client: makeClient(mock)),
+        );
+        final result = await repository.getRepoContents('owner', 'repo');
+        expect(result.isRight, isTrue);
+        final contents = (result as Right<Failure, List<ContentsResponse>>).value;
+        expect(contents.length, 2);
+        expect(contents.first.name, 'README.md');
+        expect(contents.first.type, 'file');
+        expect(contents[1].name, 'src');
+        expect(contents[1].type, 'dir');
+      });
+
+      test('returns Left(ServerFailure) on failure', () async {
+        final mock = MockClient((request) async {
+          return http.Response(jsonEncode({'message': 'Not Found'}), 404);
+        });
+        repository = RepoRepositoryImpl(
+          apiService: GiteaApiService(client: makeClient(mock)),
+        );
+        final result = await repository.getRepoContents('owner', 'missing');
+        expect(result.isLeft, isTrue);
+        final failure = (result as Left<Failure, List<ContentsResponse>>).value;
+        expect(failure, isA<ServerFailure>());
+      });
+    });
+
+    group('listPullRequests', () {
+      test('returns Right with list of PullRequest on success', () async {
+        final mock = MockClient((request) async {
+          return http.Response(
+            jsonEncode([
+              {
+                'id': 1,
+                'number': 42,
+                'title': 'Fix bug',
+              },
+            ]),
+            200,
+          );
+        });
+        repository = RepoRepositoryImpl(
+          apiService: GiteaApiService(client: makeClient(mock)),
+        );
+        final result = await repository.listPullRequests('owner', 'repo');
+        expect(result.isRight, isTrue);
+        final prs = (result as Right<Failure, List<PullRequest>>).value;
+        expect(prs.length, 1);
+        expect(prs.first.title, 'Fix bug');
+        expect(prs.first.number, 42);
+      });
+
+      test('returns Left(ServerFailure) on failure', () async {
+        final mock = MockClient((request) async {
+          return http.Response(
+            jsonEncode({'message': 'internal server error'}),
+            500,
+          );
+        });
+        repository = RepoRepositoryImpl(
+          apiService: GiteaApiService(client: makeClient(mock)),
+        );
+        final result = await repository.listPullRequests('owner', 'repo');
+        expect(result.isLeft, isTrue);
+        final failure = (result as Left<Failure, List<PullRequest>>).value;
+        expect(failure, isA<ServerFailure>());
+      });
+    });
+
     group('network errors', () {
       test('returns Left(NetworkFailure) on NetworkException', () async {
         final mock = MockClient((request) async {
