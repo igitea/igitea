@@ -57,19 +57,15 @@ class UserNotifier extends ChangeNotifier {
   }
 
   Future<void> loadCurrentUser() async {
-    debugPrint('UserNotifier: loadCurrentUser() called');
     _state = const UserLoading();
     notifyListeners();
 
     final result = await _getCurrentUserUseCase.call();
-    debugPrint('UserNotifier: loadCurrentUser() result: $result');
     switch (result) {
       case Left<Failure, User>(:final value):
-        debugPrint('UserNotifier: loadCurrentUser() failed: ${value.message}');
         _state = UserError(value.message);
         notifyListeners();
       case Right<Failure, User>(:final value):
-        debugPrint('UserNotifier: loadCurrentUser() success: ${value.login}');
         _state = UserLoaded(value);
         notifyListeners();
     }
@@ -93,19 +89,15 @@ class UserNotifier extends ChangeNotifier {
   }
 
   Future<void> getUserActivities(String username, {int? page, int? limit}) async {
-    _state = const UserLoading();
-    notifyListeners();
-
     final result = await _getUserActivitiesUseCase.call(
       GetUserActivitiesParams(username: username, page: page, limit: limit),
     );
     switch (result) {
-      case Left<Failure, List<Activity>>(:final value):
-        _state = UserError(value.message);
+      case Left<Failure, List<Activity>>():
+        _activities = [];
         notifyListeners();
       case Right<Failure, List<Activity>>(:final value):
         _activities = value;
-        _state = const UserInitial();
         notifyListeners();
     }
   }

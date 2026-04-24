@@ -77,16 +77,6 @@ class _DashboardPageState extends State<DashboardPage> {
             l10n.signInToGetStarted,
             style: Theme.of(context).textTheme.bodyLarge,
           ),
-          const SizedBox(height: 16),
-          Text(
-            'State: ${Injection.userNotifier.state.runtimeType}',
-            style: Theme.of(context).textTheme.bodySmall,
-          ),
-          const SizedBox(height: 8),
-          FilledButton(
-            onPressed: () => Injection.userNotifier.loadCurrentUser(),
-            child: const Text('Load Data'),
-          ),
         ],
       ),
     );
