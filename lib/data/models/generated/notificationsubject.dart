@@ -28,7 +28,7 @@ class NotificationSubject {
           ? json['latest_comment_url'] as String
           : null,
       state: json['state'] != null
-          ? StateType.fromJson(json['state'] as Map<String, dynamic>)
+          ? StateType.fromJson(json['state'])
           : null,
       title: json['title'] != null ? json['title'] as String : null,
       type: json['type'] != null

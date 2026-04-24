@@ -286,7 +286,7 @@ class _PRContent extends StatelessWidget {
       return ('Merged', Colors.purple);
     } else if (pr.draft == true) {
       return ('Draft', Colors.grey);
-    } else if (pr.state?.toString().toLowerCase().contains('closed') == true) {
+    } else if (pr.state?.value == 'closed') {
       return ('Closed', Colors.red);
     } else {
       return ('Open', Colors.green);

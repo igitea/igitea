@@ -115,7 +115,7 @@ class Issue {
           ? RepositoryMeta.fromJson(json['repository'] as Map<String, dynamic>)
           : null,
       state: json['state'] != null
-          ? StateType.fromJson(json['state'] as Map<String, dynamic>)
+          ? StateType.fromJson(json['state'])
           : null,
       time_estimate: json['time_estimate'] != null
           ? (json['time_estimate'] as num).toInt()

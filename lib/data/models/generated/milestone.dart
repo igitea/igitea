@@ -46,7 +46,7 @@ class Milestone {
           ? (json['open_issues'] as num).toInt()
           : null,
       state: json['state'] != null
-          ? StateType.fromJson(json['state'] as Map<String, dynamic>)
+          ? StateType.fromJson(json['state'])
           : null,
       title: json['title'] != null ? json['title'] as String : null,
       updated_at: json['updated_at'] != null

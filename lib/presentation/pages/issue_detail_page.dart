@@ -92,7 +92,7 @@ class _IssueContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isOpen = issue.state?.toString().toLowerCase().contains('open') ?? false;
+    final isOpen = issue.state?.value == 'open';
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),

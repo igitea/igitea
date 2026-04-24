@@ -132,7 +132,7 @@ class _IssueCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isOpen = issue.state?.toString().contains('open') == true;
+    final isOpen = issue.state?.value == 'open';
     final stateIcon = isOpen ? Icons.error_outline : Icons.check_circle;
     final stateColor = isOpen ? Colors.green : Colors.purple;
 
