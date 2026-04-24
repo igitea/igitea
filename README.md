@@ -2,6 +2,12 @@
 
 A cross-platform Flutter client for [Gitea](https://gitea.io), built from the OpenAPI specification.
 
+## Screenshots
+
+| Login | Repositories | Issues | Profile |
+|:-----:|:-----------:|:------:|:-------:|
+| ![Login](doc/login.png) | ![Repos](doc/repos.png) | ![Issues](doc/issues.png) | ![Profile](doc/profile.png) |
+
 ## Features
 
 - Cross-platform support: Android, iOS, macOS, Linux, Windows, **Web**
