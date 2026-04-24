@@ -1,5 +1,48 @@
 # Changelog
 
+## [0.12.0] - 2026-04-24
+
+### Added — Comments & Issue/PR Operations
+
+- Issue and PR detail pages now load and display comments with Markdown rendering.
+- Comment input with send button on both Issue and PR detail pages.
+- Close/Reopen issue button on IssueDetailPage using `EditIssueUseCase`.
+- `CommentsState` sealed class and `listComments`/`createComment` methods in `IssueNotifier`.
+- `searchIssues` global issue search method in `IssueNotifier`.
+- PR merge button with confirmation dialog on PRDetailPage (for open, mergeable PRs).
+- `mergePullRequest` API method, `MergePullRequestUseCase`, and `RepoNotifier.mergePullRequest()`.
+- `issueSearchIssues` global issue search API method and `SearchIssuesUseCase`.
+
+### Added — Search Page
+
+- New `SearchPage` with tabs for searching repositories and issues globally.
+- Added Search tab to HomePage navigation (first tab).
+- `SearchResultsLoaded` state in `RepoNotifier` for repo search.
+- `IssueListLoaded` state reused for global issue search results.
+
+### Added — Star/Unstar Repositories
+
+- Star/Unstar toggle button in RepoDetailPage AppBar.
+- `userCurrentPutStar`, `userCurrentDeleteStar`, `userCurrentCheckStar` API methods.
+- `starRepo`/`unstarRepo`/`checkStarred` repository methods and use cases.
+- `toggleStar`/`checkStarred` methods in `RepoNotifier` with loading state.
+- Star state persisted in `RepoNotifier` (checked on repo detail load).
+
+### Added — Dark Mode & Settings
+
+- `ThemeNotifier` with SharedPreferences persistence for light/dark/system theme preference.
+- `SettingsPage` with theme picker, account info, and sign-out button.
+- Settings tab added to HomePage navigation.
+- Sign-out button moved from AppBar to Settings page.
+
+### Changed
+
+- `IssueNotifier` now includes `EditIssueUseCase`, `ListCommentsUseCase`, `CreateCommentUseCase`, `SearchIssuesUseCase`.
+- `RepoNotifier` now includes `StarRepoUseCase`, `UnstarRepoUseCase`, `CheckStarredUseCase`, `MergePullRequestUseCase`.
+- `IGiteaApp` now uses `ThemeNotifier` for `themeMode`.
+- `Injection` wiring updated for all new use cases across all 3 initialization paths.
+- 248 tests passing, `flutter analyze` clean.
+
 ## [0.11.0] - 2026-04-24
 
 ### Fixed — StateType Parsing Error

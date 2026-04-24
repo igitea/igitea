@@ -1,5 +1,48 @@
 # 更新日志
 
+## [0.12.0] - 2026-04-24
+
+### 新增 — 评论与 Issue/PR 操作
+
+- Issue 和 PR 详情页现在加载并显示评论，支持 Markdown 渲染。
+- Issue 和 PR 详情页添加评论输入框和发送按钮。
+- IssueDetailPage 添加关闭/重开 Issue 按钮，使用 `EditIssueUseCase`。
+- `IssueNotifier` 新增 `CommentsState` 密封类及 `listComments`/`createComment` 方法。
+- `IssueNotifier` 新增 `searchIssues` 全局 Issue 搜索方法。
+- PRDetailPage 添加合并按钮（带确认对话框），仅对开放且可合并的 PR 显示。
+- 新增 `mergePullRequest` API 方法、`MergePullRequestUseCase` 及 `RepoNotifier.mergePullRequest()`。
+- 新增 `issueSearchIssues` 全局 Issue 搜索 API 方法及 `SearchIssuesUseCase`。
+
+### 新增 — 搜索页面
+
+- 新增 `SearchPage`，支持仓库和 Issue 全局搜索标签页。
+- HomePage 导航新增搜索标签页（第一个标签）。
+- `RepoNotifier` 复用 `SearchResultsLoaded` 状态进行仓库搜索。
+- `IssueListLoaded` 状态复用于全局 Issue 搜索结果。
+
+### 新增 — Star/Unstar 仓库
+
+- RepoDetailPage AppBar 添加 Star/Unstar 切换按钮。
+- 新增 `userCurrentPutStar`、`userCurrentDeleteStar`、`userCurrentCheckStar` API 方法。
+- 新增 `starRepo`/`unstarRepo`/`checkStarred` 仓库方法和用例。
+- `RepoNotifier` 新增 `toggleStar`/`checkStarred` 方法及加载状态。
+- Star 状态在仓库详情加载时检查。
+
+### 新增 — 暗黑模式与设置
+
+- `ThemeNotifier` 使用 SharedPreferences 持久化 light/dark/system 主题偏好。
+- `SettingsPage` 包含主题选择器、账户信息和退出登录按钮。
+- HomePage 导航新增设置标签页。
+- 退出登录按钮从 AppBar 移至设置页面。
+
+### 变更
+
+- `IssueNotifier` 新增 `EditIssueUseCase`、`ListCommentsUseCase`、`CreateCommentUseCase`、`SearchIssuesUseCase`。
+- `RepoNotifier` 新增 `StarRepoUseCase`、`UnstarRepoUseCase`、`CheckStarredUseCase`、`MergePullRequestUseCase`。
+- `IGiteaApp` 使用 `ThemeNotifier` 管理 `themeMode`。
+- `Injection` 在所有 3 个初始化路径中更新了新的用例注入。
+- 248 个测试通过，`flutter analyze` 无警告。
+
 ## [0.11.0] - 2026-04-24
 
 ### 修复 — StateType 解析错误
