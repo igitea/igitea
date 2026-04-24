@@ -126,3 +126,4 @@ app.*.symbols
 
 opencode.*
 docs/
+.idea/

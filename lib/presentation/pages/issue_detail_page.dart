@@ -23,12 +23,21 @@ class IssueDetailPage extends StatefulWidget {
 }
 
 class _IssueDetailPageState extends State<IssueDetailPage> {
+  final _commentController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Injection.issueNotifier.getIssue(widget.owner, widget.repo, widget.index);
+      Injection.issueNotifier.listComments(widget.owner, widget.repo, widget.index);
     });
+  }
+
+  @override
+  void dispose() {
+    _commentController.dispose();
+    super.dispose();
   }
 
   @override
@@ -75,7 +84,13 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
                 ],
               ),
             ),
-            IssueDetailLoaded(:final issue) => _IssueContent(issue: issue),
+            IssueDetailLoaded(:final issue) => _IssueContent(
+              issue: issue,
+              owner: widget.owner,
+              repo: widget.repo,
+              index: widget.index,
+              commentController: _commentController,
+            ),
             _ => const Center(child: CircularProgressIndicator()),
           };
         },
@@ -86,8 +101,18 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
 
 class _IssueContent extends StatelessWidget {
   final Issue issue;
+  final String owner;
+  final String repo;
+  final int index;
+  final TextEditingController commentController;
 
-  const _IssueContent({required this.issue});
+  const _IssueContent({
+    required this.issue,
+    required this.owner,
+    required this.repo,
+    required this.index,
+    required this.commentController,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -198,6 +223,24 @@ class _IssueContent extends StatelessWidget {
               child: Text(issue.milestone!.title ?? ''),
             ),
 
+          // Action buttons
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              FilledButton.tonal(
+                onPressed: () {
+                  Injection.issueNotifier.editIssue(
+                    owner,
+                    repo,
+                    index,
+                    {'state': isOpen ? 'closed' : 'open'},
+                  );
+                },
+                child: Text(isOpen ? 'Close Issue' : 'Reopen Issue'),
+              ),
+            ],
+          ),
+
           const Divider(height: 32),
 
           // Body
@@ -222,6 +265,57 @@ class _IssueContent extends StatelessWidget {
 
           const Divider(height: 32),
 
+          // Comments
+          ListenableBuilder(
+            listenable: Injection.issueNotifier,
+            builder: (context, _) {
+              final commentsState = Injection.issueNotifier.commentsState;
+              return switch (commentsState) {
+                CommentsLoading() => const Center(child: CircularProgressIndicator()),
+                CommentsError(:final message) => Column(
+                  children: [
+                    Text('Failed to load comments: $message'),
+                    TextButton(
+                      onPressed: () => Injection.issueNotifier.listComments(owner, repo, index),
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+                CommentsLoaded(:final comments) => _buildCommentsList(context, comments),
+                _ => const SizedBox.shrink(),
+              };
+            },
+          ),
+
+          // Comment input
+          const SizedBox(height: 16),
+          TextField(
+            controller: commentController,
+            decoration: InputDecoration(
+              hintText: 'Write a comment...',
+              border: const OutlineInputBorder(),
+              suffixIcon: IconButton(
+                icon: const Icon(Icons.send),
+                onPressed: () {
+                  final text = commentController.text.trim();
+                  if (text.isNotEmpty) {
+                    Injection.issueNotifier.createComment(
+                      owner,
+                      repo,
+                      index,
+                      {'body': text},
+                    );
+                    commentController.clear();
+                  }
+                },
+              ),
+            ),
+            maxLines: 3,
+            minLines: 1,
+          ),
+
+          const SizedBox(height: 16),
+
           // Footer
           Row(
             children: [
@@ -242,6 +336,28 @@ class _IssueContent extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildCommentsList(BuildContext context, List<Comment> comments) {
+    if (comments.isEmpty) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 16),
+        child: Text('No comments yet.'),
+      );
+    }
+
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Comments (${comments.length})',
+          style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        ...comments.map((comment) => _CommentItem(comment: comment)),
+      ],
     );
   }
 
@@ -289,5 +405,69 @@ class _IssueContent extends StatelessWidget {
     } catch (_) {
       return null;
     }
+  }
+}
+
+class _CommentItem extends StatelessWidget {
+  final Comment comment;
+
+  const _CommentItem({required this.comment});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                if (comment.user != null) ...[
+                  UserAvatar(user: comment.user!, radius: 14),
+                  const SizedBox(width: 8),
+                  Text(
+                    comment.user!.login ?? '',
+                    style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                ],
+                const Spacer(),
+                Text(
+                  _formatDate(comment.created_at),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            if (comment.body != null && comment.body!.isNotEmpty)
+              MarkdownBody(
+                data: comment.body!,
+                selectable: true,
+                onTapLink: (text, href, title) {
+                  if (href != null) {
+                    launchUrl(Uri.parse(href), mode: LaunchMode.externalApplication);
+                  }
+                },
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  String _formatDate(DateTime? date) {
+    if (date == null) return '';
+    final now = DateTime.now();
+    final diff = now.difference(date);
+    if (diff.inDays > 365) return '${diff.inDays ~/ 365}y ago';
+    if (diff.inDays > 30) return '${diff.inDays ~/ 30}mo ago';
+    if (diff.inDays > 0) return '${diff.inDays}d ago';
+    if (diff.inHours > 0) return '${diff.inHours}h ago';
+    if (diff.inMinutes > 0) return '${diff.inMinutes}m ago';
+    return 'just now';
   }
 }

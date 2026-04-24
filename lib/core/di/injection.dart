@@ -230,6 +230,9 @@ class Injection {
         listIssuesUseCase: listIssuesUseCase,
         getIssueUseCase: getIssueUseCase,
         createIssueUseCase: createIssueUseCase,
+        editIssueUseCase: editIssueUseCase,
+        listCommentsUseCase: listCommentsUseCase,
+        createCommentUseCase: createCommentUseCase,
         listLabelsUseCase: listLabelsUseCase,
         listMilestonesUseCase: listMilestonesUseCase,
       );
@@ -267,6 +270,9 @@ class Injection {
         listIssuesUseCase: listIssuesUseCase,
         getIssueUseCase: getIssueUseCase,
         createIssueUseCase: createIssueUseCase,
+        editIssueUseCase: editIssueUseCase,
+        listCommentsUseCase: listCommentsUseCase,
+        createCommentUseCase: createCommentUseCase,
         listLabelsUseCase: listLabelsUseCase,
         listMilestonesUseCase: listMilestonesUseCase,
       );
@@ -324,6 +330,9 @@ class Injection {
       listIssuesUseCase: listIssuesUseCase,
       getIssueUseCase: getIssueUseCase,
       createIssueUseCase: createIssueUseCase,
+      editIssueUseCase: editIssueUseCase,
+      listCommentsUseCase: listCommentsUseCase,
+      createCommentUseCase: createCommentUseCase,
       listLabelsUseCase: listLabelsUseCase,
       listMilestonesUseCase: listMilestonesUseCase,
     );
