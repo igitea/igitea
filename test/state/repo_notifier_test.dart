@@ -199,6 +199,9 @@ void main() {
         listBranchesUseCase: ListBranchesUseCase(repository: fakeRepo),
         listCommitsUseCase: ListCommitsUseCase(repository: fakeRepo),
         listTagsUseCase: ListTagsUseCase(repository: fakeRepo),
+        getRepoContentsUseCase: GetRepoContentsUseCase(repository: fakeRepo),
+        listPullRequestsUseCase: ListPullRequestsUseCase(repository: fakeRepo),
+        listReleasesUseCase: ListReleasesUseCase(repository: fakeRepo),
       );
     });
 
