@@ -191,3 +191,70 @@ class ListReleasesUseCase {
     );
   }
 }
+
+class GetRepoContentsParams {
+  final String owner;
+  final String repo;
+  final String? path;
+  final String? ref;
+
+  const GetRepoContentsParams({
+    required this.owner,
+    required this.repo,
+    this.path,
+    this.ref,
+  });
+}
+
+class GetRepoContentsUseCase {
+  final RepoRepository _repository;
+
+  GetRepoContentsUseCase({required RepoRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, List<ContentsResponse>>> call(
+    GetRepoContentsParams params,
+  ) async {
+    return _repository.getRepoContents(
+      params.owner,
+      params.repo,
+      path: params.path,
+      ref: params.ref,
+    );
+  }
+}
+
+class ListPullRequestsParams {
+  final String owner;
+  final String repo;
+  final String? state;
+  final int? page;
+  final int? limit;
+
+  const ListPullRequestsParams({
+    required this.owner,
+    required this.repo,
+    this.state,
+    this.page,
+    this.limit,
+  });
+}
+
+class ListPullRequestsUseCase {
+  final RepoRepository _repository;
+
+  ListPullRequestsUseCase({required RepoRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, List<PullRequest>>> call(
+    ListPullRequestsParams params,
+  ) async {
+    return _repository.listPullRequests(
+      params.owner,
+      params.repo,
+      state: params.state,
+      page: params.page,
+      limit: params.limit,
+    );
+  }
+}

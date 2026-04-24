@@ -60,6 +60,8 @@ class Injection {
   static late ListCommitsUseCase listCommitsUseCase;
   static late GetCommitUseCase getCommitUseCase;
   static late ListReleasesUseCase listReleasesUseCase;
+  static late GetRepoContentsUseCase getRepoContentsUseCase;
+  static late ListPullRequestsUseCase listPullRequestsUseCase;
   static late ListIssuesUseCase listIssuesUseCase;
   static late GetIssueUseCase getIssueUseCase;
   static late CreateIssueUseCase createIssueUseCase;
@@ -129,6 +131,8 @@ class Injection {
     listCommitsUseCase = ListCommitsUseCase(repository: repoRepository);
     getCommitUseCase = GetCommitUseCase(repository: repoRepository);
     listReleasesUseCase = ListReleasesUseCase(repository: repoRepository);
+    getRepoContentsUseCase = GetRepoContentsUseCase(repository: repoRepository);
+    listPullRequestsUseCase = ListPullRequestsUseCase(repository: repoRepository);
     listIssuesUseCase = ListIssuesUseCase(repository: issueRepository);
     getIssueUseCase = GetIssueUseCase(repository: issueRepository);
     createIssueUseCase = CreateIssueUseCase(repository: issueRepository);

@@ -161,6 +161,29 @@ class FakeRepoRepository implements RepoRepository {
     String repoName,
     int id,
   ) => throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, List<ContentsResponse>>> getRepoContents(
+    String owner,
+    String repo, {
+    String? path,
+    String? ref,
+  }) async {
+    if (shouldFail) return Left(failure);
+    return Right(<ContentsResponse>[]);
+  }
+
+  @override
+  Future<Either<Failure, List<PullRequest>>> listPullRequests(
+    String owner,
+    String repo, {
+    String? state,
+    int? page,
+    int? limit,
+  }) async {
+    if (shouldFail) return Left(failure);
+    return Right(<PullRequest>[]);
+  }
 }
 
 void main() {

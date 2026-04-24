@@ -156,6 +156,25 @@ class MockRepoRepository implements RepoRepository {
   @override
   Future<Either<Failure, void>> deleteHook(String owner, String repo, int id) =>
       throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, List<ContentsResponse>>> getRepoContents(
+    String owner,
+    String repo, {
+    String? path,
+    String? ref,
+  }) =>
+      throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, List<PullRequest>>> listPullRequests(
+    String owner,
+    String repo, {
+    String? state,
+    int? page,
+    int? limit,
+  }) =>
+      throw UnimplementedError();
 }
 
 void main() {
