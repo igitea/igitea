@@ -63,12 +63,16 @@ class Injection {
   static late GetRepoContentsUseCase getRepoContentsUseCase;
   static late ListPullRequestsUseCase listPullRequestsUseCase;
   static late GetPullRequestUseCase getPullRequestUseCase;
+  static late StarRepoUseCase starRepoUseCase;
+  static late UnstarRepoUseCase unstarRepoUseCase;
+  static late CheckStarredUseCase checkStarredUseCase;
   static late ListIssuesUseCase listIssuesUseCase;
   static late GetIssueUseCase getIssueUseCase;
   static late CreateIssueUseCase createIssueUseCase;
   static late EditIssueUseCase editIssueUseCase;
   static late ListCommentsUseCase listCommentsUseCase;
   static late CreateCommentUseCase createCommentUseCase;
+  static late SearchIssuesUseCase searchIssuesUseCase;
   static late ListLabelsUseCase listLabelsUseCase;
   static late CreateLabelUseCase createLabelUseCase;
   static late ListMilestonesUseCase listMilestonesUseCase;
@@ -135,12 +139,16 @@ class Injection {
     getRepoContentsUseCase = GetRepoContentsUseCase(repository: repoRepository);
     listPullRequestsUseCase = ListPullRequestsUseCase(repository: repoRepository);
     getPullRequestUseCase = GetPullRequestUseCase(repository: repoRepository);
+    starRepoUseCase = StarRepoUseCase(repository: repoRepository);
+    unstarRepoUseCase = UnstarRepoUseCase(repository: repoRepository);
+    checkStarredUseCase = CheckStarredUseCase(repository: repoRepository);
     listIssuesUseCase = ListIssuesUseCase(repository: issueRepository);
     getIssueUseCase = GetIssueUseCase(repository: issueRepository);
     createIssueUseCase = CreateIssueUseCase(repository: issueRepository);
     editIssueUseCase = EditIssueUseCase(repository: issueRepository);
     listCommentsUseCase = ListCommentsUseCase(repository: issueRepository);
     createCommentUseCase = CreateCommentUseCase(repository: issueRepository);
+    searchIssuesUseCase = SearchIssuesUseCase(repository: issueRepository);
     listLabelsUseCase = ListLabelsUseCase(repository: issueRepository);
     createLabelUseCase = CreateLabelUseCase(repository: issueRepository);
     listMilestonesUseCase = ListMilestonesUseCase(repository: issueRepository);
@@ -225,6 +233,9 @@ class Injection {
         listPullRequestsUseCase: listPullRequestsUseCase,
         getPullRequestUseCase: getPullRequestUseCase,
         listReleasesUseCase: listReleasesUseCase,
+        starRepoUseCase: starRepoUseCase,
+        unstarRepoUseCase: unstarRepoUseCase,
+        checkStarredUseCase: checkStarredUseCase,
       );
       issueNotifier.updateUseCases(
         listIssuesUseCase: listIssuesUseCase,
@@ -233,6 +244,7 @@ class Injection {
         editIssueUseCase: editIssueUseCase,
         listCommentsUseCase: listCommentsUseCase,
         createCommentUseCase: createCommentUseCase,
+        searchIssuesUseCase: searchIssuesUseCase,
         listLabelsUseCase: listLabelsUseCase,
         listMilestonesUseCase: listMilestonesUseCase,
       );
@@ -265,6 +277,9 @@ class Injection {
         listPullRequestsUseCase: listPullRequestsUseCase,
         getPullRequestUseCase: getPullRequestUseCase,
         listReleasesUseCase: listReleasesUseCase,
+        starRepoUseCase: starRepoUseCase,
+        unstarRepoUseCase: unstarRepoUseCase,
+        checkStarredUseCase: checkStarredUseCase,
       );
       issueNotifier = IssueNotifier(
         listIssuesUseCase: listIssuesUseCase,
@@ -273,6 +288,7 @@ class Injection {
         editIssueUseCase: editIssueUseCase,
         listCommentsUseCase: listCommentsUseCase,
         createCommentUseCase: createCommentUseCase,
+        searchIssuesUseCase: searchIssuesUseCase,
         listLabelsUseCase: listLabelsUseCase,
         listMilestonesUseCase: listMilestonesUseCase,
       );
@@ -325,6 +341,9 @@ class Injection {
       listPullRequestsUseCase: listPullRequestsUseCase,
       getPullRequestUseCase: getPullRequestUseCase,
       listReleasesUseCase: listReleasesUseCase,
+      starRepoUseCase: starRepoUseCase,
+      unstarRepoUseCase: unstarRepoUseCase,
+      checkStarredUseCase: checkStarredUseCase,
     );
     issueNotifier.updateUseCases(
       listIssuesUseCase: listIssuesUseCase,
@@ -333,6 +352,7 @@ class Injection {
       editIssueUseCase: editIssueUseCase,
       listCommentsUseCase: listCommentsUseCase,
       createCommentUseCase: createCommentUseCase,
+      searchIssuesUseCase: searchIssuesUseCase,
       listLabelsUseCase: listLabelsUseCase,
       listMilestonesUseCase: listMilestonesUseCase,
     );

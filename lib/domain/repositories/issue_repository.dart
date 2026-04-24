@@ -147,4 +147,25 @@ abstract class IssueRepository {
     String repo,
     String id,
   );
+
+  /// Search issues across all repositories the user has access to.
+  Future<Either<Failure, List<Issue>>> searchIssues({
+    String? state,
+    String? labels,
+    String? milestones,
+    String? q,
+    int? priority_repo_id,
+    String? type,
+    DateTime? since,
+    DateTime? before,
+    bool? assigned,
+    bool? created,
+    bool? mentioned,
+    bool? review_requested,
+    bool? reviewed,
+    String? owner,
+    String? team,
+    int? page,
+    int? limit,
+  });
 }

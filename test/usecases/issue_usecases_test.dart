@@ -179,6 +179,30 @@ class MockIssueRepository implements IssueRepository {
     String repo,
     String id,
   ) => throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, List<Issue>>> searchIssues({
+    String? state,
+    String? labels,
+    String? milestones,
+    String? q,
+    int? priority_repo_id,
+    String? type,
+    DateTime? since,
+    DateTime? before,
+    bool? assigned,
+    bool? created,
+    bool? mentioned,
+    bool? review_requested,
+    bool? reviewed,
+    String? owner,
+    String? team,
+    int? page,
+    int? limit,
+  }) async {
+    if (shouldFail) return Left(failure);
+    return Right([const Issue(id: 1, title: 'Bug', number: 1)]);
+  }
 }
 
 void main() {

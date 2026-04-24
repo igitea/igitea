@@ -316,3 +316,72 @@ class CreateMilestoneParams {
     required this.body,
   });
 }
+
+class SearchIssuesUseCase {
+  final IssueRepository _repository;
+
+  SearchIssuesUseCase({required IssueRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, List<Issue>>> call(SearchIssuesParams params) async {
+    return _repository.searchIssues(
+      state: params.state,
+      labels: params.labels,
+      milestones: params.milestones,
+      q: params.q,
+      priority_repo_id: params.priority_repo_id,
+      type: params.type,
+      since: params.since,
+      before: params.before,
+      assigned: params.assigned,
+      created: params.created,
+      mentioned: params.mentioned,
+      review_requested: params.review_requested,
+      reviewed: params.reviewed,
+      owner: params.owner,
+      team: params.team,
+      page: params.page,
+      limit: params.limit,
+    );
+  }
+}
+
+class SearchIssuesParams {
+  final String? state;
+  final String? labels;
+  final String? milestones;
+  final String? q;
+  final int? priority_repo_id;
+  final String? type;
+  final DateTime? since;
+  final DateTime? before;
+  final bool? assigned;
+  final bool? created;
+  final bool? mentioned;
+  final bool? review_requested;
+  final bool? reviewed;
+  final String? owner;
+  final String? team;
+  final int? page;
+  final int? limit;
+
+  SearchIssuesParams({
+    this.state,
+    this.labels,
+    this.milestones,
+    this.q,
+    this.priority_repo_id,
+    this.type,
+    this.since,
+    this.before,
+    this.assigned,
+    this.created,
+    this.mentioned,
+    this.review_requested,
+    this.reviewed,
+    this.owner,
+    this.team,
+    this.page,
+    this.limit,
+  });
+}

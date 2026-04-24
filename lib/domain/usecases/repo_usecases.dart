@@ -281,3 +281,57 @@ class GetPullRequestUseCase {
     return _repository.getPullRequest(params.owner, params.repo, params.index);
   }
 }
+
+class StarRepoParams {
+  final String owner;
+  final String repo;
+
+  const StarRepoParams({required this.owner, required this.repo});
+}
+
+class StarRepoUseCase {
+  final RepoRepository _repository;
+
+  StarRepoUseCase({required RepoRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, void>> call(StarRepoParams params) async {
+    return _repository.starRepo(params.owner, params.repo);
+  }
+}
+
+class UnstarRepoParams {
+  final String owner;
+  final String repo;
+
+  const UnstarRepoParams({required this.owner, required this.repo});
+}
+
+class UnstarRepoUseCase {
+  final RepoRepository _repository;
+
+  UnstarRepoUseCase({required RepoRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, void>> call(UnstarRepoParams params) async {
+    return _repository.unstarRepo(params.owner, params.repo);
+  }
+}
+
+class CheckStarredParams {
+  final String owner;
+  final String repo;
+
+  const CheckStarredParams({required this.owner, required this.repo});
+}
+
+class CheckStarredUseCase {
+  final RepoRepository _repository;
+
+  CheckStarredUseCase({required RepoRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, bool>> call(CheckStarredParams params) async {
+    return _repository.checkStarred(params.owner, params.repo);
+  }
+}

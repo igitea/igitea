@@ -142,4 +142,13 @@ abstract class RepoRepository {
     int? page,
     int? limit,
   });
+
+  /// Star a repository.
+  Future<Either<Failure, void>> starRepo(String owner, String repo);
+
+  /// Unstar a repository.
+  Future<Either<Failure, void>> unstarRepo(String owner, String repo);
+
+  /// Check if the current user has starred a repository.
+  Future<Either<Failure, bool>> checkStarred(String owner, String repo);
 }

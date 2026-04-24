@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/di/injection.dart';
 import '../../domain/entities/auth_state.dart';
 import 'dashboard_page.dart';
+import 'search_page.dart';
 import 'repo_list_page.dart';
 import 'issue_list_page.dart';
 import 'notification_page.dart';
@@ -19,6 +20,7 @@ class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
   static const _tabs = [
+    _TabData(Icons.search_outlined, Icons.search, 'Search'),
     _TabData(Icons.dashboard_outlined, Icons.dashboard, 'Dashboard'),
     _TabData(Icons.source_outlined, Icons.source, 'Repositories'),
     _TabData(Icons.bug_report_outlined, Icons.bug_report, 'Issues'),
@@ -31,6 +33,7 @@ class _HomePageState extends State<HomePage> {
   ];
 
   static final _pages = <Widget>[
+    const SearchPage(),
     const DashboardPage(),
     const RepoListPage(),
     const IssueListPage(),

@@ -1241,6 +1241,65 @@ class GiteaApiService {
     return NodeInfo.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
   }
 
+  Future<List<Issue>> issueSearchIssues({
+    String? state,
+    String? labels,
+    String? milestones,
+    String? q,
+    int? priority_repo_id,
+    String? type,
+    DateTime? since,
+    DateTime? before,
+    bool? assigned,
+    bool? created,
+    bool? mentioned,
+    bool? review_requested,
+    bool? reviewed,
+    String? owner,
+    String? team,
+    int? page,
+    int? limit,
+  }) async {
+    final query = <String, String>{};
+    if (state != null) query['state'] = state;
+    if (labels != null) query['labels'] = labels;
+    if (milestones != null) query['milestones'] = milestones;
+    if (q != null) query['q'] = q;
+    if (priority_repo_id != null) query['priority_repo_id'] = priority_repo_id.toString();
+    if (type != null) query['type'] = type;
+    if (since != null) query['since'] = since.toIso8601String();
+    if (before != null) query['before'] = before.toIso8601String();
+    if (assigned != null) query['assigned'] = assigned.toString();
+    if (created != null) query['created'] = created.toString();
+    if (mentioned != null) query['mentioned'] = mentioned.toString();
+    if (review_requested != null) query['review_requested'] = review_requested.toString();
+    if (reviewed != null) query['reviewed'] = reviewed.toString();
+    if (owner != null) query['owner'] = owner;
+    if (team != null) query['team'] = team;
+    if (page != null) query['page'] = page.toString();
+    if (limit != null) query['limit'] = limit.toString();
+    final response = await _client.get('/repos/issues/search', queryParameters: query);
+    final list = jsonDecode(response.body) as List<dynamic>;
+    return list.map((e) => Issue.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<void> userCurrentPutStar({required String owner, required String repo}) async {
+    await _client.put('/user/starred/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}');
+  }
+
+  Future<void> userCurrentDeleteStar({required String owner, required String repo}) async {
+    await _client.delete('/user/starred/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}');
+  }
+
+  Future<bool> userCurrentCheckStar({required String owner, required String repo}) async {
+    try {
+      await _client.get('/user/starred/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}');
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   // Activitypub
 
   Future<ActivityPub> activitypubPerson({required int user_id}) async {

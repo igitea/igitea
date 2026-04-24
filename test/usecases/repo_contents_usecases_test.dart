@@ -167,6 +167,18 @@ class MockRepoRepository implements RepoRepository {
     int? page,
     int? limit,
   }) => throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, void>> starRepo(String owner, String repo) =>
+      throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, void>> unstarRepo(String owner, String repo) =>
+      throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, bool>> checkStarred(String owner, String repo) =>
+      throw UnimplementedError();
 }
 
 void main() {

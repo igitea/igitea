@@ -60,6 +60,7 @@ class _RepoDetailPageState extends State<RepoDetailPage>
     _tabController = TabController(length: 5, vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Injection.repoNotifier.getRepo(widget.owner, widget.repo);
+      Injection.repoNotifier.checkStarred(widget.owner, widget.repo);
     });
   }
 
@@ -72,7 +73,27 @@ class _RepoDetailPageState extends State<RepoDetailPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('${widget.owner}/${widget.repo}')),
+      appBar: AppBar(
+        title: Text('${widget.owner}/${widget.repo}'),
+        actions: [
+          ListenableBuilder(
+            listenable: Injection.repoNotifier,
+            builder: (context, _) {
+              final isStarred = Injection.repoNotifier.isStarred;
+              final starLoading = Injection.repoNotifier.starLoading;
+              return IconButton(
+                icon: Icon(
+                  isStarred ? Icons.star : Icons.star_outline,
+                  color: isStarred ? Colors.amber : null,
+                ),
+                onPressed: starLoading
+                    ? null
+                    : () => Injection.repoNotifier.toggleStar(widget.owner, widget.repo),
+              );
+            },
+          ),
+        ],
+      ),
       body: ListenableBuilder(
         listenable: Injection.repoNotifier,
         builder: (context, _) {

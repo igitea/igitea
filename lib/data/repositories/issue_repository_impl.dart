@@ -305,4 +305,47 @@ class IssueRepositoryImpl implements IssueRepository {
       () => _apiService.issueDeleteMilestone(owner: owner, repo: repo, id: id),
     );
   }
+
+  @override
+  Future<Either<Failure, List<Issue>>> searchIssues({
+    String? state,
+    String? labels,
+    String? milestones,
+    String? q,
+    int? priority_repo_id,
+    String? type,
+    DateTime? since,
+    DateTime? before,
+    bool? assigned,
+    bool? created,
+    bool? mentioned,
+    bool? review_requested,
+    bool? reviewed,
+    String? owner,
+    String? team,
+    int? page,
+    int? limit,
+  }) async {
+    return execute(
+      () => _apiService.issueSearchIssues(
+        state: state,
+        labels: labels,
+        milestones: milestones,
+        q: q,
+        priority_repo_id: priority_repo_id,
+        type: type,
+        since: since,
+        before: before,
+        assigned: assigned,
+        created: created,
+        mentioned: mentioned,
+        review_requested: review_requested,
+        reviewed: reviewed,
+        owner: owner,
+        team: team,
+        page: page,
+        limit: limit,
+      ),
+    );
+  }
 }

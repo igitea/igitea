@@ -71,6 +71,7 @@ class IssueNotifier extends ChangeNotifier {
   EditIssueUseCase _editIssueUseCase;
   ListCommentsUseCase _listCommentsUseCase;
   CreateCommentUseCase _createCommentUseCase;
+  SearchIssuesUseCase _searchIssuesUseCase;
   ListLabelsUseCase _listLabelsUseCase;
   ListMilestonesUseCase _listMilestonesUseCase;
 
@@ -80,6 +81,8 @@ class IssueNotifier extends ChangeNotifier {
   CommentsState _commentsState = const CommentsInitial();
   CommentsState get commentsState => _commentsState;
 
+  String? lastSearchQuery;
+
   IssueNotifier({
     required ListIssuesUseCase listIssuesUseCase,
     required GetIssueUseCase getIssueUseCase,
@@ -87,6 +90,7 @@ class IssueNotifier extends ChangeNotifier {
     required EditIssueUseCase editIssueUseCase,
     required ListCommentsUseCase listCommentsUseCase,
     required CreateCommentUseCase createCommentUseCase,
+    required SearchIssuesUseCase searchIssuesUseCase,
     required ListLabelsUseCase listLabelsUseCase,
     required ListMilestonesUseCase listMilestonesUseCase,
   }) : _listIssuesUseCase = listIssuesUseCase,
@@ -95,6 +99,7 @@ class IssueNotifier extends ChangeNotifier {
        _editIssueUseCase = editIssueUseCase,
        _listCommentsUseCase = listCommentsUseCase,
        _createCommentUseCase = createCommentUseCase,
+       _searchIssuesUseCase = searchIssuesUseCase,
        _listLabelsUseCase = listLabelsUseCase,
        _listMilestonesUseCase = listMilestonesUseCase;
 
@@ -105,6 +110,7 @@ class IssueNotifier extends ChangeNotifier {
     required EditIssueUseCase editIssueUseCase,
     required ListCommentsUseCase listCommentsUseCase,
     required CreateCommentUseCase createCommentUseCase,
+    required SearchIssuesUseCase searchIssuesUseCase,
     required ListLabelsUseCase listLabelsUseCase,
     required ListMilestonesUseCase listMilestonesUseCase,
   }) {
@@ -114,6 +120,7 @@ class IssueNotifier extends ChangeNotifier {
     _editIssueUseCase = editIssueUseCase;
     _listCommentsUseCase = listCommentsUseCase;
     _createCommentUseCase = createCommentUseCase;
+    _searchIssuesUseCase = searchIssuesUseCase;
     _listLabelsUseCase = listLabelsUseCase;
     _listMilestonesUseCase = listMilestonesUseCase;
   }
@@ -273,6 +280,24 @@ class IssueNotifier extends ChangeNotifier {
         notifyListeners();
       case Right<Failure, Issue>(:final value):
         _state = IssueDetailLoaded(value);
+        notifyListeners();
+    }
+  }
+
+  Future<void> searchIssues(String query) async {
+    _state = const IssueLoading();
+    notifyListeners();
+
+    lastSearchQuery = query;
+    final result = await _searchIssuesUseCase.call(
+      SearchIssuesParams(q: query),
+    );
+    switch (result) {
+      case Left<Failure, List<Issue>>(:final value):
+        _state = IssueError(value.message);
+        notifyListeners();
+      case Right<Failure, List<Issue>>(:final value):
+        _state = IssueListLoaded(value);
         notifyListeners();
     }
   }

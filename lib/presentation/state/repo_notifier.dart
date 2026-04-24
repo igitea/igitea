@@ -135,6 +135,9 @@ class RepoNotifier extends ChangeNotifier {
   ListPullRequestsUseCase _listPullRequestsUseCase;
   GetPullRequestUseCase _getPullRequestUseCase;
   ListReleasesUseCase _listReleasesUseCase;
+  StarRepoUseCase _starRepoUseCase;
+  UnstarRepoUseCase _unstarRepoUseCase;
+  CheckStarredUseCase _checkStarredUseCase;
 
   RepoState _state = const RepoInitial();
   RepoState get state => _state;
@@ -152,6 +155,11 @@ class RepoNotifier extends ChangeNotifier {
   ReleasesState _releasesState = const ReleasesInitial();
   ReleasesState get releasesState => _releasesState;
 
+  bool _isStarred = false;
+  bool get isStarred => _isStarred;
+  bool _starLoading = false;
+  bool get starLoading => _starLoading;
+
   RepoNotifier({
     required GetRepoUseCase getRepoUseCase,
     required SearchReposUseCase searchReposUseCase,
@@ -162,6 +170,9 @@ class RepoNotifier extends ChangeNotifier {
     required ListPullRequestsUseCase listPullRequestsUseCase,
     required GetPullRequestUseCase getPullRequestUseCase,
     required ListReleasesUseCase listReleasesUseCase,
+    required StarRepoUseCase starRepoUseCase,
+    required UnstarRepoUseCase unstarRepoUseCase,
+    required CheckStarredUseCase checkStarredUseCase,
   }) : _getRepoUseCase = getRepoUseCase,
        _searchReposUseCase = searchReposUseCase,
        _listBranchesUseCase = listBranchesUseCase,
@@ -170,7 +181,10 @@ class RepoNotifier extends ChangeNotifier {
        _getRepoContentsUseCase = getRepoContentsUseCase,
        _listPullRequestsUseCase = listPullRequestsUseCase,
        _getPullRequestUseCase = getPullRequestUseCase,
-       _listReleasesUseCase = listReleasesUseCase;
+       _listReleasesUseCase = listReleasesUseCase,
+       _starRepoUseCase = starRepoUseCase,
+       _unstarRepoUseCase = unstarRepoUseCase,
+       _checkStarredUseCase = checkStarredUseCase;
 
   void updateUseCases({
     required GetRepoUseCase getRepoUseCase,
@@ -182,6 +196,9 @@ class RepoNotifier extends ChangeNotifier {
     required ListPullRequestsUseCase listPullRequestsUseCase,
     required GetPullRequestUseCase getPullRequestUseCase,
     required ListReleasesUseCase listReleasesUseCase,
+    required StarRepoUseCase starRepoUseCase,
+    required UnstarRepoUseCase unstarRepoUseCase,
+    required CheckStarredUseCase checkStarredUseCase,
   }) {
     _getRepoUseCase = getRepoUseCase;
     _searchReposUseCase = searchReposUseCase;
@@ -192,6 +209,9 @@ class RepoNotifier extends ChangeNotifier {
     _listPullRequestsUseCase = listPullRequestsUseCase;
     _getPullRequestUseCase = getPullRequestUseCase;
     _listReleasesUseCase = listReleasesUseCase;
+    _starRepoUseCase = starRepoUseCase;
+    _unstarRepoUseCase = unstarRepoUseCase;
+    _checkStarredUseCase = checkStarredUseCase;
   }
 
   Future<void> getRepo(String owner, String repo) async {
@@ -363,5 +383,51 @@ class RepoNotifier extends ChangeNotifier {
         _releasesState = ReleasesLoaded(value);
         notifyListeners();
     }
+  }
+
+  Future<void> checkStarred(String owner, String repo) async {
+    _starLoading = true;
+    notifyListeners();
+    final result = await _checkStarredUseCase.call(
+      CheckStarredParams(owner: owner, repo: repo),
+    );
+    switch (result) {
+      case Left<Failure, bool>():
+        _isStarred = false;
+      case Right<Failure, bool>(:final value):
+        _isStarred = value;
+    }
+    _starLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> toggleStar(String owner, String repo) async {
+    if (_starLoading) return;
+    _starLoading = true;
+    notifyListeners();
+
+    if (_isStarred) {
+      final result = await _unstarRepoUseCase.call(
+        UnstarRepoParams(owner: owner, repo: repo),
+      );
+      switch (result) {
+        case Left<Failure, void>():
+          break;
+        case Right<Failure, void>():
+          _isStarred = false;
+      }
+    } else {
+      final result = await _starRepoUseCase.call(
+        StarRepoParams(owner: owner, repo: repo),
+      );
+      switch (result) {
+        case Left<Failure, void>():
+          break;
+        case Right<Failure, void>():
+          _isStarred = true;
+      }
+    }
+    _starLoading = false;
+    notifyListeners();
   }
 }

@@ -183,6 +183,24 @@ class MockRepoRepository implements RepoRepository {
     int index,
   ) =>
       throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, void>> starRepo(String owner, String repo) async {
+    if (shouldFail) return Left(failure);
+    return Right(null);
+  }
+
+  @override
+  Future<Either<Failure, void>> unstarRepo(String owner, String repo) async {
+    if (shouldFail) return Left(failure);
+    return Right(null);
+  }
+
+  @override
+  Future<Either<Failure, bool>> checkStarred(String owner, String repo) async {
+    if (shouldFail) return Left(failure);
+    return Right(false);
+  }
 }
 
 void main() {

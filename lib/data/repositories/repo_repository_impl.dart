@@ -289,4 +289,25 @@ class RepoRepositoryImpl implements RepoRepository {
       () => _apiService.repoSearch(q: q, uid: uid, page: page, limit: limit),
     );
   }
+
+  @override
+  Future<Either<Failure, void>> starRepo(String owner, String repo) async {
+    return execute(() async {
+      await _apiService.userCurrentPutStar(owner: owner, repo: repo);
+    });
+  }
+
+  @override
+  Future<Either<Failure, void>> unstarRepo(String owner, String repo) async {
+    return execute(() async {
+      await _apiService.userCurrentDeleteStar(owner: owner, repo: repo);
+    });
+  }
+
+  @override
+  Future<Either<Failure, bool>> checkStarred(String owner, String repo) async {
+    return execute(
+      () => _apiService.userCurrentCheckStar(owner: owner, repo: repo),
+    );
+  }
 }
