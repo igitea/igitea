@@ -230,11 +230,11 @@ class _IssueSearchResults extends StatelessWidget {
     return ListenableBuilder(
       listenable: Injection.issueNotifier,
       builder: (context, _) {
-        final state = Injection.issueNotifier.state;
-        return switch (state) {
-          IssueLoading() => const Center(child: CircularProgressIndicator()),
-          IssueListLoaded(:final issues) => _buildIssueList(context, issues),
-          IssueError(:final message) => Center(
+        final issuesState = Injection.issueNotifier.issuesListState;
+        return switch (issuesState) {
+          IssuesListLoading() => const Center(child: CircularProgressIndicator()),
+          IssuesListLoaded(:final issues) => _buildIssueList(context, issues),
+          IssuesListError(:final message) => Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [

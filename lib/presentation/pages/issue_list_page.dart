@@ -25,6 +25,14 @@ class _IssueListPageState extends State<IssueListPage> {
 
   void _loadIssues() {
     final state = _selectedState ?? 'open';
+    final notifier = Injection.issueNotifier;
+    if (notifier.issuesListState is! IssuesListLoaded) {
+      notifier.searchIssues('', state: state);
+    }
+  }
+
+  void _forceReload() {
+    final state = _selectedState ?? 'open';
     Injection.issueNotifier.searchIssues('', state: state);
   }
 
@@ -40,7 +48,7 @@ class _IssueListPageState extends State<IssueListPage> {
               selectedState: _selectedState,
               onSelected: (state) {
                 setState(() => _selectedState = state);
-                _loadIssues();
+                _forceReload();
               },
             ),
           ),
@@ -48,25 +56,25 @@ class _IssueListPageState extends State<IssueListPage> {
             child: ListenableBuilder(
               listenable: Injection.issueNotifier,
               builder: (context, _) {
-                final state = Injection.issueNotifier.state;
-                return switch (state) {
-                  IssueLoading() => const Center(
+                final issuesState = Injection.issueNotifier.issuesListState;
+                return switch (issuesState) {
+                  IssuesListLoading() => const Center(
                     child: CircularProgressIndicator(),
                   ),
-                  IssueError(:final message) => Center(
+                  IssuesListError(:final message) => Center(
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text('Error: $message'),
                         const SizedBox(height: 16),
                         FilledButton(
-                          onPressed: () => _loadIssues(),
+                          onPressed: () => _forceReload(),
                           child: const Text('Retry'),
                         ),
                       ],
                     ),
                   ),
-                  IssueListLoaded(:final issues) => _IssueList(issues: issues),
+                  IssuesListLoaded(:final issues) => _IssueList(issues: issues, onRefresh: _forceReload),
                   _ => const Center(
                     child: CircularProgressIndicator(),
                   ),
@@ -113,8 +121,9 @@ class _FilterChips extends StatelessWidget {
 
 class _IssueList extends StatelessWidget {
   final List<Issue> issues;
+  final VoidCallback onRefresh;
 
-  const _IssueList({required this.issues});
+  const _IssueList({required this.issues, required this.onRefresh});
 
   @override
   Widget build(BuildContext context) {
@@ -122,10 +131,7 @@ class _IssueList extends StatelessWidget {
       return const Center(child: Text('No issues found.'));
     }
     return RefreshIndicator(
-      onRefresh: () async {
-        final state = _IssueListPageState()._selectedState ?? 'open';
-        Injection.issueNotifier.searchIssues('', state: state);
-      },
+      onRefresh: () async => onRefresh(),
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         itemCount: issues.length,

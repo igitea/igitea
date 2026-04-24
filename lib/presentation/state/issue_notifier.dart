@@ -17,11 +17,6 @@ class IssueLoading extends IssueState {
   const IssueLoading();
 }
 
-class IssueListLoaded extends IssueState {
-  final List<Issue> issues;
-  const IssueListLoaded(this.issues);
-}
-
 class IssueDetailLoaded extends IssueState {
   final Issue issue;
   const IssueDetailLoaded(this.issue);
@@ -64,6 +59,28 @@ class CommentsError extends CommentsState {
   const CommentsError(this.message);
 }
 
+sealed class IssuesListState {
+  const IssuesListState();
+}
+
+class IssuesListInitial extends IssuesListState {
+  const IssuesListInitial();
+}
+
+class IssuesListLoading extends IssuesListState {
+  const IssuesListLoading();
+}
+
+class IssuesListLoaded extends IssuesListState {
+  final List<Issue> issues;
+  const IssuesListLoaded(this.issues);
+}
+
+class IssuesListError extends IssuesListState {
+  final String message;
+  const IssuesListError(this.message);
+}
+
 class IssueNotifier extends ChangeNotifier {
   ListIssuesUseCase _listIssuesUseCase;
   GetIssueUseCase _getIssueUseCase;
@@ -77,6 +94,9 @@ class IssueNotifier extends ChangeNotifier {
 
   IssueState _state = const IssueInitial();
   IssueState get state => _state;
+
+  IssuesListState _issuesListState = const IssuesListInitial();
+  IssuesListState get issuesListState => _issuesListState;
 
   CommentsState _commentsState = const CommentsInitial();
   CommentsState get commentsState => _commentsState;
@@ -126,16 +146,16 @@ class IssueNotifier extends ChangeNotifier {
   }
 
   Future<void> listIssues(ListIssuesParams params) async {
-    _state = const IssueLoading();
+    _issuesListState = const IssuesListLoading();
     notifyListeners();
 
     final result = await _listIssuesUseCase.call(params);
     switch (result) {
       case Left<Failure, List<Issue>>(:final value):
-        _state = IssueError(value.message);
+        _issuesListState = IssuesListError(value.message);
         notifyListeners();
       case Right<Failure, List<Issue>>(:final value):
-        _state = IssueListLoaded(value);
+        _issuesListState = IssuesListLoaded(value);
         notifyListeners();
     }
   }
@@ -285,7 +305,7 @@ class IssueNotifier extends ChangeNotifier {
   }
 
   Future<void> searchIssues(String query, {String? state}) async {
-    _state = const IssueLoading();
+    _issuesListState = const IssuesListLoading();
     notifyListeners();
 
     lastSearchQuery = query;
@@ -294,10 +314,10 @@ class IssueNotifier extends ChangeNotifier {
     );
     switch (result) {
       case Left<Failure, List<Issue>>(:final value):
-        _state = IssueError(value.message);
+        _issuesListState = IssuesListError(value.message);
         notifyListeners();
       case Right<Failure, List<Issue>>(:final value):
-        _state = IssueListLoaded(value);
+        _issuesListState = IssuesListLoaded(value);
         notifyListeners();
     }
   }

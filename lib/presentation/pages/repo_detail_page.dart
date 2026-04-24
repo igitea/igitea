@@ -669,10 +669,10 @@ class _IssuesTabState extends State<_IssuesTab> {
     return ListenableBuilder(
       listenable: Injection.issueNotifier,
       builder: (context, _) {
-        final state = Injection.issueNotifier.state;
-        return switch (state) {
-          IssueLoading() => const Center(child: CircularProgressIndicator()),
-          IssueError(:final message) => Center(
+        final issuesState = Injection.issueNotifier.issuesListState;
+        return switch (issuesState) {
+          IssuesListLoading() => const Center(child: CircularProgressIndicator()),
+          IssuesListError(:final message) => Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -687,7 +687,7 @@ class _IssuesTabState extends State<_IssuesTab> {
                 ],
               ),
             ),
-          IssueListLoaded(:final issues) => issues.isEmpty
+          IssuesListLoaded(:final issues) => issues.isEmpty
               ? const Center(child: Text('No issues'))
               : ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 16),

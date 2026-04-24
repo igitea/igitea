@@ -1,5 +1,35 @@
 # Changelog
 
+## [0.13.0] - 2026-04-24
+
+### Fixed — Issue List No-Refresh on Back Navigation
+
+- `IssueNotifier` now uses a separate `IssuesListState` sealed class hierarchy for list data (`IssuesListInitial`, `IssuesListLoading`, `IssuesListLoaded`, `IssuesListError`), distinct from `IssueState` used for single-issue detail and other operations.
+- `searchIssues()` and `listIssues()` update `_issuesListState` instead of `_state`, preventing navigation from overwriting list data.
+- `IssueListPage` `_loadIssues()` skips redundant fetch when `IssuesListLoaded` already exists.
+- `_IssueList` `RefreshIndicator` bug fixed: was creating a new `_IssueListPageState` instance instead of using the actual state's selected filter.
+
+### Changed — IssueListPage Refactor
+
+- `IssueListPage` now uses `searchIssues('', state)` global API instead of per-repo `listIssues` for cross-repository issue listing.
+- Shows repo name on each issue card (from `issue.repository.full_name`).
+- Filter chips for All/Open/Closed states.
+- `searchIssues` now accepts optional `state` parameter.
+
+### Added — Settings Page & Admin Features
+
+- New `SettingsPage` with theme picker (light/dark/system), account info, sign-out.
+- Admin section (visible only for `is_admin == true`): User Management (placeholder), Server Settings, Cron Tasks.
+- Server Settings shows API/UI/Attachment/Repository configuration via dedicated use cases.
+- Cron Tasks page displays all tasks with a "Run Now" button.
+- New use cases: `EditUserUseCase`, `RunCronTaskUseCase`, `GetGeneralAPISettingsUseCase`, `GetGeneralUISettingsUseCase`, `GetGeneralAttachmentSettingsUseCase`, `GetGeneralRepoSettingsUseCase`.
+
+### Changed — Profile Page
+
+- Removed Repositories section from Profile page.
+- Added Settings link (navigates to `SettingsPage`).
+- Theme picker removed from Profile (moved to Settings).
+
 ## [0.12.0] - 2026-04-24
 
 ### Added — Comments & Issue/PR Operations
