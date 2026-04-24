@@ -268,6 +268,17 @@ class RepoRepositoryImpl implements RepoRepository {
   }
 
   @override
+  Future<Either<Failure, PullRequest>> getPullRequest(
+    String owner,
+    String repo,
+    int index,
+  ) async {
+    return execute(
+      () => _apiService.repoGetPullRequest(owner: owner, repo: repo, index: index),
+    );
+  }
+
+  @override
   Future<Either<Failure, SearchResults>> searchRepos({
     String? q,
     int? uid,

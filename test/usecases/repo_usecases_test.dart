@@ -175,6 +175,14 @@ class MockRepoRepository implements RepoRepository {
     int? limit,
   }) =>
       throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, PullRequest>> getPullRequest(
+    String owner,
+    String repo,
+    int index,
+  ) =>
+      throw UnimplementedError();
 }
 
 void main() {

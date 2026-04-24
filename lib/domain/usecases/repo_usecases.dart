@@ -258,3 +258,26 @@ class ListPullRequestsUseCase {
     );
   }
 }
+
+class GetPullRequestParams {
+  final String owner;
+  final String repo;
+  final int index;
+
+  const GetPullRequestParams({
+    required this.owner,
+    required this.repo,
+    required this.index,
+  });
+}
+
+class GetPullRequestUseCase {
+  final RepoRepository _repository;
+
+  GetPullRequestUseCase({required RepoRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, PullRequest>> call(GetPullRequestParams params) async {
+    return _repository.getPullRequest(params.owner, params.repo, params.index);
+  }
+}

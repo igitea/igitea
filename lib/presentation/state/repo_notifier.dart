@@ -98,6 +98,11 @@ class PullRequestsError extends PullRequestsState {
   const PullRequestsError(this.message);
 }
 
+class PullRequestDetailLoaded extends RepoState {
+  final PullRequest pullRequest;
+  const PullRequestDetailLoaded(this.pullRequest);
+}
+
 sealed class ReleasesState {
   const ReleasesState();
 }
@@ -128,6 +133,7 @@ class RepoNotifier extends ChangeNotifier {
   ListTagsUseCase _listTagsUseCase;
   GetRepoContentsUseCase _getRepoContentsUseCase;
   ListPullRequestsUseCase _listPullRequestsUseCase;
+  GetPullRequestUseCase _getPullRequestUseCase;
   ListReleasesUseCase _listReleasesUseCase;
 
   RepoState _state = const RepoInitial();
@@ -154,6 +160,7 @@ class RepoNotifier extends ChangeNotifier {
     required ListTagsUseCase listTagsUseCase,
     required GetRepoContentsUseCase getRepoContentsUseCase,
     required ListPullRequestsUseCase listPullRequestsUseCase,
+    required GetPullRequestUseCase getPullRequestUseCase,
     required ListReleasesUseCase listReleasesUseCase,
   }) : _getRepoUseCase = getRepoUseCase,
        _searchReposUseCase = searchReposUseCase,
@@ -162,6 +169,7 @@ class RepoNotifier extends ChangeNotifier {
        _listTagsUseCase = listTagsUseCase,
        _getRepoContentsUseCase = getRepoContentsUseCase,
        _listPullRequestsUseCase = listPullRequestsUseCase,
+       _getPullRequestUseCase = getPullRequestUseCase,
        _listReleasesUseCase = listReleasesUseCase;
 
   void updateUseCases({
@@ -172,6 +180,7 @@ class RepoNotifier extends ChangeNotifier {
     required ListTagsUseCase listTagsUseCase,
     required GetRepoContentsUseCase getRepoContentsUseCase,
     required ListPullRequestsUseCase listPullRequestsUseCase,
+    required GetPullRequestUseCase getPullRequestUseCase,
     required ListReleasesUseCase listReleasesUseCase,
   }) {
     _getRepoUseCase = getRepoUseCase;
@@ -181,6 +190,7 @@ class RepoNotifier extends ChangeNotifier {
     _listTagsUseCase = listTagsUseCase;
     _getRepoContentsUseCase = getRepoContentsUseCase;
     _listPullRequestsUseCase = listPullRequestsUseCase;
+    _getPullRequestUseCase = getPullRequestUseCase;
     _listReleasesUseCase = listReleasesUseCase;
   }
 
@@ -319,6 +329,22 @@ class RepoNotifier extends ChangeNotifier {
         notifyListeners();
       case Right<Failure, List<PullRequest>>(:final value):
         _pullRequestsState = PullRequestsLoaded(value);
+        notifyListeners();
+    }
+  }
+
+  Future<void> getPullRequest(String owner, String repo, int index) async {
+    _state = const RepoLoading();
+    notifyListeners();
+    final result = await _getPullRequestUseCase.call(
+      GetPullRequestParams(owner: owner, repo: repo, index: index),
+    );
+    switch (result) {
+      case Left<Failure, PullRequest>(:final value):
+        _state = RepoError(value.message);
+        notifyListeners();
+      case Right<Failure, PullRequest>(:final value):
+        _state = PullRequestDetailLoaded(value);
         notifyListeners();
     }
   }

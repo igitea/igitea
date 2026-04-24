@@ -184,6 +184,16 @@ class FakeRepoRepository implements RepoRepository {
     if (shouldFail) return Left(failure);
     return Right(<PullRequest>[]);
   }
+
+  @override
+  Future<Either<Failure, PullRequest>> getPullRequest(
+    String owner,
+    String repo,
+    int index,
+  ) async {
+    if (shouldFail) return Left(failure);
+    return Right(const PullRequest());
+  }
 }
 
 void main() {
@@ -201,6 +211,7 @@ void main() {
         listTagsUseCase: ListTagsUseCase(repository: fakeRepo),
         getRepoContentsUseCase: GetRepoContentsUseCase(repository: fakeRepo),
         listPullRequestsUseCase: ListPullRequestsUseCase(repository: fakeRepo),
+        getPullRequestUseCase: GetPullRequestUseCase(repository: fakeRepo),
         listReleasesUseCase: ListReleasesUseCase(repository: fakeRepo),
       );
     });

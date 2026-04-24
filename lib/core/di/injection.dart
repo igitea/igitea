@@ -62,6 +62,7 @@ class Injection {
   static late ListReleasesUseCase listReleasesUseCase;
   static late GetRepoContentsUseCase getRepoContentsUseCase;
   static late ListPullRequestsUseCase listPullRequestsUseCase;
+  static late GetPullRequestUseCase getPullRequestUseCase;
   static late ListIssuesUseCase listIssuesUseCase;
   static late GetIssueUseCase getIssueUseCase;
   static late CreateIssueUseCase createIssueUseCase;
@@ -133,6 +134,7 @@ class Injection {
     listReleasesUseCase = ListReleasesUseCase(repository: repoRepository);
     getRepoContentsUseCase = GetRepoContentsUseCase(repository: repoRepository);
     listPullRequestsUseCase = ListPullRequestsUseCase(repository: repoRepository);
+    getPullRequestUseCase = GetPullRequestUseCase(repository: repoRepository);
     listIssuesUseCase = ListIssuesUseCase(repository: issueRepository);
     getIssueUseCase = GetIssueUseCase(repository: issueRepository);
     createIssueUseCase = CreateIssueUseCase(repository: issueRepository);
@@ -221,6 +223,7 @@ class Injection {
         listTagsUseCase: listTagsUseCase,
         getRepoContentsUseCase: getRepoContentsUseCase,
         listPullRequestsUseCase: listPullRequestsUseCase,
+        getPullRequestUseCase: getPullRequestUseCase,
         listReleasesUseCase: listReleasesUseCase,
       );
       issueNotifier.updateUseCases(
@@ -257,6 +260,7 @@ class Injection {
         listTagsUseCase: listTagsUseCase,
         getRepoContentsUseCase: getRepoContentsUseCase,
         listPullRequestsUseCase: listPullRequestsUseCase,
+        getPullRequestUseCase: getPullRequestUseCase,
         listReleasesUseCase: listReleasesUseCase,
       );
       issueNotifier = IssueNotifier(
@@ -313,6 +317,7 @@ class Injection {
       listTagsUseCase: listTagsUseCase,
       getRepoContentsUseCase: getRepoContentsUseCase,
       listPullRequestsUseCase: listPullRequestsUseCase,
+      getPullRequestUseCase: getPullRequestUseCase,
       listReleasesUseCase: listReleasesUseCase,
     );
     issueNotifier.updateUseCases(

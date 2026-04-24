@@ -154,6 +154,13 @@ class MockRepoRepository implements RepoRepository {
   }
 
   @override
+  Future<Either<Failure, PullRequest>> getPullRequest(
+    String owner,
+    String repo,
+    int index,
+  ) => throw UnimplementedError();
+
+  @override
   Future<Either<Failure, SearchResults>> searchRepos({
     String? q,
     int? uid,

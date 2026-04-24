@@ -489,6 +489,17 @@ class GiteaApiService {
         .toList();
   }
 
+  Future<PullRequest> repoGetPullRequest({
+    required String owner,
+    required String repo,
+    required int index,
+  }) async {
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/pulls/$index',
+    );
+    return PullRequest.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+  }
+
   Future<SearchResults> repoSearch({
     String? q,
     bool? topic,

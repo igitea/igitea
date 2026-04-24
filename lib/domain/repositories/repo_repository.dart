@@ -132,6 +132,9 @@ abstract class RepoRepository {
     int? limit,
   });
 
+  /// Get a specific pull request.
+  Future<Either<Failure, PullRequest>> getPullRequest(String owner, String repo, int index);
+
   /// Search repositories.
   Future<Either<Failure, SearchResults>> searchRepos({
     String? q,
