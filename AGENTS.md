@@ -85,6 +85,14 @@ python3 tools/generate_api_service.py   # regenerate GiteaApiService methods
 - Params use `*Params` ARB method suffix: `l10n.joinedOnParams(date: dateValue)`
 - No comments unless requested (per CLAUDE.md)
 
+## Workflow — Always End With
+
+After any meaningful change (feature, fix, refactor), update **both** the English and Chinese versions together:
+- `README.md` + `README.zh-CN.md` — features, phase status, test count
+- `CHANGELOG.md` + `CHANGELOG.zh-CN.md` — version entry with Added/Changed/Fixed
+
+Then commit with a clear message (e.g. `feat: ...`, `fix: ...`, `docs: ...`).
+
 ## Key Files
 
 - `lib/core/di/injection.dart` — all DI wiring

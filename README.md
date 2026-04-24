@@ -37,7 +37,7 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 
 ## Project Status
 
-Phases 1–9 complete, Phases 1–12 complete:
+Phases 1–12 complete:
 
 | Phase | Description | Status |
 |-------|-------------|--------|
@@ -52,7 +52,7 @@ Phases 1–9 complete, Phases 1–12 complete:
 | 9 | Repo Detail & File Browser | ✅ Done |
 | 10 | Issue/PR Detail Pages & Search | ✅ Done |
 | 11 | Settings Page & Admin Features | ✅ Done |
-| 12 | Internationalization (i18n) | 🔄 Pending |
+| 12 | Internationalization (i18n) | ✅ Done |
 
 ## Getting Started
 
