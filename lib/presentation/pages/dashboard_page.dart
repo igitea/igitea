@@ -9,8 +9,21 @@ import 'notification_page.dart';
 import 'repo_detail_page.dart';
 import 'repo_list_page.dart';
 
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
+
+  @override
+  State<DashboardPage> createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends State<DashboardPage> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Injection.userNotifier.loadCurrentUser();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,6 +76,16 @@ class DashboardPage extends StatelessWidget {
           Text(
             l10n.signInToGetStarted,
             style: Theme.of(context).textTheme.bodyLarge,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            'State: ${Injection.userNotifier.state.runtimeType}',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          const SizedBox(height: 8),
+          FilledButton(
+            onPressed: () => Injection.userNotifier.loadCurrentUser(),
+            child: const Text('Load Data'),
           ),
         ],
       ),

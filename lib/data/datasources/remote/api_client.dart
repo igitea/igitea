@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import '../../../core/constants/api_constants.dart';
@@ -36,10 +37,12 @@ class ApiClient {
     Map<String, String>? queryParameters,
   }) async {
     final uri = _buildUri(path, queryParameters);
+    debugPrint('ApiClient: GET $uri');
     try {
       final response = await _client
           .get(uri, headers: _headers)
           .timeout(const Duration(seconds: defaultTimeoutSeconds));
+      debugPrint('ApiClient: GET $uri => ${response.statusCode}');
       return _processResponse(response);
     } on http.ClientException catch (e) {
       throw NetworkException(
