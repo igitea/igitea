@@ -6,8 +6,8 @@
 *.swp
 .buildlog/
 .history
-
-
+.idea/
+.kotlin/
 
 # Flutter repo-specific
 /bin/cache/
@@ -126,4 +126,3 @@ app.*.symbols
 
 opencode.*
 docs/
-.idea/
