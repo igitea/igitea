@@ -444,6 +444,51 @@ class GiteaApiService {
     );
   }
 
+  Future<List<ContentsResponse>> repoGetContents({
+    required String owner,
+    required String repo,
+    String? path,
+    String? ref,
+  }) async {
+    final query = <String, String>{};
+    if (ref != null) query['ref'] = ref;
+    final pathPart = path != null && path.isNotEmpty ? '/${Uri.encodeComponent(path)}' : '';
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/contents$pathPart',
+      queryParameters: query,
+    );
+    final decoded = jsonDecode(response.body);
+    if (decoded is List<dynamic>) {
+      return decoded
+          .map((e) => ContentsResponse.fromJson(e as Map<String, dynamic>))
+          .toList();
+    }
+    return [
+      ContentsResponse.fromJson(decoded as Map<String, dynamic>),
+    ];
+  }
+
+  Future<List<PullRequest>> repoListPullRequests({
+    required String owner,
+    required String repo,
+    String? state,
+    int? page,
+    int? limit,
+  }) async {
+    final query = <String, String>{};
+    if (state != null) query['state'] = state;
+    if (page != null) query['page'] = page.toString();
+    if (limit != null) query['limit'] = limit.toString();
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/pulls',
+      queryParameters: query,
+    );
+    final list = jsonDecode(response.body) as List<dynamic>;
+    return list
+        .map((e) => PullRequest.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
   Future<SearchResults> repoSearch({
     String? q,
     bool? topic,
