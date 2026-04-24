@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
+import '../../l10n/app_localizations.dart';
 import '../state/user_notifier.dart';
 import '../widgets/user_avatar.dart';
 import 'issue_list_page.dart';
@@ -13,6 +14,8 @@ class DashboardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       body: ListenableBuilder(
         listenable: Injection.userNotifier,
@@ -24,24 +27,24 @@ class DashboardPage extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('Error: $message'),
+                  Text('${l10n.error}: $message'),
                   const SizedBox(height: 16),
                   FilledButton(
                     onPressed: () => Injection.userNotifier.loadCurrentUser(),
-                    child: const Text('Retry'),
+                    child: Text(l10n.retry),
                   ),
                 ],
               ),
             ),
-            UserLoaded(:final user) => _buildDashboard(context, user),
-            _ => _buildWelcome(context),
+            UserLoaded(:final user) => _buildDashboard(context, user, l10n),
+            _ => _buildWelcome(context, l10n),
           };
         },
       ),
     );
   }
 
-  Widget _buildWelcome(BuildContext context) {
+  Widget _buildWelcome(BuildContext context, AppLocalizations l10n) {
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -53,12 +56,12 @@ class DashboardPage extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            'Welcome to iGitea',
+            l10n.welcomeToIgitea,
             style: Theme.of(context).textTheme.headlineMedium,
           ),
           const SizedBox(height: 8),
           Text(
-            'Sign in to get started',
+            l10n.signInToGetStarted,
             style: Theme.of(context).textTheme.bodyLarge,
           ),
         ],
@@ -66,7 +69,7 @@ class DashboardPage extends StatelessWidget {
     );
   }
 
-  Widget _buildDashboard(BuildContext context, User user) {
+  Widget _buildDashboard(BuildContext context, User user, AppLocalizations l10n) {
     return RefreshIndicator(
       onRefresh: () => Injection.userNotifier.loadCurrentUser(),
       child: ListView(
@@ -74,16 +77,16 @@ class DashboardPage extends StatelessWidget {
         children: [
           _WelcomeCard(user: user),
           const SizedBox(height: 16),
-          Text('Quick Actions', style: Theme.of(context).textTheme.titleMedium),
+          Text(l10n.quickActions, style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),
-          _QuickActions(),
+          _QuickActions(l10n: l10n),
           const SizedBox(height: 16),
           Text(
-            'Your Repositories',
+            l10n.yourRepositories,
             style: Theme.of(context).textTheme.titleMedium,
           ),
           const SizedBox(height: 8),
-          _RepoSummary(),
+          _RepoSummary(l10n: l10n),
         ],
       ),
     );
@@ -98,6 +101,7 @@ class _WelcomeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -110,7 +114,7 @@ class _WelcomeCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Hello, ${user.full_name ?? user.login ?? 'User'}!',
+                    l10n.helloParams(user.full_name ?? user.login ?? l10n.user),
                     style: theme.textTheme.titleLarge,
                   ),
                   if (user.login != null)
@@ -126,6 +130,10 @@ class _WelcomeCard extends StatelessWidget {
 }
 
 class _QuickActions extends StatelessWidget {
+  final AppLocalizations l10n;
+
+  const _QuickActions({required this.l10n});
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -133,7 +141,7 @@ class _QuickActions extends StatelessWidget {
         Expanded(
           child: _ActionCard(
             icon: Icons.source,
-            label: 'Repositories',
+            label: l10n.repositories,
             onTap: () => Navigator.of(
               context,
             ).push(MaterialPageRoute(builder: (_) => const RepoListPage())),
@@ -143,7 +151,7 @@ class _QuickActions extends StatelessWidget {
         Expanded(
           child: _ActionCard(
             icon: Icons.error_outline,
-            label: 'Issues',
+            label: l10n.issues,
             onTap: () => Navigator.of(
               context,
             ).push(MaterialPageRoute(builder: (_) => const IssueListPage())),
@@ -153,7 +161,7 @@ class _QuickActions extends StatelessWidget {
         Expanded(
           child: _ActionCard(
             icon: Icons.notifications,
-            label: 'Notifications',
+            label: l10n.notifications,
             onTap: () => Navigator.of(
               context,
             ).push(MaterialPageRoute(builder: (_) => const NotificationPage())),
@@ -198,6 +206,10 @@ class _ActionCard extends StatelessWidget {
 }
 
 class _RepoSummary extends StatelessWidget {
+  final AppLocalizations l10n;
+
+  const _RepoSummary({required this.l10n});
+
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
@@ -205,10 +217,10 @@ class _RepoSummary extends StatelessWidget {
       builder: (context, _) {
         final repos = Injection.userNotifier.repos;
         if (repos.isEmpty) {
-          return const Card(
+          return Card(
             child: Padding(
-              padding: EdgeInsets.all(16),
-              child: Text('No repositories found.'),
+              padding: const EdgeInsets.all(16),
+              child: Text(l10n.noRepositoriesFound),
             ),
           );
         }

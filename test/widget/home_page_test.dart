@@ -6,6 +6,7 @@ import 'package:igitea/core/storage/auth_method_storage.dart';
 import 'package:igitea/domain/entities/auth_state.dart';
 import 'package:igitea/presentation/pages/dashboard_page.dart';
 import 'package:igitea/presentation/pages/home_page.dart';
+import 'package:igitea/widget_test_helpers.dart';
 
 void main() {
   setUp(() {
@@ -14,7 +15,7 @@ void main() {
   });
 
   Widget testWidget() {
-    return const MaterialApp(home: HomePage());
+    return buildTestableWidget(const HomePage());
   }
 
   final testAuthState = AuthAuthenticated(

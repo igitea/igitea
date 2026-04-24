@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 
 import '../../core/di/injection.dart';
 import '../../core/storage/auth_method_storage.dart';
@@ -65,13 +66,13 @@ class _LoginPageState extends State<LoginPage>
     super.dispose();
   }
 
-  String? _validateUrl(String? value) {
+  String? _validateUrl(String? value, AppLocalizations l10n) {
     if (value == null || value.trim().isEmpty) {
-      return 'Please enter a server URL';
+      return l10n.pleaseEnterServerUrl;
     }
     final uri = Uri.tryParse(value.trim());
     if (uri == null || !uri.hasScheme || !uri.hasAuthority) {
-      return 'Please enter a valid URL';
+      return l10n.pleaseEnterValidUrl;
     }
     return null;
   }
@@ -108,6 +109,7 @@ class _LoginPageState extends State<LoginPage>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: SafeArea(
@@ -122,13 +124,13 @@ class _LoginPageState extends State<LoginPage>
                   final state = Injection.authNotifier.state;
 
                   if (state is AuthLoading && _restoringCredentials) {
-                    return const Center(
+                    return Center(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           CircularProgressIndicator(),
                           SizedBox(height: 16),
-                          Text('Restoring session...'),
+                          Text(l10n.restoringSession),
                         ],
                       ),
                     );
@@ -149,7 +151,7 @@ class _LoginPageState extends State<LoginPage>
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'iGitea',
+                        l10n.appTitle,
                         style: theme.textTheme.headlineLarge?.copyWith(
                           fontWeight: FontWeight.bold,
                           color: theme.colorScheme.primary,
@@ -157,7 +159,7 @@ class _LoginPageState extends State<LoginPage>
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Connect to your Gitea instance',
+                        l10n.connectToGitea,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
@@ -190,9 +192,9 @@ class _LoginPageState extends State<LoginPage>
                         ),
                       TabBar(
                         controller: _tabController,
-                        tabs: const [
-                          Tab(text: 'Username & Password'),
-                          Tab(text: 'Access Token'),
+                        tabs: [
+                          Tab(text: l10n.usernamePassword),
+                          Tab(text: l10n.token),
                         ],
                       ),
                       const SizedBox(height: 16),
@@ -201,8 +203,8 @@ class _LoginPageState extends State<LoginPage>
                         child: TabBarView(
                           controller: _tabController,
                           children: [
-                            _buildBasicAuthForm(theme, isLoading),
-                            _buildTokenForm(theme, isLoading),
+                            _buildBasicAuthForm(theme, isLoading, l10n),
+                            _buildTokenForm(theme, isLoading, l10n),
                           ],
                         ),
                       ),
@@ -217,37 +219,37 @@ class _LoginPageState extends State<LoginPage>
     );
   }
 
-  Widget _buildBasicAuthForm(ThemeData theme, bool isLoading) {
+  Widget _buildBasicAuthForm(ThemeData theme, bool isLoading, AppLocalizations l10n) {
     return Form(
       key: _basicFormKey,
       child: Column(
         children: [
           TextFormField(
             controller: _baseUrlController,
-            decoration: const InputDecoration(
-              labelText: 'Server URL',
+            decoration: InputDecoration(
+              labelText: l10n.serverUrl,
               hintText: 'https://gitea.example.com',
               prefixIcon: Icon(Icons.dns_outlined),
               border: OutlineInputBorder(),
             ),
             keyboardType: TextInputType.url,
             textInputAction: TextInputAction.next,
-            validator: _validateUrl,
+            validator: (value) => _validateUrl(value, l10n),
             enabled: !isLoading,
           ),
           const SizedBox(height: 16),
           TextFormField(
             controller: _usernameController,
-            decoration: const InputDecoration(
-              labelText: 'Username',
-              hintText: 'Enter your username',
+            decoration: InputDecoration(
+              labelText: l10n.username,
+              hintText: l10n.enterUsername,
               prefixIcon: Icon(Icons.person_outlined),
               border: OutlineInputBorder(),
             ),
             textInputAction: TextInputAction.next,
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
-                return 'Please enter your username';
+                return l10n.pleaseEnterUsername;
               }
               return null;
             },
@@ -257,8 +259,8 @@ class _LoginPageState extends State<LoginPage>
           TextFormField(
             controller: _passwordController,
             decoration: InputDecoration(
-              labelText: 'Password',
-              hintText: 'Enter your password',
+              labelText: l10n.password,
+              hintText: l10n.enterPassword,
               prefixIcon: const Icon(Icons.lock_outlined),
               border: const OutlineInputBorder(),
               suffixIcon: IconButton(
@@ -277,7 +279,7 @@ class _LoginPageState extends State<LoginPage>
             onFieldSubmitted: (_) => _loginWithBasicAuth(),
             validator: (value) {
               if (value == null || value.isEmpty) {
-                return 'Please enter your password';
+                return l10n.pleaseEnterPassword;
               }
               return null;
             },
@@ -294,7 +296,7 @@ class _LoginPageState extends State<LoginPage>
                       width: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text('Sign In'),
+                  : Text(l10n.signIn),
             ),
           ),
         ],
@@ -302,30 +304,30 @@ class _LoginPageState extends State<LoginPage>
     );
   }
 
-  Widget _buildTokenForm(ThemeData theme, bool isLoading) {
+  Widget _buildTokenForm(ThemeData theme, bool isLoading, AppLocalizations l10n) {
     return Form(
       key: _tokenFormKey,
       child: Column(
         children: [
           TextFormField(
             controller: _baseUrlController,
-            decoration: const InputDecoration(
-              labelText: 'Server URL',
+            decoration: InputDecoration(
+              labelText: l10n.serverUrl,
               hintText: 'https://gitea.example.com',
               prefixIcon: Icon(Icons.dns_outlined),
               border: OutlineInputBorder(),
             ),
             keyboardType: TextInputType.url,
             textInputAction: TextInputAction.next,
-            validator: _validateUrl,
+            validator: (value) => _validateUrl(value, l10n),
             enabled: !isLoading,
           ),
           const SizedBox(height: 16),
           TextFormField(
             controller: _tokenController,
             decoration: InputDecoration(
-              labelText: 'Access Token',
-              hintText: 'Paste your personal access token',
+              labelText: l10n.token,
+              hintText: l10n.pasteAccessToken,
               prefixIcon: const Icon(Icons.key_outlined),
               border: const OutlineInputBorder(),
               suffixIcon: IconButton(
@@ -344,7 +346,7 @@ class _LoginPageState extends State<LoginPage>
             onFieldSubmitted: (_) => _loginWithToken(),
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
-                return 'Please enter an access token';
+                return l10n.pleaseEnterAccessToken;
               }
               return null;
             },
@@ -361,7 +363,7 @@ class _LoginPageState extends State<LoginPage>
                       width: 20,
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
-                  : const Text('Sign In with Token'),
+                  : Text(l10n.signInWithToken),
             ),
           ),
         ],

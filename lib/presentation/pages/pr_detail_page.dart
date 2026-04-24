@@ -3,6 +3,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
+import '../../l10n/app_localizations.dart';
 import '../../presentation/state/issue_notifier.dart';
 import '../../presentation/state/repo_notifier.dart';
 import '../widgets/user_avatar.dart';
@@ -43,9 +44,10 @@ class _PRDetailPageState extends State<PRDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text('PR #${widget.index}'),
+        title: Text(l10n.pullRequestNumber(widget.index)),
         actions: [
           if (Injection.repoNotifier.state is PullRequestDetailLoaded)
             IconButton(
@@ -72,7 +74,7 @@ class _PRDetailPageState extends State<PRDetailPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('Error: $message'),
+                  Text('${l10n.error}: $message'),
                   const SizedBox(height: 16),
                   FilledButton(
                     onPressed: () => Injection.repoNotifier.getPullRequest(
@@ -80,7 +82,7 @@ class _PRDetailPageState extends State<PRDetailPage> {
                       widget.repo,
                       widget.index,
                     ),
-                    child: const Text('Retry'),
+                    child: Text(l10n.retry),
                   ),
                 ],
               ),
@@ -118,14 +120,14 @@ class _PRContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final (stateText, stateColor) = _getStateInfo();
+    final l10n = AppLocalizations.of(context)!;
+    final (stateText, stateColor) = _getStateInfo(l10n);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // State badge + Title
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -146,7 +148,7 @@ class _PRContent extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  pr.title ?? 'Untitled',
+                  pr.title ?? l10n.untitled,
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -156,7 +158,6 @@ class _PRContent extends StatelessWidget {
           ),
           const SizedBox(height: 16),
 
-          // Author info
           if (pr.user != null)
             Row(
               children: [
@@ -170,7 +171,7 @@ class _PRContent extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'opened ${_formatDate(pr.created_at)}',
+                  l10n.openedParams(_formatDate(pr.created_at)),
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -179,7 +180,6 @@ class _PRContent extends StatelessWidget {
             ),
           const SizedBox(height: 16),
 
-          // Merge button (only for open PRs that are mergeable)
           if (pr.state?.value == 'open' && pr.mergeable == true && pr.merged != true)
             Row(
               children: [
@@ -188,16 +188,16 @@ class _PRContent extends StatelessWidget {
                     final confirmed = await showDialog<bool>(
                       context: context,
                       builder: (ctx) => AlertDialog(
-                        title: const Text('Merge Pull Request'),
-                        content: const Text('Are you sure you want to merge this pull request?'),
+                        title: Text(l10n.mergePullRequest),
+                        content: Text(l10n.mergeConfirmMessage),
                         actions: [
                           TextButton(
                             onPressed: () => Navigator.of(ctx).pop(false),
-                            child: const Text('Cancel'),
+                            child: Text(l10n.cancel),
                           ),
                           FilledButton(
                             onPressed: () => Navigator.of(ctx).pop(true),
-                            child: const Text('Merge'),
+                            child: Text(l10n.merge),
                           ),
                         ],
                       ),
@@ -206,7 +206,7 @@ class _PRContent extends StatelessWidget {
                       Injection.repoNotifier.mergePullRequest(owner, repo, index);
                     }
                   },
-                  child: const Text('Merge Pull Request'),
+                  child: Text(l10n.mergePullRequest),
                 ),
               ],
             ),
@@ -235,7 +235,6 @@ class _PRContent extends StatelessWidget {
             ),
           const SizedBox(height: 16),
 
-          // Stats
           if (pr.additions != null || pr.deletions != null || pr.changed_files != null)
             Row(
               children: [
@@ -251,14 +250,13 @@ class _PRContent extends StatelessWidget {
                 ],
                 if (pr.changed_files != null) ...[
                   Icon(Icons.insert_drive_file_outlined, size: 16, color: theme.colorScheme.onSurfaceVariant),
-                  Text('${pr.changed_files} files', style: theme.textTheme.bodySmall),
+                  Text('${pr.changed_files} ${l10n.files}', style: theme.textTheme.bodySmall),
                 ],
               ],
             ),
           if (pr.additions != null || pr.deletions != null || pr.changed_files != null)
             const SizedBox(height: 16),
 
-          // Labels
           if (pr.labels != null && pr.labels!.isNotEmpty)
             Wrap(
               spacing: 8,
@@ -278,14 +276,13 @@ class _PRContent extends StatelessWidget {
           if (pr.labels != null && pr.labels!.isNotEmpty)
             const SizedBox(height: 16),
 
-          // Merge status
           if (pr.mergeable != null)
             _buildInfoRow(
               context,
               icon: pr.mergeable! ? Icons.check_circle_outline : Icons.error_outline,
-              label: 'Mergeable',
+              label: l10n.mergeable,
               child: Text(
-                pr.mergeable! ? 'Yes' : 'No',
+                pr.mergeable! ? l10n.yes : l10n.no,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: pr.mergeable! ? Colors.green : Colors.red,
                 ),
@@ -294,7 +291,6 @@ class _PRContent extends StatelessWidget {
 
           const Divider(height: 32),
 
-          // Body
           if (pr.body != null && pr.body!.isNotEmpty)
             MarkdownBody(
               data: pr.body!,
@@ -307,7 +303,7 @@ class _PRContent extends StatelessWidget {
             )
           else
             Text(
-              'No description provided.',
+              l10n.noDescriptionProvided,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
                 fontStyle: FontStyle.italic,
@@ -316,7 +312,6 @@ class _PRContent extends StatelessWidget {
 
           const Divider(height: 32),
 
-          // Comments
           ListenableBuilder(
             listenable: Injection.issueNotifier,
             builder: (context, _) {
@@ -325,25 +320,24 @@ class _PRContent extends StatelessWidget {
                 CommentsLoading() => const Center(child: CircularProgressIndicator()),
                 CommentsError(:final message) => Column(
                   children: [
-                    Text('Failed to load comments: $message'),
+                    Text('${l10n.failedToLoadComments}: $message'),
                     TextButton(
                       onPressed: () => Injection.issueNotifier.listComments(owner, repo, index),
-                      child: const Text('Retry'),
+                      child: Text(l10n.retry),
                     ),
                   ],
                 ),
-                CommentsLoaded(:final comments) => _buildCommentsList(context, comments),
+                CommentsLoaded(:final comments) => _buildCommentsList(context, comments, l10n),
                 _ => const SizedBox.shrink(),
               };
             },
           ),
 
-          // Comment input
           const SizedBox(height: 16),
           TextField(
             controller: commentController,
             decoration: InputDecoration(
-              hintText: 'Write a comment...',
+              hintText: l10n.writeComment,
               border: const OutlineInputBorder(),
               suffixIcon: IconButton(
                 icon: const Icon(Icons.send),
@@ -367,20 +361,19 @@ class _PRContent extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          // Footer
           Row(
             children: [
               Icon(Icons.comment_outlined, size: 16, color: theme.colorScheme.onSurfaceVariant),
               const SizedBox(width: 4),
               Text(
-                '${pr.comments ?? 0} comments',
+                l10n.commentsCountParams(pr.comments ?? 0),
                 style: theme.textTheme.bodySmall,
               ),
               const SizedBox(width: 16),
               Icon(Icons.update, size: 16, color: theme.colorScheme.onSurfaceVariant),
               const SizedBox(width: 4),
               Text(
-                'Updated ${_formatDate(pr.updated_at)}',
+                l10n.updatedParams(_formatDate(pr.updated_at)),
                 style: theme.textTheme.bodySmall,
               ),
             ],
@@ -390,11 +383,11 @@ class _PRContent extends StatelessWidget {
     );
   }
 
-  Widget _buildCommentsList(BuildContext context, List<Comment> comments) {
+  Widget _buildCommentsList(BuildContext context, List<Comment> comments, AppLocalizations l10n) {
     if (comments.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.symmetric(vertical: 16),
-        child: Text('No comments yet.'),
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Text(l10n.noComments),
       );
     }
 
@@ -403,7 +396,7 @@ class _PRContent extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Comments (${comments.length})',
+          l10n.commentsParams(comments.length),
           style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
@@ -412,15 +405,15 @@ class _PRContent extends StatelessWidget {
     );
   }
 
-  (String, Color) _getStateInfo() {
+  (String, Color) _getStateInfo(AppLocalizations l10n) {
     if (pr.merged == true) {
-      return ('Merged', Colors.purple);
+      return (l10n.merged, Colors.purple);
     } else if (pr.draft == true) {
-      return ('Draft', Colors.grey);
+      return (l10n.draft, Colors.grey);
     } else if (pr.state?.value == 'closed') {
-      return ('Closed', Colors.red);
+      return (l10n.closed, Colors.red);
     } else {
-      return ('Open', Colors.green);
+      return (l10n.open, Colors.green);
     }
   }
 

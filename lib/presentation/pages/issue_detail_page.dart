@@ -3,6 +3,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
+import '../../l10n/app_localizations.dart';
 import '../../presentation/state/issue_notifier.dart';
 import '../widgets/user_avatar.dart';
 
@@ -42,9 +43,10 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: Text('Issue #${widget.index}'),
+        title: Text(l10n.issueNumber(widget.index)),
         actions: [
           if (Injection.issueNotifier.state is IssueDetailLoaded)
             IconButton(
@@ -71,7 +73,7 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('Error: $message'),
+                  Text('${l10n.error}: $message'),
                   const SizedBox(height: 16),
                   FilledButton(
                     onPressed: () => Injection.issueNotifier.getIssue(
@@ -79,7 +81,7 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
                       widget.repo,
                       widget.index,
                     ),
-                    child: const Text('Retry'),
+                    child: Text(l10n.retry),
                   ),
                 ],
               ),
@@ -117,6 +119,7 @@ class _IssueContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final isOpen = issue.state?.value == 'open';
 
     return SingleChildScrollView(
@@ -124,7 +127,6 @@ class _IssueContent extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // State badge + Title
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -135,7 +137,7 @@ class _IssueContent extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  isOpen ? 'Open' : 'Closed',
+                  isOpen ? l10n.open : l10n.closed,
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: isOpen ? Colors.green : Colors.purple,
                     fontWeight: FontWeight.bold,
@@ -145,7 +147,7 @@ class _IssueContent extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  issue.title ?? 'Untitled',
+                  issue.title ?? l10n.untitled,
                   style: theme.textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -155,7 +157,6 @@ class _IssueContent extends StatelessWidget {
           ),
           const SizedBox(height: 16),
 
-          // Author info
           if (issue.user != null)
             Row(
               children: [
@@ -169,7 +170,7 @@ class _IssueContent extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'opened ${_formatDate(issue.created_at)}',
+                  l10n.openedParams(_formatDate(issue.created_at)),
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -178,7 +179,6 @@ class _IssueContent extends StatelessWidget {
             ),
           const SizedBox(height: 16),
 
-          // Labels
           if (issue.labels != null && issue.labels!.isNotEmpty)
             Wrap(
               spacing: 8,
@@ -198,12 +198,11 @@ class _IssueContent extends StatelessWidget {
           if (issue.labels != null && issue.labels!.isNotEmpty)
             const SizedBox(height: 16),
 
-          // Assignee
           if (issue.assignee != null)
             _buildInfoRow(
               context,
               icon: Icons.person_outline,
-              label: 'Assignee',
+              label: l10n.assignee,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -214,16 +213,14 @@ class _IssueContent extends StatelessWidget {
               ),
             ),
 
-          // Milestone
           if (issue.milestone != null)
             _buildInfoRow(
               context,
               icon: Icons.flag_outlined,
-              label: 'Milestone',
+              label: l10n.milestone,
               child: Text(issue.milestone!.title ?? ''),
             ),
 
-          // Action buttons
           const SizedBox(height: 8),
           Row(
             children: [
@@ -236,14 +233,13 @@ class _IssueContent extends StatelessWidget {
                     {'state': isOpen ? 'closed' : 'open'},
                   );
                 },
-                child: Text(isOpen ? 'Close Issue' : 'Reopen Issue'),
+                child: Text(isOpen ? l10n.closeIssue : l10n.reopenIssue),
               ),
             ],
           ),
 
           const Divider(height: 32),
 
-          // Body
           if (issue.body != null && issue.body!.isNotEmpty)
             MarkdownBody(
               data: issue.body!,
@@ -256,7 +252,7 @@ class _IssueContent extends StatelessWidget {
             )
           else
             Text(
-              'No description provided.',
+              l10n.noDescriptionProvided,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
                 fontStyle: FontStyle.italic,
@@ -265,7 +261,6 @@ class _IssueContent extends StatelessWidget {
 
           const Divider(height: 32),
 
-          // Comments
           ListenableBuilder(
             listenable: Injection.issueNotifier,
             builder: (context, _) {
@@ -274,25 +269,24 @@ class _IssueContent extends StatelessWidget {
                 CommentsLoading() => const Center(child: CircularProgressIndicator()),
                 CommentsError(:final message) => Column(
                   children: [
-                    Text('Failed to load comments: $message'),
+                    Text('${l10n.failedToLoadComments}: $message'),
                     TextButton(
                       onPressed: () => Injection.issueNotifier.listComments(owner, repo, index),
-                      child: const Text('Retry'),
+                      child: Text(l10n.retry),
                     ),
                   ],
                 ),
-                CommentsLoaded(:final comments) => _buildCommentsList(context, comments),
+                CommentsLoaded(:final comments) => _buildCommentsList(context, comments, l10n),
                 _ => const SizedBox.shrink(),
               };
             },
           ),
 
-          // Comment input
           const SizedBox(height: 16),
           TextField(
             controller: commentController,
             decoration: InputDecoration(
-              hintText: 'Write a comment...',
+              hintText: l10n.writeComment,
               border: const OutlineInputBorder(),
               suffixIcon: IconButton(
                 icon: const Icon(Icons.send),
@@ -316,20 +310,19 @@ class _IssueContent extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          // Footer
           Row(
             children: [
               Icon(Icons.comment_outlined, size: 16, color: theme.colorScheme.onSurfaceVariant),
               const SizedBox(width: 4),
               Text(
-                '${issue.comments ?? 0} comments',
+                l10n.commentsCountParams(issue.comments ?? 0),
                 style: theme.textTheme.bodySmall,
               ),
               const SizedBox(width: 16),
               Icon(Icons.update, size: 16, color: theme.colorScheme.onSurfaceVariant),
               const SizedBox(width: 4),
               Text(
-                'Updated ${_formatDate(issue.updated_at)}',
+                l10n.updatedParams(_formatDate(issue.updated_at)),
                 style: theme.textTheme.bodySmall,
               ),
             ],
@@ -339,11 +332,11 @@ class _IssueContent extends StatelessWidget {
     );
   }
 
-  Widget _buildCommentsList(BuildContext context, List<Comment> comments) {
+  Widget _buildCommentsList(BuildContext context, List<Comment> comments, AppLocalizations l10n) {
     if (comments.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.symmetric(vertical: 16),
-        child: Text('No comments yet.'),
+      return Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Text(l10n.noComments),
       );
     }
 
@@ -352,7 +345,7 @@ class _IssueContent extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Comments (${comments.length})',
+          l10n.commentsParams(comments.length),
           style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),

@@ -5,7 +5,7 @@ import '../../core/di/injection.dart';
 import '../../core/errors/failures.dart';
 import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
-import '../../domain/entities/auth_state.dart';
+import '../../l10n/app_localizations.dart';
 import '../../presentation/state/user_notifier.dart';
 import '../widgets/org_avatar.dart';
 import '../widgets/user_avatar.dart';
@@ -107,6 +107,7 @@ class _ErrorView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(32),
@@ -115,14 +116,14 @@ class _ErrorView extends StatelessWidget {
           children: [
             Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
             const SizedBox(height: 16),
-            Text('Failed to load profile', style: theme.textTheme.titleMedium),
+            Text(l10n.failedToLoadProfile, style: theme.textTheme.titleMedium),
             const SizedBox(height: 8),
             Text(message, style: theme.textTheme.bodyMedium, textAlign: TextAlign.center),
             const SizedBox(height: 24),
             FilledButton.icon(
               onPressed: onRetry,
               icon: const Icon(Icons.refresh),
-              label: const Text('Retry'),
+              label: Text(l10n.retry),
             ),
           ],
         ),
@@ -146,6 +147,7 @@ class _ProfileContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return RefreshIndicator(
       onRefresh: () async => onRefresh(),
       child: ListView(
@@ -153,17 +155,17 @@ class _ProfileContent extends StatelessWidget {
         children: [
           _UserHeader(user: user),
           const SizedBox(height: 16),
-          _StatsRow(user: user),
+          _StatsRow(user: user, l10n: l10n),
           const SizedBox(height: 16),
-          _InfoCards(user: user),
+          _InfoCards(user: user, l10n: l10n),
           if (orgs.isNotEmpty) ...[
             const SizedBox(height: 16),
-            _OrgsSection(orgs: orgs, loading: orgsLoading),
+            _OrgsSection(orgs: orgs, loading: orgsLoading, l10n: l10n),
           ],
           const SizedBox(height: 16),
           ListTile(
             leading: const Icon(Icons.settings_outlined),
-            title: const Text('Settings'),
+            title: Text(l10n.settings),
             trailing: const Icon(Icons.chevron_right),
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
@@ -187,6 +189,7 @@ class _UserHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
       child: Column(
@@ -194,7 +197,7 @@ class _UserHeader extends StatelessWidget {
           UserAvatar(user: user, radius: 52),
           const SizedBox(height: 12),
           Text(
-            user.full_name ?? user.login ?? 'Unknown User',
+            user.full_name ?? user.login ?? l10n.unknownUser,
             style: theme.textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
             ),
@@ -221,7 +224,7 @@ class _UserHeader extends StatelessWidget {
           if (user.is_admin == true) ...[
             const SizedBox(height: 8),
             Chip(
-              label: const Text('Admin'),
+              label: Text(l10n.admin),
               avatar: Icon(Icons.shield, size: 16, color: theme.colorScheme.onError),
               materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
               visualDensity: VisualDensity.compact,
@@ -235,8 +238,9 @@ class _UserHeader extends StatelessWidget {
 
 class _StatsRow extends StatelessWidget {
   final User user;
+  final AppLocalizations l10n;
 
-  const _StatsRow({required this.user});
+  const _StatsRow({required this.user, required this.l10n});
 
   @override
   Widget build(BuildContext context) {
@@ -244,9 +248,9 @@ class _StatsRow extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
         children: [
-          Expanded(child: _StatItem(label: 'Repos', value: '${user.starred_repos_count ?? 0}')),
-          Expanded(child: _StatItem(label: 'Followers', value: '${user.followers_count ?? 0}')),
-          Expanded(child: _StatItem(label: 'Following', value: '${user.following_count ?? 0}')),
+          Expanded(child: _StatItem(label: l10n.repos, value: '${user.starred_repos_count ?? 0}')),
+          Expanded(child: _StatItem(label: l10n.followers, value: '${user.followers_count ?? 0}')),
+          Expanded(child: _StatItem(label: l10n.following, value: '${user.following_count ?? 0}')),
         ],
       ),
     );
@@ -281,8 +285,9 @@ class _StatItem extends StatelessWidget {
 
 class _InfoCards extends StatelessWidget {
   final User user;
+  final AppLocalizations l10n;
 
-  const _InfoCards({required this.user});
+  const _InfoCards({required this.user, required this.l10n});
 
   @override
   Widget build(BuildContext context) {
@@ -307,7 +312,7 @@ class _InfoCards extends StatelessWidget {
     if (user.created != null) {
       items.add(_InfoTile(
         icon: Icons.calendar_today_outlined,
-        label: 'Joined ${_formatDate(user.created!)}',
+        label: l10n.joinedOnParams(_formatDate(user.created!)),
       ));
     }
 
@@ -363,8 +368,9 @@ class _InfoTile extends StatelessWidget {
 class _OrgsSection extends StatelessWidget {
   final List<Organization> orgs;
   final bool loading;
+  final AppLocalizations l10n;
 
-  const _OrgsSection({required this.orgs, required this.loading});
+  const _OrgsSection({required this.orgs, required this.loading, required this.l10n});
 
   @override
   Widget build(BuildContext context) {
@@ -374,7 +380,7 @@ class _OrgsSection extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text('Organizations', style: theme.textTheme.titleMedium?.copyWith(
+          child: Text(l10n.organisations, style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
           )),
         ),
@@ -404,12 +410,13 @@ class _SignOutButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: FilledButton.icon(
         onPressed: () => _handleSignOut(context),
         icon: const Icon(Icons.logout),
-        label: const Text('Sign Out'),
+        label: Text(l10n.signOut),
         style: FilledButton.styleFrom(
           backgroundColor: theme.colorScheme.error,
           foregroundColor: theme.colorScheme.onError,
@@ -421,15 +428,16 @@ class _SignOutButton extends StatelessWidget {
 
   void _handleSignOut(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Sign Out'),
-        content: const Text('Are you sure you want to sign out?'),
+        title: Text(l10n.signOut),
+        content: Text(l10n.signOutConfirmMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Cancel'),
+            child: Text(l10n.cancel),
           ),
           FilledButton(
             onPressed: () async {
@@ -440,7 +448,7 @@ class _SignOutButton extends StatelessWidget {
               backgroundColor: theme.colorScheme.error,
               foregroundColor: theme.colorScheme.onError,
             ),
-            child: const Text('Sign Out'),
+            child: Text(l10n.signOut),
           ),
         ],
       ),

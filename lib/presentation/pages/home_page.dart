@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/di/injection.dart';
 import '../../domain/entities/auth_state.dart';
+import '../../l10n/app_localizations.dart';
 import 'dashboard_page.dart';
 import 'search_page.dart';
 import 'notification_page.dart';
@@ -41,6 +42,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return ListenableBuilder(
       listenable: Injection.authNotifier,
       builder: (context, _) {
@@ -53,7 +56,7 @@ class _HomePageState extends State<HomePage> {
 
         return Scaffold(
           appBar: AppBar(
-            title: Text(user.login ?? 'iGitea'),
+            title: Text(user.login ?? l10n.appTitle),
           ),
           body: Row(
             children: [
@@ -70,15 +73,28 @@ class _HomePageState extends State<HomePage> {
                       size: 32,
                     ),
                   ),
-                  destinations: _tabs
-                      .map(
-                        (t) => NavigationRailDestination(
-                          icon: Icon(t.icon),
-                          selectedIcon: Icon(t.selectedIcon),
-                          label: Text(t.label),
-                        ),
-                      )
-                      .toList(),
+                  destinations: [
+                    NavigationRailDestination(
+                      icon: Icon(_tabs[0].icon),
+                      selectedIcon: Icon(_tabs[0].selectedIcon),
+                      label: Text(l10n.dashboard),
+                    ),
+                    NavigationRailDestination(
+                      icon: Icon(_tabs[1].icon),
+                      selectedIcon: Icon(_tabs[1].selectedIcon),
+                      label: Text(l10n.search),
+                    ),
+                    NavigationRailDestination(
+                      icon: Icon(_tabs[2].icon),
+                      selectedIcon: Icon(_tabs[2].selectedIcon),
+                      label: Text(l10n.notifications),
+                    ),
+                    NavigationRailDestination(
+                      icon: Icon(_tabs[3].icon),
+                      selectedIcon: Icon(_tabs[3].selectedIcon),
+                      label: Text(l10n.profile),
+                    ),
+                  ],
                 ),
               Expanded(
                 child: IndexedStack(
@@ -93,15 +109,28 @@ class _HomePageState extends State<HomePage> {
               : NavigationBar(
                   selectedIndex: _selectedIndex,
                   onDestinationSelected: _onDestinationSelected,
-                  destinations: _tabs
-                      .map(
-                        (t) => NavigationDestination(
-                          icon: Icon(t.icon),
-                          selectedIcon: Icon(t.selectedIcon),
-                          label: t.label,
-                        ),
-                      )
-                      .toList(),
+                  destinations: [
+                    NavigationDestination(
+                      icon: Icon(_tabs[0].icon),
+                      selectedIcon: Icon(_tabs[0].selectedIcon),
+                      label: l10n.dashboard,
+                    ),
+                    NavigationDestination(
+                      icon: Icon(_tabs[1].icon),
+                      selectedIcon: Icon(_tabs[1].selectedIcon),
+                      label: l10n.search,
+                    ),
+                    NavigationDestination(
+                      icon: Icon(_tabs[2].icon),
+                      selectedIcon: Icon(_tabs[2].selectedIcon),
+                      label: l10n.notifications,
+                    ),
+                    NavigationDestination(
+                      icon: Icon(_tabs[3].icon),
+                      selectedIcon: Icon(_tabs[3].selectedIcon),
+                      label: l10n.profile,
+                    ),
+                  ],
                 ),
         );
       },

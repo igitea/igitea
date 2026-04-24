@@ -5,11 +5,15 @@ class ThemeNotifier extends ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.system;
   ThemeMode get themeMode => _themeMode;
 
-  static const _key = 'theme_mode';
+  Locale? _locale;
+  Locale? get locale => _locale;
+
+  static const _themeKey = 'theme_mode';
+  static const _localeKey = 'locale';
 
   Future<void> loadThemeMode() async {
     final prefs = await SharedPreferences.getInstance();
-    final value = prefs.getString(_key);
+    final value = prefs.getString(_themeKey);
     switch (value) {
       case 'light':
         _themeMode = ThemeMode.light;
@@ -27,6 +31,24 @@ class ThemeNotifier extends ChangeNotifier {
     _themeMode = mode;
     notifyListeners();
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_key, mode.name);
+    await prefs.setString(_themeKey, mode.name);
+  }
+
+  Future<void> loadLocale() async {
+    final prefs = await SharedPreferences.getInstance();
+    final value = prefs.getString(_localeKey);
+    if (value != null && value.isNotEmpty) {
+      _locale = Locale(value);
+    } else {
+      _locale = null;
+    }
+    notifyListeners();
+  }
+
+  Future<void> setLocale(Locale? locale) async {
+    _locale = locale;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_localeKey, locale?.languageCode ?? '');
   }
 }

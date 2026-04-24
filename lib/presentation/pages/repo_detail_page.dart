@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../domain/usecases/issue_usecases.dart';
+import '../../l10n/app_localizations.dart';
 import '../state/repo_notifier.dart';
 import '../state/issue_notifier.dart';
 import '../widgets/user_avatar.dart';
@@ -72,6 +73,7 @@ class _RepoDetailPageState extends State<RepoDetailPage>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         title: Text('${widget.owner}/${widget.repo}'),
@@ -105,7 +107,7 @@ class _RepoDetailPageState extends State<RepoDetailPage>
                 onRetry: () =>
                     Injection.repoNotifier.getRepo(widget.owner, widget.repo),
               ),
-            RepoLoaded(:final repo) => _buildContent(context, repo),
+            RepoLoaded(:final repo) => _buildContent(context, repo, l10n),
             _ => const Center(child: CircularProgressIndicator()),
           };
         },
@@ -113,19 +115,19 @@ class _RepoDetailPageState extends State<RepoDetailPage>
     );
   }
 
-  Widget _buildContent(BuildContext context, Repository repo) {
+  Widget _buildContent(BuildContext context, Repository repo, AppLocalizations l10n) {
     return Column(
       children: [
-        _RepoHeader(repo: repo),
+        _RepoHeader(repo: repo, l10n: l10n),
         TabBar(
           controller: _tabController,
           isScrollable: true,
-          tabs: const [
-            Tab(icon: Icon(Icons.code), text: 'Code'),
-            Tab(icon: Icon(Icons.bug_report_outlined), text: 'Issues'),
-            Tab(icon: Icon(Icons.merge_type), text: 'PRs'),
-            Tab(icon: Icon(Icons.new_releases_outlined), text: 'Releases'),
-            Tab(icon: Icon(Icons.call_split), text: 'Branches'),
+          tabs: [
+            Tab(icon: Icon(Icons.code), text: l10n.code),
+            Tab(icon: Icon(Icons.bug_report_outlined), text: l10n.issues),
+            Tab(icon: Icon(Icons.merge_type), text: l10n.pullRequests),
+            Tab(icon: Icon(Icons.new_releases_outlined), text: l10n.releases),
+            Tab(icon: Icon(Icons.call_split), text: l10n.branches),
           ],
         ),
         Expanded(
@@ -136,9 +138,9 @@ class _RepoDetailPageState extends State<RepoDetailPage>
                   owner: widget.owner,
                   repo: widget.repo,
                   defaultBranch: repo.default_branch),
-              _IssuesTab(owner: widget.owner, repo: widget.repo),
-              _PullRequestsTab(owner: widget.owner, repo: widget.repo),
-              _ReleasesTab(owner: widget.owner, repo: widget.repo),
+              _IssuesTab(owner: widget.owner, repo: widget.repo, l10n: l10n),
+              _PullRequestsTab(owner: widget.owner, repo: widget.repo, l10n: l10n),
+              _ReleasesTab(owner: widget.owner, repo: widget.repo, l10n: l10n),
               _BranchesTab(
                   owner: widget.owner,
                   repo: widget.repo,
@@ -159,6 +161,7 @@ class _ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -166,7 +169,7 @@ class _ErrorView extends StatelessWidget {
           Icon(Icons.error_outline,
               size: 48, color: Theme.of(context).colorScheme.error),
           const SizedBox(height: 16),
-          Text('Failed to load repository',
+          Text(l10n.failedToLoadRepo,
               style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),
           Padding(
@@ -179,7 +182,7 @@ class _ErrorView extends StatelessWidget {
           FilledButton.icon(
             onPressed: onRetry,
             icon: const Icon(Icons.refresh),
-            label: const Text('Retry'),
+            label: Text(l10n.retry),
           ),
         ],
       ),
@@ -189,8 +192,9 @@ class _ErrorView extends StatelessWidget {
 
 class _RepoHeader extends StatelessWidget {
   final Repository repo;
+  final AppLocalizations l10n;
 
-  const _RepoHeader({required this.repo});
+  const _RepoHeader({required this.repo, required this.l10n});
 
   @override
   Widget build(BuildContext context) {
@@ -231,7 +235,7 @@ class _RepoHeader extends StatelessWidget {
                               color: theme.colorScheme.errorContainer,
                               borderRadius: BorderRadius.circular(4),
                             ),
-                            child: Text('Private',
+                            child: Text(l10n.private,
                                 style: theme.textTheme.labelSmall?.copyWith(
                                     color: theme.colorScheme.onErrorContainer)),
                           ),
@@ -245,7 +249,7 @@ class _RepoHeader extends StatelessWidget {
                               color: theme.colorScheme.tertiaryContainer,
                               borderRadius: BorderRadius.circular(4),
                             ),
-                            child: Text('Archived',
+                            child: Text(l10n.archived,
                                 style: theme.textTheme.labelSmall?.copyWith(
                                     color:
                                         theme.colorScheme.onTertiaryContainer)),
@@ -318,7 +322,7 @@ class _RepoHeader extends StatelessWidget {
           ),
           if (repo.clone_url != null || repo.ssh_url != null) ...[
             const SizedBox(height: 8),
-            _CloneUrls(repo: repo),
+            _CloneUrls(repo: repo, l10n: l10n),
           ],
         ],
       ),
@@ -379,8 +383,9 @@ class _Badge extends StatelessWidget {
 
 class _CloneUrls extends StatelessWidget {
   final Repository repo;
+  final AppLocalizations l10n;
 
-  const _CloneUrls({required this.repo});
+  const _CloneUrls({required this.repo, required this.l10n});
 
   @override
   Widget build(BuildContext context) {
@@ -390,10 +395,10 @@ class _CloneUrls extends StatelessWidget {
       children: [
         if (repo.clone_url != null)
           _UrlRow(
-              label: 'HTTPS', url: repo.clone_url!, theme: theme, context: context),
+              label: 'HTTPS', url: repo.clone_url!, theme: theme, context: context, l10n: l10n),
         if (repo.ssh_url != null)
           _UrlRow(
-              label: 'SSH', url: repo.ssh_url!, theme: theme, context: context),
+              label: 'SSH', url: repo.ssh_url!, theme: theme, context: context, l10n: l10n),
       ],
     );
   }
@@ -404,12 +409,14 @@ class _UrlRow extends StatelessWidget {
   final String url;
   final ThemeData theme;
   final BuildContext context;
+  final AppLocalizations l10n;
 
   const _UrlRow({
     required this.label,
     required this.url,
     required this.theme,
     required this.context,
+    required this.l10n,
   });
 
   @override
@@ -429,11 +436,11 @@ class _UrlRow extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.copy, size: 16),
             visualDensity: VisualDensity.compact,
-            tooltip: 'Copy $label URL',
+            tooltip: 'Copy URL',
             onPressed: () {
               Clipboard.setData(ClipboardData(text: url));
               ScaffoldMessenger.of(this.context).showSnackBar(
-                SnackBar(content: Text('$label URL copied')),
+                SnackBar(content: Text(l10n.urlCopied)),
               );
             },
           ),
@@ -518,6 +525,7 @@ class _CodeTabState extends State<_CodeTab> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       children: [
         if (_pathStack.isNotEmpty)
@@ -552,7 +560,7 @@ class _CodeTabState extends State<_CodeTab> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text('Error: $message'),
+                        Text('${l10n.error}: $message'),
                         const SizedBox(height: 16),
                         FilledButton(
                           onPressed: () => Injection.repoNotifier.loadContents(
@@ -561,12 +569,12 @@ class _CodeTabState extends State<_CodeTab> {
                             path: _currentPath.isEmpty ? null : _currentPath,
                             ref: widget.defaultBranch,
                           ),
-                          child: const Text('Retry'),
+                          child: Text(l10n.retry),
                         ),
                       ],
                     ),
                   ),
-                ContentsLoaded(:final contents) => _buildFileList(contents, theme),
+                ContentsLoaded(:final contents) => _buildFileList(contents, theme, l10n),
                 _ => const Center(child: CircularProgressIndicator()),
               };
             },
@@ -584,9 +592,9 @@ class _CodeTabState extends State<_CodeTab> {
     return parts.join(' / ');
   }
 
-  Widget _buildFileList(List<ContentsResponse> contents, ThemeData theme) {
+  Widget _buildFileList(List<ContentsResponse> contents, ThemeData theme, AppLocalizations l10n) {
     if (contents.isEmpty) {
-      return const Center(child: Text('Empty directory'));
+      return Center(child: Text(l10n.emptyDirectory));
     }
     final dirs = contents.where((c) => c.type == 'dir').toList();
     final files = contents.where((c) => c.type != 'dir').toList();
@@ -646,8 +654,9 @@ class _FileItem extends StatelessWidget {
 class _IssuesTab extends StatefulWidget {
   final String owner;
   final String repo;
+  final AppLocalizations l10n;
 
-  const _IssuesTab({required this.owner, required this.repo});
+  const _IssuesTab({required this.owner, required this.repo, required this.l10n});
 
   @override
   State<_IssuesTab> createState() => _IssuesTabState();
@@ -676,19 +685,19 @@ class _IssuesTabState extends State<_IssuesTab> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('Error: $message'),
+                  Text('${widget.l10n.error}: $message'),
                   const SizedBox(height: 16),
                   FilledButton(
                     onPressed: () => Injection.issueNotifier.listIssues(
                       ListIssuesParams(owner: widget.owner, repo: widget.repo),
                     ),
-                    child: const Text('Retry'),
+                    child: Text(widget.l10n.retry),
                   ),
                 ],
               ),
             ),
           IssuesListLoaded(:final issues) => issues.isEmpty
-              ? const Center(child: Text('No issues'))
+              ? Center(child: Text(widget.l10n.noIssues))
               : ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   itemCount: issues.length,
@@ -698,10 +707,11 @@ class _IssuesTabState extends State<_IssuesTab> {
                       issue: issue,
                       owner: widget.owner,
                       repo: widget.repo,
+                      l10n: widget.l10n,
                     );
                   },
                 ),
-          _ => const Center(child: Text('No issues')),
+          _ => Center(child: Text(widget.l10n.noIssues)),
         };
       },
     );
@@ -712,8 +722,9 @@ class _IssueItem extends StatelessWidget {
   final Issue issue;
   final String owner;
   final String repo;
+  final AppLocalizations l10n;
 
-  const _IssueItem({required this.issue, required this.owner, required this.repo});
+  const _IssueItem({required this.issue, required this.owner, required this.repo, required this.l10n});
 
   @override
   Widget build(BuildContext context) {
@@ -728,7 +739,7 @@ class _IssueItem extends StatelessWidget {
             ? UserAvatar(user: issue.user!, radius: 16)
             : Icon(stateIcon, color: stateColor),
         title: Text(
-          issue.title ?? 'Untitled',
+          issue.title ?? l10n.untitled,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
@@ -749,8 +760,9 @@ class _IssueItem extends StatelessWidget {
 class _PullRequestsTab extends StatefulWidget {
   final String owner;
   final String repo;
+  final AppLocalizations l10n;
 
-  const _PullRequestsTab({required this.owner, required this.repo});
+  const _PullRequestsTab({required this.owner, required this.repo, required this.l10n});
 
   @override
   State<_PullRequestsTab> createState() => _PullRequestsTabState();
@@ -778,18 +790,18 @@ class _PullRequestsTabState extends State<_PullRequestsTab> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('Error: $message'),
+                  Text('${widget.l10n.error}: $message'),
                   const SizedBox(height: 16),
                   FilledButton(
                     onPressed: () => Injection.repoNotifier.listPullRequests(
                         widget.owner, widget.repo),
-                    child: const Text('Retry'),
+                    child: Text(widget.l10n.retry),
                   ),
                 ],
               ),
             ),
           PullRequestsLoaded(:final pullRequests) => pullRequests.isEmpty
-              ? const Center(child: Text('No pull requests'))
+              ? Center(child: Text(widget.l10n.noPullRequests))
               : ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   itemCount: pullRequests.length,
@@ -799,10 +811,11 @@ class _PullRequestsTabState extends State<_PullRequestsTab> {
                       pr: pr,
                       owner: widget.owner,
                       repo: widget.repo,
+                      l10n: widget.l10n,
                     );
                   },
                 ),
-          _ => const Center(child: Text('No pull requests')),
+          _ => Center(child: Text(widget.l10n.noPullRequests)),
         };
       },
     );
@@ -813,8 +826,9 @@ class _PRItem extends StatelessWidget {
   final PullRequest pr;
   final String owner;
   final String repo;
+  final AppLocalizations l10n;
 
-  const _PRItem({required this.pr, required this.owner, required this.repo});
+  const _PRItem({required this.pr, required this.owner, required this.repo, required this.l10n});
 
   @override
   Widget build(BuildContext context) {
@@ -838,7 +852,7 @@ class _PRItem extends StatelessWidget {
             ? UserAvatar(user: pr.user!, radius: 16)
             : Icon(stateIcon, color: stateColor),
         title: Text(
-          pr.title ?? 'Untitled',
+          pr.title ?? l10n.untitled,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
@@ -859,8 +873,9 @@ class _PRItem extends StatelessWidget {
 class _ReleasesTab extends StatefulWidget {
   final String owner;
   final String repo;
+  final AppLocalizations l10n;
 
-  const _ReleasesTab({required this.owner, required this.repo});
+  const _ReleasesTab({required this.owner, required this.repo, required this.l10n});
 
   @override
   State<_ReleasesTab> createState() => _ReleasesTabState();
@@ -888,27 +903,27 @@ class _ReleasesTabState extends State<_ReleasesTab> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('Error: $message'),
+                  Text('${widget.l10n.error}: $message'),
                   const SizedBox(height: 16),
                   FilledButton(
                     onPressed: () => Injection.repoNotifier.listReleases(
                         widget.owner, widget.repo),
-                    child: const Text('Retry'),
+                    child: Text(widget.l10n.retry),
                   ),
                 ],
               ),
             ),
           ReleasesLoaded(:final releases) => releases.isEmpty
-              ? const Center(child: Text('No releases'))
+              ? Center(child: Text(widget.l10n.noReleases))
               : ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   itemCount: releases.length,
                   itemBuilder: (context, index) {
                     final release = releases[index];
-                    return _ReleaseItem(release: release);
+                    return _ReleaseItem(release: release, l10n: widget.l10n);
                   },
                 ),
-          _ => const Center(child: Text('No releases')),
+          _ => Center(child: Text(widget.l10n.noReleases)),
         };
       },
     );
@@ -917,8 +932,9 @@ class _ReleasesTabState extends State<_ReleasesTab> {
 
 class _ReleaseItem extends StatelessWidget {
   final Release release;
+  final AppLocalizations l10n;
 
-  const _ReleaseItem({required this.release});
+  const _ReleaseItem({required this.release, required this.l10n});
 
   @override
   Widget build(BuildContext context) {
@@ -941,7 +957,7 @@ class _ReleaseItem extends StatelessWidget {
                   color: Colors.orange.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(4),
                 ),
-                child: Text('Pre-release',
+                child: Text(l10n.preRelease,
                     style: theme.textTheme.labelSmall
                         ?.copyWith(color: Colors.orange)),
               ),
@@ -994,6 +1010,7 @@ class _BranchesTabState extends State<_BranchesTab> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return ListenableBuilder(
       listenable: Injection.repoNotifier,
       builder: (context, _) {
@@ -1001,7 +1018,7 @@ class _BranchesTabState extends State<_BranchesTab> {
         if (state is BranchesLoaded) {
           final branches = state.branches;
           if (branches.isEmpty) {
-            return const Center(child: Text('No branches'));
+            return Center(child: Text(l10n.noBranches));
           }
           return ListView.builder(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -1030,7 +1047,7 @@ class _BranchesTabState extends State<_BranchesTab> {
                                 .primaryContainer,
                             borderRadius: BorderRadius.circular(4),
                           ),
-                          child: Text('Default',
+                          child: Text(l10n.defaultBranch,
                               style: Theme.of(context).textTheme.labelSmall?.copyWith(
                                   color: Theme.of(context)
                                       .colorScheme
@@ -1049,12 +1066,12 @@ class _BranchesTabState extends State<_BranchesTab> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('Error: ${state.message}'),
+                Text('${l10n.error}: ${state.message}'),
                 const SizedBox(height: 16),
                 FilledButton(
                   onPressed: () => Injection.repoNotifier.listBranches(
                       widget.owner, widget.repo),
-                  child: const Text('Retry'),
+                  child: Text(l10n.retry),
                 ),
               ],
             ),

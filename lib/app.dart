@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'core/di/injection.dart';
 import 'domain/entities/auth_state.dart';
+import 'l10n/app_localizations.dart';
 import 'presentation/pages/login_page.dart';
 import 'presentation/pages/home_page.dart';
 
@@ -18,6 +20,7 @@ class _IGiteaAppState extends State<IGiteaApp> {
     Injection.initialize();
     _tryRestoreSession();
     Injection.themeNotifier.loadThemeMode();
+    Injection.themeNotifier.loadLocale();
   }
 
   Future<void> _tryRestoreSession() async {
@@ -42,9 +45,13 @@ class _IGiteaAppState extends State<IGiteaApp> {
           home = const LoginPage();
         }
 
+        final locale = Injection.themeNotifier.locale;
         return MaterialApp(
           title: 'iGitea',
           debugShowCheckedModeBanner: false,
+          locale: locale,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
           theme: ThemeData(
             colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
             useMaterial3: true,

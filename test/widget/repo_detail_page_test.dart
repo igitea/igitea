@@ -6,6 +6,7 @@ import 'package:igitea/data/models/generated/generated_models.dart';
 import 'package:igitea/domain/entities/auth_state.dart';
 import 'package:igitea/presentation/pages/repo_detail_page.dart';
 import 'package:igitea/presentation/state/repo_notifier.dart';
+import 'package:igitea/widget_test_helpers.dart';
 
 void main() {
   setUp(() {
@@ -20,18 +21,14 @@ void main() {
 
   testWidgets('renders loading initially', (tester) async {
     await tester.pumpWidget(
-      const MaterialApp(
-        home: RepoDetailPage(owner: 'testowner', repo: 'testrepo'),
-      ),
+      buildTestableWidget(const RepoDetailPage(owner: 'testowner', repo: 'testrepo')),
     );
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
   });
 
   testWidgets('renders tab bar with 5 tabs', (tester) async {
     await tester.pumpWidget(
-      const MaterialApp(
-        home: RepoDetailPage(owner: 'testowner', repo: 'testrepo'),
-      ),
+      buildTestableWidget(const RepoDetailPage(owner: 'testowner', repo: 'testrepo')),
     );
     await tester.pump();
 
@@ -42,7 +39,7 @@ void main() {
 
     expect(find.text('Code'), findsOneWidget);
     expect(find.text('Issues'), findsOneWidget);
-    expect(find.text('PRs'), findsOneWidget);
+    expect(find.text('Pull Requests'), findsOneWidget);
     expect(find.text('Releases'), findsOneWidget);
     expect(find.text('Branches'), findsOneWidget);
   });

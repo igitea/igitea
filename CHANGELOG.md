@@ -1,6 +1,31 @@
 # Changelog
 
-## [0.13.0] - 2026-04-24
+## [0.14.0] - 2026-04-24
+
+### Added — Internationalization (i18n) — Phase 12
+
+- Full i18n support with 10 languages: English, Simplified Chinese (zh), Traditional Chinese (zh_TW), Japanese (ja), Korean (ko), Spanish (es), French (fr), German (de), Portuguese (pt), Russian (ru)
+- `l10n.yaml` configured with `flutter gen-l10n`, generated files in `lib/l10n/`
+- `AppLocalizations` wired into `IGiteaApp` with `localizationsDelegates` and `supportedLocales`
+- All 12 page files updated to use `AppLocalizations.of(context)!` for hardcoded strings
+- Language selector in Settings page with system-default option
+- `ThemeNotifier.setLocale()`/`loadLocale()` with SharedPreferences persistence (`locale` key)
+- `buildTestableWidget()` helper in `lib/widget_test_helpers.dart` for widget tests with l10n
+
+### Added — Settings Page Language Selector
+
+- Settings page now shows Language row below Theme picker
+- Language dialog lists all 10 supported locales with checkmark on current selection
+- Selecting "System default" clears persisted locale, uses platform locale
+
+### Updated — Test Infrastructure
+
+- Widget tests updated to use `buildTestableWidget()` with localizations support
+- Fixed test assertions: "PRs" → "Pull Requests", "Access Token" → "Token", "Username & Password" → l10n check
+
+### Changed
+
+- 247 tests passing, `flutter analyze` clean
 
 ### Fixed — Issue List No-Refresh on Back Navigation
 

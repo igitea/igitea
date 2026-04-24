@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
+import '../../l10n/app_localizations.dart';
 import '../state/notification_notifier.dart';
 import '../widgets/user_avatar.dart';
 
@@ -22,13 +23,14 @@ class _NotificationPageState extends State<NotificationPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Notifications'),
+        title: Text(l10n.notifications),
         actions: [
           IconButton(
             icon: const Icon(Icons.done_all),
-            tooltip: 'Mark all as read',
+            tooltip: l10n.markAllRead,
             onPressed: _markAllRead,
           ),
         ],
@@ -45,20 +47,21 @@ class _NotificationPageState extends State<NotificationPage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('Error: $message'),
+                  Text('${l10n.error}: $message'),
                   const SizedBox(height: 16),
                   FilledButton(
                     onPressed: () =>
                         Injection.notificationNotifier.listNotifications(),
-                    child: const Text('Retry'),
+                    child: Text(l10n.retry),
                   ),
                 ],
               ),
             ),
             NotificationListLoaded(:final notifications) => _NotificationList(
               notifications: notifications,
+              l10n: l10n,
             ),
-            _ => const Center(child: Text('No notifications')),
+            _ => Center(child: Text(l10n.noNotifications)),
           };
         },
       ),
@@ -66,8 +69,9 @@ class _NotificationPageState extends State<NotificationPage> {
   }
 
   void _markAllRead() {
+    final l10n = AppLocalizations.of(context)!;
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('All notifications marked as read')),
+      SnackBar(content: Text(l10n.allNotificationsMarkedAsRead)),
     );
     Injection.notificationNotifier.listNotifications();
   }
@@ -75,13 +79,14 @@ class _NotificationPageState extends State<NotificationPage> {
 
 class _NotificationList extends StatelessWidget {
   final List<NotificationThread> notifications;
+  final AppLocalizations l10n;
 
-  const _NotificationList({required this.notifications});
+  const _NotificationList({required this.notifications, required this.l10n});
 
   @override
   Widget build(BuildContext context) {
     if (notifications.isEmpty) {
-      return const Center(child: Text('No notifications.'));
+      return Center(child: Text(l10n.noNotifications));
     }
     return RefreshIndicator(
       onRefresh: () => Injection.notificationNotifier.listNotifications(),
@@ -90,7 +95,7 @@ class _NotificationList extends StatelessWidget {
         itemCount: notifications.length,
         itemBuilder: (context, index) {
           final notification = notifications[index];
-          return _NotificationCard(notification: notification);
+          return _NotificationCard(notification: notification, l10n: l10n);
         },
       ),
     );
@@ -99,8 +104,9 @@ class _NotificationList extends StatelessWidget {
 
 class _NotificationCard extends StatelessWidget {
   final NotificationThread notification;
+  final AppLocalizations l10n;
 
-  const _NotificationCard({required this.notification});
+  const _NotificationCard({required this.notification, required this.l10n});
 
   @override
   Widget build(BuildContext context) {
@@ -125,7 +131,7 @@ class _NotificationCard extends StatelessWidget {
                     : theme.colorScheme.onSurfaceVariant,
               ),
         title: Text(
-          subject?.title ?? 'No title',
+          subject?.title ?? l10n.noTitle,
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: isUnread ? const TextStyle(fontWeight: FontWeight.bold) : null,

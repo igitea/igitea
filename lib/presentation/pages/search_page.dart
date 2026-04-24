@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
+import '../../l10n/app_localizations.dart';
 import '../../presentation/state/issue_notifier.dart';
 import '../../presentation/state/repo_notifier.dart';
 import '../widgets/user_avatar.dart';
@@ -41,14 +42,16 @@ class _SearchPageState extends State<SearchPage>
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Search'),
+        title: Text(l10n.search),
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [
-            Tab(icon: Icon(Icons.source), text: 'Repositories'),
-            Tab(icon: Icon(Icons.bug_report), text: 'Issues'),
+          tabs: [
+            Tab(icon: Icon(Icons.source), text: l10n.repositories),
+            Tab(icon: Icon(Icons.bug_report), text: l10n.issues),
           ],
         ),
       ),
@@ -58,7 +61,7 @@ class _SearchPageState extends State<SearchPage>
             padding: const EdgeInsets.all(16),
             child: SearchBar(
               controller: _searchController,
-              hintText: 'Search...',
+              hintText: l10n.search,
               leading: const Icon(Icons.search),
               onSubmitted: (_) => _onSearch(),
             ),
@@ -81,35 +84,37 @@ class _SearchPageState extends State<SearchPage>
 class _RepoSearchResults extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return ListenableBuilder(
       listenable: Injection.repoNotifier,
       builder: (context, _) {
         final state = Injection.repoNotifier.state;
         return switch (state) {
           RepoLoading() => const Center(child: CircularProgressIndicator()),
-          SearchResultsLoaded(:final results) => _buildRepoList(context, results.data ?? []),
+          SearchResultsLoaded(:final results) => _buildRepoList(context, results.data ?? [], l10n),
           RepoError(:final message) => Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('Error: $message'),
+                Text('${l10n.error}: $message'),
                 const SizedBox(height: 16),
                 FilledButton(
                   onPressed: () => Injection.repoNotifier.searchRepos(),
-                  child: const Text('Retry'),
+                  child: Text(l10n.retry),
                 ),
               ],
             ),
           ),
-          _ => const Center(child: Text('Enter a search query to find repositories')),
+          _ => Center(child: Text(l10n.enterSearchQueryRepos)),
         };
       },
     );
   }
 
-  Widget _buildRepoList(BuildContext context, List<Repository> repos) {
+  Widget _buildRepoList(BuildContext context, List<Repository> repos, AppLocalizations l10n) {
     if (repos.isEmpty) {
-      return const Center(child: Text('No repositories found.'));
+      return Center(child: Text(l10n.noRepositoriesFound));
     }
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -130,6 +135,8 @@ class _SearchRepoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: InkWell(
@@ -173,7 +180,7 @@ class _SearchRepoCard extends StatelessWidget {
                         borderRadius: BorderRadius.circular(4),
                       ),
                       child: Text(
-                        'Private',
+                        l10n.private,
                         style: theme.textTheme.labelSmall?.copyWith(
                           color: theme.colorScheme.onErrorContainer,
                         ),
@@ -227,38 +234,40 @@ class _SearchRepoCard extends StatelessWidget {
 class _IssueSearchResults extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return ListenableBuilder(
       listenable: Injection.issueNotifier,
       builder: (context, _) {
         final issuesState = Injection.issueNotifier.issuesListState;
         return switch (issuesState) {
           IssuesListLoading() => const Center(child: CircularProgressIndicator()),
-          IssuesListLoaded(:final issues) => _buildIssueList(context, issues),
+          IssuesListLoaded(:final issues) => _buildIssueList(context, issues, l10n),
           IssuesListError(:final message) => Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('Error: $message'),
+                Text('${l10n.error}: $message'),
                 const SizedBox(height: 16),
                 FilledButton(
                   onPressed: () {
                     final query = Injection.issueNotifier.lastSearchQuery ?? '';
                     Injection.issueNotifier.searchIssues(query);
                   },
-                  child: const Text('Retry'),
+                  child: Text(l10n.retry),
                 ),
               ],
             ),
           ),
-          _ => const Center(child: Text('Enter a search query to find issues')),
+          _ => Center(child: Text(l10n.enterSearchQueryIssues)),
         };
       },
     );
   }
 
-  Widget _buildIssueList(BuildContext context, List<Issue> issues) {
+  Widget _buildIssueList(BuildContext context, List<Issue> issues, AppLocalizations l10n) {
     if (issues.isEmpty) {
-      return const Center(child: Text('No issues found.'));
+      return Center(child: Text(l10n.noIssuesFound));
     }
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -279,7 +288,9 @@ class _SearchIssueCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final isOpen = issue.state?.value == 'open';
+
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: InkWell(
@@ -312,7 +323,7 @@ class _SearchIssueCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      isOpen ? 'Open' : 'Closed',
+                      isOpen ? l10n.open : l10n.closed,
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: isOpen ? Colors.green : Colors.purple,
                         fontWeight: FontWeight.bold,
@@ -322,7 +333,7 @@ class _SearchIssueCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      issue.title ?? 'Untitled',
+                      issue.title ?? l10n.untitled,
                       style: theme.textTheme.titleSmall,
                       overflow: TextOverflow.ellipsis,
                     ),

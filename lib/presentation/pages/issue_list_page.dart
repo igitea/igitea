@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
+import '../../l10n/app_localizations.dart';
 import '../../presentation/state/issue_notifier.dart';
 import '../widgets/user_avatar.dart';
 import 'issue_detail_page.dart';
@@ -38,8 +39,9 @@ class _IssueListPageState extends State<IssueListPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Issues')),
+      appBar: AppBar(title: Text(l10n.issues)),
       body: Column(
         children: [
           Padding(
@@ -50,6 +52,7 @@ class _IssueListPageState extends State<IssueListPage> {
                 setState(() => _selectedState = state);
                 _forceReload();
               },
+              l10n: l10n,
             ),
           ),
           Expanded(
@@ -65,16 +68,16 @@ class _IssueListPageState extends State<IssueListPage> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text('Error: $message'),
+                        Text('${l10n.error}: $message'),
                         const SizedBox(height: 16),
                         FilledButton(
                           onPressed: () => _forceReload(),
-                          child: const Text('Retry'),
+                          child: Text(l10n.retry),
                         ),
                       ],
                     ),
                   ),
-                  IssuesListLoaded(:final issues) => _IssueList(issues: issues, onRefresh: _forceReload),
+                  IssuesListLoaded(:final issues) => _IssueList(issues: issues, onRefresh: _forceReload, l10n: l10n),
                   _ => const Center(
                     child: CircularProgressIndicator(),
                   ),
@@ -91,8 +94,9 @@ class _IssueListPageState extends State<IssueListPage> {
 class _FilterChips extends StatelessWidget {
   final String? selectedState;
   final ValueChanged<String?> onSelected;
+  final AppLocalizations l10n;
 
-  const _FilterChips({required this.selectedState, required this.onSelected});
+  const _FilterChips({required this.selectedState, required this.onSelected, required this.l10n});
 
   @override
   Widget build(BuildContext context) {
@@ -100,17 +104,17 @@ class _FilterChips extends StatelessWidget {
       spacing: 8,
       children: [
         FilterChip(
-          label: const Text('All'),
+          label: Text(l10n.all),
           selected: selectedState == null,
           onSelected: (_) => onSelected(null),
         ),
         FilterChip(
-          label: const Text('Open'),
+          label: Text(l10n.open),
           selected: selectedState == 'open',
           onSelected: (_) => onSelected('open'),
         ),
         FilterChip(
-          label: const Text('Closed'),
+          label: Text(l10n.closed),
           selected: selectedState == 'closed',
           onSelected: (_) => onSelected('closed'),
         ),
@@ -122,13 +126,14 @@ class _FilterChips extends StatelessWidget {
 class _IssueList extends StatelessWidget {
   final List<Issue> issues;
   final VoidCallback onRefresh;
+  final AppLocalizations l10n;
 
-  const _IssueList({required this.issues, required this.onRefresh});
+  const _IssueList({required this.issues, required this.onRefresh, required this.l10n});
 
   @override
   Widget build(BuildContext context) {
     if (issues.isEmpty) {
-      return const Center(child: Text('No issues found.'));
+      return Center(child: Text(l10n.noIssuesFound));
     }
     return RefreshIndicator(
       onRefresh: () async => onRefresh(),
@@ -137,7 +142,7 @@ class _IssueList extends StatelessWidget {
         itemCount: issues.length,
         itemBuilder: (context, index) {
           final issue = issues[index];
-          return _IssueCard(issue: issue);
+          return _IssueCard(issue: issue, l10n: l10n);
         },
       ),
     );
@@ -146,8 +151,9 @@ class _IssueList extends StatelessWidget {
 
 class _IssueCard extends StatelessWidget {
   final Issue issue;
+  final AppLocalizations l10n;
 
-  const _IssueCard({required this.issue});
+  const _IssueCard({required this.issue, required this.l10n});
 
   @override
   Widget build(BuildContext context) {
@@ -186,7 +192,7 @@ class _IssueCard extends StatelessWidget {
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
-                      issue.title ?? 'Untitled',
+                      issue.title ?? l10n.untitled,
                       style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,

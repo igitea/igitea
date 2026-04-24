@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:igitea/core/di/injection.dart';
 import 'package:igitea/presentation/pages/login_page.dart';
+import 'package:igitea/widget_test_helpers.dart';
 
 void main() {
   setUp(() {
@@ -9,7 +10,7 @@ void main() {
   });
 
   Widget testWidget() {
-    return const MaterialApp(home: LoginPage());
+    return buildTestableWidget(const LoginPage());
   }
 
   group('LoginPage', () {
@@ -22,7 +23,7 @@ void main() {
     testWidgets('shows both login tabs', (tester) async {
       await tester.pumpWidget(testWidget());
       expect(find.text('Username & Password'), findsOneWidget);
-      expect(find.text('Access Token'), findsWidgets);
+      expect(find.text('Token'), findsWidgets);
     });
 
     testWidgets(
@@ -40,12 +41,12 @@ void main() {
       'token tab shows Access Token field and Sign In with Token button',
       (tester) async {
         await tester.pumpWidget(testWidget());
-        await tester.tap(find.text('Access Token'));
+        await tester.tap(find.text('Token'));
         await tester.pumpAndSettle();
         expect(find.text('Sign In with Token'), findsOneWidget);
         final tokenFormFields = find.byType(TextFormField);
         expect(tokenFormFields, findsWidgets);
-        final accessTokenLabel = find.text('Access Token');
+        final accessTokenLabel = find.text('Token');
         expect(accessTokenLabel, findsWidgets);
       },
     );
@@ -59,7 +60,7 @@ void main() {
 
     testWidgets('token field is obscured by default', (tester) async {
       await tester.pumpWidget(testWidget());
-      await tester.tap(find.text('Access Token'));
+      await tester.tap(find.text('Token'));
       await tester.pumpAndSettle();
       final fields = find.byType(TextField);
       final tokenField = tester.widget<TextField>(fields.at(1));
@@ -94,7 +95,7 @@ void main() {
         tester.view.resetDevicePixelRatio();
       });
       await tester.pumpWidget(testWidget());
-      await tester.tap(find.text('Access Token'));
+      await tester.tap(find.text('Token'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Sign In with Token'));
       await tester.pumpAndSettle();

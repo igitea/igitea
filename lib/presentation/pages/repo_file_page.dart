@@ -12,6 +12,7 @@ import '../../core/errors/failures.dart';
 import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../domain/usecases/repo_usecases.dart';
+import '../../l10n/app_localizations.dart';
 
 class RepoFilePage extends StatefulWidget {
   final String owner;
@@ -120,6 +121,7 @@ class _RepoFilePageState extends State<RepoFilePage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final hasContent = _decodedContent != null;
     return Scaffold(
       appBar: AppBar(
@@ -128,13 +130,13 @@ class _RepoFilePageState extends State<RepoFilePage> {
           if (hasContent)
             IconButton(
               icon: const Icon(Icons.copy),
-              tooltip: 'Copy code',
+              tooltip: l10n.copyCode,
               onPressed: () => _copyToClipboard(context),
             ),
           if (widget.downloadUrl != null)
             IconButton(
               icon: const Icon(Icons.download),
-              tooltip: 'Download file',
+              tooltip: l10n.downloadFile,
               onPressed: () => _downloadFile(context),
             ),
         ],
@@ -142,19 +144,19 @@ class _RepoFilePageState extends State<RepoFilePage> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? _buildError(theme)
+              ? _buildError(theme, l10n)
               : _buildContent(theme),
     );
   }
 
-  Widget _buildError(ThemeData theme) {
+  Widget _buildError(ThemeData theme, AppLocalizations l10n) {
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
           const SizedBox(height: 16),
-          Text('Failed to load file', style: theme.textTheme.titleMedium),
+          Text(l10n.failedToLoadFile, style: theme.textTheme.titleMedium),
           const SizedBox(height: 8),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -167,14 +169,14 @@ class _RepoFilePageState extends State<RepoFilePage> {
               _loadFile();
             },
             icon: const Icon(Icons.refresh),
-            label: const Text('Retry'),
+            label: Text(l10n.retry),
           ),
           if (widget.htmlUrl != null) ...[
             const SizedBox(height: 8),
             OutlinedButton.icon(
               onPressed: () => _launchUrl(widget.htmlUrl!),
               icon: const Icon(Icons.open_in_new),
-              label: const Text('Open in browser'),
+              label: Text(l10n.openInBrowser),
             ),
           ],
         ],
@@ -183,16 +185,17 @@ class _RepoFilePageState extends State<RepoFilePage> {
   }
 
   Widget _buildContent(ThemeData theme) {
+    final l10n = AppLocalizations.of(context)!;
     if (_isImage) {
       if (widget.downloadUrl != null) {
         return Center(
           child: Image.network(
             widget.downloadUrl!,
-            errorBuilder: (context, error, stackTrace) => _buildFallback(theme),
+            errorBuilder: (context, error, stackTrace) => _buildFallback(theme, l10n),
           ),
         );
       }
-      return _buildFallback(theme);
+      return _buildFallback(theme, l10n);
     }
 
     if (_isMarkdown && _decodedContent != null) {
@@ -232,10 +235,10 @@ class _RepoFilePageState extends State<RepoFilePage> {
       );
     }
 
-    return _buildFallback(theme);
+    return _buildFallback(theme, l10n);
   }
 
-  Widget _buildFallback(ThemeData theme) {
+  Widget _buildFallback(ThemeData theme, AppLocalizations l10n) {
     return Center(
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -248,7 +251,7 @@ class _RepoFilePageState extends State<RepoFilePage> {
           Text(
             _rawResponse?.size != null
                 ? _formatSize(_rawResponse!.size!)
-                : 'File preview not available',
+                : l10n.filePreviewNotAvailable,
             style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant),
           ),
@@ -257,7 +260,7 @@ class _RepoFilePageState extends State<RepoFilePage> {
             FilledButton.icon(
               onPressed: () => _launchUrl(widget.htmlUrl!),
               icon: const Icon(Icons.open_in_new),
-              label: const Text('Open in browser'),
+              label: Text(l10n.openInBrowser),
             ),
           ],
           if (widget.downloadUrl != null) ...[
@@ -265,7 +268,7 @@ class _RepoFilePageState extends State<RepoFilePage> {
             OutlinedButton.icon(
               onPressed: () => _launchUrl(widget.downloadUrl!),
               icon: const Icon(Icons.download),
-              label: const Text('Download'),
+              label: Text(l10n.download),
             ),
           ],
         ],
@@ -318,23 +321,25 @@ class _RepoFilePageState extends State<RepoFilePage> {
   }
 
   Future<void> _copyToClipboard(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     if (_decodedContent == null) return;
     await Clipboard.setData(ClipboardData(text: _decodedContent!));
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Copied to clipboard')),
+        SnackBar(content: Text(l10n.copied)),
       );
     }
   }
 
   Future<void> _downloadFile(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     if (widget.downloadUrl == null) return;
     final uri = Uri.tryParse(widget.downloadUrl!);
     if (uri != null) {
       final success = await launchUrl(uri, mode: LaunchMode.externalApplication);
       if (!success && context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to open download URL')),
+          SnackBar(content: Text(l10n.failedToOpenDownloadUrl)),
         );
       }
     }
