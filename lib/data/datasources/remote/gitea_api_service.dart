@@ -228,6 +228,20 @@ class GiteaApiService {
     );
   }
 
+  Future<PullRequest> repoCreatePullRequest({
+    required String owner,
+    required String repo,
+    Map<String, dynamic>? body,
+  }) async {
+    final response = await _client.post(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/pulls',
+      body: body,
+    );
+    return PullRequest.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
+  }
+
   Future<Repository> repoMigrate({Map<String, dynamic>? body}) async {
     final response = await _client.post('/repos/migrate', body: body);
     return Repository.fromJson(

@@ -196,6 +196,10 @@ class FakeRepoRepository implements RepoRepository {
   }
 
   @override
+  Future<Either<Failure, PullRequest>> createPullRequest(
+    String owner, String repo, Map<String, dynamic> body) => throw UnimplementedError();
+
+  @override
   Future<Either<Failure, void>> starRepo(String owner, String repo) async {
     if (shouldFail) return Left(failure);
     return Right(null);
@@ -246,6 +250,9 @@ void main() {
         unstarRepoUseCase: UnstarRepoUseCase(repository: fakeRepo),
         checkStarredUseCase: CheckStarredUseCase(repository: fakeRepo),
         mergePullRequestUseCase: MergePullRequestUseCase(repository: fakeRepo),
+        createPullRequestUseCase: CreatePullRequestUseCase(repository: fakeRepo),
+        editRepoUseCase: EditRepoUseCase(repository: fakeRepo),
+        deleteRepoUseCase: DeleteRepoUseCase(repository: fakeRepo),
       );
     });
 

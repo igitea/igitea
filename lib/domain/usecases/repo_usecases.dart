@@ -365,3 +365,67 @@ class MergePullRequestUseCase {
     );
   }
 }
+
+class CreatePullRequestParams {
+  final String owner;
+  final String repo;
+  final Map<String, dynamic> body;
+
+  const CreatePullRequestParams({
+    required this.owner,
+    required this.repo,
+    required this.body,
+  });
+}
+
+class CreatePullRequestUseCase {
+  final RepoRepository _repository;
+
+  CreatePullRequestUseCase({required RepoRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, PullRequest>> call(CreatePullRequestParams params) async {
+    return _repository.createPullRequest(params.owner, params.repo, params.body);
+  }
+}
+
+class EditRepoParams {
+  final String owner;
+  final String repo;
+  final Map<String, dynamic> body;
+
+  const EditRepoParams({
+    required this.owner,
+    required this.repo,
+    required this.body,
+  });
+}
+
+class EditRepoUseCase {
+  final RepoRepository _repository;
+
+  EditRepoUseCase({required RepoRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, Repository>> call(EditRepoParams params) async {
+    return _repository.editRepo(params.owner, params.repo, params.body);
+  }
+}
+
+class DeleteRepoParams {
+  final String owner;
+  final String repo;
+
+  const DeleteRepoParams({required this.owner, required this.repo});
+}
+
+class DeleteRepoUseCase {
+  final RepoRepository _repository;
+
+  DeleteRepoUseCase({required RepoRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, void>> call(DeleteRepoParams params) async {
+    return _repository.deleteRepo(params.owner, params.repo);
+  }
+}

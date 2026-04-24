@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.17.1] - 2026-04-25
+
+### Added — Repository Deletion
+
+- `DeleteRepoUseCase` with `DeleteRepoParams` in domain layer
+- `deleteRepo()` method in `RepoNotifier` with `RepoLoading` → `RepoInitial` state transition
+- Repository deletion implementation in `RepoSettingsPage`: confirmation dialog, API call, success navigation back to home
+- `deleteRepoUseCase` wired through all 3 `Injection` initialization paths (`initialize()`, `updateAuth()`, `repoNotifier.updateUseCases()`)
+- 247 tests passing, `flutter analyze` clean
+
 ## [0.17.0] - 2026-04-24
 
 ### Added — Activity Feed on Dashboard

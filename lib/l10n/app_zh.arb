@@ -183,5 +183,16 @@
   "performedAction": "执行了操作",
   "inRepo": "在",
   "to": "到",
-  "from": "从"
+  "from": "从",
+  "newPullRequest": "新建拉取请求",
+  "headBranch": "源分支",
+  "baseBranch": "目标分支",
+  "pleaseFillAllFields": "请填写所有必填字段",
+  "settingsSaved": "设置已保存",
+  "privateRepo": "私有仓库",
+  "privateRepoDesc": "仅对你和协作者可见",
+  "enableIssues": "启用 Issues",
+  "enablePullRequests": "启用 Pull Requests",
+  "enableWiki": "启用 Wiki",
+  "defaultBranch": "默认分支"
 }

@@ -179,11 +179,11 @@ class _IssueContent extends StatelessWidget {
             ),
           const SizedBox(height: 16),
 
-          if (issue.labels != null && issue.labels!.isNotEmpty)
-            Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: issue.labels!.map((label) {
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              ...(issue.labels ?? []).map((label) {
                 return Chip(
                   label: Text(label.name ?? ''),
                   backgroundColor: _parseColor(label.color)?.withValues(alpha: 0.2) ?? theme.colorScheme.primaryContainer,
@@ -193,10 +193,15 @@ class _IssueContent extends StatelessWidget {
                   padding: EdgeInsets.zero,
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 );
-              }).toList(),
-            ),
-          if (issue.labels != null && issue.labels!.isNotEmpty)
-            const SizedBox(height: 16),
+              }),
+              ActionChip(
+                label: Text(l10n.edit),
+                avatar: const Icon(Icons.edit, size: 16),
+                onPressed: () => _showLabelEditor(context, issue),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
 
           if (issue.assignee != null)
             _buildInfoRow(
@@ -218,7 +223,17 @@ class _IssueContent extends StatelessWidget {
               context,
               icon: Icons.flag_outlined,
               label: l10n.milestone,
-              child: Text(issue.milestone!.title ?? ''),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(issue.milestone!.title ?? ''),
+                  const SizedBox(width: 8),
+                  InkWell(
+                    onTap: () => _showMilestoneEditor(context, issue),
+                    child: Icon(Icons.edit, size: 16, color: theme.colorScheme.primary),
+                  ),
+                ],
+              ),
             ),
 
           const SizedBox(height: 8),
@@ -398,6 +413,143 @@ class _IssueContent extends StatelessWidget {
     } catch (_) {
       return null;
     }
+  }
+
+  void _showMilestoneEditor(BuildContext context, Issue issue) async {
+    final l10n = AppLocalizations.of(context)!;
+    await Injection.issueNotifier.listMilestones(owner, repo);
+    final milestonesState = Injection.issueNotifier.state;
+    if (milestonesState is! MilestonesLoaded) return;
+
+    final allMilestones = milestonesState.milestones;
+    int? selectedMilestoneId = issue.milestone?.id;
+
+    if (!context.mounted) return;
+
+    await showDialog(
+      context: context,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setState) {
+            return AlertDialog(
+              title: Text(l10n.milestone),
+              content: SizedBox(
+                width: double.maxFinite,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: allMilestones.length + 1,
+                  itemBuilder: (ctx, index) {
+                    if (index == 0) {
+                      return RadioListTile<int?>(
+                        title: Text(l10n.noMilestones),
+                        value: null,
+                        groupValue: selectedMilestoneId,
+                        onChanged: (v) => setState(() => selectedMilestoneId = v),
+                      );
+                    }
+                    final milestone = allMilestones[index - 1];
+                    return RadioListTile<int?>(
+                      title: Text(milestone.title ?? ''),
+                      value: milestone.id,
+                      groupValue: selectedMilestoneId,
+                      onChanged: (v) => setState(() => selectedMilestoneId = v),
+                    );
+                  },
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  child: Text(l10n.cancel),
+                ),
+                FilledButton(
+                  onPressed: () async {
+                    Navigator.of(ctx).pop();
+                    await Injection.issueNotifier.editIssue(
+                      owner,
+                      repo,
+                      index,
+                      {'milestone': selectedMilestoneId},
+                    );
+                    await Injection.issueNotifier.getIssue(owner, repo, index);
+                  },
+                  child: Text(l10n.save),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  void _showLabelEditor(BuildContext context, Issue issue) async {
+    final l10n = AppLocalizations.of(context)!;
+    await Injection.issueNotifier.listLabels(owner, repo);
+    final labelsState = Injection.issueNotifier.state;
+    if (labelsState is! LabelsLoaded) return;
+
+    final allLabels = labelsState.labels;
+    final currentLabelNames = issue.labels?.map((l) => l.name ?? '').toSet() ?? {};
+    final selectedLabels = Set<String>.from(currentLabelNames);
+
+    if (!context.mounted) return;
+
+    await showDialog(
+      context: context,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setState) {
+            return AlertDialog(
+              title: Text(l10n.labels),
+              content: SizedBox(
+                width: double.maxFinite,
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: allLabels.length,
+                  itemBuilder: (ctx, index) {
+                    final label = allLabels[index];
+                    final isSelected = selectedLabels.contains(label.name);
+                    return CheckboxListTile(
+                      title: Text(label.name ?? ''),
+                      value: isSelected,
+                      onChanged: (checked) {
+                        setState(() {
+                          if (checked == true) {
+                            selectedLabels.add(label.name!);
+                          } else {
+                            selectedLabels.remove(label.name);
+                          }
+                        });
+                      },
+                    );
+                  },
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(ctx).pop(),
+                  child: Text(l10n.cancel),
+                ),
+                FilledButton(
+                  onPressed: () async {
+                    Navigator.of(ctx).pop();
+                    await Injection.issueNotifier.editIssue(
+                      owner,
+                      repo,
+                      index,
+                      {'labels': selectedLabels.toList()},
+                    );
+                    await Injection.issueNotifier.getIssue(owner, repo, index);
+                  },
+                  child: Text(l10n.save),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 }
 

@@ -1526,7 +1526,7 @@ abstract class AppLocalizations {
   /// No description provided for @defaultBranch.
   ///
   /// In en, this message translates to:
-  /// **'Default'**
+  /// **'Default branch'**
   String get defaultBranch;
 
   /// No description provided for @copyCode.
@@ -1768,6 +1768,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'from'**
   String get from;
+
+  /// No description provided for @headBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Head branch'**
+  String get headBranch;
+
+  /// No description provided for @baseBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Base branch'**
+  String get baseBranch;
+
+  /// No description provided for @pleaseFillAllFields.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill all required fields'**
+  String get pleaseFillAllFields;
+
+  /// No description provided for @settingsSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings saved'**
+  String get settingsSaved;
+
+  /// No description provided for @privateRepo.
+  ///
+  /// In en, this message translates to:
+  /// **'Private repository'**
+  String get privateRepo;
+
+  /// No description provided for @privateRepoDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Only visible to you and collaborators'**
+  String get privateRepoDesc;
+
+  /// No description provided for @enableIssues.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Issues'**
+  String get enableIssues;
+
+  /// No description provided for @enablePullRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Pull Requests'**
+  String get enablePullRequests;
+
+  /// No description provided for @enableWiki.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Wiki'**
+  String get enableWiki;
 }
 
 class _AppLocalizationsDelegate

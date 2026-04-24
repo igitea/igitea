@@ -139,6 +139,9 @@ class RepoNotifier extends ChangeNotifier {
   UnstarRepoUseCase _unstarRepoUseCase;
   CheckStarredUseCase _checkStarredUseCase;
   MergePullRequestUseCase _mergePullRequestUseCase;
+  CreatePullRequestUseCase _createPullRequestUseCase;
+  EditRepoUseCase _editRepoUseCase;
+  DeleteRepoUseCase _deleteRepoUseCase;
 
   RepoState _state = const RepoInitial();
   RepoState get state => _state;
@@ -175,6 +178,9 @@ class RepoNotifier extends ChangeNotifier {
     required UnstarRepoUseCase unstarRepoUseCase,
     required CheckStarredUseCase checkStarredUseCase,
     required MergePullRequestUseCase mergePullRequestUseCase,
+    required CreatePullRequestUseCase createPullRequestUseCase,
+    required EditRepoUseCase editRepoUseCase,
+    required DeleteRepoUseCase deleteRepoUseCase,
   }) : _getRepoUseCase = getRepoUseCase,
        _searchReposUseCase = searchReposUseCase,
        _listBranchesUseCase = listBranchesUseCase,
@@ -187,7 +193,10 @@ class RepoNotifier extends ChangeNotifier {
        _starRepoUseCase = starRepoUseCase,
        _unstarRepoUseCase = unstarRepoUseCase,
        _checkStarredUseCase = checkStarredUseCase,
-       _mergePullRequestUseCase = mergePullRequestUseCase;
+       _mergePullRequestUseCase = mergePullRequestUseCase,
+       _createPullRequestUseCase = createPullRequestUseCase,
+       _editRepoUseCase = editRepoUseCase,
+       _deleteRepoUseCase = deleteRepoUseCase;
 
   void updateUseCases({
     required GetRepoUseCase getRepoUseCase,
@@ -203,6 +212,9 @@ class RepoNotifier extends ChangeNotifier {
     required UnstarRepoUseCase unstarRepoUseCase,
     required CheckStarredUseCase checkStarredUseCase,
     required MergePullRequestUseCase mergePullRequestUseCase,
+    required CreatePullRequestUseCase createPullRequestUseCase,
+    required EditRepoUseCase editRepoUseCase,
+    required DeleteRepoUseCase deleteRepoUseCase,
   }) {
     _getRepoUseCase = getRepoUseCase;
     _searchReposUseCase = searchReposUseCase;
@@ -217,6 +229,9 @@ class RepoNotifier extends ChangeNotifier {
     _unstarRepoUseCase = unstarRepoUseCase;
     _checkStarredUseCase = checkStarredUseCase;
     _mergePullRequestUseCase = mergePullRequestUseCase;
+    _createPullRequestUseCase = createPullRequestUseCase;
+    _editRepoUseCase = editRepoUseCase;
+    _deleteRepoUseCase = deleteRepoUseCase;
   }
 
   Future<void> getRepo(String owner, String repo) async {
@@ -449,6 +464,62 @@ class RepoNotifier extends ChangeNotifier {
         notifyListeners();
       case Right<Failure, void>():
         await getPullRequest(owner, repo, index);
+    }
+  }
+
+  Future<void> createPullRequest(
+    String owner,
+    String repo,
+    Map<String, dynamic> body,
+  ) async {
+    _state = const RepoLoading();
+    notifyListeners();
+
+    final result = await _createPullRequestUseCase.call(
+      CreatePullRequestParams(owner: owner, repo: repo, body: body),
+    );
+    switch (result) {
+      case Left<Failure, PullRequest>(:final value):
+        _state = RepoError(value.message);
+        notifyListeners();
+      case Right<Failure, PullRequest>(:final value):
+        _state = PullRequestDetailLoaded(value);
+        notifyListeners();
+    }
+  }
+
+  Future<void> editRepo(
+    String owner,
+    String repo,
+    Map<String, dynamic> body,
+  ) async {
+    final result = await _editRepoUseCase.call(
+      EditRepoParams(owner: owner, repo: repo, body: body),
+    );
+    switch (result) {
+      case Left<Failure, Repository>(:final value):
+        _state = RepoError(value.message);
+        notifyListeners();
+      case Right<Failure, Repository>(:final value):
+        _state = RepoLoaded(value);
+        notifyListeners();
+    }
+  }
+
+  Future<void> deleteRepo(String owner, String repo) async {
+    _state = const RepoLoading();
+    notifyListeners();
+
+    final result = await _deleteRepoUseCase.call(
+      DeleteRepoParams(owner: owner, repo: repo),
+    );
+    switch (result) {
+      case Left<Failure, void>(:final value):
+        _state = RepoError(value.message);
+        notifyListeners();
+      case Right<Failure, void>():
+        _state = const RepoInitial();
+        notifyListeners();
     }
   }
 }

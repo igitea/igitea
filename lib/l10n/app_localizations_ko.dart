@@ -763,7 +763,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get archived => 'Archived';
 
   @override
-  String get defaultBranch => 'Default';
+  String get defaultBranch => 'Default branch';
 
   @override
   String get copyCode => 'Copy code';
@@ -886,4 +886,31 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get from => 'from';
+
+  @override
+  String get headBranch => 'Head branch';
+
+  @override
+  String get baseBranch => 'Base branch';
+
+  @override
+  String get pleaseFillAllFields => 'Please fill all required fields';
+
+  @override
+  String get settingsSaved => 'Settings saved';
+
+  @override
+  String get privateRepo => 'Private repository';
+
+  @override
+  String get privateRepoDesc => 'Only visible to you and collaborators';
+
+  @override
+  String get enableIssues => 'Enable Issues';
+
+  @override
+  String get enablePullRequests => 'Enable Pull Requests';
+
+  @override
+  String get enableWiki => 'Enable Wiki';
 }

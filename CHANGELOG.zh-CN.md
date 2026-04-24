@@ -1,5 +1,15 @@
 # 更新日志
 
+## [0.17.1] - 2026-04-25
+
+### 新增 — 仓库删除
+
+- 领域层新增 `DeleteRepoUseCase` 及 `DeleteRepoParams`
+- `RepoNotifier` 新增 `deleteRepo()` 方法，状态流转：`RepoLoading` → `RepoInitial`
+- `RepoSettingsPage` 实现仓库删除功能：确认对话框、API 调用、成功后返回首页
+- `deleteRepoUseCase` 已接入全部 3 个 `Injection` 初始化路径（`initialize()`、`updateAuth()`、`repoNotifier.updateUseCases()`）
+- 247 个测试通过，`flutter analyze` 无警告
+
 ## [0.17.0] - 2026-04-24
 
 ### 新增 — Dashboard 活动流

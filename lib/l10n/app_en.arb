@@ -278,5 +278,16 @@
   "performedAction": "performed action",
   "inRepo": "in",
   "to": "to",
-  "from": "from"
+  "from": "from",
+  "newPullRequest": "New Pull Request",
+  "headBranch": "Head branch",
+  "baseBranch": "Base branch",
+  "pleaseFillAllFields": "Please fill all required fields",
+  "settingsSaved": "Settings saved",
+  "privateRepo": "Private repository",
+  "privateRepoDesc": "Only visible to you and collaborators",
+  "enableIssues": "Enable Issues",
+  "enablePullRequests": "Enable Pull Requests",
+  "enableWiki": "Enable Wiki",
+  "defaultBranch": "Default branch"
 }

@@ -38,6 +38,7 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 - Create Issue page for creating new issues in any repository
 - Deep link support: open issues, PRs, and repositories via URL paths
 - Activity feed on Dashboard: shows recent user activities (create repo, push tag, create/close issue, PR, etc.)
+- Repository settings: edit description, visibility, feature toggles, and delete repository
 - 247 unit/widget tests, `flutter analyze` clean
 
 ## Project Status

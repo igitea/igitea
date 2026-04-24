@@ -763,7 +763,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get archived => 'Archived';
 
   @override
-  String get defaultBranch => 'Default';
+  String get defaultBranch => '默认分支';
 
   @override
   String get copyCode => 'Copy code';
@@ -886,6 +886,33 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get from => '从';
+
+  @override
+  String get headBranch => '源分支';
+
+  @override
+  String get baseBranch => '目标分支';
+
+  @override
+  String get pleaseFillAllFields => '请填写所有必填字段';
+
+  @override
+  String get settingsSaved => '设置已保存';
+
+  @override
+  String get privateRepo => '私有仓库';
+
+  @override
+  String get privateRepoDesc => '仅对你和协作者可见';
+
+  @override
+  String get enableIssues => '启用 Issues';
+
+  @override
+  String get enablePullRequests => '启用 Pull Requests';
+
+  @override
+  String get enableWiki => '启用 Wiki';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).

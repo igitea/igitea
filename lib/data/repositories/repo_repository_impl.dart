@@ -312,19 +312,30 @@ class RepoRepositoryImpl implements RepoRepository {
   }
 
   @override
+  Future<Either<Failure, PullRequest>> createPullRequest(
+    String owner,
+    String repo,
+    Map<String, dynamic> body,
+  ) async {
+    return execute(
+      () => _apiService.repoCreatePullRequest(owner: owner, repo: repo, body: body),
+    );
+  }
+
+  @override
   Future<Either<Failure, void>> mergePullRequest(
     String owner,
     String repo,
     int index, {
     MergePullRequestOption? body,
   }) async {
-    return execute(() async {
-      await _apiService.repoMergePullRequest(
+    return execute(
+      () => _apiService.repoMergePullRequest(
         owner: owner,
         repo: repo,
         index: index,
         body: body,
-      );
-    });
+      ),
+    );
   }
 }
