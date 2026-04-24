@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.17.0] - 2026-04-24
+
+### Added — Activity Feed on Dashboard
+
+- `listUserActivities()` API method in `GiteaApiService`: `GET /users/{username}/activities/feeds`
+- `getUserActivities()` in `UserRepository` interface and `UserRepositoryImpl`
+- `GetUserActivitiesUseCase` with `GetUserActivitiesParams`
+- `UserNotifier.getUserActivities()` method and `_activities` field
+- `_ActivityFeed` widget on Dashboard page showing recent user activities
+- Activity types supported: create_repo, push_tag, delete_tag, create_issue, close_issue, reopen_issue, create_pull_request, merge_pull_request, close_pull_request, comment_issue, comment_pull_request, fork_repo, transfer_repo, delete_repo, wiki_page
+- Activity cards show user avatar, action description, and timestamp
+- Tap on activity card navigates to the related repository
+- Shows up to 10 most recent activities
+
+### Changed
+
+- `UserNotifier` constructor and `updateUseCases()` now require `GetUserActivitiesUseCase`
+- `Injection` class updated across all 3 initialization paths
+- New ARB keys: `recentActivity`, `noActivity`, `createdRepo`, `pushedTag`, `deletedTag`, `createdIssue`, `closedIssue`, `reopenedIssue`, `createdPR`, `mergedPR`, `closedPR`, `commentedOnIssue`, `commentedOnPR`, `forkedRepo`, `transferredRepo`, `deletedRepo`, `updatedWiki`, `performedAction`, `inRepo`, `to`, `from`
+- 247 tests passing, `flutter analyze` clean
+
 ## [0.16.0] - 2026-04-24
 
 ### Added — Notification Actions

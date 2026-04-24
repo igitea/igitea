@@ -1,5 +1,26 @@
 # 更新日志
 
+## [0.17.0] - 2026-04-24
+
+### 新增 — Dashboard 活动流
+
+- `GiteaApiService` 新增 `listUserActivities()` API 方法：`GET /users/{username}/activities/feeds`
+- `UserRepository` 接口和 `UserRepositoryImpl` 中新增 `getUserActivities()`
+- `GetUserActivitiesUseCase` 及 `GetUserActivitiesParams`
+- `UserNotifier` 新增 `getUserActivities()` 方法和 `_activities` 字段
+- Dashboard 页面新增 `_ActivityFeed` 小组件，显示最近用户活动
+- 支持的活动类型：创建仓库、推送标签、删除标签、创建/关闭/重开 Issue、创建/合并/关闭 PR、评论 Issue/PR、分叉仓库、转移仓库、删除仓库、更新 Wiki
+- 活动卡片显示用户头像、操作描述和时间戳
+- 点击活动卡片跳转到相关仓库
+- 显示最近 10 条活动
+
+### 变更
+
+- `UserNotifier` 构造函数和 `updateUseCases()` 现在需要 `GetUserActivitiesUseCase`
+- `Injection` 类更新所有 3 个初始化路径
+- 新增 ARB 键：`recentActivity`、`noActivity`、`createdRepo`、`pushedTag`、`deletedTag`、`createdIssue`、`closedIssue`、`reopenedIssue`、`createdPR`、`mergedPR`、`closedPR`、`commentedOnIssue`、`commentedOnPR`、`forkedRepo`、`transferredRepo`、`deletedRepo`、`updatedWiki`、`performedAction`、`inRepo`、`to`、`from`
+- 247 个测试通过，`flutter analyze` 无警告
+
 ## [0.16.0] - 2026-04-24
 
 ### 新增 — 通知操作

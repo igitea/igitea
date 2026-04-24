@@ -829,4 +829,64 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get pleaseEnterTitle => 'Please enter a title';
+
+  @override
+  String get noActivity => 'No recent activity';
+
+  @override
+  String get createdRepo => 'created repository';
+
+  @override
+  String get pushedTag => 'pushed tag';
+
+  @override
+  String get deletedTag => 'deleted tag';
+
+  @override
+  String get createdIssue => 'created issue';
+
+  @override
+  String get closedIssue => 'closed issue';
+
+  @override
+  String get reopenedIssue => 'reopened issue';
+
+  @override
+  String get createdPR => 'created pull request';
+
+  @override
+  String get mergedPR => 'merged pull request';
+
+  @override
+  String get closedPR => 'closed pull request';
+
+  @override
+  String get commentedOnIssue => 'commented on issue';
+
+  @override
+  String get commentedOnPR => 'commented on pull request';
+
+  @override
+  String get forkedRepo => 'forked repository';
+
+  @override
+  String get transferredRepo => 'transferred repository';
+
+  @override
+  String get deletedRepo => 'deleted repository';
+
+  @override
+  String get updatedWiki => 'updated wiki';
+
+  @override
+  String get performedAction => 'performed action';
+
+  @override
+  String get inRepo => 'in';
+
+  @override
+  String get to => 'to';
+
+  @override
+  String get from => 'from';
 }

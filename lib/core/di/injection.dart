@@ -55,6 +55,7 @@ class Injection {
   static late ListCurrentUserReposUseCase listCurrentUserReposUseCase;
   static late ListFollowersUseCase listFollowersUseCase;
   static late ListFollowingUseCase listFollowingUseCase;
+  static late GetUserActivitiesUseCase getUserActivitiesUseCase;
   static late GetRepoUseCase getRepoUseCase;
   static late SearchReposUseCase searchReposUseCase;
   static late ListBranchesUseCase listBranchesUseCase;
@@ -140,6 +141,7 @@ class Injection {
     );
     listFollowersUseCase = ListFollowersUseCase(repository: userRepository);
     listFollowingUseCase = ListFollowingUseCase(repository: userRepository);
+    getUserActivitiesUseCase = GetUserActivitiesUseCase(repository: userRepository);
     getRepoUseCase = GetRepoUseCase(repository: repoRepository);
     searchReposUseCase = SearchReposUseCase(repository: repoRepository);
     listBranchesUseCase = ListBranchesUseCase(repository: repoRepository);
@@ -240,6 +242,7 @@ class Injection {
       userNotifier.updateUseCases(
         getCurrentUserUseCase: getCurrentUserUseCase,
         listCurrentUserReposUseCase: listCurrentUserReposUseCase,
+        getUserActivitiesUseCase: getUserActivitiesUseCase,
       );
       repoNotifier.updateUseCases(
         getRepoUseCase: getRepoUseCase,
@@ -292,6 +295,7 @@ class Injection {
       userNotifier = UserNotifier(
         getCurrentUserUseCase: getCurrentUserUseCase,
         listCurrentUserReposUseCase: listCurrentUserReposUseCase,
+        getUserActivitiesUseCase: getUserActivitiesUseCase,
       );
       repoNotifier = RepoNotifier(
         getRepoUseCase: getRepoUseCase,
@@ -365,6 +369,7 @@ class Injection {
     userNotifier.updateUseCases(
       getCurrentUserUseCase: getCurrentUserUseCase,
       listCurrentUserReposUseCase: listCurrentUserReposUseCase,
+      getUserActivitiesUseCase: getUserActivitiesUseCase,
     );
     repoNotifier.updateUseCases(
       getRepoUseCase: getRepoUseCase,

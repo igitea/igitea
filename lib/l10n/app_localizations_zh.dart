@@ -826,6 +826,66 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get pleaseEnterTitle => '请输入标题';
+
+  @override
+  String get noActivity => '暂无活动';
+
+  @override
+  String get createdRepo => '创建了仓库';
+
+  @override
+  String get pushedTag => '推送了标签';
+
+  @override
+  String get deletedTag => '删除了标签';
+
+  @override
+  String get createdIssue => '创建了问题';
+
+  @override
+  String get closedIssue => '关闭了问题';
+
+  @override
+  String get reopenedIssue => '重新打开了问题';
+
+  @override
+  String get createdPR => '创建了拉取请求';
+
+  @override
+  String get mergedPR => '合并了拉取请求';
+
+  @override
+  String get closedPR => '关闭了拉取请求';
+
+  @override
+  String get commentedOnIssue => '评论了问题';
+
+  @override
+  String get commentedOnPR => '评论了拉取请求';
+
+  @override
+  String get forkedRepo => '分叉了仓库';
+
+  @override
+  String get transferredRepo => '转移了仓库';
+
+  @override
+  String get deletedRepo => '删除了仓库';
+
+  @override
+  String get updatedWiki => '更新了 Wiki';
+
+  @override
+  String get performedAction => '执行了操作';
+
+  @override
+  String get inRepo => '在';
+
+  @override
+  String get to => '到';
+
+  @override
+  String get from => '从';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).

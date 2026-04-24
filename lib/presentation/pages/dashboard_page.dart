@@ -87,6 +87,13 @@ class DashboardPage extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           _RepoSummary(l10n: l10n),
+          const SizedBox(height: 16),
+          Text(
+            l10n.recentActivity,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 8),
+          _ActivityFeed(user: user),
         ],
       ),
     );
@@ -279,5 +286,167 @@ class _RepoSummary extends StatelessWidget {
         );
       },
     );
+  }
+}
+
+class _ActivityFeed extends StatefulWidget {
+  final User user;
+
+  const _ActivityFeed({required this.user});
+
+  @override
+  State<_ActivityFeed> createState() => _ActivityFeedState();
+}
+
+class _ActivityFeedState extends State<_ActivityFeed> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.user.login != null) {
+        Injection.userNotifier.getUserActivities(widget.user.login!);
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+
+    return ListenableBuilder(
+      listenable: Injection.userNotifier,
+      builder: (context, _) {
+        final activities = Injection.userNotifier.activities;
+
+        if (activities.isEmpty) {
+          return Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Center(child: Text(l10n.noActivity)),
+            ),
+          );
+        }
+
+        return Column(
+          children: activities.take(10).map((activity) {
+            return Card(
+              margin: const EdgeInsets.only(bottom: 8),
+              child: ListTile(
+                leading: activity.act_user != null
+                    ? UserAvatar(user: activity.act_user!, radius: 16)
+                    : Icon(_activityIcon(activity.op_type), size: 20),
+                title: Text(
+                  _activityDescription(activity, l10n),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                subtitle: activity.created != null
+                    ? Text(
+                        _formatDate(activity.created!),
+                        style: theme.textTheme.bodySmall,
+                      )
+                    : null,
+                onTap: () => _navigateToActivity(activity, context),
+              ),
+            );
+          }).toList(),
+        );
+      },
+    );
+  }
+
+  IconData _activityIcon(String? opType) {
+    switch (opType) {
+      case 'create_repo':
+        return Icons.create_new_folder;
+      case 'push_tag':
+      case 'delete_tag':
+        return Icons.tag;
+      case 'create_issue':
+      case 'close_issue':
+      case 'reopen_issue':
+        return Icons.error_outline;
+      case 'create_pull_request':
+      case 'merge_pull_request':
+      case 'close_pull_request':
+        return Icons.merge_type;
+      case 'comment_issue':
+      case 'comment_pull_request':
+        return Icons.comment;
+      case 'fork_repo':
+        return Icons.fork_right;
+      case 'transfer_repo':
+        return Icons.swap_horiz;
+      case 'delete_repo':
+        return Icons.delete;
+      case 'wiki_page':
+        return Icons.book;
+      default:
+        return Icons.circle;
+    }
+  }
+
+  String _activityDescription(Activity activity, AppLocalizations l10n) {
+    final user = activity.act_user?.login ?? l10n.unknown;
+    final repo = activity.repo?.full_name ?? l10n.unknown;
+    final opType = activity.op_type ?? '';
+
+    switch (opType) {
+      case 'create_repo':
+        return '$user ${l10n.createdRepo} $repo';
+      case 'push_tag':
+        return '$user ${l10n.pushedTag} ${activity.ref_name ?? ''} ${l10n.to} $repo';
+      case 'delete_tag':
+        return '$user ${l10n.deletedTag} ${activity.ref_name ?? ''} ${l10n.from} $repo';
+      case 'create_issue':
+        return '$user ${l10n.createdIssue} #${activity.content ?? ''} ${l10n.inRepo} $repo';
+      case 'close_issue':
+        return '$user ${l10n.closedIssue} #${activity.content ?? ''} ${l10n.inRepo} $repo';
+      case 'reopen_issue':
+        return '$user ${l10n.reopenedIssue} #${activity.content ?? ''} ${l10n.inRepo} $repo';
+      case 'create_pull_request':
+        return '$user ${l10n.createdPR} #${activity.content ?? ''} ${l10n.inRepo} $repo';
+      case 'merge_pull_request':
+        return '$user ${l10n.mergedPR} #${activity.content ?? ''} ${l10n.inRepo} $repo';
+      case 'close_pull_request':
+        return '$user ${l10n.closedPR} #${activity.content ?? ''} ${l10n.inRepo} $repo';
+      case 'comment_issue':
+        return '$user ${l10n.commentedOnIssue} #${activity.content ?? ''} ${l10n.inRepo} $repo';
+      case 'comment_pull_request':
+        return '$user ${l10n.commentedOnPR} #${activity.content ?? ''} ${l10n.inRepo} $repo';
+      case 'fork_repo':
+        return '$user ${l10n.forkedRepo} $repo';
+      case 'transfer_repo':
+        return '$user ${l10n.transferredRepo} $repo';
+      case 'delete_repo':
+        return '$user ${l10n.deletedRepo} $repo';
+      case 'wiki_page':
+        return '$user ${l10n.updatedWiki} ${l10n.inRepo} $repo';
+      default:
+        return '$user ${l10n.performedAction} $opType ${l10n.inRepo} $repo';
+    }
+  }
+
+  String _formatDate(DateTime date) {
+    final now = DateTime.now();
+    final diff = now.difference(date);
+    if (diff.inDays > 365) return '${diff.inDays ~/ 365}y ago';
+    if (diff.inDays > 30) return '${diff.inDays ~/ 30}mo ago';
+    if (diff.inDays > 0) return '${diff.inDays}d ago';
+    if (diff.inHours > 0) return '${diff.inHours}h ago';
+    if (diff.inMinutes > 0) return '${diff.inMinutes}m ago';
+    return 'just now';
+  }
+
+  void _navigateToActivity(Activity activity, BuildContext context) {
+    if (activity.repo?.owner == null || activity.repo?.name == null) return;
+
+    final owner = activity.repo!.owner!.login!;
+    final repo = activity.repo!.name!;
+
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (_) => RepoDetailPage(owner: owner, repo: repo),
+    ));
   }
 }

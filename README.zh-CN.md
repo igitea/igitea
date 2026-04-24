@@ -37,6 +37,7 @@
 - 通知操作：单条标记已读、全部标记已读
 - 新建 Issue 页面：在任何仓库创建 Issue
 - Deep Link 支持：通过 URL 路径打开 Issue、PR 和仓库
+- Dashboard 活动流：显示最近用户活动（创建仓库、推送标签、创建/关闭 Issue、PR 等）
 - 247 个单元/Widget 测试，`flutter analyze` 无警告
 
 ## 项目进度

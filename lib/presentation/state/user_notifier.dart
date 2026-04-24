@@ -30,22 +30,30 @@ class UserError extends UserState {
 class UserNotifier extends ChangeNotifier {
   GetCurrentUserUseCase _getCurrentUserUseCase;
   ListCurrentUserReposUseCase _listCurrentUserReposUseCase;
+  GetUserActivitiesUseCase _getUserActivitiesUseCase;
 
   UserState _state = const UserInitial();
   UserState get state => _state;
 
+  List<Activity> _activities = [];
+  List<Activity> get activities => _activities;
+
   UserNotifier({
     required GetCurrentUserUseCase getCurrentUserUseCase,
     required ListCurrentUserReposUseCase listCurrentUserReposUseCase,
+    required GetUserActivitiesUseCase getUserActivitiesUseCase,
   }) : _getCurrentUserUseCase = getCurrentUserUseCase,
-       _listCurrentUserReposUseCase = listCurrentUserReposUseCase;
+       _listCurrentUserReposUseCase = listCurrentUserReposUseCase,
+       _getUserActivitiesUseCase = getUserActivitiesUseCase;
 
   void updateUseCases({
     required GetCurrentUserUseCase getCurrentUserUseCase,
     required ListCurrentUserReposUseCase listCurrentUserReposUseCase,
+    required GetUserActivitiesUseCase getUserActivitiesUseCase,
   }) {
     _getCurrentUserUseCase = getCurrentUserUseCase;
     _listCurrentUserReposUseCase = listCurrentUserReposUseCase;
+    _getUserActivitiesUseCase = getUserActivitiesUseCase;
   }
 
   Future<void> loadCurrentUser() async {
@@ -76,6 +84,24 @@ class UserNotifier extends ChangeNotifier {
         notifyListeners();
       case Right<Failure, List<Repository>>(:final value):
         _repos = value;
+        notifyListeners();
+    }
+  }
+
+  Future<void> getUserActivities(String username, {int? page, int? limit}) async {
+    _state = const UserLoading();
+    notifyListeners();
+
+    final result = await _getUserActivitiesUseCase.call(
+      GetUserActivitiesParams(username: username, page: page, limit: limit),
+    );
+    switch (result) {
+      case Left<Failure, List<Activity>>(:final value):
+        _state = UserError(value.message);
+        notifyListeners();
+      case Right<Failure, List<Activity>>(:final value):
+        _activities = value;
+        _state = const UserInitial();
         notifyListeners();
     }
   }

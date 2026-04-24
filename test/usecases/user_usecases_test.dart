@@ -92,6 +92,16 @@ class MockUserRepository implements UserRepository {
 
   @override
   Future<Either<Failure, void>> deleteKey(int id) => throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, List<Activity>>> getUserActivities(
+    String username, {
+    int? page,
+    int? limit,
+  }) async {
+    if (shouldFail) return Left(failure);
+    return Right([]);
+  }
 }
 
 void main() {

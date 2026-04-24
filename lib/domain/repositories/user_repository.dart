@@ -60,4 +60,11 @@ abstract class UserRepository {
 
   /// Delete a public key for the current user.
   Future<Either<Failure, void>> deleteKey(int id);
+
+  /// Get user activity feeds.
+  Future<Either<Failure, List<Activity>>> getUserActivities(
+    String username, {
+    int? page,
+    int? limit,
+  });
 }

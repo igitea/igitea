@@ -86,6 +86,13 @@ class FakeUserRepository implements UserRepository {
 
   @override
   Future<Either<Failure, void>> deleteKey(int id) => throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, List<Activity>>> getUserActivities(
+    String username, {
+    int? page,
+    int? limit,
+  }) => throw UnimplementedError();
 }
 
 void main() {
@@ -97,6 +104,7 @@ void main() {
       fakeRepo = FakeUserRepository();
       notifier = UserNotifier(
         getCurrentUserUseCase: GetCurrentUserUseCase(repository: fakeRepo),
+        getUserActivitiesUseCase: GetUserActivitiesUseCase(repository: fakeRepo),
         listCurrentUserReposUseCase: ListCurrentUserReposUseCase(
           repository: fakeRepo,
         ),

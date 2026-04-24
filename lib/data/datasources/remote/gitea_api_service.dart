@@ -1312,6 +1312,20 @@ class GiteaApiService {
     }
   }
 
+  Future<List<Activity>> listUserActivities(String username, {int? page, int? limit}) async {
+    final query = <String, String>{};
+    if (page != null) query['page'] = page.toString();
+    if (limit != null) query['limit'] = limit.toString();
+
+    final response = await _client.get(
+      '/users/${Uri.encodeComponent(username)}/activities/feeds',
+      queryParameters: query.isNotEmpty ? query : null,
+    );
+
+    final list = jsonDecode(response.body) as List<dynamic>;
+    return list.map((e) => Activity.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
   // Activitypub
 
   Future<ActivityPub> activitypubPerson({required int user_id}) async {

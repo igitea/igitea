@@ -1648,6 +1648,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please enter a title'**
   String get pleaseEnterTitle;
+
+  /// No description provided for @noActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'No recent activity'**
+  String get noActivity;
+
+  /// No description provided for @createdRepo.
+  ///
+  /// In en, this message translates to:
+  /// **'created repository'**
+  String get createdRepo;
+
+  /// No description provided for @pushedTag.
+  ///
+  /// In en, this message translates to:
+  /// **'pushed tag'**
+  String get pushedTag;
+
+  /// No description provided for @deletedTag.
+  ///
+  /// In en, this message translates to:
+  /// **'deleted tag'**
+  String get deletedTag;
+
+  /// No description provided for @createdIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'created issue'**
+  String get createdIssue;
+
+  /// No description provided for @closedIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'closed issue'**
+  String get closedIssue;
+
+  /// No description provided for @reopenedIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'reopened issue'**
+  String get reopenedIssue;
+
+  /// No description provided for @createdPR.
+  ///
+  /// In en, this message translates to:
+  /// **'created pull request'**
+  String get createdPR;
+
+  /// No description provided for @mergedPR.
+  ///
+  /// In en, this message translates to:
+  /// **'merged pull request'**
+  String get mergedPR;
+
+  /// No description provided for @closedPR.
+  ///
+  /// In en, this message translates to:
+  /// **'closed pull request'**
+  String get closedPR;
+
+  /// No description provided for @commentedOnIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'commented on issue'**
+  String get commentedOnIssue;
+
+  /// No description provided for @commentedOnPR.
+  ///
+  /// In en, this message translates to:
+  /// **'commented on pull request'**
+  String get commentedOnPR;
+
+  /// No description provided for @forkedRepo.
+  ///
+  /// In en, this message translates to:
+  /// **'forked repository'**
+  String get forkedRepo;
+
+  /// No description provided for @transferredRepo.
+  ///
+  /// In en, this message translates to:
+  /// **'transferred repository'**
+  String get transferredRepo;
+
+  /// No description provided for @deletedRepo.
+  ///
+  /// In en, this message translates to:
+  /// **'deleted repository'**
+  String get deletedRepo;
+
+  /// No description provided for @updatedWiki.
+  ///
+  /// In en, this message translates to:
+  /// **'updated wiki'**
+  String get updatedWiki;
+
+  /// No description provided for @performedAction.
+  ///
+  /// In en, this message translates to:
+  /// **'performed action'**
+  String get performedAction;
+
+  /// No description provided for @inRepo.
+  ///
+  /// In en, this message translates to:
+  /// **'in'**
+  String get inRepo;
+
+  /// No description provided for @to.
+  ///
+  /// In en, this message translates to:
+  /// **'to'**
+  String get to;
+
+  /// No description provided for @from.
+  ///
+  /// In en, this message translates to:
+  /// **'from'**
+  String get from;
 }
 
 class _AppLocalizationsDelegate

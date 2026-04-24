@@ -120,4 +120,15 @@ class UserRepositoryImpl implements UserRepository {
   Future<Either<Failure, void>> deleteKey(int id) async {
     return execute(() => _apiService.userCurrentDeleteKey(id: id));
   }
+
+  @override
+  Future<Either<Failure, List<Activity>>> getUserActivities(
+    String username, {
+    int? page,
+    int? limit,
+  }) async {
+    return execute(
+      () => _apiService.listUserActivities(username, page: page, limit: limit),
+    );
+  }
 }

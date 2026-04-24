@@ -118,3 +118,26 @@ class ListFollowingUseCase {
     );
   }
 }
+
+class GetUserActivitiesParams {
+  final String username;
+  final int? page;
+  final int? limit;
+
+  const GetUserActivitiesParams({required this.username, this.page, this.limit});
+}
+
+class GetUserActivitiesUseCase {
+  final UserRepository _repository;
+
+  GetUserActivitiesUseCase({required UserRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, List<Activity>>> call(GetUserActivitiesParams params) async {
+    return _repository.getUserActivities(
+      params.username,
+      page: params.page,
+      limit: params.limit,
+    );
+  }
+}
