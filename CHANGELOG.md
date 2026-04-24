@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.15.0] - 2026-04-24
+
+### Added — Admin User Management
+
+- New `AdminNotifier` with `AdminUsersState` and `AdminOperationState` for user CRUD operations
+- `UserManagementPage` with full user list, create, edit, and delete functionality
+- Admin-only access: visible only for `is_admin == true` users
+- User list displays avatar, username, email, admin badge
+- Create user dialog: username, email, full name, password, admin toggle, must-change-password toggle
+- Edit user dialog: email, full name, admin toggle (username immutable)
+- Delete user with confirmation dialog
+- Auto-refresh user list after create/edit/delete operations
+- New ARB keys: `createUser`, `editUser`, `deleteUser`, `deleteUserConfirmParams`, `userCreated`, `userUpdated`, `userDeleted`, `noUsersFound`, `pleaseEnterEmail`, `fullName`, `mustChangePassword`
+
+### Changed
+
+- `Injection` class updated with `AdminNotifier` initialization across all 3 paths (`initialize()`, `updateAuth()`)
+- 247 tests passing, `flutter analyze` clean
+
 ## [0.14.0] - 2026-04-24
 
 ### Added — Internationalization (i18n) — Phase 12

@@ -1,5 +1,24 @@
 # 更新日志
 
+## [0.15.0] - 2026-04-24
+
+### 新增 — 管理员用户管理
+
+- 新增 `AdminNotifier`，包含 `AdminUsersState` 和 `AdminOperationState`，支持用户增删改查
+- `UserManagementPage` 用户管理页面：用户列表、创建、编辑、删除
+- 仅管理员可见：`is_admin == true` 的用户才能访问
+- 用户列表显示头像、用户名、邮箱、管理员徽章
+- 创建用户对话框：用户名、邮箱、全名、密码、管理员开关、首次登录必须改密开关
+- 编辑用户对话框：邮箱、全名、管理员开关（用户名不可修改）
+- 删除用户带确认对话框
+- 创建/编辑/删除后自动刷新用户列表
+- 新增 ARB 键：`createUser`、`editUser`、`deleteUser`、`deleteUserConfirmParams`、`userCreated`、`userUpdated`、`userDeleted`、`noUsersFound`、`pleaseEnterEmail`、`fullName`、`mustChangePassword`
+
+### 变更
+
+- `Injection` 类更新，在 3 个初始化路径（`initialize()`、`updateAuth()`）中添加 `AdminNotifier`
+- 247 个测试通过，`flutter analyze` 无警告
+
 ## [0.12.0] - 2026-04-24
 
 ### 新增 — 评论与 Issue/PR 操作

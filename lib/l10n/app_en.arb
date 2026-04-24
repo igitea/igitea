@@ -244,5 +244,16 @@
   "failedToOpenDownloadUrl": "Failed to open download URL",
   "noNotifications": "No notifications",
   "noTitle": "No title",
-  "allNotificationsMarkedAsRead": "All notifications marked as read"
+  "allNotificationsMarkedAsRead": "All notifications marked as read",
+  "createUser": "Create User",
+  "editUser": "Edit User",
+  "deleteUser": "Delete User",
+  "deleteUserConfirmParams": "Are you sure you want to delete user \"{username}\"? This action cannot be undone.",
+  "userCreated": "User created successfully",
+  "userUpdated": "User updated successfully",
+  "userDeleted": "User deleted successfully",
+  "noUsersFound": "No users found",
+  "pleaseEnterEmail": "Please enter an email",
+  "fullName": "Full name",
+  "mustChangePassword": "Must change password on first login"
 }

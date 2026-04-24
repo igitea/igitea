@@ -25,6 +25,7 @@ import '../../domain/usecases/organization_usecases.dart';
 import '../../domain/usecases/package_usecases.dart';
 import '../../domain/usecases/repo_usecases.dart';
 import '../../domain/usecases/user_usecases.dart';
+import '../../presentation/state/admin_notifier.dart';
 import '../../presentation/state/auth_notifier.dart';
 import '../../presentation/state/issue_notifier.dart';
 import '../../presentation/state/notification_notifier.dart';
@@ -113,6 +114,7 @@ class Injection {
   static late OrgNotifier organizationNotifier;
   static late NotificationNotifier notificationNotifier;
   static late ThemeNotifier themeNotifier;
+  static late AdminNotifier adminNotifier;
 
   static bool _initialized = false;
 
@@ -275,6 +277,12 @@ class Injection {
         markThreadReadUseCase: markThreadReadUseCase,
         checkNewAvailableUseCase: checkNewNotificationsUseCase,
       );
+      adminNotifier.updateUseCases(
+        searchUsersUseCase: searchUsersUseCase,
+        createUserUseCase: createUserUseCase,
+        editUserUseCase: editUserUseCase,
+        deleteUserUseCase: deleteUserUseCase,
+      );
     } else {
       authNotifier = AuthNotifier(
         loginUseCase: loginUseCase,
@@ -321,6 +329,12 @@ class Injection {
         checkNewAvailableUseCase: checkNewNotificationsUseCase,
       );
       themeNotifier = ThemeNotifier();
+      adminNotifier = AdminNotifier(
+        searchUsersUseCase: searchUsersUseCase,
+        createUserUseCase: createUserUseCase,
+        editUserUseCase: editUserUseCase,
+        deleteUserUseCase: deleteUserUseCase,
+      );
       _initialized = true;
     }
   }
@@ -385,6 +399,12 @@ class Injection {
       listNotificationsUseCase: listNotificationsUseCase,
       markThreadReadUseCase: markThreadReadUseCase,
       checkNewAvailableUseCase: checkNewNotificationsUseCase,
+    );
+    adminNotifier.updateUseCases(
+      searchUsersUseCase: searchUsersUseCase,
+      createUserUseCase: createUserUseCase,
+      editUserUseCase: editUserUseCase,
+      deleteUserUseCase: deleteUserUseCase,
     );
   }
 }

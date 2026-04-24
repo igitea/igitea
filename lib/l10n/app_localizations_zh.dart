@@ -788,6 +788,41 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get allNotificationsMarkedAsRead => 'All notifications marked as read';
+
+  @override
+  String get createUser => '创建用户';
+
+  @override
+  String get editUser => '编辑用户';
+
+  @override
+  String get deleteUser => '删除用户';
+
+  @override
+  String deleteUserConfirmParams(Object username) {
+    return '确定要删除用户\"$username\"吗？此操作无法撤销。';
+  }
+
+  @override
+  String get userCreated => '用户创建成功';
+
+  @override
+  String get userUpdated => '用户更新成功';
+
+  @override
+  String get userDeleted => '用户删除成功';
+
+  @override
+  String get noUsersFound => '未找到用户';
+
+  @override
+  String get pleaseEnterEmail => '请输入邮箱';
+
+  @override
+  String get fullName => '全名';
+
+  @override
+  String get mustChangePassword => '首次登录必须修改密码';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).

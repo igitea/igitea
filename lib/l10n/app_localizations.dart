@@ -1576,6 +1576,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All notifications marked as read'**
   String get allNotificationsMarkedAsRead;
+
+  /// No description provided for @createUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Create User'**
+  String get createUser;
+
+  /// No description provided for @editUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit User'**
+  String get editUser;
+
+  /// No description provided for @deleteUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete User'**
+  String get deleteUser;
+
+  /// No description provided for @deleteUserConfirmParams.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete user \"{username}\"? This action cannot be undone.'**
+  String deleteUserConfirmParams(Object username);
+
+  /// No description provided for @userCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'User created successfully'**
+  String get userCreated;
+
+  /// No description provided for @userUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'User updated successfully'**
+  String get userUpdated;
+
+  /// No description provided for @userDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'User deleted successfully'**
+  String get userDeleted;
+
+  /// No description provided for @noUsersFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No users found'**
+  String get noUsersFound;
+
+  /// No description provided for @pleaseEnterEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter an email'**
+  String get pleaseEnterEmail;
+
+  /// No description provided for @fullName.
+  ///
+  /// In en, this message translates to:
+  /// **'Full name'**
+  String get fullName;
+
+  /// No description provided for @mustChangePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Must change password on first login'**
+  String get mustChangePassword;
 }
 
 class _AppLocalizationsDelegate

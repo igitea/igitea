@@ -30,9 +30,10 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 - File browser with breadcrumb navigation and directory browsing
 - File viewer: Markdown rendering, image display, code syntax highlighting
 - Dark mode with light/dark/system theme switcher
-- Settings page with theme picker, account info, and sign-out
+- Settings page with theme picker, account info, sign-out, and admin panel
 - **i18n**: Full internationalization support with 10 languages (EN, ZH, ZH_TW, JA, KO, ES, FR, DE, PT, RU)
 - Language selector in Settings with persistent preference
+- Admin user management: list, create, edit, delete users (admin only)
 - 247 unit/widget tests, `flutter analyze` clean
 
 ## Project Status

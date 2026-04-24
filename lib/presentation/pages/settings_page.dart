@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/di/injection.dart';
 import '../../core/errors/failures.dart';
@@ -7,7 +6,8 @@ import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../domain/entities/auth_state.dart';
 import '../../l10n/app_localizations.dart';
-import '../../presentation/state/theme_notifier.dart';
+import '../state/theme_notifier.dart';
+import 'user_management_page.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});

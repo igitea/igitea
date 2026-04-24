@@ -788,4 +788,39 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get allNotificationsMarkedAsRead => 'All notifications marked as read';
+
+  @override
+  String get createUser => 'Create User';
+
+  @override
+  String get editUser => 'Edit User';
+
+  @override
+  String get deleteUser => 'Delete User';
+
+  @override
+  String deleteUserConfirmParams(Object username) {
+    return 'Are you sure you want to delete user \"$username\"? This action cannot be undone.';
+  }
+
+  @override
+  String get userCreated => 'User created successfully';
+
+  @override
+  String get userUpdated => 'User updated successfully';
+
+  @override
+  String get userDeleted => 'User deleted successfully';
+
+  @override
+  String get noUsersFound => 'No users found';
+
+  @override
+  String get pleaseEnterEmail => 'Please enter an email';
+
+  @override
+  String get fullName => 'Full name';
+
+  @override
+  String get mustChangePassword => 'Must change password on first login';
 }

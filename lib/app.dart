@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'core/di/injection.dart';
 import 'domain/entities/auth_state.dart';
 import 'l10n/app_localizations.dart';
