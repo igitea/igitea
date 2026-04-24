@@ -219,6 +219,9 @@ class Injection {
         listBranchesUseCase: listBranchesUseCase,
         listCommitsUseCase: listCommitsUseCase,
         listTagsUseCase: listTagsUseCase,
+        getRepoContentsUseCase: getRepoContentsUseCase,
+        listPullRequestsUseCase: listPullRequestsUseCase,
+        listReleasesUseCase: listReleasesUseCase,
       );
       issueNotifier.updateUseCases(
         listIssuesUseCase: listIssuesUseCase,
@@ -252,6 +255,9 @@ class Injection {
         listBranchesUseCase: listBranchesUseCase,
         listCommitsUseCase: listCommitsUseCase,
         listTagsUseCase: listTagsUseCase,
+        getRepoContentsUseCase: getRepoContentsUseCase,
+        listPullRequestsUseCase: listPullRequestsUseCase,
+        listReleasesUseCase: listReleasesUseCase,
       );
       issueNotifier = IssueNotifier(
         listIssuesUseCase: listIssuesUseCase,
@@ -305,6 +311,9 @@ class Injection {
       listBranchesUseCase: listBranchesUseCase,
       listCommitsUseCase: listCommitsUseCase,
       listTagsUseCase: listTagsUseCase,
+      getRepoContentsUseCase: getRepoContentsUseCase,
+      listPullRequestsUseCase: listPullRequestsUseCase,
+      listReleasesUseCase: listReleasesUseCase,
     );
     issueNotifier.updateUseCases(
       listIssuesUseCase: listIssuesUseCase,

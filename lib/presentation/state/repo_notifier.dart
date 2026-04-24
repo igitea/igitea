@@ -52,15 +52,95 @@ class RepoError extends RepoState {
   const RepoError(this.message);
 }
 
+sealed class ContentsState {
+  const ContentsState();
+}
+
+class ContentsInitial extends ContentsState {
+  const ContentsInitial();
+}
+
+class ContentsLoading extends ContentsState {
+  const ContentsLoading();
+}
+
+class ContentsLoaded extends ContentsState {
+  final List<ContentsResponse> contents;
+  final String path;
+  final String? ref;
+  const ContentsLoaded(this.contents, this.path, this.ref);
+}
+
+class ContentsError extends ContentsState {
+  final String message;
+  const ContentsError(this.message);
+}
+
+sealed class PullRequestsState {
+  const PullRequestsState();
+}
+
+class PullRequestsInitial extends PullRequestsState {
+  const PullRequestsInitial();
+}
+
+class PullRequestsLoading extends PullRequestsState {
+  const PullRequestsLoading();
+}
+
+class PullRequestsLoaded extends PullRequestsState {
+  final List<PullRequest> pullRequests;
+  const PullRequestsLoaded(this.pullRequests);
+}
+
+class PullRequestsError extends PullRequestsState {
+  final String message;
+  const PullRequestsError(this.message);
+}
+
+sealed class ReleasesState {
+  const ReleasesState();
+}
+
+class ReleasesInitial extends ReleasesState {
+  const ReleasesInitial();
+}
+
+class ReleasesLoading extends ReleasesState {
+  const ReleasesLoading();
+}
+
+class ReleasesLoaded extends ReleasesState {
+  final List<Release> releases;
+  const ReleasesLoaded(this.releases);
+}
+
+class ReleasesError extends ReleasesState {
+  final String message;
+  const ReleasesError(this.message);
+}
+
 class RepoNotifier extends ChangeNotifier {
   GetRepoUseCase _getRepoUseCase;
   SearchReposUseCase _searchReposUseCase;
   ListBranchesUseCase _listBranchesUseCase;
   ListCommitsUseCase _listCommitsUseCase;
   ListTagsUseCase _listTagsUseCase;
+  GetRepoContentsUseCase _getRepoContentsUseCase;
+  ListPullRequestsUseCase _listPullRequestsUseCase;
+  ListReleasesUseCase _listReleasesUseCase;
 
   RepoState _state = const RepoInitial();
   RepoState get state => _state;
+
+  ContentsState _contentsState = const ContentsInitial();
+  ContentsState get contentsState => _contentsState;
+
+  PullRequestsState _pullRequestsState = const PullRequestsInitial();
+  PullRequestsState get pullRequestsState => _pullRequestsState;
+
+  ReleasesState _releasesState = const ReleasesInitial();
+  ReleasesState get releasesState => _releasesState;
 
   RepoNotifier({
     required GetRepoUseCase getRepoUseCase,
@@ -68,11 +148,17 @@ class RepoNotifier extends ChangeNotifier {
     required ListBranchesUseCase listBranchesUseCase,
     required ListCommitsUseCase listCommitsUseCase,
     required ListTagsUseCase listTagsUseCase,
+    required GetRepoContentsUseCase getRepoContentsUseCase,
+    required ListPullRequestsUseCase listPullRequestsUseCase,
+    required ListReleasesUseCase listReleasesUseCase,
   }) : _getRepoUseCase = getRepoUseCase,
        _searchReposUseCase = searchReposUseCase,
        _listBranchesUseCase = listBranchesUseCase,
        _listCommitsUseCase = listCommitsUseCase,
-       _listTagsUseCase = listTagsUseCase;
+       _listTagsUseCase = listTagsUseCase,
+       _getRepoContentsUseCase = getRepoContentsUseCase,
+       _listPullRequestsUseCase = listPullRequestsUseCase,
+       _listReleasesUseCase = listReleasesUseCase;
 
   void updateUseCases({
     required GetRepoUseCase getRepoUseCase,
@@ -80,12 +166,18 @@ class RepoNotifier extends ChangeNotifier {
     required ListBranchesUseCase listBranchesUseCase,
     required ListCommitsUseCase listCommitsUseCase,
     required ListTagsUseCase listTagsUseCase,
+    required GetRepoContentsUseCase getRepoContentsUseCase,
+    required ListPullRequestsUseCase listPullRequestsUseCase,
+    required ListReleasesUseCase listReleasesUseCase,
   }) {
     _getRepoUseCase = getRepoUseCase;
     _searchReposUseCase = searchReposUseCase;
     _listBranchesUseCase = listBranchesUseCase;
     _listCommitsUseCase = listCommitsUseCase;
     _listTagsUseCase = listTagsUseCase;
+    _getRepoContentsUseCase = getRepoContentsUseCase;
+    _listPullRequestsUseCase = listPullRequestsUseCase;
+    _listReleasesUseCase = listReleasesUseCase;
   }
 
   Future<void> getRepo(String owner, String repo) async {
@@ -191,6 +283,54 @@ class RepoNotifier extends ChangeNotifier {
         notifyListeners();
       case Right<Failure, List<Tag>>(:final value):
         _state = TagsLoaded(value);
+        notifyListeners();
+    }
+  }
+
+  Future<void> loadContents(String owner, String repo, {String? path, String? ref}) async {
+    _contentsState = const ContentsLoading();
+    notifyListeners();
+    final result = await _getRepoContentsUseCase.call(
+      GetRepoContentsParams(owner: owner, repo: repo, path: path, ref: ref),
+    );
+    switch (result) {
+      case Left<Failure, List<ContentsResponse>>(:final value):
+        _contentsState = ContentsError(value.message);
+        notifyListeners();
+      case Right<Failure, List<ContentsResponse>>(:final value):
+        _contentsState = ContentsLoaded(value, path ?? '', ref);
+        notifyListeners();
+    }
+  }
+
+  Future<void> listPullRequests(String owner, String repo, {String? state}) async {
+    _pullRequestsState = const PullRequestsLoading();
+    notifyListeners();
+    final result = await _listPullRequestsUseCase.call(
+      ListPullRequestsParams(owner: owner, repo: repo, state: state),
+    );
+    switch (result) {
+      case Left<Failure, List<PullRequest>>(:final value):
+        _pullRequestsState = PullRequestsError(value.message);
+        notifyListeners();
+      case Right<Failure, List<PullRequest>>(:final value):
+        _pullRequestsState = PullRequestsLoaded(value);
+        notifyListeners();
+    }
+  }
+
+  Future<void> listReleases(String owner, String repo) async {
+    _releasesState = const ReleasesLoading();
+    notifyListeners();
+    final result = await _listReleasesUseCase.call(
+      ListReleasesParams(owner: owner, repo: repo),
+    );
+    switch (result) {
+      case Left<Failure, List<Release>>(:final value):
+        _releasesState = ReleasesError(value.message);
+        notifyListeners();
+      case Right<Failure, List<Release>>(:final value):
+        _releasesState = ReleasesLoaded(value);
         notifyListeners();
     }
   }
