@@ -4,13 +4,14 @@ part of 'generated_models.dart';
 class SearchResults {
   final List<Repository>? data;
   final bool? ok;
-  const SearchResults({
-    this.data,
-    this.ok,
-  });
+  const SearchResults({this.data, this.ok});
   factory SearchResults.fromJson(Map<String, dynamic> json) {
     return SearchResults(
-      data: json['data'] != null ? (json['data'] as List<dynamic>).map((e) => Repository.fromJson(e as Map<String, dynamic>)).toList() : null,
+      data: json['data'] != null
+          ? (json['data'] as List<dynamic>)
+                .map((e) => Repository.fromJson(e as Map<String, dynamic>))
+                .toList()
+          : null,
       ok: json['ok'] != null ? json['ok'] as bool : null,
     );
   }
@@ -20,12 +21,11 @@ class SearchResults {
     if (ok != null) map['ok'] = ok!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is SearchResults &&
-          data == other.data &&
-          ok == other.ok;
+      other is SearchResults && data == other.data && ok == other.ok;
   @override
   int get hashCode => Object.hash(data, ok);
   @override

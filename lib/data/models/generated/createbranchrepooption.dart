@@ -12,9 +12,15 @@ class CreateBranchRepoOption {
   });
   factory CreateBranchRepoOption.fromJson(Map<String, dynamic> json) {
     return CreateBranchRepoOption(
-      new_branch_name: json['new_branch_name'] != null ? json['new_branch_name'] as String : null,
-      old_branch_name: json['old_branch_name'] != null ? json['old_branch_name'] as String : null,
-      old_ref_name: json['old_ref_name'] != null ? json['old_ref_name'] as String : null,
+      new_branch_name: json['new_branch_name'] != null
+          ? json['new_branch_name'] as String
+          : null,
+      old_branch_name: json['old_branch_name'] != null
+          ? json['old_branch_name'] as String
+          : null,
+      old_ref_name: json['old_ref_name'] != null
+          ? json['old_ref_name'] as String
+          : null,
     );
   }
   Map<String, dynamic> toJson() {
@@ -24,6 +30,7 @@ class CreateBranchRepoOption {
     if (old_ref_name != null) map['old_ref_name'] = old_ref_name!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -32,7 +39,9 @@ class CreateBranchRepoOption {
           old_branch_name == other.old_branch_name &&
           old_ref_name == other.old_ref_name;
   @override
-  int get hashCode => Object.hash(new_branch_name, old_branch_name, old_ref_name);
+  int get hashCode =>
+      Object.hash(new_branch_name, old_branch_name, old_ref_name);
   @override
-  String toString() => 'CreateBranchRepoOption(new_branch_name: $new_branch_name, old_branch_name: $old_branch_name, old_ref_name: $old_ref_name)';
+  String toString() =>
+      'CreateBranchRepoOption(new_branch_name: $new_branch_name, old_branch_name: $old_branch_name, old_ref_name: $old_ref_name)';
 }

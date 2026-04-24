@@ -22,10 +22,18 @@ class NotificationThread {
     return NotificationThread(
       id: json['id'] != null ? (json['id'] as num).toInt() : null,
       pinned: json['pinned'] != null ? json['pinned'] as bool : null,
-      repository: json['repository'] != null ? Repository.fromJson(json['repository'] as Map<String, dynamic>) : null,
-      subject: json['subject'] != null ? NotificationSubject.fromJson(json['subject'] as Map<String, dynamic>) : null,
+      repository: json['repository'] != null
+          ? Repository.fromJson(json['repository'] as Map<String, dynamic>)
+          : null,
+      subject: json['subject'] != null
+          ? NotificationSubject.fromJson(
+              json['subject'] as Map<String, dynamic>,
+            )
+          : null,
       unread: json['unread'] != null ? json['unread'] as bool : null,
-      updated_at: json['updated_at'] != null ? DateTime.parse(json['updated_at'] as String) : null,
+      updated_at: json['updated_at'] != null
+          ? DateTime.parse(json['updated_at'] as String)
+          : null,
       url: json['url'] != null ? json['url'] as String : null,
     );
   }
@@ -40,6 +48,7 @@ class NotificationThread {
     if (url != null) map['url'] = url!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -52,7 +61,9 @@ class NotificationThread {
           updated_at == other.updated_at &&
           url == other.url;
   @override
-  int get hashCode => Object.hash(id, pinned, repository, subject, unread, updated_at, url);
+  int get hashCode =>
+      Object.hash(id, pinned, repository, subject, unread, updated_at, url);
   @override
-  String toString() => 'NotificationThread(id: $id, pinned: $pinned, repository: $repository, subject: $subject, unread: $unread, updated_at: $updated_at, url: $url)';
+  String toString() =>
+      'NotificationThread(id: $id, pinned: $pinned, repository: $repository, subject: $subject, unread: $unread, updated_at: $updated_at, url: $url)';
 }

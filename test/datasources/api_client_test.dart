@@ -49,7 +49,10 @@ void main() {
         baseUrl: 'https://gitea.example.com',
         client: mock,
       );
-      await client.get('/repos', queryParameters: {'state': 'open', 'page': '1'});
+      await client.get(
+        '/repos',
+        queryParameters: {'state': 'open', 'page': '1'},
+      );
     });
 
     test('post sends JSON body', () async {
@@ -76,7 +79,10 @@ void main() {
         baseUrl: 'https://gitea.example.com',
         client: mock,
       );
-      final response = await client.put('/repos/1', body: {'description': 'updated'});
+      final response = await client.put(
+        '/repos/1',
+        body: {'description': 'updated'},
+      );
       expect(response.statusCode, 200);
     });
 
@@ -156,10 +162,7 @@ void main() {
         baseUrl: 'https://gitea.example.com',
         client: mock,
       );
-      expect(
-        () => client.get('/user'),
-        throwsA(isA<ServerException>()),
-      );
+      expect(() => client.get('/user'), throwsA(isA<ServerException>()));
     });
 
     test('422 throws ServerException', () async {

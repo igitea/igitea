@@ -32,6 +32,7 @@ class ChangeFileOperation {
     if (sha != null) map['sha'] = sha!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -44,5 +45,6 @@ class ChangeFileOperation {
   @override
   int get hashCode => Object.hash(content, from_path, operation, path, sha);
   @override
-  String toString() => 'ChangeFileOperation(content: $content, from_path: $from_path, operation: $operation, path: $path, sha: $sha)';
+  String toString() =>
+      'ChangeFileOperation(content: $content, from_path: $from_path, operation: $operation, path: $path, sha: $sha)';
 }

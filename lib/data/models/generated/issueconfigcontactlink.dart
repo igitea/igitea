@@ -4,11 +4,7 @@ class IssueConfigContactLink {
   final String? about;
   final String? name;
   final String? url;
-  const IssueConfigContactLink({
-    this.about,
-    this.name,
-    this.url,
-  });
+  const IssueConfigContactLink({this.about, this.name, this.url});
   factory IssueConfigContactLink.fromJson(Map<String, dynamic> json) {
     return IssueConfigContactLink(
       about: json['about'] != null ? json['about'] as String : null,
@@ -23,6 +19,7 @@ class IssueConfigContactLink {
     if (url != null) map['url'] = url!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -33,5 +30,6 @@ class IssueConfigContactLink {
   @override
   int get hashCode => Object.hash(about, name, url);
   @override
-  String toString() => 'IssueConfigContactLink(about: $about, name: $name, url: $url)';
+  String toString() =>
+      'IssueConfigContactLink(about: $about, name: $name, url: $url)';
 }

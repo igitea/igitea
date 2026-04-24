@@ -3,10 +3,7 @@ part of 'generated_models.dart';
 class IssueConfigValidation {
   final String? message;
   final bool? valid;
-  const IssueConfigValidation({
-    this.message,
-    this.valid,
-  });
+  const IssueConfigValidation({this.message, this.valid});
   factory IssueConfigValidation.fromJson(Map<String, dynamic> json) {
     return IssueConfigValidation(
       message: json['message'] != null ? json['message'] as String : null,
@@ -19,6 +16,7 @@ class IssueConfigValidation {
     if (valid != null) map['valid'] = valid!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -28,5 +26,6 @@ class IssueConfigValidation {
   @override
   int get hashCode => Object.hash(message, valid);
   @override
-  String toString() => 'IssueConfigValidation(message: $message, valid: $valid)';
+  String toString() =>
+      'IssueConfigValidation(message: $message, valid: $valid)';
 }

@@ -5,16 +5,16 @@ class Reaction {
   final String? content;
   final DateTime? created_at;
   final User? user;
-  const Reaction({
-    this.content,
-    this.created_at,
-    this.user,
-  });
+  const Reaction({this.content, this.created_at, this.user});
   factory Reaction.fromJson(Map<String, dynamic> json) {
     return Reaction(
       content: json['content'] != null ? json['content'] as String : null,
-      created_at: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
-      user: json['user'] != null ? User.fromJson(json['user'] as Map<String, dynamic>) : null,
+      created_at: json['created_at'] != null
+          ? DateTime.parse(json['created_at'] as String)
+          : null,
+      user: json['user'] != null
+          ? User.fromJson(json['user'] as Map<String, dynamic>)
+          : null,
     );
   }
   Map<String, dynamic> toJson() {
@@ -24,6 +24,7 @@ class Reaction {
     if (user != null) map['user'] = user!.toJson();
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -34,5 +35,6 @@ class Reaction {
   @override
   int get hashCode => Object.hash(content, created_at, user);
   @override
-  String toString() => 'Reaction(content: $content, created_at: $created_at, user: $user)';
+  String toString() =>
+      'Reaction(content: $content, created_at: $created_at, user: $user)';
 }

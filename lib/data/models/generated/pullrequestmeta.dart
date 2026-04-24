@@ -17,7 +17,9 @@ class PullRequestMeta {
       draft: json['draft'] != null ? json['draft'] as bool : null,
       html_url: json['html_url'] != null ? json['html_url'] as String : null,
       merged: json['merged'] != null ? json['merged'] as bool : null,
-      merged_at: json['merged_at'] != null ? DateTime.parse(json['merged_at'] as String) : null,
+      merged_at: json['merged_at'] != null
+          ? DateTime.parse(json['merged_at'] as String)
+          : null,
     );
   }
   Map<String, dynamic> toJson() {
@@ -28,6 +30,7 @@ class PullRequestMeta {
     if (merged_at != null) map['merged_at'] = merged_at!.toIso8601String();
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -39,5 +42,6 @@ class PullRequestMeta {
   @override
   int get hashCode => Object.hash(draft, html_url, merged, merged_at);
   @override
-  String toString() => 'PullRequestMeta(draft: $draft, html_url: $html_url, merged: $merged, merged_at: $merged_at)';
+  String toString() =>
+      'PullRequestMeta(draft: $draft, html_url: $html_url, merged: $merged, merged_at: $merged_at)';
 }

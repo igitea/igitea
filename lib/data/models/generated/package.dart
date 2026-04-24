@@ -24,13 +24,21 @@ class Package {
   });
   factory Package.fromJson(Map<String, dynamic> json) {
     return Package(
-      created_at: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
-      creator: json['creator'] != null ? User.fromJson(json['creator'] as Map<String, dynamic>) : null,
+      created_at: json['created_at'] != null
+          ? DateTime.parse(json['created_at'] as String)
+          : null,
+      creator: json['creator'] != null
+          ? User.fromJson(json['creator'] as Map<String, dynamic>)
+          : null,
       html_url: json['html_url'] != null ? json['html_url'] as String : null,
       id: json['id'] != null ? (json['id'] as num).toInt() : null,
       name: json['name'] != null ? json['name'] as String : null,
-      owner: json['owner'] != null ? User.fromJson(json['owner'] as Map<String, dynamic>) : null,
-      repository: json['repository'] != null ? Repository.fromJson(json['repository'] as Map<String, dynamic>) : null,
+      owner: json['owner'] != null
+          ? User.fromJson(json['owner'] as Map<String, dynamic>)
+          : null,
+      repository: json['repository'] != null
+          ? Repository.fromJson(json['repository'] as Map<String, dynamic>)
+          : null,
       type: json['type'] != null ? json['type'] as String : null,
       version: json['version'] != null ? json['version'] as String : null,
     );
@@ -48,6 +56,7 @@ class Package {
     if (version != null) map['version'] = version!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -62,7 +71,18 @@ class Package {
           type == other.type &&
           version == other.version;
   @override
-  int get hashCode => Object.hash(created_at, creator, html_url, id, name, owner, repository, type, version);
+  int get hashCode => Object.hash(
+    created_at,
+    creator,
+    html_url,
+    id,
+    name,
+    owner,
+    repository,
+    type,
+    version,
+  );
   @override
-  String toString() => 'Package(created_at: $created_at, creator: $creator, html_url: $html_url, id: $id, name: $name, owner: $owner, repository: $repository, type: $type, version: $version)';
+  String toString() =>
+      'Package(created_at: $created_at, creator: $creator, html_url: $html_url, id: $id, name: $name, owner: $owner, repository: $repository, type: $type, version: $version)';
 }

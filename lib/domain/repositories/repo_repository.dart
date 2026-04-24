@@ -113,11 +113,7 @@ abstract class RepoRepository {
   );
 
   /// Delete a hook.
-  Future<Either<Failure, void>> deleteHook(
-    String owner,
-    String repo,
-    int id,
-  );
+  Future<Either<Failure, void>> deleteHook(String owner, String repo, int id);
 
   /// Search repositories.
   Future<Either<Failure, SearchResults>> searchRepos({

@@ -26,21 +26,36 @@ class ActionArtifact {
   });
   factory ActionArtifact.fromJson(Map<String, dynamic> json) {
     return ActionArtifact(
-      archive_download_url: json['archive_download_url'] != null ? json['archive_download_url'] as String : null,
-      created_at: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
+      archive_download_url: json['archive_download_url'] != null
+          ? json['archive_download_url'] as String
+          : null,
+      created_at: json['created_at'] != null
+          ? DateTime.parse(json['created_at'] as String)
+          : null,
       expired: json['expired'] != null ? json['expired'] as bool : null,
-      expires_at: json['expires_at'] != null ? DateTime.parse(json['expires_at'] as String) : null,
+      expires_at: json['expires_at'] != null
+          ? DateTime.parse(json['expires_at'] as String)
+          : null,
       id: json['id'] != null ? (json['id'] as num).toInt() : null,
       name: json['name'] != null ? json['name'] as String : null,
-      size_in_bytes: json['size_in_bytes'] != null ? (json['size_in_bytes'] as num).toInt() : null,
-      updated_at: json['updated_at'] != null ? DateTime.parse(json['updated_at'] as String) : null,
+      size_in_bytes: json['size_in_bytes'] != null
+          ? (json['size_in_bytes'] as num).toInt()
+          : null,
+      updated_at: json['updated_at'] != null
+          ? DateTime.parse(json['updated_at'] as String)
+          : null,
       url: json['url'] != null ? json['url'] as String : null,
-      workflow_run: json['workflow_run'] != null ? ActionWorkflowRun.fromJson(json['workflow_run'] as Map<String, dynamic>) : null,
+      workflow_run: json['workflow_run'] != null
+          ? ActionWorkflowRun.fromJson(
+              json['workflow_run'] as Map<String, dynamic>,
+            )
+          : null,
     );
   }
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    if (archive_download_url != null) map['archive_download_url'] = archive_download_url!;
+    if (archive_download_url != null)
+      map['archive_download_url'] = archive_download_url!;
     if (created_at != null) map['created_at'] = created_at!.toIso8601String();
     if (expired != null) map['expired'] = expired!;
     if (expires_at != null) map['expires_at'] = expires_at!.toIso8601String();
@@ -52,6 +67,7 @@ class ActionArtifact {
     if (workflow_run != null) map['workflow_run'] = workflow_run!.toJson();
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -67,7 +83,19 @@ class ActionArtifact {
           url == other.url &&
           workflow_run == other.workflow_run;
   @override
-  int get hashCode => Object.hash(archive_download_url, created_at, expired, expires_at, id, name, size_in_bytes, updated_at, url, workflow_run);
+  int get hashCode => Object.hash(
+    archive_download_url,
+    created_at,
+    expired,
+    expires_at,
+    id,
+    name,
+    size_in_bytes,
+    updated_at,
+    url,
+    workflow_run,
+  );
   @override
-  String toString() => 'ActionArtifact(archive_download_url: $archive_download_url, created_at: $created_at, expired: $expired, expires_at: $expires_at, id: $id, name: $name, size_in_bytes: $size_in_bytes, updated_at: $updated_at, url: $url, workflow_run: $workflow_run)';
+  String toString() =>
+      'ActionArtifact(archive_download_url: $archive_download_url, created_at: $created_at, expired: $expired, expires_at: $expires_at, id: $id, name: $name, size_in_bytes: $size_in_bytes, updated_at: $updated_at, url: $url, workflow_run: $workflow_run)';
 }

@@ -4,14 +4,19 @@ part of 'generated_models.dart';
 class ActionWorkflowJobsResponse {
   final List<ActionWorkflowJob>? jobs;
   final int? total_count;
-  const ActionWorkflowJobsResponse({
-    this.jobs,
-    this.total_count,
-  });
+  const ActionWorkflowJobsResponse({this.jobs, this.total_count});
   factory ActionWorkflowJobsResponse.fromJson(Map<String, dynamic> json) {
     return ActionWorkflowJobsResponse(
-      jobs: json['jobs'] != null ? (json['jobs'] as List<dynamic>).map((e) => ActionWorkflowJob.fromJson(e as Map<String, dynamic>)).toList() : null,
-      total_count: json['total_count'] != null ? (json['total_count'] as num).toInt() : null,
+      jobs: json['jobs'] != null
+          ? (json['jobs'] as List<dynamic>)
+                .map(
+                  (e) => ActionWorkflowJob.fromJson(e as Map<String, dynamic>),
+                )
+                .toList()
+          : null,
+      total_count: json['total_count'] != null
+          ? (json['total_count'] as num).toInt()
+          : null,
     );
   }
   Map<String, dynamic> toJson() {
@@ -20,6 +25,7 @@ class ActionWorkflowJobsResponse {
     if (total_count != null) map['total_count'] = total_count!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -29,5 +35,6 @@ class ActionWorkflowJobsResponse {
   @override
   int get hashCode => Object.hash(jobs, total_count);
   @override
-  String toString() => 'ActionWorkflowJobsResponse(jobs: $jobs, total_count: $total_count)';
+  String toString() =>
+      'ActionWorkflowJobsResponse(jobs: $jobs, total_count: $total_count)';
 }

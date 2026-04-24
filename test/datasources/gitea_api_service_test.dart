@@ -13,10 +13,7 @@ void main() {
     late GiteaApiService service;
 
     ApiClient makeClient(MockClient mock) {
-      return ApiClient(
-        baseUrl: 'https://gitea.example.com',
-        client: mock,
-      );
+      return ApiClient(baseUrl: 'https://gitea.example.com', client: mock);
     }
 
     group('Settings', () {
@@ -35,10 +32,7 @@ void main() {
       test('userGetCurrent returns User', () async {
         final mock = MockClient((request) async {
           expect(request.url.path, '/api/v1/user');
-          return http.Response(
-            jsonEncode({'id': 1, 'login': 'gitea'}),
-            200,
-          );
+          return http.Response(jsonEncode({'id': 1, 'login': 'gitea'}), 200);
         });
         service = GiteaApiService(client: makeClient(mock));
         final user = await service.userGetCurrent();
@@ -49,10 +43,7 @@ void main() {
       test('userGet returns User by username', () async {
         final mock = MockClient((request) async {
           expect(request.url.path, '/api/v1/users/testuser');
-          return http.Response(
-            jsonEncode({'id': 2, 'login': 'testuser'}),
-            200,
-          );
+          return http.Response(jsonEncode({'id': 2, 'login': 'testuser'}), 200);
         });
         service = GiteaApiService(client: makeClient(mock));
         final user = await service.userGet(username: 'testuser');
@@ -94,7 +85,11 @@ void main() {
         final mock = MockClient((request) async {
           expect(request.url.path, '/api/v1/repos/owner/repo');
           return http.Response(
-            jsonEncode({'id': 100, 'name': 'repo', 'owner': {'id': 1, 'login': 'owner'}}),
+            jsonEncode({
+              'id': 100,
+              'name': 'repo',
+              'owner': {'id': 1, 'login': 'owner'},
+            }),
             200,
           );
         });
@@ -118,7 +113,10 @@ void main() {
       test('repoListBranches returns list', () async {
         final mock = MockClient((request) async {
           return http.Response(
-            jsonEncode([{'name': 'main'}, {'name': 'develop'}]),
+            jsonEncode([
+              {'name': 'main'},
+              {'name': 'develop'},
+            ]),
             200,
           );
         });
@@ -159,7 +157,11 @@ void main() {
           );
         });
         service = GiteaApiService(client: makeClient(mock));
-        final issue = await service.issueGetIssue(owner: 'o', repo: 'r', index: 1);
+        final issue = await service.issueGetIssue(
+          owner: 'o',
+          repo: 'r',
+          index: 1,
+        );
         expect(issue.title, 'Bug');
       });
 
@@ -195,10 +197,7 @@ void main() {
     group('Organization', () {
       test('orgGet returns Organization', () async {
         final mock = MockClient((request) async {
-          return http.Response(
-            jsonEncode({'id': 1, 'name': 'myorg'}),
-            200,
-          );
+          return http.Response(jsonEncode({'id': 1, 'name': 'myorg'}), 200);
         });
         service = GiteaApiService(client: makeClient(mock));
         final org = await service.orgGet(org: 'myorg');

@@ -5,11 +5,7 @@ class Permission {
   final bool? admin;
   final bool? pull;
   final bool? push;
-  const Permission({
-    this.admin,
-    this.pull,
-    this.push,
-  });
+  const Permission({this.admin, this.pull, this.push});
   factory Permission.fromJson(Map<String, dynamic> json) {
     return Permission(
       admin: json['admin'] != null ? json['admin'] as bool : null,
@@ -24,6 +20,7 @@ class Permission {
     if (push != null) map['push'] = push!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

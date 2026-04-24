@@ -24,11 +24,19 @@ class UserSettingsOptions {
   });
   factory UserSettingsOptions.fromJson(Map<String, dynamic> json) {
     return UserSettingsOptions(
-      description: json['description'] != null ? json['description'] as String : null,
-      diff_view_style: json['diff_view_style'] != null ? json['diff_view_style'] as String : null,
+      description: json['description'] != null
+          ? json['description'] as String
+          : null,
+      diff_view_style: json['diff_view_style'] != null
+          ? json['diff_view_style'] as String
+          : null,
       full_name: json['full_name'] != null ? json['full_name'] as String : null,
-      hide_activity: json['hide_activity'] != null ? json['hide_activity'] as bool : null,
-      hide_email: json['hide_email'] != null ? json['hide_email'] as bool : null,
+      hide_activity: json['hide_activity'] != null
+          ? json['hide_activity'] as bool
+          : null,
+      hide_email: json['hide_email'] != null
+          ? json['hide_email'] as bool
+          : null,
       language: json['language'] != null ? json['language'] as String : null,
       location: json['location'] != null ? json['location'] as String : null,
       theme: json['theme'] != null ? json['theme'] as String : null,
@@ -48,6 +56,7 @@ class UserSettingsOptions {
     if (website != null) map['website'] = website!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -62,7 +71,18 @@ class UserSettingsOptions {
           theme == other.theme &&
           website == other.website;
   @override
-  int get hashCode => Object.hash(description, diff_view_style, full_name, hide_activity, hide_email, language, location, theme, website);
+  int get hashCode => Object.hash(
+    description,
+    diff_view_style,
+    full_name,
+    hide_activity,
+    hide_email,
+    language,
+    location,
+    theme,
+    website,
+  );
   @override
-  String toString() => 'UserSettingsOptions(description: $description, diff_view_style: $diff_view_style, full_name: $full_name, hide_activity: $hide_activity, hide_email: $hide_email, language: $language, location: $location, theme: $theme, website: $website)';
+  String toString() =>
+      'UserSettingsOptions(description: $description, diff_view_style: $diff_view_style, full_name: $full_name, hide_activity: $hide_activity, hide_email: $hide_email, language: $language, location: $location, theme: $theme, website: $website)';
 }

@@ -5,11 +5,7 @@ class FileLinksResponse {
   final String? git;
   final String? html;
   final String? self;
-  const FileLinksResponse({
-    this.git,
-    this.html,
-    this.self,
-  });
+  const FileLinksResponse({this.git, this.html, this.self});
   factory FileLinksResponse.fromJson(Map<String, dynamic> json) {
     return FileLinksResponse(
       git: json['git'] != null ? json['git'] as String : null,
@@ -24,6 +20,7 @@ class FileLinksResponse {
     if (self != null) map['self'] = self!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

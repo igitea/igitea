@@ -21,7 +21,13 @@ class ActionRunner {
       busy: json['busy'] != null ? json['busy'] as bool : null,
       ephemeral: json['ephemeral'] != null ? json['ephemeral'] as bool : null,
       id: json['id'] != null ? (json['id'] as num).toInt() : null,
-      labels: json['labels'] != null ? (json['labels'] as List<dynamic>).map((e) => ActionRunnerLabel.fromJson(e as Map<String, dynamic>)).toList() : null,
+      labels: json['labels'] != null
+          ? (json['labels'] as List<dynamic>)
+                .map(
+                  (e) => ActionRunnerLabel.fromJson(e as Map<String, dynamic>),
+                )
+                .toList()
+          : null,
       name: json['name'] != null ? json['name'] as String : null,
       status: json['status'] != null ? json['status'] as String : null,
     );
@@ -36,6 +42,7 @@ class ActionRunner {
     if (status != null) map['status'] = status!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -49,5 +56,6 @@ class ActionRunner {
   @override
   int get hashCode => Object.hash(busy, ephemeral, id, labels, name, status);
   @override
-  String toString() => 'ActionRunner(busy: $busy, ephemeral: $ephemeral, id: $id, labels: $labels, name: $name, status: $status)';
+  String toString() =>
+      'ActionRunner(busy: $busy, ephemeral: $ephemeral, id: $id, labels: $labels, name: $name, status: $status)';
 }

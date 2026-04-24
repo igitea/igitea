@@ -6,12 +6,7 @@ class RepositoryMeta {
   final int? id;
   final String? name;
   final String? owner;
-  const RepositoryMeta({
-    this.full_name,
-    this.id,
-    this.name,
-    this.owner,
-  });
+  const RepositoryMeta({this.full_name, this.id, this.name, this.owner});
   factory RepositoryMeta.fromJson(Map<String, dynamic> json) {
     return RepositoryMeta(
       full_name: json['full_name'] != null ? json['full_name'] as String : null,
@@ -28,6 +23,7 @@ class RepositoryMeta {
     if (owner != null) map['owner'] = owner!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -39,5 +35,6 @@ class RepositoryMeta {
   @override
   int get hashCode => Object.hash(full_name, id, name, owner);
   @override
-  String toString() => 'RepositoryMeta(full_name: $full_name, id: $id, name: $name, owner: $owner)';
+  String toString() =>
+      'RepositoryMeta(full_name: $full_name, id: $id, name: $name, owner: $owner)';
 }

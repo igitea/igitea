@@ -4,10 +4,7 @@ part of 'generated_models.dart';
 class GitignoreTemplateInfo {
   final String? name;
   final String? source;
-  const GitignoreTemplateInfo({
-    this.name,
-    this.source,
-  });
+  const GitignoreTemplateInfo({this.name, this.source});
   factory GitignoreTemplateInfo.fromJson(Map<String, dynamic> json) {
     return GitignoreTemplateInfo(
       name: json['name'] != null ? json['name'] as String : null,
@@ -20,6 +17,7 @@ class GitignoreTemplateInfo {
     if (source != null) map['source'] = source!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

@@ -2,7 +2,6 @@ part of 'generated_models.dart';
 
 /// IssueFormFieldVisible defines issue form field visible
 class IssueFormFieldVisible {
-
   const IssueFormFieldVisible();
   factory IssueFormFieldVisible.fromJson(Map<String, dynamic> json) {
     return IssueFormFieldVisible();
@@ -12,9 +11,9 @@ class IssueFormFieldVisible {
 
     return map;
   }
+
   @override
-  bool operator ==(Object other) =>
-      identical(this, other);
+  bool operator ==(Object other) => identical(this, other);
   @override
   int get hashCode => 0;
   @override

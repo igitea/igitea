@@ -4,14 +4,13 @@ part of 'generated_models.dart';
 class CreateForkOption {
   final String? name;
   final String? organization;
-  const CreateForkOption({
-    this.name,
-    this.organization,
-  });
+  const CreateForkOption({this.name, this.organization});
   factory CreateForkOption.fromJson(Map<String, dynamic> json) {
     return CreateForkOption(
       name: json['name'] != null ? json['name'] as String : null,
-      organization: json['organization'] != null ? json['organization'] as String : null,
+      organization: json['organization'] != null
+          ? json['organization'] as String
+          : null,
     );
   }
   Map<String, dynamic> toJson() {
@@ -20,6 +19,7 @@ class CreateForkOption {
     if (organization != null) map['organization'] = organization!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -29,5 +29,6 @@ class CreateForkOption {
   @override
   int get hashCode => Object.hash(name, organization);
   @override
-  String toString() => 'CreateForkOption(name: $name, organization: $organization)';
+  String toString() =>
+      'CreateForkOption(name: $name, organization: $organization)';
 }

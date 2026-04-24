@@ -1,16 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:http/http.dart' as http;
 
 import '../../../core/constants/api_constants.dart';
 import '../../../core/errors/exceptions.dart';
 
-/// Base HTTP client for the Gitea API.
-///
-/// Handles URL construction, authentication headers, request/response logging,
-/// and error mapping to domain exceptions.
 class ApiClient {
   final http.Client _client;
   final String baseUrl;
@@ -24,21 +19,18 @@ class ApiClient {
     String? token,
     String? username,
     String? password,
-  })  : _client = client ?? http.Client(),
-        _token = token,
-        _username = username,
-        _password = password;
+  }) : _client = client ?? http.Client(),
+       _token = token,
+       _username = username,
+       _password = password;
 
-  /// Updates the access token used for authentication.
   set token(String? value) => _token = value;
 
-  /// Updates the Basic auth credentials.
   void setBasicAuth(String? username, String? password) {
     _username = username;
     _password = password;
   }
 
-  /// Performs an HTTP GET request.
   Future<http.Response> get(
     String path, {
     Map<String, String>? queryParameters,
@@ -49,14 +41,17 @@ class ApiClient {
           .get(uri, headers: _headers)
           .timeout(const Duration(seconds: defaultTimeoutSeconds));
       return _processResponse(response);
-    } on SocketException catch (e) {
-      throw NetworkException(e.message);
+    } on http.ClientException catch (e) {
+      throw NetworkException(
+        e.message.isNotEmpty ? e.message : 'Network error',
+      );
     } on TimeoutException catch (_) {
       throw const NetworkException('Request timed out');
+    } on FormatException catch (e) {
+      throw NetworkException(e.message);
     }
   }
 
-  /// Performs an HTTP POST request.
   Future<http.Response> post(
     String path, {
     Map<String, dynamic>? body,
@@ -72,14 +67,17 @@ class ApiClient {
           )
           .timeout(const Duration(seconds: defaultTimeoutSeconds));
       return _processResponse(response);
-    } on SocketException catch (e) {
-      throw NetworkException(e.message);
+    } on http.ClientException catch (e) {
+      throw NetworkException(
+        e.message.isNotEmpty ? e.message : 'Network error',
+      );
     } on TimeoutException catch (_) {
       throw const NetworkException('Request timed out');
+    } on FormatException catch (e) {
+      throw NetworkException(e.message);
     }
   }
 
-  /// Performs an HTTP PUT request.
   Future<http.Response> put(
     String path, {
     Map<String, dynamic>? body,
@@ -95,14 +93,17 @@ class ApiClient {
           )
           .timeout(const Duration(seconds: defaultTimeoutSeconds));
       return _processResponse(response);
-    } on SocketException catch (e) {
-      throw NetworkException(e.message);
+    } on http.ClientException catch (e) {
+      throw NetworkException(
+        e.message.isNotEmpty ? e.message : 'Network error',
+      );
     } on TimeoutException catch (_) {
       throw const NetworkException('Request timed out');
+    } on FormatException catch (e) {
+      throw NetworkException(e.message);
     }
   }
 
-  /// Performs an HTTP PATCH request.
   Future<http.Response> patch(
     String path, {
     Map<String, dynamic>? body,
@@ -118,14 +119,17 @@ class ApiClient {
           )
           .timeout(const Duration(seconds: defaultTimeoutSeconds));
       return _processResponse(response);
-    } on SocketException catch (e) {
-      throw NetworkException(e.message);
+    } on http.ClientException catch (e) {
+      throw NetworkException(
+        e.message.isNotEmpty ? e.message : 'Network error',
+      );
     } on TimeoutException catch (_) {
       throw const NetworkException('Request timed out');
+    } on FormatException catch (e) {
+      throw NetworkException(e.message);
     }
   }
 
-  /// Performs an HTTP DELETE request.
   Future<http.Response> delete(
     String path, {
     Map<String, dynamic>? body,
@@ -141,10 +145,14 @@ class ApiClient {
           )
           .timeout(const Duration(seconds: defaultTimeoutSeconds));
       return _processResponse(response);
-    } on SocketException catch (e) {
-      throw NetworkException(e.message);
+    } on http.ClientException catch (e) {
+      throw NetworkException(
+        e.message.isNotEmpty ? e.message : 'Network error',
+      );
     } on TimeoutException catch (_) {
       throw const NetworkException('Request timed out');
+    } on FormatException catch (e) {
+      throw NetworkException(e.message);
     }
   }
 
@@ -163,9 +171,7 @@ class ApiClient {
     if (_token != null && _token!.isNotEmpty) {
       headers['Authorization'] = 'token $_token';
     } else if (_username != null && _password != null) {
-      final credentials = base64Encode(
-        utf8.encode('$_username:$_password'),
-      );
+      final credentials = base64Encode(utf8.encode('$_username:$_password'));
       headers['Authorization'] = 'Basic $credentials';
     }
     return headers;

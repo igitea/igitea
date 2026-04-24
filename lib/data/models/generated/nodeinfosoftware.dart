@@ -16,7 +16,9 @@ class NodeInfoSoftware {
     return NodeInfoSoftware(
       homepage: json['homepage'] != null ? json['homepage'] as String : null,
       name: json['name'] != null ? json['name'] as String : null,
-      repository: json['repository'] != null ? json['repository'] as String : null,
+      repository: json['repository'] != null
+          ? json['repository'] as String
+          : null,
       version: json['version'] != null ? json['version'] as String : null,
     );
   }
@@ -28,6 +30,7 @@ class NodeInfoSoftware {
     if (version != null) map['version'] = version!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -39,5 +42,6 @@ class NodeInfoSoftware {
   @override
   int get hashCode => Object.hash(homepage, name, repository, version);
   @override
-  String toString() => 'NodeInfoSoftware(homepage: $homepage, name: $name, repository: $repository, version: $version)';
+  String toString() =>
+      'NodeInfoSoftware(homepage: $homepage, name: $name, repository: $repository, version: $version)';
 }

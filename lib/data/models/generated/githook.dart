@@ -5,11 +5,7 @@ class GitHook {
   final String? content;
   final bool? is_active;
   final String? name;
-  const GitHook({
-    this.content,
-    this.is_active,
-    this.name,
-  });
+  const GitHook({this.content, this.is_active, this.name});
   factory GitHook.fromJson(Map<String, dynamic> json) {
     return GitHook(
       content: json['content'] != null ? json['content'] as String : null,
@@ -24,6 +20,7 @@ class GitHook {
     if (name != null) map['name'] = name!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -34,5 +31,6 @@ class GitHook {
   @override
   int get hashCode => Object.hash(content, is_active, name);
   @override
-  String toString() => 'GitHook(content: $content, is_active: $is_active, name: $name)';
+  String toString() =>
+      'GitHook(content: $content, is_active: $is_active, name: $name)';
 }

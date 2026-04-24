@@ -28,17 +28,33 @@ class Comment {
   });
   factory Comment.fromJson(Map<String, dynamic> json) {
     return Comment(
-      assets: json['assets'] != null ? (json['assets'] as List<dynamic>).map((e) => Attachment.fromJson(e as Map<String, dynamic>)).toList() : null,
+      assets: json['assets'] != null
+          ? (json['assets'] as List<dynamic>)
+                .map((e) => Attachment.fromJson(e as Map<String, dynamic>))
+                .toList()
+          : null,
       body: json['body'] != null ? json['body'] as String : null,
-      created_at: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
+      created_at: json['created_at'] != null
+          ? DateTime.parse(json['created_at'] as String)
+          : null,
       html_url: json['html_url'] != null ? json['html_url'] as String : null,
       id: json['id'] != null ? (json['id'] as num).toInt() : null,
       issue_url: json['issue_url'] != null ? json['issue_url'] as String : null,
-      original_author: json['original_author'] != null ? json['original_author'] as String : null,
-      original_author_id: json['original_author_id'] != null ? (json['original_author_id'] as num).toInt() : null,
-      pull_request_url: json['pull_request_url'] != null ? json['pull_request_url'] as String : null,
-      updated_at: json['updated_at'] != null ? DateTime.parse(json['updated_at'] as String) : null,
-      user: json['user'] != null ? User.fromJson(json['user'] as Map<String, dynamic>) : null,
+      original_author: json['original_author'] != null
+          ? json['original_author'] as String
+          : null,
+      original_author_id: json['original_author_id'] != null
+          ? (json['original_author_id'] as num).toInt()
+          : null,
+      pull_request_url: json['pull_request_url'] != null
+          ? json['pull_request_url'] as String
+          : null,
+      updated_at: json['updated_at'] != null
+          ? DateTime.parse(json['updated_at'] as String)
+          : null,
+      user: json['user'] != null
+          ? User.fromJson(json['user'] as Map<String, dynamic>)
+          : null,
     );
   }
   Map<String, dynamic> toJson() {
@@ -50,12 +66,14 @@ class Comment {
     if (id != null) map['id'] = id!;
     if (issue_url != null) map['issue_url'] = issue_url!;
     if (original_author != null) map['original_author'] = original_author!;
-    if (original_author_id != null) map['original_author_id'] = original_author_id!;
+    if (original_author_id != null)
+      map['original_author_id'] = original_author_id!;
     if (pull_request_url != null) map['pull_request_url'] = pull_request_url!;
     if (updated_at != null) map['updated_at'] = updated_at!.toIso8601String();
     if (user != null) map['user'] = user!.toJson();
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -72,7 +90,20 @@ class Comment {
           updated_at == other.updated_at &&
           user == other.user;
   @override
-  int get hashCode => Object.hash(assets, body, created_at, html_url, id, issue_url, original_author, original_author_id, pull_request_url, updated_at, user);
+  int get hashCode => Object.hash(
+    assets,
+    body,
+    created_at,
+    html_url,
+    id,
+    issue_url,
+    original_author,
+    original_author_id,
+    pull_request_url,
+    updated_at,
+    user,
+  );
   @override
-  String toString() => 'Comment(assets: $assets, body: $body, created_at: $created_at, html_url: $html_url, id: $id, issue_url: $issue_url, original_author: $original_author, original_author_id: $original_author_id, pull_request_url: $pull_request_url, updated_at: $updated_at, user: $user)';
+  String toString() =>
+      'Comment(assets: $assets, body: $body, created_at: $created_at, html_url: $html_url, id: $id, issue_url: $issue_url, original_author: $original_author, original_author_id: $original_author_id, pull_request_url: $pull_request_url, updated_at: $updated_at, user: $user)';
 }

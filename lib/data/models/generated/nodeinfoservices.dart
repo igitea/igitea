@@ -4,14 +4,15 @@ part of 'generated_models.dart';
 class NodeInfoServices {
   final List<String>? inbound;
   final List<String>? outbound;
-  const NodeInfoServices({
-    this.inbound,
-    this.outbound,
-  });
+  const NodeInfoServices({this.inbound, this.outbound});
   factory NodeInfoServices.fromJson(Map<String, dynamic> json) {
     return NodeInfoServices(
-      inbound: json['inbound'] != null ? (json['inbound'] as List<dynamic>).cast<String>() : null,
-      outbound: json['outbound'] != null ? (json['outbound'] as List<dynamic>).cast<String>() : null,
+      inbound: json['inbound'] != null
+          ? (json['inbound'] as List<dynamic>).cast<String>()
+          : null,
+      outbound: json['outbound'] != null
+          ? (json['outbound'] as List<dynamic>).cast<String>()
+          : null,
     );
   }
   Map<String, dynamic> toJson() {
@@ -20,6 +21,7 @@ class NodeInfoServices {
     if (outbound != null) map['outbound'] = outbound!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -29,5 +31,6 @@ class NodeInfoServices {
   @override
   int get hashCode => Object.hash(inbound, outbound);
   @override
-  String toString() => 'NodeInfoServices(inbound: $inbound, outbound: $outbound)';
+  String toString() =>
+      'NodeInfoServices(inbound: $inbound, outbound: $outbound)';
 }

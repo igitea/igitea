@@ -1,0 +1,245 @@
+import '../../core/errors/failures.dart';
+import '../../core/utils/either.dart';
+import '../../core/utils/repository_helper.dart';
+import '../../domain/repositories/repo_repository.dart';
+import '../datasources/remote/gitea_api_service.dart';
+import '../models/generated/generated_models.dart';
+
+/// Implementation of [RepoRepository] using [GiteaApiService].
+class RepoRepositoryImpl implements RepoRepository {
+  final GiteaApiService _apiService;
+
+  RepoRepositoryImpl({required GiteaApiService apiService})
+    : _apiService = apiService;
+
+  @override
+  Future<Either<Failure, Repository>> getRepo(String owner, String repo) async {
+    return execute(() => _apiService.repoGet(owner: owner, repo: repo));
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteRepo(String owner, String repo) async {
+    return execute(() => _apiService.repoDelete(owner: owner, repo: repo));
+  }
+
+  @override
+  Future<Either<Failure, Repository>> editRepo(
+    String owner,
+    String repo,
+    Map<String, dynamic> body,
+  ) async {
+    return execute(
+      () => _apiService.repoEdit(owner: owner, repo: repo, body: body),
+    );
+  }
+
+  @override
+  Future<Either<Failure, Repository>> migrateRepo(
+    Map<String, dynamic> body,
+  ) async {
+    return execute(() => _apiService.repoMigrate(body: body));
+  }
+
+  @override
+  Future<Either<Failure, List<Branch>>> listBranches(
+    String owner,
+    String repo, {
+    int? page,
+    int? limit,
+  }) async {
+    return execute(
+      () => _apiService.repoListBranches(
+        owner: owner,
+        repo: repo,
+        page: page,
+        limit: limit,
+      ),
+    );
+  }
+
+  @override
+  Future<Either<Failure, Branch>> getBranch(
+    String owner,
+    String repo,
+    String branch,
+  ) async {
+    return execute(
+      () => _apiService.repoGetBranch(owner: owner, repo: repo, branch: branch),
+    );
+  }
+
+  @override
+  Future<Either<Failure, List<Tag>>> listTags(
+    String owner,
+    String repo, {
+    int? page,
+    int? limit,
+  }) async {
+    return execute(
+      () => _apiService.repoListTags(
+        owner: owner,
+        repo: repo,
+        page: page,
+        limit: limit,
+      ),
+    );
+  }
+
+  @override
+  Future<Either<Failure, List<Commit>>> listCommits(
+    String owner,
+    String repo, {
+    String? sha,
+    int? page,
+    int? limit,
+  }) async {
+    return execute(
+      () => _apiService.repoGetAllCommits(
+        owner: owner,
+        repo: repo,
+        sha: sha,
+        page: page,
+        limit: limit,
+      ),
+    );
+  }
+
+  @override
+  Future<Either<Failure, Commit>> getCommit(
+    String owner,
+    String repo,
+    String sha,
+  ) async {
+    return execute(
+      () => _apiService.repoGetSingleCommit(owner: owner, repo: repo, sha: sha),
+    );
+  }
+
+  @override
+  Future<Either<Failure, List<Release>>> listReleases(
+    String owner,
+    String repo, {
+    int? page,
+    int? limit,
+  }) async {
+    return execute(
+      () => _apiService.repoListReleases(
+        owner: owner,
+        repo: repo,
+        page: page,
+        limit: limit,
+      ),
+    );
+  }
+
+  @override
+  Future<Either<Failure, Release>> getRelease(
+    String owner,
+    String repo,
+    int id,
+  ) async {
+    return execute(
+      () => _apiService.repoGetRelease(owner: owner, repo: repo, id: id),
+    );
+  }
+
+  @override
+  Future<Either<Failure, List<User>>> listCollaborators(
+    String owner,
+    String repo, {
+    int? page,
+    int? limit,
+  }) async {
+    return execute(
+      () => _apiService.repoListCollaborators(
+        owner: owner,
+        repo: repo,
+        page: page,
+        limit: limit,
+      ),
+    );
+  }
+
+  @override
+  Future<Either<Failure, void>> addCollaborator(
+    String owner,
+    String repo,
+    String collaborator,
+    Map<String, dynamic> body,
+  ) async {
+    return execute(
+      () => _apiService.repoAddCollaborator(
+        owner: owner,
+        repo: repo,
+        collaborator: collaborator,
+        body: body,
+      ),
+    );
+  }
+
+  @override
+  Future<Either<Failure, void>> removeCollaborator(
+    String owner,
+    String repo,
+    String collaborator,
+  ) async {
+    return execute(
+      () => _apiService.repoDeleteCollaborator(
+        owner: owner,
+        repo: repo,
+        collaborator: collaborator,
+      ),
+    );
+  }
+
+  @override
+  Future<Either<Failure, List<Hook>>> listHooks(
+    String owner,
+    String repo, {
+    int? page,
+    int? limit,
+  }) async {
+    return execute(
+      () => _apiService.repoListHooks(
+        owner: owner,
+        repo: repo,
+        page: page,
+        limit: limit,
+      ),
+    );
+  }
+
+  @override
+  Future<Either<Failure, Hook>> createHook(
+    String owner,
+    String repo,
+    Map<String, dynamic> body,
+  ) async {
+    return execute(
+      () => _apiService.repoCreateHook(owner: owner, repo: repo, body: body),
+    );
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteHook(
+    String owner,
+    String repo,
+    int id,
+  ) async {
+    return execute(
+      () => _apiService.repoDeleteHook(owner: owner, repo: repo, id: id),
+    );
+  }
+
+  @override
+  Future<Either<Failure, SearchResults>> searchRepos({
+    String? q,
+    int? uid,
+    int? page,
+    int? limit,
+  }) async {
+    return execute(
+      () => _apiService.repoSearch(q: q, uid: uid, page: page, limit: limit),
+    );
+  }
+}

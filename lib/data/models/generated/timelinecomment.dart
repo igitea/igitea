@@ -64,35 +64,75 @@ class TimelineComment {
   });
   factory TimelineComment.fromJson(Map<String, dynamic> json) {
     return TimelineComment(
-      assignee: json['assignee'] != null ? User.fromJson(json['assignee'] as Map<String, dynamic>) : null,
-      assignee_team: json['assignee_team'] != null ? Team.fromJson(json['assignee_team'] as Map<String, dynamic>) : null,
+      assignee: json['assignee'] != null
+          ? User.fromJson(json['assignee'] as Map<String, dynamic>)
+          : null,
+      assignee_team: json['assignee_team'] != null
+          ? Team.fromJson(json['assignee_team'] as Map<String, dynamic>)
+          : null,
       body: json['body'] != null ? json['body'] as String : null,
-      created_at: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
-      dependent_issue: json['dependent_issue'] != null ? Issue.fromJson(json['dependent_issue'] as Map<String, dynamic>) : null,
+      created_at: json['created_at'] != null
+          ? DateTime.parse(json['created_at'] as String)
+          : null,
+      dependent_issue: json['dependent_issue'] != null
+          ? Issue.fromJson(json['dependent_issue'] as Map<String, dynamic>)
+          : null,
       html_url: json['html_url'] != null ? json['html_url'] as String : null,
       id: json['id'] != null ? (json['id'] as num).toInt() : null,
       issue_url: json['issue_url'] != null ? json['issue_url'] as String : null,
-      label: json['label'] != null ? Label.fromJson(json['label'] as Map<String, dynamic>) : null,
-      milestone: json['milestone'] != null ? Milestone.fromJson(json['milestone'] as Map<String, dynamic>) : null,
+      label: json['label'] != null
+          ? Label.fromJson(json['label'] as Map<String, dynamic>)
+          : null,
+      milestone: json['milestone'] != null
+          ? Milestone.fromJson(json['milestone'] as Map<String, dynamic>)
+          : null,
       new_ref: json['new_ref'] != null ? json['new_ref'] as String : null,
       new_title: json['new_title'] != null ? json['new_title'] as String : null,
-      old_milestone: json['old_milestone'] != null ? Milestone.fromJson(json['old_milestone'] as Map<String, dynamic>) : null,
-      old_project_id: json['old_project_id'] != null ? (json['old_project_id'] as num).toInt() : null,
+      old_milestone: json['old_milestone'] != null
+          ? Milestone.fromJson(json['old_milestone'] as Map<String, dynamic>)
+          : null,
+      old_project_id: json['old_project_id'] != null
+          ? (json['old_project_id'] as num).toInt()
+          : null,
       old_ref: json['old_ref'] != null ? json['old_ref'] as String : null,
       old_title: json['old_title'] != null ? json['old_title'] as String : null,
-      project_id: json['project_id'] != null ? (json['project_id'] as num).toInt() : null,
-      pull_request_url: json['pull_request_url'] != null ? json['pull_request_url'] as String : null,
-      ref_action: json['ref_action'] != null ? json['ref_action'] as String : null,
-      ref_comment: json['ref_comment'] != null ? Comment.fromJson(json['ref_comment'] as Map<String, dynamic>) : null,
-      ref_commit_sha: json['ref_commit_sha'] != null ? json['ref_commit_sha'] as String : null,
-      ref_issue: json['ref_issue'] != null ? Issue.fromJson(json['ref_issue'] as Map<String, dynamic>) : null,
-      removed_assignee: json['removed_assignee'] != null ? json['removed_assignee'] as bool : null,
-      resolve_doer: json['resolve_doer'] != null ? User.fromJson(json['resolve_doer'] as Map<String, dynamic>) : null,
-      review_id: json['review_id'] != null ? (json['review_id'] as num).toInt() : null,
-      tracked_time: json['tracked_time'] != null ? TrackedTime.fromJson(json['tracked_time'] as Map<String, dynamic>) : null,
+      project_id: json['project_id'] != null
+          ? (json['project_id'] as num).toInt()
+          : null,
+      pull_request_url: json['pull_request_url'] != null
+          ? json['pull_request_url'] as String
+          : null,
+      ref_action: json['ref_action'] != null
+          ? json['ref_action'] as String
+          : null,
+      ref_comment: json['ref_comment'] != null
+          ? Comment.fromJson(json['ref_comment'] as Map<String, dynamic>)
+          : null,
+      ref_commit_sha: json['ref_commit_sha'] != null
+          ? json['ref_commit_sha'] as String
+          : null,
+      ref_issue: json['ref_issue'] != null
+          ? Issue.fromJson(json['ref_issue'] as Map<String, dynamic>)
+          : null,
+      removed_assignee: json['removed_assignee'] != null
+          ? json['removed_assignee'] as bool
+          : null,
+      resolve_doer: json['resolve_doer'] != null
+          ? User.fromJson(json['resolve_doer'] as Map<String, dynamic>)
+          : null,
+      review_id: json['review_id'] != null
+          ? (json['review_id'] as num).toInt()
+          : null,
+      tracked_time: json['tracked_time'] != null
+          ? TrackedTime.fromJson(json['tracked_time'] as Map<String, dynamic>)
+          : null,
       type: json['type'] != null ? json['type'] as String : null,
-      updated_at: json['updated_at'] != null ? DateTime.parse(json['updated_at'] as String) : null,
-      user: json['user'] != null ? User.fromJson(json['user'] as Map<String, dynamic>) : null,
+      updated_at: json['updated_at'] != null
+          ? DateTime.parse(json['updated_at'] as String)
+          : null,
+      user: json['user'] != null
+          ? User.fromJson(json['user'] as Map<String, dynamic>)
+          : null,
     );
   }
   Map<String, dynamic> toJson() {
@@ -101,7 +141,8 @@ class TimelineComment {
     if (assignee_team != null) map['assignee_team'] = assignee_team!.toJson();
     if (body != null) map['body'] = body!;
     if (created_at != null) map['created_at'] = created_at!.toIso8601String();
-    if (dependent_issue != null) map['dependent_issue'] = dependent_issue!.toJson();
+    if (dependent_issue != null)
+      map['dependent_issue'] = dependent_issue!.toJson();
     if (html_url != null) map['html_url'] = html_url!;
     if (id != null) map['id'] = id!;
     if (issue_url != null) map['issue_url'] = issue_url!;
@@ -128,6 +169,7 @@ class TimelineComment {
     if (user != null) map['user'] = user!.toJson();
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -162,7 +204,38 @@ class TimelineComment {
           updated_at == other.updated_at &&
           user == other.user;
   @override
-  int get hashCode => Object.hashAll([assignee, assignee_team, body, created_at, dependent_issue, html_url, id, issue_url, label, milestone, new_ref, new_title, old_milestone, old_project_id, old_ref, old_title, project_id, pull_request_url, ref_action, ref_comment, ref_commit_sha, ref_issue, removed_assignee, resolve_doer, review_id, tracked_time, type, updated_at, user]);
+  int get hashCode => Object.hashAll([
+    assignee,
+    assignee_team,
+    body,
+    created_at,
+    dependent_issue,
+    html_url,
+    id,
+    issue_url,
+    label,
+    milestone,
+    new_ref,
+    new_title,
+    old_milestone,
+    old_project_id,
+    old_ref,
+    old_title,
+    project_id,
+    pull_request_url,
+    ref_action,
+    ref_comment,
+    ref_commit_sha,
+    ref_issue,
+    removed_assignee,
+    resolve_doer,
+    review_id,
+    tracked_time,
+    type,
+    updated_at,
+    user,
+  ]);
   @override
-  String toString() => 'TimelineComment(assignee: $assignee, assignee_team: $assignee_team, body: $body, created_at: $created_at, dependent_issue: $dependent_issue, html_url: $html_url, id: $id, issue_url: $issue_url, label: $label, milestone: $milestone, new_ref: $new_ref, new_title: $new_title, old_milestone: $old_milestone, old_project_id: $old_project_id, old_ref: $old_ref, old_title: $old_title, project_id: $project_id, pull_request_url: $pull_request_url, ref_action: $ref_action, ref_comment: $ref_comment, ref_commit_sha: $ref_commit_sha, ref_issue: $ref_issue, removed_assignee: $removed_assignee, resolve_doer: $resolve_doer, review_id: $review_id, tracked_time: $tracked_time, type: $type, updated_at: $updated_at, user: $user)';
+  String toString() =>
+      'TimelineComment(assignee: $assignee, assignee_team: $assignee_team, body: $body, created_at: $created_at, dependent_issue: $dependent_issue, html_url: $html_url, id: $id, issue_url: $issue_url, label: $label, milestone: $milestone, new_ref: $new_ref, new_title: $new_title, old_milestone: $old_milestone, old_project_id: $old_project_id, old_ref: $old_ref, old_title: $old_title, project_id: $project_id, pull_request_url: $pull_request_url, ref_action: $ref_action, ref_comment: $ref_comment, ref_commit_sha: $ref_commit_sha, ref_issue: $ref_issue, removed_assignee: $removed_assignee, resolve_doer: $resolve_doer, review_id: $review_id, tracked_time: $tracked_time, type: $type, updated_at: $updated_at, user: $user)';
 }

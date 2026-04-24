@@ -21,25 +21,36 @@ class NotificationSubject {
   factory NotificationSubject.fromJson(Map<String, dynamic> json) {
     return NotificationSubject(
       html_url: json['html_url'] != null ? json['html_url'] as String : null,
-      latest_comment_html_url: json['latest_comment_html_url'] != null ? json['latest_comment_html_url'] as String : null,
-      latest_comment_url: json['latest_comment_url'] != null ? json['latest_comment_url'] as String : null,
-      state: json['state'] != null ? StateType.fromJson(json['state'] as Map<String, dynamic>) : null,
+      latest_comment_html_url: json['latest_comment_html_url'] != null
+          ? json['latest_comment_html_url'] as String
+          : null,
+      latest_comment_url: json['latest_comment_url'] != null
+          ? json['latest_comment_url'] as String
+          : null,
+      state: json['state'] != null
+          ? StateType.fromJson(json['state'] as Map<String, dynamic>)
+          : null,
       title: json['title'] != null ? json['title'] as String : null,
-      type: json['type'] != null ? NotifySubjectType.fromJson(json['type'] as Map<String, dynamic>) : null,
+      type: json['type'] != null
+          ? NotifySubjectType.fromJson(json['type'] as Map<String, dynamic>)
+          : null,
       url: json['url'] != null ? json['url'] as String : null,
     );
   }
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     if (html_url != null) map['html_url'] = html_url!;
-    if (latest_comment_html_url != null) map['latest_comment_html_url'] = latest_comment_html_url!;
-    if (latest_comment_url != null) map['latest_comment_url'] = latest_comment_url!;
+    if (latest_comment_html_url != null)
+      map['latest_comment_html_url'] = latest_comment_html_url!;
+    if (latest_comment_url != null)
+      map['latest_comment_url'] = latest_comment_url!;
     if (state != null) map['state'] = state!.toJson();
     if (title != null) map['title'] = title!;
     if (type != null) map['type'] = type!.toJson();
     if (url != null) map['url'] = url!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -52,7 +63,16 @@ class NotificationSubject {
           type == other.type &&
           url == other.url;
   @override
-  int get hashCode => Object.hash(html_url, latest_comment_html_url, latest_comment_url, state, title, type, url);
+  int get hashCode => Object.hash(
+    html_url,
+    latest_comment_html_url,
+    latest_comment_url,
+    state,
+    title,
+    type,
+    url,
+  );
   @override
-  String toString() => 'NotificationSubject(html_url: $html_url, latest_comment_html_url: $latest_comment_html_url, latest_comment_url: $latest_comment_url, state: $state, title: $title, type: $type, url: $url)';
+  String toString() =>
+      'NotificationSubject(html_url: $html_url, latest_comment_html_url: $latest_comment_html_url, latest_comment_url: $latest_comment_url, state: $state, title: $title, type: $type, url: $url)';
 }

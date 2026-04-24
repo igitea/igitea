@@ -26,14 +26,22 @@ class UpdateFileOptions {
   });
   factory UpdateFileOptions.fromJson(Map<String, dynamic> json) {
     return UpdateFileOptions(
-      author: json['author'] != null ? Identity.fromJson(json['author'] as Map<String, dynamic>) : null,
+      author: json['author'] != null
+          ? Identity.fromJson(json['author'] as Map<String, dynamic>)
+          : null,
       branch: json['branch'] != null ? json['branch'] as String : null,
-      committer: json['committer'] != null ? Identity.fromJson(json['committer'] as Map<String, dynamic>) : null,
+      committer: json['committer'] != null
+          ? Identity.fromJson(json['committer'] as Map<String, dynamic>)
+          : null,
       content: json['content'] != null ? json['content'] as String : null,
-      dates: json['dates'] != null ? CommitDateOptions.fromJson(json['dates'] as Map<String, dynamic>) : null,
+      dates: json['dates'] != null
+          ? CommitDateOptions.fromJson(json['dates'] as Map<String, dynamic>)
+          : null,
       from_path: json['from_path'] != null ? json['from_path'] as String : null,
       message: json['message'] != null ? json['message'] as String : null,
-      new_branch: json['new_branch'] != null ? json['new_branch'] as String : null,
+      new_branch: json['new_branch'] != null
+          ? json['new_branch'] as String
+          : null,
       sha: json['sha'] != null ? json['sha'] as String : null,
       signoff: json['signoff'] != null ? json['signoff'] as bool : null,
     );
@@ -52,6 +60,7 @@ class UpdateFileOptions {
     if (signoff != null) map['signoff'] = signoff!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -67,7 +76,19 @@ class UpdateFileOptions {
           sha == other.sha &&
           signoff == other.signoff;
   @override
-  int get hashCode => Object.hash(author, branch, committer, content, dates, from_path, message, new_branch, sha, signoff);
+  int get hashCode => Object.hash(
+    author,
+    branch,
+    committer,
+    content,
+    dates,
+    from_path,
+    message,
+    new_branch,
+    sha,
+    signoff,
+  );
   @override
-  String toString() => 'UpdateFileOptions(author: $author, branch: $branch, committer: $committer, content: $content, dates: $dates, from_path: $from_path, message: $message, new_branch: $new_branch, sha: $sha, signoff: $signoff)';
+  String toString() =>
+      'UpdateFileOptions(author: $author, branch: $branch, committer: $committer, content: $content, dates: $dates, from_path: $from_path, message: $message, new_branch: $new_branch, sha: $sha, signoff: $signoff)';
 }

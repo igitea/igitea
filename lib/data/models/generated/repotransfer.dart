@@ -5,16 +5,20 @@ class RepoTransfer {
   final User? doer;
   final User? recipient;
   final List<Team>? teams;
-  const RepoTransfer({
-    this.doer,
-    this.recipient,
-    this.teams,
-  });
+  const RepoTransfer({this.doer, this.recipient, this.teams});
   factory RepoTransfer.fromJson(Map<String, dynamic> json) {
     return RepoTransfer(
-      doer: json['doer'] != null ? User.fromJson(json['doer'] as Map<String, dynamic>) : null,
-      recipient: json['recipient'] != null ? User.fromJson(json['recipient'] as Map<String, dynamic>) : null,
-      teams: json['teams'] != null ? (json['teams'] as List<dynamic>).map((e) => Team.fromJson(e as Map<String, dynamic>)).toList() : null,
+      doer: json['doer'] != null
+          ? User.fromJson(json['doer'] as Map<String, dynamic>)
+          : null,
+      recipient: json['recipient'] != null
+          ? User.fromJson(json['recipient'] as Map<String, dynamic>)
+          : null,
+      teams: json['teams'] != null
+          ? (json['teams'] as List<dynamic>)
+                .map((e) => Team.fromJson(e as Map<String, dynamic>))
+                .toList()
+          : null,
     );
   }
   Map<String, dynamic> toJson() {
@@ -24,6 +28,7 @@ class RepoTransfer {
     if (teams != null) map['teams'] = teams!.map((e) => e.toJson()).toList();
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -34,5 +39,6 @@ class RepoTransfer {
   @override
   int get hashCode => Object.hash(doer, recipient, teams);
   @override
-  String toString() => 'RepoTransfer(doer: $doer, recipient: $recipient, teams: $teams)';
+  String toString() =>
+      'RepoTransfer(doer: $doer, recipient: $recipient, teams: $teams)';
 }

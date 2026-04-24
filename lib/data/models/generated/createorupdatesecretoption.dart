@@ -4,14 +4,13 @@ part of 'generated_models.dart';
 class CreateOrUpdateSecretOption {
   final String? data;
   final String? description;
-  const CreateOrUpdateSecretOption({
-    this.data,
-    this.description,
-  });
+  const CreateOrUpdateSecretOption({this.data, this.description});
   factory CreateOrUpdateSecretOption.fromJson(Map<String, dynamic> json) {
     return CreateOrUpdateSecretOption(
       data: json['data'] != null ? json['data'] as String : null,
-      description: json['description'] != null ? json['description'] as String : null,
+      description: json['description'] != null
+          ? json['description'] as String
+          : null,
     );
   }
   Map<String, dynamic> toJson() {
@@ -20,6 +19,7 @@ class CreateOrUpdateSecretOption {
     if (description != null) map['description'] = description!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -29,5 +29,6 @@ class CreateOrUpdateSecretOption {
   @override
   int get hashCode => Object.hash(data, description);
   @override
-  String toString() => 'CreateOrUpdateSecretOption(data: $data, description: $description)';
+  String toString() =>
+      'CreateOrUpdateSecretOption(data: $data, description: $description)';
 }

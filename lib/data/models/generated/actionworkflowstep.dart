@@ -18,17 +18,24 @@ class ActionWorkflowStep {
   });
   factory ActionWorkflowStep.fromJson(Map<String, dynamic> json) {
     return ActionWorkflowStep(
-      completed_at: json['completed_at'] != null ? DateTime.parse(json['completed_at'] as String) : null,
-      conclusion: json['conclusion'] != null ? json['conclusion'] as String : null,
+      completed_at: json['completed_at'] != null
+          ? DateTime.parse(json['completed_at'] as String)
+          : null,
+      conclusion: json['conclusion'] != null
+          ? json['conclusion'] as String
+          : null,
       name: json['name'] != null ? json['name'] as String : null,
       number: json['number'] != null ? (json['number'] as num).toInt() : null,
-      started_at: json['started_at'] != null ? DateTime.parse(json['started_at'] as String) : null,
+      started_at: json['started_at'] != null
+          ? DateTime.parse(json['started_at'] as String)
+          : null,
       status: json['status'] != null ? json['status'] as String : null,
     );
   }
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    if (completed_at != null) map['completed_at'] = completed_at!.toIso8601String();
+    if (completed_at != null)
+      map['completed_at'] = completed_at!.toIso8601String();
     if (conclusion != null) map['conclusion'] = conclusion!;
     if (name != null) map['name'] = name!;
     if (number != null) map['number'] = number!;
@@ -36,6 +43,7 @@ class ActionWorkflowStep {
     if (status != null) map['status'] = status!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -47,7 +55,9 @@ class ActionWorkflowStep {
           started_at == other.started_at &&
           status == other.status;
   @override
-  int get hashCode => Object.hash(completed_at, conclusion, name, number, started_at, status);
+  int get hashCode =>
+      Object.hash(completed_at, conclusion, name, number, started_at, status);
   @override
-  String toString() => 'ActionWorkflowStep(completed_at: $completed_at, conclusion: $conclusion, name: $name, number: $number, started_at: $started_at, status: $status)';
+  String toString() =>
+      'ActionWorkflowStep(completed_at: $completed_at, conclusion: $conclusion, name: $name, number: $number, started_at: $started_at, status: $status)';
 }

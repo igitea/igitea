@@ -5,15 +5,15 @@ class CommitStats {
   final int? additions;
   final int? deletions;
   final int? total;
-  const CommitStats({
-    this.additions,
-    this.deletions,
-    this.total,
-  });
+  const CommitStats({this.additions, this.deletions, this.total});
   factory CommitStats.fromJson(Map<String, dynamic> json) {
     return CommitStats(
-      additions: json['additions'] != null ? (json['additions'] as num).toInt() : null,
-      deletions: json['deletions'] != null ? (json['deletions'] as num).toInt() : null,
+      additions: json['additions'] != null
+          ? (json['additions'] as num).toInt()
+          : null,
+      deletions: json['deletions'] != null
+          ? (json['deletions'] as num).toInt()
+          : null,
       total: json['total'] != null ? (json['total'] as num).toInt() : null,
     );
   }
@@ -24,6 +24,7 @@ class CommitStats {
     if (total != null) map['total'] = total!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -34,5 +35,6 @@ class CommitStats {
   @override
   int get hashCode => Object.hash(additions, deletions, total);
   @override
-  String toString() => 'CommitStats(additions: $additions, deletions: $deletions, total: $total)';
+  String toString() =>
+      'CommitStats(additions: $additions, deletions: $deletions, total: $total)';
 }

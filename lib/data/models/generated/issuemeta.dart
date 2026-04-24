@@ -5,11 +5,7 @@ class IssueMeta {
   final int? index;
   final String? owner;
   final String? repo;
-  const IssueMeta({
-    this.index,
-    this.owner,
-    this.repo,
-  });
+  const IssueMeta({this.index, this.owner, this.repo});
   factory IssueMeta.fromJson(Map<String, dynamic> json) {
     return IssueMeta(
       index: json['index'] != null ? (json['index'] as num).toInt() : null,
@@ -24,6 +20,7 @@ class IssueMeta {
     if (repo != null) map['repo'] = repo!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

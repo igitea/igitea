@@ -26,15 +26,36 @@ class Commit {
   });
   factory Commit.fromJson(Map<String, dynamic> json) {
     return Commit(
-      author: json['author'] != null ? User.fromJson(json['author'] as Map<String, dynamic>) : null,
-      commit: json['commit'] != null ? RepoCommit.fromJson(json['commit'] as Map<String, dynamic>) : null,
-      committer: json['committer'] != null ? User.fromJson(json['committer'] as Map<String, dynamic>) : null,
-      created: json['created'] != null ? DateTime.parse(json['created'] as String) : null,
-      files: json['files'] != null ? (json['files'] as List<dynamic>).map((e) => CommitAffectedFiles.fromJson(e as Map<String, dynamic>)).toList() : null,
+      author: json['author'] != null
+          ? User.fromJson(json['author'] as Map<String, dynamic>)
+          : null,
+      commit: json['commit'] != null
+          ? RepoCommit.fromJson(json['commit'] as Map<String, dynamic>)
+          : null,
+      committer: json['committer'] != null
+          ? User.fromJson(json['committer'] as Map<String, dynamic>)
+          : null,
+      created: json['created'] != null
+          ? DateTime.parse(json['created'] as String)
+          : null,
+      files: json['files'] != null
+          ? (json['files'] as List<dynamic>)
+                .map(
+                  (e) =>
+                      CommitAffectedFiles.fromJson(e as Map<String, dynamic>),
+                )
+                .toList()
+          : null,
       html_url: json['html_url'] != null ? json['html_url'] as String : null,
-      parents: json['parents'] != null ? (json['parents'] as List<dynamic>).map((e) => CommitMeta.fromJson(e as Map<String, dynamic>)).toList() : null,
+      parents: json['parents'] != null
+          ? (json['parents'] as List<dynamic>)
+                .map((e) => CommitMeta.fromJson(e as Map<String, dynamic>))
+                .toList()
+          : null,
       sha: json['sha'] != null ? json['sha'] as String : null,
-      stats: json['stats'] != null ? CommitStats.fromJson(json['stats'] as Map<String, dynamic>) : null,
+      stats: json['stats'] != null
+          ? CommitStats.fromJson(json['stats'] as Map<String, dynamic>)
+          : null,
       url: json['url'] != null ? json['url'] as String : null,
     );
   }
@@ -46,12 +67,14 @@ class Commit {
     if (created != null) map['created'] = created!.toIso8601String();
     if (files != null) map['files'] = files!.map((e) => e.toJson()).toList();
     if (html_url != null) map['html_url'] = html_url!;
-    if (parents != null) map['parents'] = parents!.map((e) => e.toJson()).toList();
+    if (parents != null)
+      map['parents'] = parents!.map((e) => e.toJson()).toList();
     if (sha != null) map['sha'] = sha!;
     if (stats != null) map['stats'] = stats!.toJson();
     if (url != null) map['url'] = url!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -67,7 +90,19 @@ class Commit {
           stats == other.stats &&
           url == other.url;
   @override
-  int get hashCode => Object.hash(author, commit, committer, created, files, html_url, parents, sha, stats, url);
+  int get hashCode => Object.hash(
+    author,
+    commit,
+    committer,
+    created,
+    files,
+    html_url,
+    parents,
+    sha,
+    stats,
+    url,
+  );
   @override
-  String toString() => 'Commit(author: $author, commit: $commit, committer: $committer, created: $created, files: $files, html_url: $html_url, parents: $parents, sha: $sha, stats: $stats, url: $url)';
+  String toString() =>
+      'Commit(author: $author, commit: $commit, committer: $committer, created: $created, files: $files, html_url: $html_url, parents: $parents, sha: $sha, stats: $stats, url: $url)';
 }

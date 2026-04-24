@@ -5,11 +5,7 @@ class CreateKeyOption {
   final String? key;
   final bool? read_only;
   final String? title;
-  const CreateKeyOption({
-    this.key,
-    this.read_only,
-    this.title,
-  });
+  const CreateKeyOption({this.key, this.read_only, this.title});
   factory CreateKeyOption.fromJson(Map<String, dynamic> json) {
     return CreateKeyOption(
       key: json['key'] != null ? json['key'] as String : null,
@@ -24,6 +20,7 @@ class CreateKeyOption {
     if (title != null) map['title'] = title!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -34,5 +31,6 @@ class CreateKeyOption {
   @override
   int get hashCode => Object.hash(key, read_only, title);
   @override
-  String toString() => 'CreateKeyOption(key: $key, read_only: $read_only, title: $title)';
+  String toString() =>
+      'CreateKeyOption(key: $key, read_only: $read_only, title: $title)';
 }

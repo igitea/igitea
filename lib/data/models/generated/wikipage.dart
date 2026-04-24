@@ -22,11 +22,17 @@ class WikiPage {
   });
   factory WikiPage.fromJson(Map<String, dynamic> json) {
     return WikiPage(
-      commit_count: json['commit_count'] != null ? (json['commit_count'] as num).toInt() : null,
-      content_base64: json['content_base64'] != null ? json['content_base64'] as String : null,
+      commit_count: json['commit_count'] != null
+          ? (json['commit_count'] as num).toInt()
+          : null,
+      content_base64: json['content_base64'] != null
+          ? json['content_base64'] as String
+          : null,
       footer: json['footer'] != null ? json['footer'] as String : null,
       html_url: json['html_url'] != null ? json['html_url'] as String : null,
-      last_commit: json['last_commit'] != null ? WikiCommit.fromJson(json['last_commit'] as Map<String, dynamic>) : null,
+      last_commit: json['last_commit'] != null
+          ? WikiCommit.fromJson(json['last_commit'] as Map<String, dynamic>)
+          : null,
       sidebar: json['sidebar'] != null ? json['sidebar'] as String : null,
       sub_url: json['sub_url'] != null ? json['sub_url'] as String : null,
       title: json['title'] != null ? json['title'] as String : null,
@@ -44,6 +50,7 @@ class WikiPage {
     if (title != null) map['title'] = title!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -57,7 +64,17 @@ class WikiPage {
           sub_url == other.sub_url &&
           title == other.title;
   @override
-  int get hashCode => Object.hash(commit_count, content_base64, footer, html_url, last_commit, sidebar, sub_url, title);
+  int get hashCode => Object.hash(
+    commit_count,
+    content_base64,
+    footer,
+    html_url,
+    last_commit,
+    sidebar,
+    sub_url,
+    title,
+  );
   @override
-  String toString() => 'WikiPage(commit_count: $commit_count, content_base64: $content_base64, footer: $footer, html_url: $html_url, last_commit: $last_commit, sidebar: $sidebar, sub_url: $sub_url, title: $title)';
+  String toString() =>
+      'WikiPage(commit_count: $commit_count, content_base64: $content_base64, footer: $footer, html_url: $html_url, last_commit: $last_commit, sidebar: $sidebar, sub_url: $sub_url, title: $title)';
 }

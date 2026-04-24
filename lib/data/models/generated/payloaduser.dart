@@ -5,11 +5,7 @@ class PayloadUser {
   final String? email;
   final String? name;
   final String? username;
-  const PayloadUser({
-    this.email,
-    this.name,
-    this.username,
-  });
+  const PayloadUser({this.email, this.name, this.username});
   factory PayloadUser.fromJson(Map<String, dynamic> json) {
     return PayloadUser(
       email: json['email'] != null ? json['email'] as String : null,
@@ -24,6 +20,7 @@ class PayloadUser {
     if (username != null) map['username'] = username!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -34,5 +31,6 @@ class PayloadUser {
   @override
   int get hashCode => Object.hash(email, name, username);
   @override
-  String toString() => 'PayloadUser(email: $email, name: $name, username: $username)';
+  String toString() =>
+      'PayloadUser(email: $email, name: $name, username: $username)';
 }

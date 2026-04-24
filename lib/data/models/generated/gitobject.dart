@@ -5,11 +5,7 @@ class GitObject {
   final String? sha;
   final String? type;
   final String? url;
-  const GitObject({
-    this.sha,
-    this.type,
-    this.url,
-  });
+  const GitObject({this.sha, this.type, this.url});
   factory GitObject.fromJson(Map<String, dynamic> json) {
     return GitObject(
       sha: json['sha'] != null ? json['sha'] as String : null,
@@ -24,6 +20,7 @@ class GitObject {
     if (url != null) map['url'] = url!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

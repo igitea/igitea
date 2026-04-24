@@ -16,11 +16,19 @@ class TopicResponse {
   });
   factory TopicResponse.fromJson(Map<String, dynamic> json) {
     return TopicResponse(
-      created: json['created'] != null ? DateTime.parse(json['created'] as String) : null,
+      created: json['created'] != null
+          ? DateTime.parse(json['created'] as String)
+          : null,
       id: json['id'] != null ? (json['id'] as num).toInt() : null,
-      repo_count: json['repo_count'] != null ? (json['repo_count'] as num).toInt() : null,
-      topic_name: json['topic_name'] != null ? json['topic_name'] as String : null,
-      updated: json['updated'] != null ? DateTime.parse(json['updated'] as String) : null,
+      repo_count: json['repo_count'] != null
+          ? (json['repo_count'] as num).toInt()
+          : null,
+      topic_name: json['topic_name'] != null
+          ? json['topic_name'] as String
+          : null,
+      updated: json['updated'] != null
+          ? DateTime.parse(json['updated'] as String)
+          : null,
     );
   }
   Map<String, dynamic> toJson() {
@@ -32,6 +40,7 @@ class TopicResponse {
     if (updated != null) map['updated'] = updated!.toIso8601String();
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -44,5 +53,6 @@ class TopicResponse {
   @override
   int get hashCode => Object.hash(created, id, repo_count, topic_name, updated);
   @override
-  String toString() => 'TopicResponse(created: $created, id: $id, repo_count: $repo_count, topic_name: $topic_name, updated: $updated)';
+  String toString() =>
+      'TopicResponse(created: $created, id: $id, repo_count: $repo_count, topic_name: $topic_name, updated: $updated)';
 }

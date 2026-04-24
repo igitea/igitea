@@ -18,11 +18,17 @@ class WatchInfo {
   });
   factory WatchInfo.fromJson(Map<String, dynamic> json) {
     return WatchInfo(
-      created_at: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
+      created_at: json['created_at'] != null
+          ? DateTime.parse(json['created_at'] as String)
+          : null,
       ignored: json['ignored'] != null ? json['ignored'] as bool : null,
       reason: json['reason'] != null ? json['reason'] : null,
-      repository_url: json['repository_url'] != null ? json['repository_url'] as String : null,
-      subscribed: json['subscribed'] != null ? json['subscribed'] as bool : null,
+      repository_url: json['repository_url'] != null
+          ? json['repository_url'] as String
+          : null,
+      subscribed: json['subscribed'] != null
+          ? json['subscribed'] as bool
+          : null,
       url: json['url'] != null ? json['url'] as String : null,
     );
   }
@@ -36,6 +42,7 @@ class WatchInfo {
     if (url != null) map['url'] = url!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -47,7 +54,9 @@ class WatchInfo {
           subscribed == other.subscribed &&
           url == other.url;
   @override
-  int get hashCode => Object.hash(created_at, ignored, reason, repository_url, subscribed, url);
+  int get hashCode =>
+      Object.hash(created_at, ignored, reason, repository_url, subscribed, url);
   @override
-  String toString() => 'WatchInfo(created_at: $created_at, ignored: $ignored, reason: $reason, repository_url: $repository_url, subscribed: $subscribed, url: $url)';
+  String toString() =>
+      'WatchInfo(created_at: $created_at, ignored: $ignored, reason: $reason, repository_url: $repository_url, subscribed: $subscribed, url: $url)';
 }

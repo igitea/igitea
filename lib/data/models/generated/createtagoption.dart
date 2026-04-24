@@ -5,11 +5,7 @@ class CreateTagOption {
   final String? message;
   final String? tag_name;
   final String? target;
-  const CreateTagOption({
-    this.message,
-    this.tag_name,
-    this.target,
-  });
+  const CreateTagOption({this.message, this.tag_name, this.target});
   factory CreateTagOption.fromJson(Map<String, dynamic> json) {
     return CreateTagOption(
       message: json['message'] != null ? json['message'] as String : null,
@@ -24,6 +20,7 @@ class CreateTagOption {
     if (target != null) map['target'] = target!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -34,5 +31,6 @@ class CreateTagOption {
   @override
   int get hashCode => Object.hash(message, tag_name, target);
   @override
-  String toString() => 'CreateTagOption(message: $message, tag_name: $tag_name, target: $target)';
+  String toString() =>
+      'CreateTagOption(message: $message, tag_name: $tag_name, target: $target)';
 }

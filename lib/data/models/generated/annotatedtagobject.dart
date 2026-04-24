@@ -5,11 +5,7 @@ class AnnotatedTagObject {
   final String? sha;
   final String? type;
   final String? url;
-  const AnnotatedTagObject({
-    this.sha,
-    this.type,
-    this.url,
-  });
+  const AnnotatedTagObject({this.sha, this.type, this.url});
   factory AnnotatedTagObject.fromJson(Map<String, dynamic> json) {
     return AnnotatedTagObject(
       sha: json['sha'] != null ? json['sha'] as String : null,
@@ -24,6 +20,7 @@ class AnnotatedTagObject {
     if (url != null) map['url'] = url!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

@@ -18,12 +18,22 @@ class RepoCommit {
   });
   factory RepoCommit.fromJson(Map<String, dynamic> json) {
     return RepoCommit(
-      author: json['author'] != null ? CommitUser.fromJson(json['author'] as Map<String, dynamic>) : null,
-      committer: json['committer'] != null ? CommitUser.fromJson(json['committer'] as Map<String, dynamic>) : null,
+      author: json['author'] != null
+          ? CommitUser.fromJson(json['author'] as Map<String, dynamic>)
+          : null,
+      committer: json['committer'] != null
+          ? CommitUser.fromJson(json['committer'] as Map<String, dynamic>)
+          : null,
       message: json['message'] != null ? json['message'] as String : null,
-      tree: json['tree'] != null ? CommitMeta.fromJson(json['tree'] as Map<String, dynamic>) : null,
+      tree: json['tree'] != null
+          ? CommitMeta.fromJson(json['tree'] as Map<String, dynamic>)
+          : null,
       url: json['url'] != null ? json['url'] as String : null,
-      verification: json['verification'] != null ? PayloadCommitVerification.fromJson(json['verification'] as Map<String, dynamic>) : null,
+      verification: json['verification'] != null
+          ? PayloadCommitVerification.fromJson(
+              json['verification'] as Map<String, dynamic>,
+            )
+          : null,
     );
   }
   Map<String, dynamic> toJson() {
@@ -36,6 +46,7 @@ class RepoCommit {
     if (verification != null) map['verification'] = verification!.toJson();
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -47,7 +58,9 @@ class RepoCommit {
           url == other.url &&
           verification == other.verification;
   @override
-  int get hashCode => Object.hash(author, committer, message, tree, url, verification);
+  int get hashCode =>
+      Object.hash(author, committer, message, tree, url, verification);
   @override
-  String toString() => 'RepoCommit(author: $author, committer: $committer, message: $message, tree: $tree, url: $url, verification: $verification)';
+  String toString() =>
+      'RepoCommit(author: $author, committer: $committer, message: $message, tree: $tree, url: $url, verification: $verification)';
 }

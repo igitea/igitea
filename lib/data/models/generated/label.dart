@@ -21,10 +21,14 @@ class Label {
   factory Label.fromJson(Map<String, dynamic> json) {
     return Label(
       color: json['color'] != null ? json['color'] as String : null,
-      description: json['description'] != null ? json['description'] as String : null,
+      description: json['description'] != null
+          ? json['description'] as String
+          : null,
       exclusive: json['exclusive'] != null ? json['exclusive'] as bool : null,
       id: json['id'] != null ? (json['id'] as num).toInt() : null,
-      is_archived: json['is_archived'] != null ? json['is_archived'] as bool : null,
+      is_archived: json['is_archived'] != null
+          ? json['is_archived'] as bool
+          : null,
       name: json['name'] != null ? json['name'] as String : null,
       url: json['url'] != null ? json['url'] as String : null,
     );
@@ -40,6 +44,7 @@ class Label {
     if (url != null) map['url'] = url!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -52,7 +57,9 @@ class Label {
           name == other.name &&
           url == other.url;
   @override
-  int get hashCode => Object.hash(color, description, exclusive, id, is_archived, name, url);
+  int get hashCode =>
+      Object.hash(color, description, exclusive, id, is_archived, name, url);
   @override
-  String toString() => 'Label(color: $color, description: $description, exclusive: $exclusive, id: $id, is_archived: $is_archived, name: $name, url: $url)';
+  String toString() =>
+      'Label(color: $color, description: $description, exclusive: $exclusive, id: $id, is_archived: $is_archived, name: $name, url: $url)';
 }

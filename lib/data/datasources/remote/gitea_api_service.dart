@@ -17,25 +17,31 @@ class GiteaApiService {
 
   Future<GeneralAPISettings> getGeneralAPISettings() async {
     final response = await _client.get('/settings/api');
-    return GeneralAPISettings.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    return GeneralAPISettings.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
   }
 
   Future<GeneralAttachmentSettings> getGeneralAttachmentSettings() async {
     final response = await _client.get('/settings/attachment');
-    return GeneralAttachmentSettings.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    return GeneralAttachmentSettings.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
   }
 
   Future<GeneralRepoSettings> getGeneralRepositorySettings() async {
     final response = await _client.get('/settings/repository');
-    return GeneralRepoSettings.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    return GeneralRepoSettings.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
   }
 
   Future<GeneralUISettings> getGeneralUISettings() async {
     final response = await _client.get('/settings/ui');
-    return GeneralUISettings.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    return GeneralUISettings.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
   }
-
-
 
   // User
 
@@ -44,10 +50,10 @@ class GiteaApiService {
     return User.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
   }
 
-  Future<User> userGet({
-    required String username,
-  }) async {
-    final response = await _client.get('/users/${Uri.encodeComponent(username)}');
+  Future<User> userGet({required String username}) async {
+    final response = await _client.get(
+      '/users/${Uri.encodeComponent(username)}',
+    );
     return User.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
   }
 
@@ -59,9 +65,14 @@ class GiteaApiService {
     final query = <String, String>{};
     if (page != null) query['page'] = page.toString();
     if (limit != null) query['limit'] = limit.toString();
-    final response = await _client.get('/users/${Uri.encodeComponent(username)}/repos', queryParameters: query);
+    final response = await _client.get(
+      '/users/${Uri.encodeComponent(username)}/repos',
+      queryParameters: query,
+    );
     final list = jsonDecode(response.body) as List<dynamic>;
-    return list.map((e) => Repository.fromJson(e as Map<String, dynamic>)).toList();
+    return list
+        .map((e) => Repository.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   Future<List<User>> userListFollowers({
@@ -72,7 +83,10 @@ class GiteaApiService {
     final query = <String, String>{};
     if (page != null) query['page'] = page.toString();
     if (limit != null) query['limit'] = limit.toString();
-    final response = await _client.get('/users/${Uri.encodeComponent(username)}/followers', queryParameters: query);
+    final response = await _client.get(
+      '/users/${Uri.encodeComponent(username)}/followers',
+      queryParameters: query,
+    );
     final list = jsonDecode(response.body) as List<dynamic>;
     return list.map((e) => User.fromJson(e as Map<String, dynamic>)).toList();
   }
@@ -85,29 +99,36 @@ class GiteaApiService {
     final query = <String, String>{};
     if (page != null) query['page'] = page.toString();
     if (limit != null) query['limit'] = limit.toString();
-    final response = await _client.get('/users/${Uri.encodeComponent(username)}/following', queryParameters: query);
+    final response = await _client.get(
+      '/users/${Uri.encodeComponent(username)}/following',
+      queryParameters: query,
+    );
     final list = jsonDecode(response.body) as List<dynamic>;
     return list.map((e) => User.fromJson(e as Map<String, dynamic>)).toList();
   }
 
-  Future<List<Repository>> userCurrentListRepos({
-    int? page,
-    int? limit,
-  }) async {
+  Future<List<Repository>> userCurrentListRepos({int? page, int? limit}) async {
     final query = <String, String>{};
     if (page != null) query['page'] = page.toString();
     if (limit != null) query['limit'] = limit.toString();
     final response = await _client.get('/user/repos', queryParameters: query);
     final list = jsonDecode(response.body) as List<dynamic>;
-    return list.map((e) => Repository.fromJson(e as Map<String, dynamic>)).toList();
+    return list
+        .map((e) => Repository.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   Future<AccessToken> userCreateToken({
     required String username,
     Map<String, dynamic>? body,
   }) async {
-    final response = await _client.post('/users/${Uri.encodeComponent(username)}/tokens', body: body);
-    return AccessToken.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    final response = await _client.post(
+      '/users/${Uri.encodeComponent(username)}/tokens',
+      body: body,
+    );
+    return AccessToken.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
   }
 
   Future<List<Email>> userListEmails() async {
@@ -116,17 +137,13 @@ class GiteaApiService {
     return list.map((e) => Email.fromJson(e as Map<String, dynamic>)).toList();
   }
 
-  Future<List<Email>> userAddEmail({
-    Map<String, dynamic>? body,
-  }) async {
+  Future<List<Email>> userAddEmail({Map<String, dynamic>? body}) async {
     final response = await _client.post('/user/emails', body: body);
     final list = jsonDecode(response.body) as List<dynamic>;
     return list.map((e) => Email.fromJson(e as Map<String, dynamic>)).toList();
   }
 
-  Future<void> userDeleteEmail({
-    Map<String, dynamic>? body,
-  }) async {
+  Future<void> userDeleteEmail({Map<String, dynamic>? body}) async {
     await _client.delete('/user/emails', body: body);
   }
 
@@ -140,9 +157,14 @@ class GiteaApiService {
     if (fingerprint != null) query['fingerprint'] = fingerprint;
     if (page != null) query['page'] = page.toString();
     if (limit != null) query['limit'] = limit.toString();
-    final response = await _client.get('/users/${Uri.encodeComponent(username)}/keys', queryParameters: query);
+    final response = await _client.get(
+      '/users/${Uri.encodeComponent(username)}/keys',
+      queryParameters: query,
+    );
     final list = jsonDecode(response.body) as List<dynamic>;
-    return list.map((e) => PublicKey.fromJson(e as Map<String, dynamic>)).toList();
+    return list
+        .map((e) => PublicKey.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   Future<List<PublicKey>> userCurrentListKeys({
@@ -156,23 +178,21 @@ class GiteaApiService {
     if (limit != null) query['limit'] = limit.toString();
     final response = await _client.get('/user/keys', queryParameters: query);
     final list = jsonDecode(response.body) as List<dynamic>;
-    return list.map((e) => PublicKey.fromJson(e as Map<String, dynamic>)).toList();
+    return list
+        .map((e) => PublicKey.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
-  Future<PublicKey> userCurrentPostKey({
-    Map<String, dynamic>? body,
-  }) async {
+  Future<PublicKey> userCurrentPostKey({Map<String, dynamic>? body}) async {
     final response = await _client.post('/user/keys', body: body);
-    return PublicKey.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    return PublicKey.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
   }
 
-  Future<void> userCurrentDeleteKey({
-    required int id,
-  }) async {
+  Future<void> userCurrentDeleteKey({required int id}) async {
     await _client.delete('/user/keys/${id.toString()}');
   }
-
-
 
   // Repository
 
@@ -180,15 +200,18 @@ class GiteaApiService {
     required String owner,
     required String repo,
   }) async {
-    final response = await _client.get('/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}');
-    return Repository.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}',
+    );
+    return Repository.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
   }
 
-  Future<void> repoDelete({
-    required String owner,
-    required String repo,
-  }) async {
-    await _client.delete('/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}');
+  Future<void> repoDelete({required String owner, required String repo}) async {
+    await _client.delete(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}',
+    );
   }
 
   Future<Repository> repoEdit({
@@ -196,15 +219,20 @@ class GiteaApiService {
     required String repo,
     Map<String, dynamic>? body,
   }) async {
-    final response = await _client.patch('/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}', body: body);
-    return Repository.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    final response = await _client.patch(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}',
+      body: body,
+    );
+    return Repository.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
   }
 
-  Future<Repository> repoMigrate({
-    Map<String, dynamic>? body,
-  }) async {
+  Future<Repository> repoMigrate({Map<String, dynamic>? body}) async {
     final response = await _client.post('/repos/migrate', body: body);
-    return Repository.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    return Repository.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
   }
 
   Future<List<Commit>> repoGetAllCommits({
@@ -232,7 +260,10 @@ class GiteaApiService {
     if (page != null) query['page'] = page.toString();
     if (limit != null) query['limit'] = limit.toString();
     if (not != null) query['not'] = not;
-    final response = await _client.get('/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/commits', queryParameters: query);
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/commits',
+      queryParameters: query,
+    );
     final list = jsonDecode(response.body) as List<dynamic>;
     return list.map((e) => Commit.fromJson(e as Map<String, dynamic>)).toList();
   }
@@ -249,7 +280,10 @@ class GiteaApiService {
     if (stat != null) query['stat'] = stat.toString();
     if (verification != null) query['verification'] = verification.toString();
     if (files != null) query['files'] = files.toString();
-    final response = await _client.get('/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/git/commits/${Uri.encodeComponent(sha)}', queryParameters: query);
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/git/commits/${Uri.encodeComponent(sha)}',
+      queryParameters: query,
+    );
     return Commit.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
   }
 
@@ -262,7 +296,10 @@ class GiteaApiService {
     final query = <String, String>{};
     if (page != null) query['page'] = page.toString();
     if (limit != null) query['limit'] = limit.toString();
-    final response = await _client.get('/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/branches', queryParameters: query);
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/branches',
+      queryParameters: query,
+    );
     final list = jsonDecode(response.body) as List<dynamic>;
     return list.map((e) => Branch.fromJson(e as Map<String, dynamic>)).toList();
   }
@@ -272,7 +309,9 @@ class GiteaApiService {
     required String repo,
     required String branch,
   }) async {
-    final response = await _client.get('/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/branches/${Uri.encodeComponent(branch)}');
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/branches/${Uri.encodeComponent(branch)}',
+    );
     return Branch.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
   }
 
@@ -285,7 +324,10 @@ class GiteaApiService {
     final query = <String, String>{};
     if (page != null) query['page'] = page.toString();
     if (limit != null) query['limit'] = limit.toString();
-    final response = await _client.get('/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/tags', queryParameters: query);
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/tags',
+      queryParameters: query,
+    );
     final list = jsonDecode(response.body) as List<dynamic>;
     return list.map((e) => Tag.fromJson(e as Map<String, dynamic>)).toList();
   }
@@ -303,9 +345,14 @@ class GiteaApiService {
     if (pre_release != null) query['pre-release'] = pre_release.toString();
     if (page != null) query['page'] = page.toString();
     if (limit != null) query['limit'] = limit.toString();
-    final response = await _client.get('/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/releases', queryParameters: query);
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/releases',
+      queryParameters: query,
+    );
     final list = jsonDecode(response.body) as List<dynamic>;
-    return list.map((e) => Release.fromJson(e as Map<String, dynamic>)).toList();
+    return list
+        .map((e) => Release.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   Future<Release> repoGetRelease({
@@ -313,7 +360,9 @@ class GiteaApiService {
     required String repo,
     required int id,
   }) async {
-    final response = await _client.get('/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/releases/${id.toString()}');
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/releases/${id.toString()}',
+    );
     return Release.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
   }
 
@@ -326,7 +375,10 @@ class GiteaApiService {
     final query = <String, String>{};
     if (page != null) query['page'] = page.toString();
     if (limit != null) query['limit'] = limit.toString();
-    final response = await _client.get('/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/collaborators', queryParameters: query);
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/collaborators',
+      queryParameters: query,
+    );
     final list = jsonDecode(response.body) as List<dynamic>;
     return list.map((e) => User.fromJson(e as Map<String, dynamic>)).toList();
   }
@@ -337,7 +389,10 @@ class GiteaApiService {
     required String collaborator,
     Map<String, dynamic>? body,
   }) async {
-    await _client.put('/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/collaborators/${Uri.encodeComponent(collaborator)}', body: body);
+    await _client.put(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/collaborators/${Uri.encodeComponent(collaborator)}',
+      body: body,
+    );
   }
 
   Future<void> repoDeleteCollaborator({
@@ -345,7 +400,9 @@ class GiteaApiService {
     required String repo,
     required String collaborator,
   }) async {
-    await _client.delete('/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/collaborators/${Uri.encodeComponent(collaborator)}');
+    await _client.delete(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/collaborators/${Uri.encodeComponent(collaborator)}',
+    );
   }
 
   Future<List<Hook>> repoListHooks({
@@ -357,7 +414,10 @@ class GiteaApiService {
     final query = <String, String>{};
     if (page != null) query['page'] = page.toString();
     if (limit != null) query['limit'] = limit.toString();
-    final response = await _client.get('/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/hooks', queryParameters: query);
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/hooks',
+      queryParameters: query,
+    );
     final list = jsonDecode(response.body) as List<dynamic>;
     return list.map((e) => Hook.fromJson(e as Map<String, dynamic>)).toList();
   }
@@ -367,7 +427,10 @@ class GiteaApiService {
     required String repo,
     Map<String, dynamic>? body,
   }) async {
-    final response = await _client.post('/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/hooks', body: body);
+    final response = await _client.post(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/hooks',
+      body: body,
+    );
     return Hook.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
   }
 
@@ -376,7 +439,9 @@ class GiteaApiService {
     required String repo,
     required int id,
   }) async {
-    await _client.delete('/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/hooks/${id.toString()}');
+    await _client.delete(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/hooks/${id.toString()}',
+    );
   }
 
   Future<SearchResults> repoSearch({
@@ -403,7 +468,8 @@ class GiteaApiService {
     if (topic != null) query['topic'] = topic.toString();
     if (includeDesc != null) query['includeDesc'] = includeDesc.toString();
     if (uid != null) query['uid'] = uid.toString();
-    if (priority_owner_id != null) query['priority_owner_id'] = priority_owner_id.toString();
+    if (priority_owner_id != null)
+      query['priority_owner_id'] = priority_owner_id.toString();
     if (team_id != null) query['team_id'] = team_id.toString();
     if (starredBy != null) query['starredBy'] = starredBy.toString();
     if (private != null) query['private'] = private.toString();
@@ -417,10 +483,10 @@ class GiteaApiService {
     if (page != null) query['page'] = page.toString();
     if (limit != null) query['limit'] = limit.toString();
     final response = await _client.get('/repos/search', queryParameters: query);
-    return SearchResults.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    return SearchResults.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
   }
-
-
 
   // Issue
 
@@ -453,7 +519,10 @@ class GiteaApiService {
     if (mentioned_by != null) query['mentioned_by'] = mentioned_by;
     if (page != null) query['page'] = page.toString();
     if (limit != null) query['limit'] = limit.toString();
-    final response = await _client.get('/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues', queryParameters: query);
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues',
+      queryParameters: query,
+    );
     final list = jsonDecode(response.body) as List<dynamic>;
     return list.map((e) => Issue.fromJson(e as Map<String, dynamic>)).toList();
   }
@@ -463,7 +532,9 @@ class GiteaApiService {
     required String repo,
     required int index,
   }) async {
-    final response = await _client.get('/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues/${index.toString()}');
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues/${index.toString()}',
+    );
     return Issue.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
   }
 
@@ -472,7 +543,10 @@ class GiteaApiService {
     required String repo,
     Map<String, dynamic>? body,
   }) async {
-    final response = await _client.post('/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues', body: body);
+    final response = await _client.post(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues',
+      body: body,
+    );
     return Issue.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
   }
 
@@ -482,7 +556,10 @@ class GiteaApiService {
     required int index,
     Map<String, dynamic>? body,
   }) async {
-    final response = await _client.patch('/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues/${index.toString()}', body: body);
+    final response = await _client.patch(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues/${index.toString()}',
+      body: body,
+    );
     return Issue.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
   }
 
@@ -491,7 +568,9 @@ class GiteaApiService {
     required String repo,
     required int index,
   }) async {
-    await _client.delete('/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues/${index.toString()}');
+    await _client.delete(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues/${index.toString()}',
+    );
   }
 
   Future<List<Comment>> issueGetComments({
@@ -504,9 +583,14 @@ class GiteaApiService {
     final query = <String, String>{};
     if (since != null) query['since'] = since.toIso8601String();
     if (before != null) query['before'] = before.toIso8601String();
-    final response = await _client.get('/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues/${index.toString()}/comments', queryParameters: query);
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues/${index.toString()}/comments',
+      queryParameters: query,
+    );
     final list = jsonDecode(response.body) as List<dynamic>;
-    return list.map((e) => Comment.fromJson(e as Map<String, dynamic>)).toList();
+    return list
+        .map((e) => Comment.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   Future<Comment> issueCreateComment({
@@ -515,7 +599,10 @@ class GiteaApiService {
     required int index,
     Map<String, dynamic>? body,
   }) async {
-    final response = await _client.post('/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues/${index.toString()}/comments', body: body);
+    final response = await _client.post(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues/${index.toString()}/comments',
+      body: body,
+    );
     return Comment.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
   }
 
@@ -525,7 +612,10 @@ class GiteaApiService {
     required int id,
     Map<String, dynamic>? body,
   }) async {
-    final response = await _client.patch('/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues/comments/${id.toString()}', body: body);
+    final response = await _client.patch(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues/comments/${id.toString()}',
+      body: body,
+    );
     return Comment.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
   }
 
@@ -534,7 +624,9 @@ class GiteaApiService {
     required String repo,
     required int id,
   }) async {
-    await _client.delete('/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues/comments/${id.toString()}');
+    await _client.delete(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues/comments/${id.toString()}',
+    );
   }
 
   Future<List<Label>> issueListLabels({
@@ -546,7 +638,10 @@ class GiteaApiService {
     final query = <String, String>{};
     if (page != null) query['page'] = page.toString();
     if (limit != null) query['limit'] = limit.toString();
-    final response = await _client.get('/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/labels', queryParameters: query);
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/labels',
+      queryParameters: query,
+    );
     final list = jsonDecode(response.body) as List<dynamic>;
     return list.map((e) => Label.fromJson(e as Map<String, dynamic>)).toList();
   }
@@ -556,7 +651,10 @@ class GiteaApiService {
     required String repo,
     Map<String, dynamic>? body,
   }) async {
-    final response = await _client.post('/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/labels', body: body);
+    final response = await _client.post(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/labels',
+      body: body,
+    );
     return Label.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
   }
 
@@ -565,7 +663,9 @@ class GiteaApiService {
     required String repo,
     required int id,
   }) async {
-    final response = await _client.get('/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/labels/${id.toString()}');
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/labels/${id.toString()}',
+    );
     return Label.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
   }
 
@@ -575,7 +675,10 @@ class GiteaApiService {
     required int id,
     Map<String, dynamic>? body,
   }) async {
-    final response = await _client.patch('/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/labels/${id.toString()}', body: body);
+    final response = await _client.patch(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/labels/${id.toString()}',
+      body: body,
+    );
     return Label.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
   }
 
@@ -584,7 +687,9 @@ class GiteaApiService {
     required String repo,
     required int id,
   }) async {
-    await _client.delete('/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/labels/${id.toString()}');
+    await _client.delete(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/labels/${id.toString()}',
+    );
   }
 
   Future<List<Milestone>> issueGetMilestonesList({
@@ -600,9 +705,14 @@ class GiteaApiService {
     if (name != null) query['name'] = name;
     if (page != null) query['page'] = page.toString();
     if (limit != null) query['limit'] = limit.toString();
-    final response = await _client.get('/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/milestones', queryParameters: query);
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/milestones',
+      queryParameters: query,
+    );
     final list = jsonDecode(response.body) as List<dynamic>;
-    return list.map((e) => Milestone.fromJson(e as Map<String, dynamic>)).toList();
+    return list
+        .map((e) => Milestone.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   Future<Milestone> issueGetMilestone({
@@ -610,8 +720,12 @@ class GiteaApiService {
     required String repo,
     required String id,
   }) async {
-    final response = await _client.get('/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/milestones/${Uri.encodeComponent(id)}');
-    return Milestone.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/milestones/${Uri.encodeComponent(id)}',
+    );
+    return Milestone.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
   }
 
   Future<Milestone> issueCreateMilestone({
@@ -619,8 +733,13 @@ class GiteaApiService {
     required String repo,
     Map<String, dynamic>? body,
   }) async {
-    final response = await _client.post('/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/milestones', body: body);
-    return Milestone.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    final response = await _client.post(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/milestones',
+      body: body,
+    );
+    return Milestone.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
   }
 
   Future<Milestone> issueEditMilestone({
@@ -629,8 +748,13 @@ class GiteaApiService {
     required String id,
     Map<String, dynamic>? body,
   }) async {
-    final response = await _client.patch('/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/milestones/${Uri.encodeComponent(id)}', body: body);
-    return Milestone.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    final response = await _client.patch(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/milestones/${Uri.encodeComponent(id)}',
+      body: body,
+    );
+    return Milestone.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
   }
 
   Future<void> issueDeleteMilestone({
@@ -638,18 +762,18 @@ class GiteaApiService {
     required String repo,
     required String id,
   }) async {
-    await _client.delete('/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/milestones/${Uri.encodeComponent(id)}');
+    await _client.delete(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/milestones/${Uri.encodeComponent(id)}',
+    );
   }
-
-
 
   // Organization
 
-  Future<Organization> orgGet({
-    required String org,
-  }) async {
+  Future<Organization> orgGet({required String org}) async {
     final response = await _client.get('/orgs/${Uri.encodeComponent(org)}');
-    return Organization.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    return Organization.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
   }
 
   Future<List<Organization>> orgListCurrentUserOrgs({
@@ -661,7 +785,9 @@ class GiteaApiService {
     if (limit != null) query['limit'] = limit.toString();
     final response = await _client.get('/user/orgs', queryParameters: query);
     final list = jsonDecode(response.body) as List<dynamic>;
-    return list.map((e) => Organization.fromJson(e as Map<String, dynamic>)).toList();
+    return list
+        .map((e) => Organization.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   Future<List<Organization>> orgListUserOrgs({
@@ -672,29 +798,37 @@ class GiteaApiService {
     final query = <String, String>{};
     if (page != null) query['page'] = page.toString();
     if (limit != null) query['limit'] = limit.toString();
-    final response = await _client.get('/users/${Uri.encodeComponent(username)}/orgs', queryParameters: query);
+    final response = await _client.get(
+      '/users/${Uri.encodeComponent(username)}/orgs',
+      queryParameters: query,
+    );
     final list = jsonDecode(response.body) as List<dynamic>;
-    return list.map((e) => Organization.fromJson(e as Map<String, dynamic>)).toList();
+    return list
+        .map((e) => Organization.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
-  Future<Organization> orgCreate({
-    Map<String, dynamic>? body,
-  }) async {
+  Future<Organization> orgCreate({Map<String, dynamic>? body}) async {
     final response = await _client.post('/orgs', body: body);
-    return Organization.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    return Organization.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
   }
 
   Future<Organization> orgEdit({
     required String org,
     Map<String, dynamic>? body,
   }) async {
-    final response = await _client.patch('/orgs/${Uri.encodeComponent(org)}', body: body);
-    return Organization.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    final response = await _client.patch(
+      '/orgs/${Uri.encodeComponent(org)}',
+      body: body,
+    );
+    return Organization.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
   }
 
-  Future<void> orgDelete({
-    required String org,
-  }) async {
+  Future<void> orgDelete({required String org}) async {
     await _client.delete('/orgs/${Uri.encodeComponent(org)}');
   }
 
@@ -706,9 +840,14 @@ class GiteaApiService {
     final query = <String, String>{};
     if (page != null) query['page'] = page.toString();
     if (limit != null) query['limit'] = limit.toString();
-    final response = await _client.get('/orgs/${Uri.encodeComponent(org)}/repos', queryParameters: query);
+    final response = await _client.get(
+      '/orgs/${Uri.encodeComponent(org)}/repos',
+      queryParameters: query,
+    );
     final list = jsonDecode(response.body) as List<dynamic>;
-    return list.map((e) => Repository.fromJson(e as Map<String, dynamic>)).toList();
+    return list
+        .map((e) => Repository.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   Future<List<Team>> orgListTeams({
@@ -719,14 +858,15 @@ class GiteaApiService {
     final query = <String, String>{};
     if (page != null) query['page'] = page.toString();
     if (limit != null) query['limit'] = limit.toString();
-    final response = await _client.get('/orgs/${Uri.encodeComponent(org)}/teams', queryParameters: query);
+    final response = await _client.get(
+      '/orgs/${Uri.encodeComponent(org)}/teams',
+      queryParameters: query,
+    );
     final list = jsonDecode(response.body) as List<dynamic>;
     return list.map((e) => Team.fromJson(e as Map<String, dynamic>)).toList();
   }
 
-  Future<Team> orgGetTeam({
-    required int id,
-  }) async {
+  Future<Team> orgGetTeam({required int id}) async {
     final response = await _client.get('/teams/${id.toString()}');
     return Team.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
   }
@@ -739,7 +879,10 @@ class GiteaApiService {
     final query = <String, String>{};
     if (page != null) query['page'] = page.toString();
     if (limit != null) query['limit'] = limit.toString();
-    final response = await _client.get('/teams/${id.toString()}/members', queryParameters: query);
+    final response = await _client.get(
+      '/teams/${id.toString()}/members',
+      queryParameters: query,
+    );
     final list = jsonDecode(response.body) as List<dynamic>;
     return list.map((e) => User.fromJson(e as Map<String, dynamic>)).toList();
   }
@@ -752,12 +895,15 @@ class GiteaApiService {
     final query = <String, String>{};
     if (page != null) query['page'] = page.toString();
     if (limit != null) query['limit'] = limit.toString();
-    final response = await _client.get('/teams/${id.toString()}/repos', queryParameters: query);
+    final response = await _client.get(
+      '/teams/${id.toString()}/repos',
+      queryParameters: query,
+    );
     final list = jsonDecode(response.body) as List<dynamic>;
-    return list.map((e) => Repository.fromJson(e as Map<String, dynamic>)).toList();
+    return list
+        .map((e) => Repository.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
-
-
 
   // Notification
 
@@ -778,9 +924,14 @@ class GiteaApiService {
     if (before != null) query['before'] = before.toIso8601String();
     if (page != null) query['page'] = page.toString();
     if (limit != null) query['limit'] = limit.toString();
-    final response = await _client.get('/notifications', queryParameters: query);
+    final response = await _client.get(
+      '/notifications',
+      queryParameters: query,
+    );
     final list = jsonDecode(response.body) as List<dynamic>;
-    return list.map((e) => NotificationThread.fromJson(e as Map<String, dynamic>)).toList();
+    return list
+        .map((e) => NotificationThread.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   Future<List<NotificationThread>> notifyGetRepoList({
@@ -802,9 +953,14 @@ class GiteaApiService {
     if (before != null) query['before'] = before.toIso8601String();
     if (page != null) query['page'] = page.toString();
     if (limit != null) query['limit'] = limit.toString();
-    final response = await _client.get('/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/notifications', queryParameters: query);
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/notifications',
+      queryParameters: query,
+    );
     final list = jsonDecode(response.body) as List<dynamic>;
-    return list.map((e) => NotificationThread.fromJson(e as Map<String, dynamic>)).toList();
+    return list
+        .map((e) => NotificationThread.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   Future<void> notifyReadList({
@@ -814,7 +970,8 @@ class GiteaApiService {
     String? to_status,
   }) async {
     final query = <String, String>{};
-    if (last_read_at != null) query['last_read_at'] = last_read_at.toIso8601String();
+    if (last_read_at != null)
+      query['last_read_at'] = last_read_at.toIso8601String();
     if (all != null) query['all'] = all;
     if (status_types != null) query['status-types'] = status_types.join(',');
     if (to_status != null) query['to-status'] = to_status;
@@ -823,19 +980,19 @@ class GiteaApiService {
 
   Future<NotificationCount> notifyNewAvailable() async {
     final response = await _client.get('/notifications/new');
-    return NotificationCount.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    return NotificationCount.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
   }
 
-  Future<void> notifyReadThread({
-    required String id,
-    String? to_status,
-  }) async {
+  Future<void> notifyReadThread({required String id, String? to_status}) async {
     final query = <String, String>{};
     if (to_status != null) query['to-status'] = to_status;
-    await _client.patch('/notifications/threads/${Uri.encodeComponent(id)}', queryParameters: query);
+    await _client.patch(
+      '/notifications/threads/${Uri.encodeComponent(id)}',
+      queryParameters: query,
+    );
   }
-
-
 
   // Package
 
@@ -851,9 +1008,14 @@ class GiteaApiService {
     if (limit != null) query['limit'] = limit.toString();
     if (type != null) query['type'] = type;
     if (q != null) query['q'] = q;
-    final response = await _client.get('/packages/${Uri.encodeComponent(owner)}', queryParameters: query);
+    final response = await _client.get(
+      '/packages/${Uri.encodeComponent(owner)}',
+      queryParameters: query,
+    );
     final list = jsonDecode(response.body) as List<dynamic>;
-    return list.map((e) => Package.fromJson(e as Map<String, dynamic>)).toList();
+    return list
+        .map((e) => Package.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   Future<Package> getPackage({
@@ -862,7 +1024,9 @@ class GiteaApiService {
     required String name,
     required String version,
   }) async {
-    final response = await _client.get('/packages/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(type)}/${Uri.encodeComponent(name)}/${Uri.encodeComponent(version)}');
+    final response = await _client.get(
+      '/packages/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(type)}/${Uri.encodeComponent(name)}/${Uri.encodeComponent(version)}',
+    );
     return Package.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
   }
 
@@ -872,9 +1036,13 @@ class GiteaApiService {
     required String name,
     required String version,
   }) async {
-    final response = await _client.get('/packages/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(type)}/${Uri.encodeComponent(name)}/${Uri.encodeComponent(version)}/files');
+    final response = await _client.get(
+      '/packages/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(type)}/${Uri.encodeComponent(name)}/${Uri.encodeComponent(version)}/files',
+    );
     final list = jsonDecode(response.body) as List<dynamic>;
-    return list.map((e) => PackageFile.fromJson(e as Map<String, dynamic>)).toList();
+    return list
+        .map((e) => PackageFile.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   Future<void> deletePackage({
@@ -883,10 +1051,10 @@ class GiteaApiService {
     required String name,
     required String version,
   }) async {
-    await _client.delete('/packages/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(type)}/${Uri.encodeComponent(name)}/${Uri.encodeComponent(version)}');
+    await _client.delete(
+      '/packages/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(type)}/${Uri.encodeComponent(name)}/${Uri.encodeComponent(version)}',
+    );
   }
-
-
 
   // Admin
 
@@ -906,46 +1074,43 @@ class GiteaApiService {
     return list.map((e) => User.fromJson(e as Map<String, dynamic>)).toList();
   }
 
-  Future<User> adminCreateUser({
-    Map<String, dynamic>? body,
-  }) async {
+  Future<User> adminCreateUser({Map<String, dynamic>? body}) async {
     final response = await _client.post('/admin/users', body: body);
     return User.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
   }
 
-  Future<void> adminDeleteUser({
-    required String username,
-    bool? purge,
-  }) async {
+  Future<void> adminDeleteUser({required String username, bool? purge}) async {
     final query = <String, String>{};
     if (purge != null) query['purge'] = purge.toString();
-    await _client.delete('/admin/users/${Uri.encodeComponent(username)}', queryParameters: query);
+    await _client.delete(
+      '/admin/users/${Uri.encodeComponent(username)}',
+      queryParameters: query,
+    );
   }
 
   Future<User> adminEditUser({
     required String username,
     Map<String, dynamic>? body,
   }) async {
-    final response = await _client.patch('/admin/users/${Uri.encodeComponent(username)}', body: body);
+    final response = await _client.patch(
+      '/admin/users/${Uri.encodeComponent(username)}',
+      body: body,
+    );
     return User.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
   }
 
-  Future<List<Organization>> adminGetAllOrgs({
-    int? page,
-    int? limit,
-  }) async {
+  Future<List<Organization>> adminGetAllOrgs({int? page, int? limit}) async {
     final query = <String, String>{};
     if (page != null) query['page'] = page.toString();
     if (limit != null) query['limit'] = limit.toString();
     final response = await _client.get('/admin/orgs', queryParameters: query);
     final list = jsonDecode(response.body) as List<dynamic>;
-    return list.map((e) => Organization.fromJson(e as Map<String, dynamic>)).toList();
+    return list
+        .map((e) => Organization.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
-  Future<List<Cron>> adminCronList({
-    int? page,
-    int? limit,
-  }) async {
+  Future<List<Cron>> adminCronList({int? page, int? limit}) async {
     final query = <String, String>{};
     if (page != null) query['page'] = page.toString();
     if (limit != null) query['limit'] = limit.toString();
@@ -954,9 +1119,7 @@ class GiteaApiService {
     return list.map((e) => Cron.fromJson(e as Map<String, dynamic>)).toList();
   }
 
-  Future<void> adminCronRun({
-    required String task,
-  }) async {
+  Future<void> adminCronRun({required String task}) async {
     await _client.post('/admin/cron/${Uri.encodeComponent(task)}');
   }
 
@@ -974,27 +1137,19 @@ class GiteaApiService {
     return list.map((e) => Hook.fromJson(e as Map<String, dynamic>)).toList();
   }
 
-  Future<Hook> adminGetHook({
-    required int id,
-  }) async {
+  Future<Hook> adminGetHook({required int id}) async {
     final response = await _client.get('/admin/hooks/${id.toString()}');
     return Hook.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
   }
 
-  Future<Hook> adminCreateHook({
-    Map<String, dynamic>? body,
-  }) async {
+  Future<Hook> adminCreateHook({Map<String, dynamic>? body}) async {
     final response = await _client.post('/admin/hooks', body: body);
     return Hook.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
   }
 
-  Future<void> adminDeleteHook({
-    required int id,
-  }) async {
+  Future<void> adminDeleteHook({required int id}) async {
     await _client.delete('/admin/hooks/${id.toString()}');
   }
-
-
 
   // Miscellaneous
 
@@ -1007,20 +1162,20 @@ class GiteaApiService {
   Future<GitignoreTemplateInfo> getGitignoreTemplateInfo({
     required String name,
   }) async {
-    final response = await _client.get('/gitignore/templates/${Uri.encodeComponent(name)}');
-    return GitignoreTemplateInfo.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+    final response = await _client.get(
+      '/gitignore/templates/${Uri.encodeComponent(name)}',
+    );
+    return GitignoreTemplateInfo.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
   }
 
-  Future<String> renderMarkdown({
-    Map<String, dynamic>? body,
-  }) async {
+  Future<String> renderMarkdown({Map<String, dynamic>? body}) async {
     final response = await _client.post('/markdown', body: body);
     return response.body;
   }
 
-  Future<String> renderMarkdownRaw({
-    Map<String, dynamic>? body,
-  }) async {
+  Future<String> renderMarkdownRaw({Map<String, dynamic>? body}) async {
     final response = await _client.post('/markdown/raw', body: body);
     return response.body;
   }
@@ -1030,20 +1185,18 @@ class GiteaApiService {
     return NodeInfo.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
   }
 
-
-
   // Activitypub
 
-  Future<ActivityPub> activitypubPerson({
-    required int user_id,
-  }) async {
-    final response = await _client.get('/activitypub/user-id/${user_id.toString()}');
-    return ActivityPub.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+  Future<ActivityPub> activitypubPerson({required int user_id}) async {
+    final response = await _client.get(
+      '/activitypub/user-id/${user_id.toString()}',
+    );
+    return ActivityPub.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
   }
 
-  Future<void> activitypubPersonInbox({
-    required int user_id,
-  }) async {
+  Future<void> activitypubPersonInbox({required int user_id}) async {
     await _client.post('/activitypub/user-id/${user_id.toString()}/inbox');
   }
 }

@@ -15,8 +15,12 @@ class CreatePullReviewComment {
   factory CreatePullReviewComment.fromJson(Map<String, dynamic> json) {
     return CreatePullReviewComment(
       body: json['body'] != null ? json['body'] as String : null,
-      new_position: json['new_position'] != null ? (json['new_position'] as num).toInt() : null,
-      old_position: json['old_position'] != null ? (json['old_position'] as num).toInt() : null,
+      new_position: json['new_position'] != null
+          ? (json['new_position'] as num).toInt()
+          : null,
+      old_position: json['old_position'] != null
+          ? (json['old_position'] as num).toInt()
+          : null,
       path: json['path'] != null ? json['path'] as String : null,
     );
   }
@@ -28,6 +32,7 @@ class CreatePullReviewComment {
     if (path != null) map['path'] = path!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -39,5 +44,6 @@ class CreatePullReviewComment {
   @override
   int get hashCode => Object.hash(body, new_position, old_position, path);
   @override
-  String toString() => 'CreatePullReviewComment(body: $body, new_position: $new_position, old_position: $old_position, path: $path)';
+  String toString() =>
+      'CreatePullReviewComment(body: $body, new_position: $new_position, old_position: $old_position, path: $path)';
 }

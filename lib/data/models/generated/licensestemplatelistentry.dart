@@ -5,11 +5,7 @@ class LicensesTemplateListEntry {
   final String? key;
   final String? name;
   final String? url;
-  const LicensesTemplateListEntry({
-    this.key,
-    this.name,
-    this.url,
-  });
+  const LicensesTemplateListEntry({this.key, this.name, this.url});
   factory LicensesTemplateListEntry.fromJson(Map<String, dynamic> json) {
     return LicensesTemplateListEntry(
       key: json['key'] != null ? json['key'] as String : null,
@@ -24,6 +20,7 @@ class LicensesTemplateListEntry {
     if (url != null) map['url'] = url!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -34,5 +31,6 @@ class LicensesTemplateListEntry {
   @override
   int get hashCode => Object.hash(key, name, url);
   @override
-  String toString() => 'LicensesTemplateListEntry(key: $key, name: $name, url: $url)';
+  String toString() =>
+      'LicensesTemplateListEntry(key: $key, name: $name, url: $url)';
 }

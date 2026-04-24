@@ -20,9 +20,15 @@ class Attachment {
   });
   factory Attachment.fromJson(Map<String, dynamic> json) {
     return Attachment(
-      browser_download_url: json['browser_download_url'] != null ? json['browser_download_url'] as String : null,
-      created_at: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
-      download_count: json['download_count'] != null ? (json['download_count'] as num).toInt() : null,
+      browser_download_url: json['browser_download_url'] != null
+          ? json['browser_download_url'] as String
+          : null,
+      created_at: json['created_at'] != null
+          ? DateTime.parse(json['created_at'] as String)
+          : null,
+      download_count: json['download_count'] != null
+          ? (json['download_count'] as num).toInt()
+          : null,
       id: json['id'] != null ? (json['id'] as num).toInt() : null,
       name: json['name'] != null ? json['name'] as String : null,
       size: json['size'] != null ? (json['size'] as num).toInt() : null,
@@ -31,7 +37,8 @@ class Attachment {
   }
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    if (browser_download_url != null) map['browser_download_url'] = browser_download_url!;
+    if (browser_download_url != null)
+      map['browser_download_url'] = browser_download_url!;
     if (created_at != null) map['created_at'] = created_at!.toIso8601String();
     if (download_count != null) map['download_count'] = download_count!;
     if (id != null) map['id'] = id!;
@@ -40,6 +47,7 @@ class Attachment {
     if (uuid != null) map['uuid'] = uuid!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -52,7 +60,16 @@ class Attachment {
           size == other.size &&
           uuid == other.uuid;
   @override
-  int get hashCode => Object.hash(browser_download_url, created_at, download_count, id, name, size, uuid);
+  int get hashCode => Object.hash(
+    browser_download_url,
+    created_at,
+    download_count,
+    id,
+    name,
+    size,
+    uuid,
+  );
   @override
-  String toString() => 'Attachment(browser_download_url: $browser_download_url, created_at: $created_at, download_count: $download_count, id: $id, name: $name, size: $size, uuid: $uuid)';
+  String toString() =>
+      'Attachment(browser_download_url: $browser_download_url, created_at: $created_at, download_count: $download_count, id: $id, name: $name, size: $size, uuid: $uuid)';
 }

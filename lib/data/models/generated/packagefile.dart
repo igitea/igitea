@@ -40,6 +40,7 @@ class PackageFile {
     if (size != null) map['size'] = size!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -54,5 +55,6 @@ class PackageFile {
   @override
   int get hashCode => Object.hash(id, md5, name, sha1, sha256, sha512, size);
   @override
-  String toString() => 'PackageFile(id: $id, md5: $md5, name: $name, sha1: $sha1, sha256: $sha256, sha512: $sha512, size: $size)';
+  String toString() =>
+      'PackageFile(id: $id, md5: $md5, name: $name, sha1: $sha1, sha256: $sha256, sha512: $sha512, size: $size)';
 }

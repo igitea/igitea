@@ -17,10 +17,18 @@ class CreatePushMirrorOption {
   factory CreatePushMirrorOption.fromJson(Map<String, dynamic> json) {
     return CreatePushMirrorOption(
       interval: json['interval'] != null ? json['interval'] as String : null,
-      remote_address: json['remote_address'] != null ? json['remote_address'] as String : null,
-      remote_password: json['remote_password'] != null ? json['remote_password'] as String : null,
-      remote_username: json['remote_username'] != null ? json['remote_username'] as String : null,
-      sync_on_commit: json['sync_on_commit'] != null ? json['sync_on_commit'] as bool : null,
+      remote_address: json['remote_address'] != null
+          ? json['remote_address'] as String
+          : null,
+      remote_password: json['remote_password'] != null
+          ? json['remote_password'] as String
+          : null,
+      remote_username: json['remote_username'] != null
+          ? json['remote_username'] as String
+          : null,
+      sync_on_commit: json['sync_on_commit'] != null
+          ? json['sync_on_commit'] as bool
+          : null,
     );
   }
   Map<String, dynamic> toJson() {
@@ -32,6 +40,7 @@ class CreatePushMirrorOption {
     if (sync_on_commit != null) map['sync_on_commit'] = sync_on_commit!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -42,7 +51,14 @@ class CreatePushMirrorOption {
           remote_username == other.remote_username &&
           sync_on_commit == other.sync_on_commit;
   @override
-  int get hashCode => Object.hash(interval, remote_address, remote_password, remote_username, sync_on_commit);
+  int get hashCode => Object.hash(
+    interval,
+    remote_address,
+    remote_password,
+    remote_username,
+    sync_on_commit,
+  );
   @override
-  String toString() => 'CreatePushMirrorOption(interval: $interval, remote_address: $remote_address, remote_password: $remote_password, remote_username: $remote_username, sync_on_commit: $sync_on_commit)';
+  String toString() =>
+      'CreatePushMirrorOption(interval: $interval, remote_address: $remote_address, remote_password: $remote_password, remote_username: $remote_username, sync_on_commit: $sync_on_commit)';
 }

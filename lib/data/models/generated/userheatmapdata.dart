@@ -4,14 +4,15 @@ part of 'generated_models.dart';
 class UserHeatmapData {
   final int? contributions;
   final TimeStamp? timestamp;
-  const UserHeatmapData({
-    this.contributions,
-    this.timestamp,
-  });
+  const UserHeatmapData({this.contributions, this.timestamp});
   factory UserHeatmapData.fromJson(Map<String, dynamic> json) {
     return UserHeatmapData(
-      contributions: json['contributions'] != null ? (json['contributions'] as num).toInt() : null,
-      timestamp: json['timestamp'] != null ? TimeStamp.fromJson(json['timestamp'] as Map<String, dynamic>) : null,
+      contributions: json['contributions'] != null
+          ? (json['contributions'] as num).toInt()
+          : null,
+      timestamp: json['timestamp'] != null
+          ? TimeStamp.fromJson(json['timestamp'] as Map<String, dynamic>)
+          : null,
     );
   }
   Map<String, dynamic> toJson() {
@@ -20,6 +21,7 @@ class UserHeatmapData {
     if (timestamp != null) map['timestamp'] = timestamp!.toJson();
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -29,5 +31,6 @@ class UserHeatmapData {
   @override
   int get hashCode => Object.hash(contributions, timestamp);
   @override
-  String toString() => 'UserHeatmapData(contributions: $contributions, timestamp: $timestamp)';
+  String toString() =>
+      'UserHeatmapData(contributions: $contributions, timestamp: $timestamp)';
 }

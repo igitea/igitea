@@ -27,14 +27,20 @@ class ActionWorkflow {
   factory ActionWorkflow.fromJson(Map<String, dynamic> json) {
     return ActionWorkflow(
       badge_url: json['badge_url'] != null ? json['badge_url'] as String : null,
-      created_at: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
-      deleted_at: json['deleted_at'] != null ? DateTime.parse(json['deleted_at'] as String) : null,
+      created_at: json['created_at'] != null
+          ? DateTime.parse(json['created_at'] as String)
+          : null,
+      deleted_at: json['deleted_at'] != null
+          ? DateTime.parse(json['deleted_at'] as String)
+          : null,
       html_url: json['html_url'] != null ? json['html_url'] as String : null,
       id: json['id'] != null ? json['id'] as String : null,
       name: json['name'] != null ? json['name'] as String : null,
       path: json['path'] != null ? json['path'] as String : null,
       state: json['state'] != null ? json['state'] as String : null,
-      updated_at: json['updated_at'] != null ? DateTime.parse(json['updated_at'] as String) : null,
+      updated_at: json['updated_at'] != null
+          ? DateTime.parse(json['updated_at'] as String)
+          : null,
       url: json['url'] != null ? json['url'] as String : null,
     );
   }
@@ -52,6 +58,7 @@ class ActionWorkflow {
     if (url != null) map['url'] = url!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -67,7 +74,19 @@ class ActionWorkflow {
           updated_at == other.updated_at &&
           url == other.url;
   @override
-  int get hashCode => Object.hash(badge_url, created_at, deleted_at, html_url, id, name, path, state, updated_at, url);
+  int get hashCode => Object.hash(
+    badge_url,
+    created_at,
+    deleted_at,
+    html_url,
+    id,
+    name,
+    path,
+    state,
+    updated_at,
+    url,
+  );
   @override
-  String toString() => 'ActionWorkflow(badge_url: $badge_url, created_at: $created_at, deleted_at: $deleted_at, html_url: $html_url, id: $id, name: $name, path: $path, state: $state, updated_at: $updated_at, url: $url)';
+  String toString() =>
+      'ActionWorkflow(badge_url: $badge_url, created_at: $created_at, deleted_at: $deleted_at, html_url: $html_url, id: $id, name: $name, path: $path, state: $state, updated_at: $updated_at, url: $url)';
 }

@@ -5,11 +5,7 @@ class ActionRunnerLabel {
   final int? id;
   final String? name;
   final String? type;
-  const ActionRunnerLabel({
-    this.id,
-    this.name,
-    this.type,
-  });
+  const ActionRunnerLabel({this.id, this.name, this.type});
   factory ActionRunnerLabel.fromJson(Map<String, dynamic> json) {
     return ActionRunnerLabel(
       id: json['id'] != null ? (json['id'] as num).toInt() : null,
@@ -24,6 +20,7 @@ class ActionRunnerLabel {
     if (type != null) map['type'] = type!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

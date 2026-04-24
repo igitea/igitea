@@ -17,7 +17,9 @@ class LicenseTemplateInfo {
   factory LicenseTemplateInfo.fromJson(Map<String, dynamic> json) {
     return LicenseTemplateInfo(
       body: json['body'] != null ? json['body'] as String : null,
-      implementation: json['implementation'] != null ? json['implementation'] as String : null,
+      implementation: json['implementation'] != null
+          ? json['implementation'] as String
+          : null,
       key: json['key'] != null ? json['key'] as String : null,
       name: json['name'] != null ? json['name'] as String : null,
       url: json['url'] != null ? json['url'] as String : null,
@@ -32,6 +34,7 @@ class LicenseTemplateInfo {
     if (url != null) map['url'] = url!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -44,5 +47,6 @@ class LicenseTemplateInfo {
   @override
   int get hashCode => Object.hash(body, implementation, key, name, url);
   @override
-  String toString() => 'LicenseTemplateInfo(body: $body, implementation: $implementation, key: $key, name: $name, url: $url)';
+  String toString() =>
+      'LicenseTemplateInfo(body: $body, implementation: $implementation, key: $key, name: $name, url: $url)';
 }

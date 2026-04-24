@@ -5,14 +5,12 @@ class CommitMeta {
   final DateTime? created;
   final String? sha;
   final String? url;
-  const CommitMeta({
-    this.created,
-    this.sha,
-    this.url,
-  });
+  const CommitMeta({this.created, this.sha, this.url});
   factory CommitMeta.fromJson(Map<String, dynamic> json) {
     return CommitMeta(
-      created: json['created'] != null ? DateTime.parse(json['created'] as String) : null,
+      created: json['created'] != null
+          ? DateTime.parse(json['created'] as String)
+          : null,
       sha: json['sha'] != null ? json['sha'] as String : null,
       url: json['url'] != null ? json['url'] as String : null,
     );
@@ -24,6 +22,7 @@ class CommitMeta {
     if (url != null) map['url'] = url!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

@@ -21,9 +21,13 @@ class EditReleaseOption {
       body: json['body'] != null ? json['body'] as String : null,
       draft: json['draft'] != null ? json['draft'] as bool : null,
       name: json['name'] != null ? json['name'] as String : null,
-      prerelease: json['prerelease'] != null ? json['prerelease'] as bool : null,
+      prerelease: json['prerelease'] != null
+          ? json['prerelease'] as bool
+          : null,
       tag_name: json['tag_name'] != null ? json['tag_name'] as String : null,
-      target_commitish: json['target_commitish'] != null ? json['target_commitish'] as String : null,
+      target_commitish: json['target_commitish'] != null
+          ? json['target_commitish'] as String
+          : null,
     );
   }
   Map<String, dynamic> toJson() {
@@ -36,6 +40,7 @@ class EditReleaseOption {
     if (target_commitish != null) map['target_commitish'] = target_commitish!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -47,7 +52,9 @@ class EditReleaseOption {
           tag_name == other.tag_name &&
           target_commitish == other.target_commitish;
   @override
-  int get hashCode => Object.hash(body, draft, name, prerelease, tag_name, target_commitish);
+  int get hashCode =>
+      Object.hash(body, draft, name, prerelease, tag_name, target_commitish);
   @override
-  String toString() => 'EditReleaseOption(body: $body, draft: $draft, name: $name, prerelease: $prerelease, tag_name: $tag_name, target_commitish: $target_commitish)';
+  String toString() =>
+      'EditReleaseOption(body: $body, draft: $draft, name: $name, prerelease: $prerelease, tag_name: $tag_name, target_commitish: $target_commitish)';
 }

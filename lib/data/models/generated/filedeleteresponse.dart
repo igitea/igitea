@@ -5,16 +5,18 @@ class FileDeleteResponse {
   final FileCommitResponse? commit;
   final dynamic content;
   final PayloadCommitVerification? verification;
-  const FileDeleteResponse({
-    this.commit,
-    this.content,
-    this.verification,
-  });
+  const FileDeleteResponse({this.commit, this.content, this.verification});
   factory FileDeleteResponse.fromJson(Map<String, dynamic> json) {
     return FileDeleteResponse(
-      commit: json['commit'] != null ? FileCommitResponse.fromJson(json['commit'] as Map<String, dynamic>) : null,
+      commit: json['commit'] != null
+          ? FileCommitResponse.fromJson(json['commit'] as Map<String, dynamic>)
+          : null,
       content: json['content'] != null ? json['content'] : null,
-      verification: json['verification'] != null ? PayloadCommitVerification.fromJson(json['verification'] as Map<String, dynamic>) : null,
+      verification: json['verification'] != null
+          ? PayloadCommitVerification.fromJson(
+              json['verification'] as Map<String, dynamic>,
+            )
+          : null,
     );
   }
   Map<String, dynamic> toJson() {
@@ -24,6 +26,7 @@ class FileDeleteResponse {
     if (verification != null) map['verification'] = verification!.toJson();
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -34,5 +37,6 @@ class FileDeleteResponse {
   @override
   int get hashCode => Object.hash(commit, content, verification);
   @override
-  String toString() => 'FileDeleteResponse(commit: $commit, content: $content, verification: $verification)';
+  String toString() =>
+      'FileDeleteResponse(commit: $commit, content: $content, verification: $verification)';
 }

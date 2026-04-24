@@ -15,7 +15,9 @@ class LabelTemplate {
   factory LabelTemplate.fromJson(Map<String, dynamic> json) {
     return LabelTemplate(
       color: json['color'] != null ? json['color'] as String : null,
-      description: json['description'] != null ? json['description'] as String : null,
+      description: json['description'] != null
+          ? json['description'] as String
+          : null,
       exclusive: json['exclusive'] != null ? json['exclusive'] as bool : null,
       name: json['name'] != null ? json['name'] as String : null,
     );
@@ -28,6 +30,7 @@ class LabelTemplate {
     if (name != null) map['name'] = name!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -39,5 +42,6 @@ class LabelTemplate {
   @override
   int get hashCode => Object.hash(color, description, exclusive, name);
   @override
-  String toString() => 'LabelTemplate(color: $color, description: $description, exclusive: $exclusive, name: $name)';
+  String toString() =>
+      'LabelTemplate(color: $color, description: $description, exclusive: $exclusive, name: $name)';
 }

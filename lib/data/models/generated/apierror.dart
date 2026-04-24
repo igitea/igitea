@@ -4,10 +4,7 @@ part of 'generated_models.dart';
 class APIError {
   final String? message;
   final String? url;
-  const APIError({
-    this.message,
-    this.url,
-  });
+  const APIError({this.message, this.url});
   factory APIError.fromJson(Map<String, dynamic> json) {
     return APIError(
       message: json['message'] != null ? json['message'] as String : null,
@@ -20,12 +17,11 @@ class APIError {
     if (url != null) map['url'] = url!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is APIError &&
-          message == other.message &&
-          url == other.url;
+      other is APIError && message == other.message && url == other.url;
   @override
   int get hashCode => Object.hash(message, url);
   @override

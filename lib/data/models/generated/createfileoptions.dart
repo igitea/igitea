@@ -22,13 +22,21 @@ class CreateFileOptions {
   });
   factory CreateFileOptions.fromJson(Map<String, dynamic> json) {
     return CreateFileOptions(
-      author: json['author'] != null ? Identity.fromJson(json['author'] as Map<String, dynamic>) : null,
+      author: json['author'] != null
+          ? Identity.fromJson(json['author'] as Map<String, dynamic>)
+          : null,
       branch: json['branch'] != null ? json['branch'] as String : null,
-      committer: json['committer'] != null ? Identity.fromJson(json['committer'] as Map<String, dynamic>) : null,
+      committer: json['committer'] != null
+          ? Identity.fromJson(json['committer'] as Map<String, dynamic>)
+          : null,
       content: json['content'] != null ? json['content'] as String : null,
-      dates: json['dates'] != null ? CommitDateOptions.fromJson(json['dates'] as Map<String, dynamic>) : null,
+      dates: json['dates'] != null
+          ? CommitDateOptions.fromJson(json['dates'] as Map<String, dynamic>)
+          : null,
       message: json['message'] != null ? json['message'] as String : null,
-      new_branch: json['new_branch'] != null ? json['new_branch'] as String : null,
+      new_branch: json['new_branch'] != null
+          ? json['new_branch'] as String
+          : null,
       signoff: json['signoff'] != null ? json['signoff'] as bool : null,
     );
   }
@@ -44,6 +52,7 @@ class CreateFileOptions {
     if (signoff != null) map['signoff'] = signoff!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -57,7 +66,17 @@ class CreateFileOptions {
           new_branch == other.new_branch &&
           signoff == other.signoff;
   @override
-  int get hashCode => Object.hash(author, branch, committer, content, dates, message, new_branch, signoff);
+  int get hashCode => Object.hash(
+    author,
+    branch,
+    committer,
+    content,
+    dates,
+    message,
+    new_branch,
+    signoff,
+  );
   @override
-  String toString() => 'CreateFileOptions(author: $author, branch: $branch, committer: $committer, content: $content, dates: $dates, message: $message, new_branch: $new_branch, signoff: $signoff)';
+  String toString() =>
+      'CreateFileOptions(author: $author, branch: $branch, committer: $committer, content: $content, dates: $dates, message: $message, new_branch: $new_branch, signoff: $signoff)';
 }

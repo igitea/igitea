@@ -4,14 +4,13 @@ part of 'generated_models.dart';
 class CreateAccessTokenOption {
   final String? name;
   final List<String>? scopes;
-  const CreateAccessTokenOption({
-    this.name,
-    this.scopes,
-  });
+  const CreateAccessTokenOption({this.name, this.scopes});
   factory CreateAccessTokenOption.fromJson(Map<String, dynamic> json) {
     return CreateAccessTokenOption(
       name: json['name'] != null ? json['name'] as String : null,
-      scopes: json['scopes'] != null ? (json['scopes'] as List<dynamic>).cast<String>() : null,
+      scopes: json['scopes'] != null
+          ? (json['scopes'] as List<dynamic>).cast<String>()
+          : null,
     );
   }
   Map<String, dynamic> toJson() {
@@ -20,6 +19,7 @@ class CreateAccessTokenOption {
     if (scopes != null) map['scopes'] = scopes!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

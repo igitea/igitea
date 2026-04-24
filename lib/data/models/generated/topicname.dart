@@ -3,12 +3,12 @@ part of 'generated_models.dart';
 /// TopicName a list of repo topic names
 class TopicName {
   final List<String>? topics;
-  const TopicName({
-    this.topics,
-  });
+  const TopicName({this.topics});
   factory TopicName.fromJson(Map<String, dynamic> json) {
     return TopicName(
-      topics: json['topics'] != null ? (json['topics'] as List<dynamic>).cast<String>() : null,
+      topics: json['topics'] != null
+          ? (json['topics'] as List<dynamic>).cast<String>()
+          : null,
     );
   }
   Map<String, dynamic> toJson() {
@@ -16,11 +16,10 @@ class TopicName {
     if (topics != null) map['topics'] = topics!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is TopicName &&
-          topics == other.topics;
+      identical(this, other) || other is TopicName && topics == other.topics;
   @override
   int get hashCode => topics.hashCode;
   @override

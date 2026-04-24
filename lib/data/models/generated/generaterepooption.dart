@@ -31,15 +31,23 @@ class GenerateRepoOption {
   factory GenerateRepoOption.fromJson(Map<String, dynamic> json) {
     return GenerateRepoOption(
       avatar: json['avatar'] != null ? json['avatar'] as bool : null,
-      default_branch: json['default_branch'] != null ? json['default_branch'] as String : null,
-      description: json['description'] != null ? json['description'] as String : null,
-      git_content: json['git_content'] != null ? json['git_content'] as bool : null,
+      default_branch: json['default_branch'] != null
+          ? json['default_branch'] as String
+          : null,
+      description: json['description'] != null
+          ? json['description'] as String
+          : null,
+      git_content: json['git_content'] != null
+          ? json['git_content'] as bool
+          : null,
       git_hooks: json['git_hooks'] != null ? json['git_hooks'] as bool : null,
       labels: json['labels'] != null ? json['labels'] as bool : null,
       name: json['name'] != null ? json['name'] as String : null,
       owner: json['owner'] != null ? json['owner'] as String : null,
       private: json['private'] != null ? json['private'] as bool : null,
-      protected_branch: json['protected_branch'] != null ? json['protected_branch'] as bool : null,
+      protected_branch: json['protected_branch'] != null
+          ? json['protected_branch'] as bool
+          : null,
       topics: json['topics'] != null ? json['topics'] as bool : null,
       webhooks: json['webhooks'] != null ? json['webhooks'] as bool : null,
     );
@@ -60,6 +68,7 @@ class GenerateRepoOption {
     if (webhooks != null) map['webhooks'] = webhooks!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -77,7 +86,21 @@ class GenerateRepoOption {
           topics == other.topics &&
           webhooks == other.webhooks;
   @override
-  int get hashCode => Object.hash(avatar, default_branch, description, git_content, git_hooks, labels, name, owner, private, protected_branch, topics, webhooks);
+  int get hashCode => Object.hash(
+    avatar,
+    default_branch,
+    description,
+    git_content,
+    git_hooks,
+    labels,
+    name,
+    owner,
+    private,
+    protected_branch,
+    topics,
+    webhooks,
+  );
   @override
-  String toString() => 'GenerateRepoOption(avatar: $avatar, default_branch: $default_branch, description: $description, git_content: $git_content, git_hooks: $git_hooks, labels: $labels, name: $name, owner: $owner, private: $private, protected_branch: $protected_branch, topics: $topics, webhooks: $webhooks)';
+  String toString() =>
+      'GenerateRepoOption(avatar: $avatar, default_branch: $default_branch, description: $description, git_content: $git_content, git_hooks: $git_hooks, labels: $labels, name: $name, owner: $owner, private: $private, protected_branch: $protected_branch, topics: $topics, webhooks: $webhooks)';
 }

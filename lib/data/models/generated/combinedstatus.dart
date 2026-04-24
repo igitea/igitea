@@ -20,12 +20,22 @@ class CombinedStatus {
   });
   factory CombinedStatus.fromJson(Map<String, dynamic> json) {
     return CombinedStatus(
-      commit_url: json['commit_url'] != null ? json['commit_url'] as String : null,
-      repository: json['repository'] != null ? Repository.fromJson(json['repository'] as Map<String, dynamic>) : null,
+      commit_url: json['commit_url'] != null
+          ? json['commit_url'] as String
+          : null,
+      repository: json['repository'] != null
+          ? Repository.fromJson(json['repository'] as Map<String, dynamic>)
+          : null,
       sha: json['sha'] != null ? json['sha'] as String : null,
       state: json['state'] != null ? json['state'] as String : null,
-      statuses: json['statuses'] != null ? (json['statuses'] as List<dynamic>).map((e) => CommitStatus.fromJson(e as Map<String, dynamic>)).toList() : null,
-      total_count: json['total_count'] != null ? (json['total_count'] as num).toInt() : null,
+      statuses: json['statuses'] != null
+          ? (json['statuses'] as List<dynamic>)
+                .map((e) => CommitStatus.fromJson(e as Map<String, dynamic>))
+                .toList()
+          : null,
+      total_count: json['total_count'] != null
+          ? (json['total_count'] as num).toInt()
+          : null,
       url: json['url'] != null ? json['url'] as String : null,
     );
   }
@@ -35,11 +45,13 @@ class CombinedStatus {
     if (repository != null) map['repository'] = repository!.toJson();
     if (sha != null) map['sha'] = sha!;
     if (state != null) map['state'] = state!;
-    if (statuses != null) map['statuses'] = statuses!.map((e) => e.toJson()).toList();
+    if (statuses != null)
+      map['statuses'] = statuses!.map((e) => e.toJson()).toList();
     if (total_count != null) map['total_count'] = total_count!;
     if (url != null) map['url'] = url!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -52,7 +64,16 @@ class CombinedStatus {
           total_count == other.total_count &&
           url == other.url;
   @override
-  int get hashCode => Object.hash(commit_url, repository, sha, state, statuses, total_count, url);
+  int get hashCode => Object.hash(
+    commit_url,
+    repository,
+    sha,
+    state,
+    statuses,
+    total_count,
+    url,
+  );
   @override
-  String toString() => 'CombinedStatus(commit_url: $commit_url, repository: $repository, sha: $sha, state: $state, statuses: $statuses, total_count: $total_count, url: $url)';
+  String toString() =>
+      'CombinedStatus(commit_url: $commit_url, repository: $repository, sha: $sha, state: $state, statuses: $statuses, total_count: $total_count, url: $url)';
 }

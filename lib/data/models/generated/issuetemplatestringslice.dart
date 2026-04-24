@@ -1,7 +1,6 @@
 part of 'generated_models.dart';
 
 class IssueTemplateStringSlice {
-
   const IssueTemplateStringSlice();
   factory IssueTemplateStringSlice.fromJson(Map<String, dynamic> json) {
     return IssueTemplateStringSlice();
@@ -11,9 +10,9 @@ class IssueTemplateStringSlice {
 
     return map;
   }
+
   @override
-  bool operator ==(Object other) =>
-      identical(this, other);
+  bool operator ==(Object other) => identical(this, other);
   @override
   int get hashCode => 0;
   @override

@@ -38,11 +38,7 @@ void main() {
     });
 
     test('round-trip preserves values', () {
-      final original = AccessToken(
-        id: 99,
-        name: 'round',
-        sha1: 'trip',
-      );
+      final original = AccessToken(id: 99, name: 'round', sha1: 'trip');
       final restored = AccessToken.fromJson(original.toJson());
       expect(restored.id, original.id);
       expect(restored.name, original.name);
@@ -68,10 +64,7 @@ void main() {
     });
 
     test('toJson serializes nested objects', () {
-      final user = User(
-        id: 2,
-        login: 'test',
-      );
+      final user = User(id: 2, login: 'test');
       final json = user.toJson();
       expect(json['id'], 2);
       expect(json['login'], 'test');
@@ -84,10 +77,7 @@ void main() {
         'id': 100,
         'name': 'hello-world',
         'full_name': 'gitea/hello-world',
-        'owner': {
-          'id': 1,
-          'login': 'gitea',
-        },
+        'owner': {'id': 1, 'login': 'gitea'},
         'private': false,
         'fork': false,
       };

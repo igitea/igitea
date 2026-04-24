@@ -32,6 +32,7 @@ class MarkupOption {
     if (Wiki != null) map['Wiki'] = Wiki!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -44,5 +45,6 @@ class MarkupOption {
   @override
   int get hashCode => Object.hash(Context, FilePath, Mode, Text, Wiki);
   @override
-  String toString() => 'MarkupOption(Context: $Context, FilePath: $FilePath, Mode: $Mode, Text: $Text, Wiki: $Wiki)';
+  String toString() =>
+      'MarkupOption(Context: $Context, FilePath: $FilePath, Mode: $Mode, Text: $Text, Wiki: $Wiki)';
 }

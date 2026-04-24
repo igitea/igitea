@@ -4,10 +4,33 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 
 ## Features
 
-- Cross-platform support: Android, iOS, macOS, Linux, Windows
+- Cross-platform support: Android, iOS, macOS, Linux, Windows, **Web**
 - Clean Architecture with Repository Pattern
-- Auto-generated data models from Gitea OpenAPI spec
-- Built-in state management using Flutter `ChangeNotifier`
+- 120+ auto-generated data models from Gitea OpenAPI spec
+- Full REST API client covering all Gitea API endpoint tags
+- 8 repository interfaces + implementations with exception→failure mapping
+- 30+ domain use cases with `Either<Failure, T>` pattern
+- ChangeNotifier-based state managers for Auth, User, Repo, Issue, Org, Notification
+- Material 3 UI: Login, Dashboard, Repo List, Issue List, Notifications, Profile
+- Adaptive layout: NavigationRail (desktop) / NavigationBar (mobile)
+- Login page: username/password (primary), token (secondary), OAuth2 planned
+- Avatar display: user/org avatars with NetworkImage, graceful fallback to initials
+- 234 unit/widget tests, `flutter analyze` clean
+
+## Project Status
+
+Phases 1–8 complete:
+
+| Phase | Description | Status |
+|-------|-------------|--------|
+| 1 | Project Bootstrap | ✅ Done |
+| 2 | Model Generation | ✅ Done |
+| 3 | API Service | ✅ Done |
+| 4 | Repository Layer | ✅ Done |
+| 5 | Domain Use Cases | ✅ Done |
+| 6 | State Management | ✅ Done |
+| 7 | UI Layer | ✅ Done |
+| 8 | Testing & Quality | ✅ Done |
 
 ## Getting Started
 
@@ -46,12 +69,38 @@ flutter build apk
 flutter build ios
 ```
 
+### Build for Web
+
+```bash
+flutter build web
+```
+
 ## Architecture
 
-- `lib/core/` — Utilities, constants, and error types
-- `lib/data/` — Data models, remote data sources, and repository implementations
-- `lib/domain/` — Entities, repository interfaces, and use cases
-- `lib/presentation/` — UI pages, widgets, and state managers
+```
+lib/
+├── core/            # Utilities, constants, error/failure types
+├── data/
+│   ├── datasources/ # ApiClient, GiteaApiService
+│   ├── models/      # 120+ generated Dart model classes
+│   └── repositories/# 8 repository implementations
+├── domain/
+│   ├── repositories/# 8 repository interfaces
+│   └── usecases/    # 30+ use case classes
+└── presentation/
+     ├── pages/       # Material 3 UI pages
+     ├── state/       # ChangeNotifier state managers
+     └── widgets/     # Reusable avatar widgets
+```
+
+## Tech Stack
+
+- **Flutter 3.x** / **Dart 3.x**
+- **Material 3** design system
+- **Clean Architecture** — domain/data/presentation separation
+- **ChangeNotifier** for state management (no third-party dependencies)
+- **Either\<Failure, T\>** for typed error handling
+- **http** package for HTTP
 
 ## License
 

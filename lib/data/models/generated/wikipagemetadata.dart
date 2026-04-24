@@ -15,7 +15,9 @@ class WikiPageMetaData {
   factory WikiPageMetaData.fromJson(Map<String, dynamic> json) {
     return WikiPageMetaData(
       html_url: json['html_url'] != null ? json['html_url'] as String : null,
-      last_commit: json['last_commit'] != null ? WikiCommit.fromJson(json['last_commit'] as Map<String, dynamic>) : null,
+      last_commit: json['last_commit'] != null
+          ? WikiCommit.fromJson(json['last_commit'] as Map<String, dynamic>)
+          : null,
       sub_url: json['sub_url'] != null ? json['sub_url'] as String : null,
       title: json['title'] != null ? json['title'] as String : null,
     );
@@ -28,6 +30,7 @@ class WikiPageMetaData {
     if (title != null) map['title'] = title!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -39,5 +42,6 @@ class WikiPageMetaData {
   @override
   int get hashCode => Object.hash(html_url, last_commit, sub_url, title);
   @override
-  String toString() => 'WikiPageMetaData(html_url: $html_url, last_commit: $last_commit, sub_url: $sub_url, title: $title)';
+  String toString() =>
+      'WikiPageMetaData(html_url: $html_url, last_commit: $last_commit, sub_url: $sub_url, title: $title)';
 }

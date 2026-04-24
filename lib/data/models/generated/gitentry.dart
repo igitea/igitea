@@ -36,6 +36,7 @@ class GitEntry {
     if (url != null) map['url'] = url!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -49,5 +50,6 @@ class GitEntry {
   @override
   int get hashCode => Object.hash(mode, path, sha, size, type, url);
   @override
-  String toString() => 'GitEntry(mode: $mode, path: $path, sha: $sha, size: $size, type: $type, url: $url)';
+  String toString() =>
+      'GitEntry(mode: $mode, path: $path, sha: $sha, size: $size, type: $type, url: $url)';
 }

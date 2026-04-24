@@ -4,14 +4,13 @@ part of 'generated_models.dart';
 class SubmitPullReviewOptions {
   final String? body;
   final ReviewStateType? event;
-  const SubmitPullReviewOptions({
-    this.body,
-    this.event,
-  });
+  const SubmitPullReviewOptions({this.body, this.event});
   factory SubmitPullReviewOptions.fromJson(Map<String, dynamic> json) {
     return SubmitPullReviewOptions(
       body: json['body'] != null ? json['body'] as String : null,
-      event: json['event'] != null ? ReviewStateType.fromJson(json['event'] as Map<String, dynamic>) : null,
+      event: json['event'] != null
+          ? ReviewStateType.fromJson(json['event'] as Map<String, dynamic>)
+          : null,
     );
   }
   Map<String, dynamic> toJson() {
@@ -20,6 +19,7 @@ class SubmitPullReviewOptions {
     if (event != null) map['event'] = event!.toJson();
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

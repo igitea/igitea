@@ -17,9 +17,13 @@ class EditLabelOption {
   factory EditLabelOption.fromJson(Map<String, dynamic> json) {
     return EditLabelOption(
       color: json['color'] != null ? json['color'] as String : null,
-      description: json['description'] != null ? json['description'] as String : null,
+      description: json['description'] != null
+          ? json['description'] as String
+          : null,
       exclusive: json['exclusive'] != null ? json['exclusive'] as bool : null,
-      is_archived: json['is_archived'] != null ? json['is_archived'] as bool : null,
+      is_archived: json['is_archived'] != null
+          ? json['is_archived'] as bool
+          : null,
       name: json['name'] != null ? json['name'] as String : null,
     );
   }
@@ -32,6 +36,7 @@ class EditLabelOption {
     if (name != null) map['name'] = name!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -42,7 +47,9 @@ class EditLabelOption {
           is_archived == other.is_archived &&
           name == other.name;
   @override
-  int get hashCode => Object.hash(color, description, exclusive, is_archived, name);
+  int get hashCode =>
+      Object.hash(color, description, exclusive, is_archived, name);
   @override
-  String toString() => 'EditLabelOption(color: $color, description: $description, exclusive: $exclusive, is_archived: $is_archived, name: $name)';
+  String toString() =>
+      'EditLabelOption(color: $color, description: $description, exclusive: $exclusive, is_archived: $is_archived, name: $name)';
 }

@@ -4,13 +4,12 @@ part of 'generated_models.dart';
 class CreateActionWorkflowDispatch {
   final Map<String, dynamic>? inputs;
   final String? ref;
-  const CreateActionWorkflowDispatch({
-    this.inputs,
-    this.ref,
-  });
+  const CreateActionWorkflowDispatch({this.inputs, this.ref});
   factory CreateActionWorkflowDispatch.fromJson(Map<String, dynamic> json) {
     return CreateActionWorkflowDispatch(
-      inputs: json['inputs'] != null ? json['inputs'] as Map<String, dynamic> : null,
+      inputs: json['inputs'] != null
+          ? json['inputs'] as Map<String, dynamic>
+          : null,
       ref: json['ref'] != null ? json['ref'] as String : null,
     );
   }
@@ -20,6 +19,7 @@ class CreateActionWorkflowDispatch {
     if (ref != null) map['ref'] = ref!;
     return map;
   }
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -29,5 +29,6 @@ class CreateActionWorkflowDispatch {
   @override
   int get hashCode => Object.hash(inputs, ref);
   @override
-  String toString() => 'CreateActionWorkflowDispatch(inputs: $inputs, ref: $ref)';
+  String toString() =>
+      'CreateActionWorkflowDispatch(inputs: $inputs, ref: $ref)';
 }
