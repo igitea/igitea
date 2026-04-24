@@ -8,6 +8,8 @@ import '../state/repo_notifier.dart';
 import '../state/issue_notifier.dart';
 import '../widgets/user_avatar.dart';
 import '../widgets/file_icon.dart';
+import 'issue_detail_page.dart';
+import 'pr_detail_page.dart';
 import 'repo_file_page.dart';
 
 const _languageColors = <String, Color>{
@@ -671,7 +673,11 @@ class _IssuesTabState extends State<_IssuesTab> {
                   itemCount: issues.length,
                   itemBuilder: (context, index) {
                     final issue = issues[index];
-                    return _IssueItem(issue: issue);
+                    return _IssueItem(
+                      issue: issue,
+                      owner: widget.owner,
+                      repo: widget.repo,
+                    );
                   },
                 ),
           _ => const Center(child: Text('No issues')),
@@ -683,8 +689,10 @@ class _IssuesTabState extends State<_IssuesTab> {
 
 class _IssueItem extends StatelessWidget {
   final Issue issue;
+  final String owner;
+  final String repo;
 
-  const _IssueItem({required this.issue});
+  const _IssueItem({required this.issue, required this.owner, required this.repo});
 
   @override
   Widget build(BuildContext context) {
@@ -705,6 +713,13 @@ class _IssueItem extends StatelessWidget {
         ),
         subtitle: Text('#${issue.number ?? 0}'),
         trailing: Icon(stateIcon, color: stateColor, size: 16),
+        onTap: () => Navigator.of(context).push(MaterialPageRoute(
+          builder: (_) => IssueDetailPage(
+            owner: owner,
+            repo: repo,
+            index: issue.number ?? 0,
+          ),
+        )),
       ),
     );
   }
@@ -759,7 +774,11 @@ class _PullRequestsTabState extends State<_PullRequestsTab> {
                   itemCount: pullRequests.length,
                   itemBuilder: (context, index) {
                     final pr = pullRequests[index];
-                    return _PRItem(pr: pr);
+                    return _PRItem(
+                      pr: pr,
+                      owner: widget.owner,
+                      repo: widget.repo,
+                    );
                   },
                 ),
           _ => const Center(child: Text('No pull requests')),
@@ -771,8 +790,10 @@ class _PullRequestsTabState extends State<_PullRequestsTab> {
 
 class _PRItem extends StatelessWidget {
   final PullRequest pr;
+  final String owner;
+  final String repo;
 
-  const _PRItem({required this.pr});
+  const _PRItem({required this.pr, required this.owner, required this.repo});
 
   @override
   Widget build(BuildContext context) {
@@ -802,6 +823,13 @@ class _PRItem extends StatelessWidget {
         ),
         subtitle: Text('#${pr.number ?? 0}'),
         trailing: Icon(stateIcon, color: stateColor, size: 16),
+        onTap: () => Navigator.of(context).push(MaterialPageRoute(
+          builder: (_) => PRDetailPage(
+            owner: owner,
+            repo: repo,
+            index: pr.number ?? 0,
+          ),
+        )),
       ),
     );
   }
