@@ -15,11 +15,15 @@
 - 自适应布局：桌面端 NavigationRail / 移动端 NavigationBar
 - 登录页：用户名/密码（主要）、Token（次要），OAuth2 计划中
 - 头像显示：用户/组织头像通过 NetworkImage 获取，无头像时优雅回退至首字母
-- 234 个单元/Widget 测试，`flutter analyze` 无警告
+- 仓库详情页：5 个标签页——代码（文件浏览器）、Issue、Pull Request、Release、分支
+- 文件浏览器：面包屑导航和目录浏览
+- 文件查看器：Markdown 渲染、图片展示、代码语法高亮
+- 通过 url_launcher 在浏览器中打开文件
+- 238 个单元/Widget 测试，`flutter analyze` 无警告
 
 ## 项目进度
 
-阶段 1–8 已完成：
+阶段 1–8 已完成，阶段 9 进行中：
 
 | 阶段 | 描述 | 状态 |
 |------|------|------|
@@ -31,6 +35,7 @@
 | 6 | 状态管理 | ✅ 完成 |
 | 7 | UI 层 | ✅ 完成 |
 | 8 | 测试与质量 | ✅ 完成 |
+| 9 | 仓库详情与文件浏览器 | 🔧 进行中 |
 
 ## 快速开始
 
@@ -90,7 +95,7 @@ lib/
 └── presentation/
      ├── pages/       # Material 3 UI 页面
      ├── state/       # ChangeNotifier 状态管理器
-     └── widgets/     # 可复用头像小部件
+     └── widgets/     # 可复用头像和文件图标小部件
 ```
 
 ## 技术栈

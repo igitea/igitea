@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.10.0] - 2026-04-24
+
+### Added — Repo Detail Page
+
+- `RepoDetailPage` with 5 tabs: Code, Issues, Pull Requests, Releases, Branches.
+- File browser (`_CodeTab`) with breadcrumb navigation and directory traversal.
+- `RepoFilePage` with Markdown rendering (flutter_markdown), image display, and code syntax highlighting (highlight).
+- `file_icon.dart` helper widget for file type icons.
+- Navigation from repo cards in Dashboard, RepoList, Profile, and Notification pages.
+
+### Added — API & Data Layer
+
+- `repoGetContents` and `repoListPullRequests` API methods in `GiteaApiService`.
+- `getRepoContents` and `listPullRequests` in repository layer.
+- `GetRepoContentsUseCase` and `ListPullRequestsUseCase` with DI wiring.
+- `ContentsState`, `PullRequestsState`, and `ReleasesState` in `RepoNotifier`.
+
+### Dependencies
+
+- Added `flutter_markdown` and `highlight` packages.
+
 ## [0.9.0] - 2026-04-24
 
 ### Added — Avatar System

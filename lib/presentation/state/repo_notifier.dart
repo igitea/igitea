@@ -132,6 +132,10 @@ class RepoNotifier extends ChangeNotifier {
 
   RepoState _state = const RepoInitial();
   RepoState get state => _state;
+  set state(RepoState value) {
+    _state = value;
+    notifyListeners();
+  }
 
   ContentsState _contentsState = const ContentsInitial();
   ContentsState get contentsState => _contentsState;

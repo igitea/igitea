@@ -1,5 +1,26 @@
 # 更新日志
 
+## [0.10.0] - 2026-04-24
+
+### 新增 — 仓库详情页
+
+- `RepoDetailPage`，包含 5 个标签页：代码、Issue、Pull Request、Release、分支。
+- 文件浏览器（`_CodeTab`），支持面包屑导航和目录遍历。
+- `RepoFilePage`，支持 Markdown 渲染（flutter_markdown）、图片展示和代码语法高亮（highlight）。
+- `file_icon.dart` 文件类型图标辅助小部件。
+- 从仪表盘、仓库列表、个人主页和通知页面的仓库卡片导航。
+
+### 新增 — API 与数据层
+
+- `GiteaApiService` 中新增 `repoGetContents` 和 `repoListPullRequests` API 方法。
+- 仓库层新增 `getRepoContents` 和 `listPullRequests`。
+- 新增 `GetRepoContentsUseCase` 和 `ListPullRequestsUseCase`，并完成依赖注入配置。
+- `RepoNotifier` 中新增 `ContentsState`、`PullRequestsState` 和 `ReleasesState`。
+
+### 依赖
+
+- 新增 `flutter_markdown` 和 `highlight` 包。
+
 ## [0.9.0] - 2026-04-24
 
 ### 新增 — 头像系统

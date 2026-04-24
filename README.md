@@ -15,11 +15,15 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 - Adaptive layout: NavigationRail (desktop) / NavigationBar (mobile)
 - Login page: username/password (primary), token (secondary), OAuth2 planned
 - Avatar display: user/org avatars with NetworkImage, graceful fallback to initials
-- 234 unit/widget tests, `flutter analyze` clean
+- Repo detail page with 5 tabs: Code (file browser), Issues, Pull Requests, Releases, Branches
+- File browser with breadcrumb navigation and directory browsing
+- File viewer: Markdown rendering, image display, code syntax highlighting
+- Open files in browser via url_launcher
+- 238 unit/widget tests, `flutter analyze` clean
 
 ## Project Status
 
-Phases 1–8 complete:
+Phases 1–8 complete, Phase 9 in progress:
 
 | Phase | Description | Status |
 |-------|-------------|--------|
@@ -31,6 +35,7 @@ Phases 1–8 complete:
 | 6 | State Management | ✅ Done |
 | 7 | UI Layer | ✅ Done |
 | 8 | Testing & Quality | ✅ Done |
+| 9 | Repo Detail & File Browser | 🔧 In Progress |
 
 ## Getting Started
 
@@ -90,7 +95,7 @@ lib/
 └── presentation/
      ├── pages/       # Material 3 UI pages
      ├── state/       # ChangeNotifier state managers
-     └── widgets/     # Reusable avatar widgets
+     └── widgets/     # Reusable avatar and file icon widgets
 ```
 
 ## Tech Stack
