@@ -335,3 +335,33 @@ class CheckStarredUseCase {
     return _repository.checkStarred(params.owner, params.repo);
   }
 }
+
+class MergePullRequestParams {
+  final String owner;
+  final String repo;
+  final int index;
+  final MergePullRequestOption? body;
+
+  const MergePullRequestParams({
+    required this.owner,
+    required this.repo,
+    required this.index,
+    this.body,
+  });
+}
+
+class MergePullRequestUseCase {
+  final RepoRepository _repository;
+
+  MergePullRequestUseCase({required RepoRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, void>> call(MergePullRequestParams params) async {
+    return _repository.mergePullRequest(
+      params.owner,
+      params.repo,
+      params.index,
+      body: params.body,
+    );
+  }
+}

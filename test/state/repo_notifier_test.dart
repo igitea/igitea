@@ -212,6 +212,17 @@ class FakeRepoRepository implements RepoRepository {
     if (shouldFail) return Left(failure);
     return Right(false);
   }
+
+  @override
+  Future<Either<Failure, void>> mergePullRequest(
+    String owner,
+    String repo,
+    int index, {
+    MergePullRequestOption? body,
+  }) async {
+    if (shouldFail) return Left(failure);
+    return Right(null);
+  }
 }
 
 void main() {
@@ -234,6 +245,7 @@ void main() {
         starRepoUseCase: StarRepoUseCase(repository: fakeRepo),
         unstarRepoUseCase: UnstarRepoUseCase(repository: fakeRepo),
         checkStarredUseCase: CheckStarredUseCase(repository: fakeRepo),
+        mergePullRequestUseCase: MergePullRequestUseCase(repository: fakeRepo),
       );
     });
 

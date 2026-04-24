@@ -179,6 +179,15 @@ class MockRepoRepository implements RepoRepository {
   @override
   Future<Either<Failure, bool>> checkStarred(String owner, String repo) =>
       throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, void>> mergePullRequest(
+    String owner,
+    String repo,
+    int index, {
+    MergePullRequestOption? body,
+  }) =>
+      throw UnimplementedError();
 }
 
 void main() {

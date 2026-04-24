@@ -310,4 +310,21 @@ class RepoRepositoryImpl implements RepoRepository {
       () => _apiService.userCurrentCheckStar(owner: owner, repo: repo),
     );
   }
+
+  @override
+  Future<Either<Failure, void>> mergePullRequest(
+    String owner,
+    String repo,
+    int index, {
+    MergePullRequestOption? body,
+  }) async {
+    return execute(() async {
+      await _apiService.repoMergePullRequest(
+        owner: owner,
+        repo: repo,
+        index: index,
+        body: body,
+      );
+    });
+  }
 }

@@ -138,6 +138,7 @@ class RepoNotifier extends ChangeNotifier {
   StarRepoUseCase _starRepoUseCase;
   UnstarRepoUseCase _unstarRepoUseCase;
   CheckStarredUseCase _checkStarredUseCase;
+  MergePullRequestUseCase _mergePullRequestUseCase;
 
   RepoState _state = const RepoInitial();
   RepoState get state => _state;
@@ -173,6 +174,7 @@ class RepoNotifier extends ChangeNotifier {
     required StarRepoUseCase starRepoUseCase,
     required UnstarRepoUseCase unstarRepoUseCase,
     required CheckStarredUseCase checkStarredUseCase,
+    required MergePullRequestUseCase mergePullRequestUseCase,
   }) : _getRepoUseCase = getRepoUseCase,
        _searchReposUseCase = searchReposUseCase,
        _listBranchesUseCase = listBranchesUseCase,
@@ -184,7 +186,8 @@ class RepoNotifier extends ChangeNotifier {
        _listReleasesUseCase = listReleasesUseCase,
        _starRepoUseCase = starRepoUseCase,
        _unstarRepoUseCase = unstarRepoUseCase,
-       _checkStarredUseCase = checkStarredUseCase;
+       _checkStarredUseCase = checkStarredUseCase,
+       _mergePullRequestUseCase = mergePullRequestUseCase;
 
   void updateUseCases({
     required GetRepoUseCase getRepoUseCase,
@@ -199,6 +202,7 @@ class RepoNotifier extends ChangeNotifier {
     required StarRepoUseCase starRepoUseCase,
     required UnstarRepoUseCase unstarRepoUseCase,
     required CheckStarredUseCase checkStarredUseCase,
+    required MergePullRequestUseCase mergePullRequestUseCase,
   }) {
     _getRepoUseCase = getRepoUseCase;
     _searchReposUseCase = searchReposUseCase;
@@ -212,6 +216,7 @@ class RepoNotifier extends ChangeNotifier {
     _starRepoUseCase = starRepoUseCase;
     _unstarRepoUseCase = unstarRepoUseCase;
     _checkStarredUseCase = checkStarredUseCase;
+    _mergePullRequestUseCase = mergePullRequestUseCase;
   }
 
   Future<void> getRepo(String owner, String repo) async {
@@ -429,5 +434,21 @@ class RepoNotifier extends ChangeNotifier {
     }
     _starLoading = false;
     notifyListeners();
+  }
+
+  Future<void> mergePullRequest(String owner, String repo, int index) async {
+    _state = const RepoLoading();
+    notifyListeners();
+
+    final result = await _mergePullRequestUseCase.call(
+      MergePullRequestParams(owner: owner, repo: repo, index: index),
+    );
+    switch (result) {
+      case Left<Failure, void>(:final value):
+        _state = RepoError(value.message);
+        notifyListeners();
+      case Right<Failure, void>():
+        await getPullRequest(owner, repo, index);
+    }
   }
 }

@@ -201,6 +201,17 @@ class MockRepoRepository implements RepoRepository {
     if (shouldFail) return Left(failure);
     return Right(false);
   }
+
+  @override
+  Future<Either<Failure, void>> mergePullRequest(
+    String owner,
+    String repo,
+    int index, {
+    MergePullRequestOption? body,
+  }) async {
+    if (shouldFail) return Left(failure);
+    return Right(null);
+  }
 }
 
 void main() {

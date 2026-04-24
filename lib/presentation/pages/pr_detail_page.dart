@@ -179,7 +179,39 @@ class _PRContent extends StatelessWidget {
             ),
           const SizedBox(height: 16),
 
-          // Branch info
+          // Merge button (only for open PRs that are mergeable)
+          if (pr.state?.value == 'open' && pr.mergeable == true && pr.merged != true)
+            Row(
+              children: [
+                FilledButton(
+                  onPressed: () async {
+                    final confirmed = await showDialog<bool>(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text('Merge Pull Request'),
+                        content: const Text('Are you sure you want to merge this pull request?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(ctx).pop(false),
+                            child: const Text('Cancel'),
+                          ),
+                          FilledButton(
+                            onPressed: () => Navigator.of(ctx).pop(true),
+                            child: const Text('Merge'),
+                          ),
+                        ],
+                      ),
+                    );
+                    if (confirmed == true) {
+                      Injection.repoNotifier.mergePullRequest(owner, repo, index);
+                    }
+                  },
+                  child: const Text('Merge Pull Request'),
+                ),
+              ],
+            ),
+          if (pr.state?.value == 'open' && pr.mergeable == true && pr.merged != true)
+            const SizedBox(height: 16),
           if (pr.head != null && pr.base_ != null)
             Container(
               padding: const EdgeInsets.all(12),

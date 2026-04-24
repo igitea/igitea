@@ -151,4 +151,12 @@ abstract class RepoRepository {
 
   /// Check if the current user has starred a repository.
   Future<Either<Failure, bool>> checkStarred(String owner, String repo);
+
+  /// Merge a pull request.
+  Future<Either<Failure, void>> mergePullRequest(
+    String owner,
+    String repo,
+    int index, {
+    MergePullRequestOption? body,
+  });
 }

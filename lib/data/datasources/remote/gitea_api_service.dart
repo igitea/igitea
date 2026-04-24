@@ -500,6 +500,18 @@ class GiteaApiService {
     return PullRequest.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
   }
 
+  Future<void> repoMergePullRequest({
+    required String owner,
+    required String repo,
+    required int index,
+    MergePullRequestOption? body,
+  }) async {
+    await _client.post(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/pulls/$index/merge',
+      body: body?.toJson(),
+    );
+  }
+
   Future<SearchResults> repoSearch({
     String? q,
     bool? topic,
