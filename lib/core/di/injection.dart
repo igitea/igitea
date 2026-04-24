@@ -275,6 +275,7 @@ class Injection {
       notificationNotifier.updateUseCases(
         listNotificationsUseCase: listNotificationsUseCase,
         markThreadReadUseCase: markThreadReadUseCase,
+        markNotificationsReadUseCase: markNotificationsReadUseCase,
         checkNewAvailableUseCase: checkNewNotificationsUseCase,
       );
       adminNotifier.updateUseCases(
@@ -326,6 +327,7 @@ class Injection {
       notificationNotifier = NotificationNotifier(
         listNotificationsUseCase: listNotificationsUseCase,
         markThreadReadUseCase: markThreadReadUseCase,
+        markNotificationsReadUseCase: markNotificationsReadUseCase,
         checkNewAvailableUseCase: checkNewNotificationsUseCase,
       );
       themeNotifier = ThemeNotifier();
@@ -398,6 +400,7 @@ class Injection {
     notificationNotifier.updateUseCases(
       listNotificationsUseCase: listNotificationsUseCase,
       markThreadReadUseCase: markThreadReadUseCase,
+      markNotificationsReadUseCase: markNotificationsReadUseCase,
       checkNewAvailableUseCase: checkNewNotificationsUseCase,
     );
     adminNotifier.updateUseCases(

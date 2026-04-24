@@ -1,5 +1,36 @@
 # Changelog
 
+## [0.16.0] - 2026-04-24
+
+### Added — Notification Actions
+
+- `markAllRead()` in `NotificationNotifier` using `MarkNotificationsReadUseCase`
+- AppBar "Mark all as read" button now calls real API instead of just showing snackbar
+- Single notification "Mark as read" button (check_circle icon) on unread notification cards
+- Auto-refresh notification list after marking read
+
+### Added — Create Issue Page
+
+- `CreateIssuePage` with title and body input fields
+- Submit button in AppBar with loading indicator
+- Validation: title is required
+- On success, pops with created issue; on error, shows snackbar
+
+### Added — Deep Link Support
+
+- `onGenerateRoute` in `IGiteaApp` for URL-based navigation
+- Supported paths:
+  - `/{owner}/{repo}` → RepoDetailPage
+  - `/{owner}/{repo}/issues/{id}` → IssueDetailPage
+  - `/{owner}/{repo}/pulls/{id}` → PRDetailPage
+
+### Changed
+
+- `NotificationNotifier` updated with `MarkNotificationsReadUseCase` in constructor and `updateUseCases()`
+- `Injection` class updated for all 3 initialization paths
+- New ARB keys: `newIssue`, `pleaseEnterTitle`
+- 247 tests passing, `flutter analyze` clean
+
 ## [0.15.0] - 2026-04-24
 
 ### Added — Admin User Management

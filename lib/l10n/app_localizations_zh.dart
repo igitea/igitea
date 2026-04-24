@@ -823,6 +823,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get mustChangePassword => '首次登录必须修改密码';
+
+  @override
+  String get pleaseEnterTitle => '请输入标题';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).

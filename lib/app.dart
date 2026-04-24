@@ -4,6 +4,9 @@ import 'domain/entities/auth_state.dart';
 import 'l10n/app_localizations.dart';
 import 'presentation/pages/login_page.dart';
 import 'presentation/pages/home_page.dart';
+import 'presentation/pages/issue_detail_page.dart';
+import 'presentation/pages/pr_detail_page.dart';
+import 'presentation/pages/repo_detail_page.dart';
 
 class IGiteaApp extends StatefulWidget {
   const IGiteaApp({super.key});
@@ -64,8 +67,76 @@ class _IGiteaAppState extends State<IGiteaApp> {
           ),
           themeMode: Injection.themeNotifier.themeMode,
           home: home,
+          onGenerateRoute: _onGenerateRoute,
         );
       },
     );
+  }
+
+  Route<dynamic>? _onGenerateRoute(RouteSettings settings) {
+    final uri = Uri.tryParse(settings.name ?? '');
+    if (uri == null) return null;
+
+    final path = uri.path;
+    final match = _parsePath(path);
+    if (match == null) return null;
+
+    final type = match['type'];
+    final owner = match['owner'];
+    final repo = match['repo'];
+    final index = int.tryParse(match['index'] ?? '');
+
+    if (type == 'issue' && index != null && owner != null && repo != null) {
+      return MaterialPageRoute(
+        builder: (_) => IssueDetailPage(owner: owner, repo: repo, index: index),
+      );
+    } else if (type == 'pull' && index != null && owner != null && repo != null) {
+      return MaterialPageRoute(
+        builder: (_) => PRDetailPage(owner: owner, repo: repo, index: index),
+      );
+    } else if (type == 'repo' && owner != null && repo != null) {
+      return MaterialPageRoute(
+        builder: (_) => RepoDetailPage(owner: owner, repo: repo),
+      );
+    }
+
+    return null;
+  }
+
+  Map<String, String>? _parsePath(String path) {
+    final issuePattern = RegExp(r'^/([^/]+)/([^/]+)/issues/(\d+)$');
+    final prPattern = RegExp(r'^/([^/]+)/([^/]+)/pulls/(\d+)$');
+    final repoPattern = RegExp(r'^/([^/]+)/([^/]+)$');
+
+    if (issuePattern.hasMatch(path)) {
+      final match = issuePattern.firstMatch(path)!;
+      return {
+        'type': 'issue',
+        'owner': match.group(1)!,
+        'repo': match.group(2)!,
+        'index': match.group(3)!,
+      };
+    }
+
+    if (prPattern.hasMatch(path)) {
+      final match = prPattern.firstMatch(path)!;
+      return {
+        'type': 'pull',
+        'owner': match.group(1)!,
+        'repo': match.group(2)!,
+        'index': match.group(3)!,
+      };
+    }
+
+    if (repoPattern.hasMatch(path)) {
+      final match = repoPattern.firstMatch(path)!;
+      return {
+        'type': 'repo',
+        'owner': match.group(1)!,
+        'repo': match.group(2)!,
+      };
+    }
+
+    return null;
   }
 }

@@ -255,5 +255,7 @@
   "noUsersFound": "No users found",
   "pleaseEnterEmail": "Please enter an email",
   "fullName": "Full name",
-  "mustChangePassword": "Must change password on first login"
+  "mustChangePassword": "Must change password on first login",
+  "newIssue": "New Issue",
+  "pleaseEnterTitle": "Please enter a title"
 }

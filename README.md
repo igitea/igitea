@@ -34,6 +34,9 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 - **i18n**: Full internationalization support with 10 languages (EN, ZH, ZH_TW, JA, KO, ES, FR, DE, PT, RU)
 - Language selector in Settings with persistent preference
 - Admin user management: list, create, edit, delete users (admin only)
+- Notification actions: mark single as read, mark all as read
+- Create Issue page for creating new issues in any repository
+- Deep link support: open issues, PRs, and repositories via URL paths
 - 247 unit/widget tests, `flutter analyze` clean
 
 ## Project Status

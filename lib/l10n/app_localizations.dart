@@ -1642,6 +1642,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Must change password on first login'**
   String get mustChangePassword;
+
+  /// No description provided for @pleaseEnterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a title'**
+  String get pleaseEnterTitle;
 }
 
 class _AppLocalizationsDelegate

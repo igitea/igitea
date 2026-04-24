@@ -68,12 +68,14 @@ class _NotificationPageState extends State<NotificationPage> {
     );
   }
 
-  void _markAllRead() {
+  void _markAllRead() async {
     final l10n = AppLocalizations.of(context)!;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l10n.allNotificationsMarkedAsRead)),
-    );
-    Injection.notificationNotifier.listNotifications();
+    await Injection.notificationNotifier.markAllRead();
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.allNotificationsMarkedAsRead)),
+      );
+    }
   }
 }
 
@@ -146,17 +148,20 @@ class _NotificationCard extends StatelessWidget {
           ],
         ),
         trailing: isUnread
-            ? Container(
-                width: 8,
-                height: 8,
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary,
-                  shape: BoxShape.circle,
-                ),
+            ? IconButton(
+                icon: const Icon(Icons.check_circle_outline),
+                tooltip: l10n.markRead,
+                onPressed: () => _markAsRead(context),
               )
             : null,
       ),
     );
+  }
+
+  void _markAsRead(BuildContext context) async {
+    if (notification.id == null) return;
+    await Injection.notificationNotifier.markThreadRead(notification.id!.toString());
+    await Injection.notificationNotifier.listNotifications();
   }
 
   IconData _subjectIcon(String? type) {

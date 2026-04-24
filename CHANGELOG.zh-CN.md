@@ -1,5 +1,36 @@
 # 更新日志
 
+## [0.16.0] - 2026-04-24
+
+### 新增 — 通知操作
+
+- `NotificationNotifier` 新增 `markAllRead()` 方法，使用 `MarkNotificationsReadUseCase`
+- AppBar "全部标记为已读" 按钮现在调用真实 API，不再只是显示提示
+- 单条通知 "标记为已读" 按钮（未读通知卡片上的勾选图标）
+- 标记已读后自动刷新通知列表
+
+### 新增 — 新建 Issue 页面
+
+- `CreateIssuePage` 标题和正文输入表单
+- AppBar 提交按钮带加载指示器
+- 验证：标题必填
+- 创建成功后返回创建的 Issue，失败时显示提示
+
+### 新增 — Deep Link 支持
+
+- `IGiteaApp` 新增 `onGenerateRoute` 支持基于 URL 的导航
+- 支持路径：
+  - `/{owner}/{repo}` → 仓库详情页
+  - `/{owner}/{repo}/issues/{id}` → Issue 详情页
+  - `/{owner}/{repo}/pulls/{id}` → PR 详情页
+
+### 变更
+
+- `NotificationNotifier` 构造函数和 `updateUseCases()` 中新增 `MarkNotificationsReadUseCase`
+- `Injection` 类更新所有 3 个初始化路径
+- 新增 ARB 键：`newIssue`、`pleaseEnterTitle`
+- 247 个测试通过，`flutter analyze` 无警告
+
 ## [0.15.0] - 2026-04-24
 
 ### 新增 — 管理员用户管理

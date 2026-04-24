@@ -160,5 +160,7 @@
   "noUsersFound": "未找到用户",
   "pleaseEnterEmail": "请输入邮箱",
   "fullName": "全名",
-  "mustChangePassword": "首次登录必须修改密码"
+  "mustChangePassword": "首次登录必须修改密码",
+  "newIssue": "新建问题",
+  "pleaseEnterTitle": "请输入标题"
 }

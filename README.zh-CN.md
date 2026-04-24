@@ -34,6 +34,9 @@
 - **国际化**：支持 10 种语言（EN、ZH、ZH_TW、JA、KO、ES、FR、DE、PT、RU）
 - 设置页语言选择器，语言偏好持久化
 - 管理员用户管理：列表、创建、编辑、删除用户（仅管理员）
+- 通知操作：单条标记已读、全部标记已读
+- 新建 Issue 页面：在任何仓库创建 Issue
+- Deep Link 支持：通过 URL 路径打开 Issue、PR 和仓库
 - 247 个单元/Widget 测试，`flutter analyze` 无警告
 
 ## 项目进度

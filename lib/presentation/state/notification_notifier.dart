@@ -36,6 +36,7 @@ class NotificationError extends NotificationState {
 class NotificationNotifier extends ChangeNotifier {
   ListNotificationsUseCase _listNotificationsUseCase;
   MarkThreadReadUseCase _markThreadReadUseCase;
+  MarkNotificationsReadUseCase _markNotificationsReadUseCase;
   CheckNewNotificationsUseCase _checkNewAvailableUseCase;
 
   NotificationState _state = const NotificationInitial();
@@ -44,18 +45,22 @@ class NotificationNotifier extends ChangeNotifier {
   NotificationNotifier({
     required ListNotificationsUseCase listNotificationsUseCase,
     required MarkThreadReadUseCase markThreadReadUseCase,
+    required MarkNotificationsReadUseCase markNotificationsReadUseCase,
     required CheckNewNotificationsUseCase checkNewAvailableUseCase,
   }) : _listNotificationsUseCase = listNotificationsUseCase,
        _markThreadReadUseCase = markThreadReadUseCase,
+       _markNotificationsReadUseCase = markNotificationsReadUseCase,
        _checkNewAvailableUseCase = checkNewAvailableUseCase;
 
   void updateUseCases({
     required ListNotificationsUseCase listNotificationsUseCase,
     required MarkThreadReadUseCase markThreadReadUseCase,
+    required MarkNotificationsReadUseCase markNotificationsReadUseCase,
     required CheckNewNotificationsUseCase checkNewAvailableUseCase,
   }) {
     _listNotificationsUseCase = listNotificationsUseCase;
     _markThreadReadUseCase = markThreadReadUseCase;
+    _markNotificationsReadUseCase = markNotificationsReadUseCase;
     _checkNewAvailableUseCase = checkNewAvailableUseCase;
   }
 
@@ -100,6 +105,17 @@ class NotificationNotifier extends ChangeNotifier {
         notifyListeners();
       case Right<Failure, void>():
         break;
+    }
+  }
+
+  Future<void> markAllRead() async {
+    final result = await _markNotificationsReadUseCase.call();
+    switch (result) {
+      case Left<Failure, void>(:final value):
+        _state = NotificationError(value.message);
+        notifyListeners();
+      case Right<Failure, void>():
+        await listNotifications();
     }
   }
 

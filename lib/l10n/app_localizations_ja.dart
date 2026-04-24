@@ -823,4 +823,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get mustChangePassword => 'Must change password on first login';
+
+  @override
+  String get pleaseEnterTitle => 'Please enter a title';
 }
