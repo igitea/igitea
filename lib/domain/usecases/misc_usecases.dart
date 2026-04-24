@@ -35,3 +35,47 @@ class GetNodeInfoUseCase {
     return _repository.getNodeInfo();
   }
 }
+
+class GetGeneralAPISettingsUseCase {
+  final MiscRepository _repository;
+
+  GetGeneralAPISettingsUseCase({required MiscRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, GeneralAPISettings>> call() async {
+    return _repository.getGeneralAPISettings();
+  }
+}
+
+class GetGeneralUISettingsUseCase {
+  final MiscRepository _repository;
+
+  GetGeneralUISettingsUseCase({required MiscRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, GeneralUISettings>> call() async {
+    return _repository.getGeneralUISettings();
+  }
+}
+
+class GetGeneralAttachmentSettingsUseCase {
+  final MiscRepository _repository;
+
+  GetGeneralAttachmentSettingsUseCase({required MiscRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, GeneralAttachmentSettings>> call() async {
+    return _repository.getGeneralAttachmentSettings();
+  }
+}
+
+class GetGeneralRepoSettingsUseCase {
+  final MiscRepository _repository;
+
+  GetGeneralRepoSettingsUseCase({required MiscRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, GeneralRepoSettings>> call() async {
+    return _repository.getGeneralRepositorySettings();
+  }
+}

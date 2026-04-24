@@ -96,9 +96,15 @@ class Injection {
   static late CreateUserUseCase createUserUseCase;
   static late DeleteUserUseCase deleteUserUseCase;
   static late ListCronTasksUseCase listCronTasksUseCase;
+  static late EditUserUseCase editUserUseCase;
+  static late RunCronTaskUseCase runCronTaskUseCase;
   static late GetGitignoreTemplatesUseCase getGitignoreTemplatesUseCase;
   static late RenderMarkdownUseCase renderMarkdownUseCase;
   static late GetNodeInfoUseCase getNodeInfoUseCase;
+  static late GetGeneralAPISettingsUseCase getGeneralAPISettingsUseCase;
+  static late GetGeneralUISettingsUseCase getGeneralUISettingsUseCase;
+  static late GetGeneralAttachmentSettingsUseCase getGeneralAttachmentSettingsUseCase;
+  static late GetGeneralRepoSettingsUseCase getGeneralRepoSettingsUseCase;
 
   static late AuthNotifier authNotifier;
   static late UserNotifier userNotifier;
@@ -199,6 +205,12 @@ class Injection {
     );
     renderMarkdownUseCase = RenderMarkdownUseCase(repository: miscRepository);
     getNodeInfoUseCase = GetNodeInfoUseCase(repository: miscRepository);
+    getGeneralAPISettingsUseCase = GetGeneralAPISettingsUseCase(repository: miscRepository);
+    getGeneralUISettingsUseCase = GetGeneralUISettingsUseCase(repository: miscRepository);
+    getGeneralAttachmentSettingsUseCase = GetGeneralAttachmentSettingsUseCase(repository: miscRepository);
+    getGeneralRepoSettingsUseCase = GetGeneralRepoSettingsUseCase(repository: miscRepository);
+    editUserUseCase = EditUserUseCase(repository: adminRepository);
+    runCronTaskUseCase = RunCronTaskUseCase(repository: adminRepository);
   }
 
   static void initialize({

@@ -6,38 +6,10 @@ import '../../core/errors/failures.dart';
 import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../domain/entities/auth_state.dart';
-import '../../presentation/state/theme_notifier.dart';
 import '../../presentation/state/user_notifier.dart';
 import '../widgets/org_avatar.dart';
 import '../widgets/user_avatar.dart';
-
-const _languageColors = <String, Color>{
-  'Dart': Color(0xFF00B4AB),
-  'TypeScript': Color(0xFF3178C6),
-  'JavaScript': Color(0xFFF7DF1E),
-  'Python': Color(0xFF3572A5),
-  'Java': Color(0xFFB07219),
-  'Go': Color(0xFF00ADD8),
-  'Rust': Color(0xFFDEA584),
-  'C': Color(0xFF555555),
-  'C++': Color(0xFFF34B7D),
-  'C#': Color(0xFF178600),
-  'Ruby': Color(0xFFCC342D),
-  'PHP': Color(0xFF4F5D95),
-  'Swift': Color(0xFFF05138),
-  'Kotlin': Color(0xFFA97BFF),
-  'Shell': Color(0xFF89E051),
-  'HTML': Color(0xFFE34C26),
-  'CSS': Color(0xFF563D7C),
-  'Lua': Color(0xFF000080),
-  'Scala': Color(0xFFDC322F),
-  'Vue': Color(0xFF41B883),
-  'Objective-C': Color(0xFF438EFF),
-  'Perl': Color(0xFF0298C3),
-  'Haskell': Color(0xFF5E5086),
-  'Elixir': Color(0xFF6E4A7E),
-  'Clojure': Color(0xFFDB5855),
-};
+import 'settings_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -189,7 +161,16 @@ class _ProfileContent extends StatelessWidget {
             _OrgsSection(orgs: orgs, loading: orgsLoading),
           ],
           const SizedBox(height: 16),
-          _SettingsSection(),
+          ListTile(
+            leading: const Icon(Icons.settings_outlined),
+            title: const Text('Settings'),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => const SettingsPage(),
+              ));
+            },
+          ),
           const SizedBox(height: 24),
           _SignOutButton(),
         ],
@@ -415,90 +396,6 @@ class _OrgsSection extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-class _SettingsSection extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Card(
-        child: Column(
-          children: [
-            ListenableBuilder(
-              listenable: Injection.themeNotifier,
-              builder: (context, _) {
-                return ListTile(
-                  leading: const Icon(Icons.palette_outlined),
-                  title: const Text('Theme'),
-                  subtitle: Text(_themeModeLabel(Injection.themeNotifier.themeMode)),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () => _showThemeDialog(context),
-                );
-              },
-            ),
-            const Divider(height: 1),
-            ListenableBuilder(
-              listenable: Injection.authNotifier,
-              builder: (context, _) {
-                final state = Injection.authNotifier.state;
-                final server = state is AuthAuthenticated ? state.baseUrl : 'Not connected';
-                return ListTile(
-                  leading: const Icon(Icons.dns_outlined),
-                  title: const Text('Server'),
-                  subtitle: Text(server, style: theme.textTheme.bodySmall),
-                );
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  String _themeModeLabel(ThemeMode mode) {
-    switch (mode) {
-      case ThemeMode.light:
-        return 'Light';
-      case ThemeMode.dark:
-        return 'Dark';
-      case ThemeMode.system:
-        return 'System';
-    }
-  }
-
-  void _showThemeDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (ctx) => SimpleDialog(
-        title: const Text('Choose Theme'),
-        children: [
-          SimpleDialogOption(
-            onPressed: () {
-              Injection.themeNotifier.setThemeMode(ThemeMode.system);
-              Navigator.of(ctx).pop();
-            },
-            child: const Text('System'),
-          ),
-          SimpleDialogOption(
-            onPressed: () {
-              Injection.themeNotifier.setThemeMode(ThemeMode.light);
-              Navigator.of(ctx).pop();
-            },
-            child: const Text('Light'),
-          ),
-          SimpleDialogOption(
-            onPressed: () {
-              Injection.themeNotifier.setThemeMode(ThemeMode.dark);
-              Navigator.of(ctx).pop();
-            },
-            child: const Text('Dark'),
-          ),
-        ],
-      ),
     );
   }
 }

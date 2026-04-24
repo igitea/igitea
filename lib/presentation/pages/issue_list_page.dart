@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
-import '../../domain/usecases/issue_usecases.dart';
-import '../state/issue_notifier.dart';
+import '../../presentation/state/issue_notifier.dart';
 import '../widgets/user_avatar.dart';
+import 'issue_detail_page.dart';
 
 class IssueListPage extends StatefulWidget {
   const IssueListPage({super.key});
@@ -14,6 +14,19 @@ class IssueListPage extends StatefulWidget {
 
 class _IssueListPageState extends State<IssueListPage> {
   String? _selectedState;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadIssues();
+    });
+  }
+
+  void _loadIssues() {
+    final state = _selectedState ?? 'open';
+    Injection.issueNotifier.searchIssues('', state: state);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +40,7 @@ class _IssueListPageState extends State<IssueListPage> {
               selectedState: _selectedState,
               onSelected: (state) {
                 setState(() => _selectedState = state);
+                _loadIssues();
               },
             ),
           ),
@@ -54,7 +68,7 @@ class _IssueListPageState extends State<IssueListPage> {
                   ),
                   IssueListLoaded(:final issues) => _IssueList(issues: issues),
                   _ => const Center(
-                    child: Text('Select a repository to view issues'),
+                    child: CircularProgressIndicator(),
                   ),
                 };
               },
@@ -62,12 +76,6 @@ class _IssueListPageState extends State<IssueListPage> {
           ),
         ],
       ),
-    );
-  }
-
-  void _loadIssues() {
-    Injection.issueNotifier.listIssues(
-      ListIssuesParams(owner: '', repo: '', state: _selectedState),
     );
   }
 }
@@ -113,13 +121,19 @@ class _IssueList extends StatelessWidget {
     if (issues.isEmpty) {
       return const Center(child: Text('No issues found.'));
     }
-    return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      itemCount: issues.length,
-      itemBuilder: (context, index) {
-        final issue = issues[index];
-        return _IssueCard(issue: issue);
+    return RefreshIndicator(
+      onRefresh: () async {
+        final state = _IssueListPageState()._selectedState ?? 'open';
+        Injection.issueNotifier.searchIssues('', state: state);
       },
+      child: ListView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: issues.length,
+        itemBuilder: (context, index) {
+          final issue = issues[index];
+          return _IssueCard(issue: issue);
+        },
+      ),
     );
   }
 }
@@ -136,50 +150,105 @@ class _IssueCard extends StatelessWidget {
     final stateIcon = isOpen ? Icons.error_outline : Icons.check_circle;
     final stateColor = isOpen ? Colors.green : Colors.purple;
 
+    final repoFullName = issue.repository?.full_name ?? '';
+    final owner = issue.repository?.owner ?? '';
+    final repo = issue.repository?.name ?? '';
+    final canNavigate = owner.isNotEmpty && repo.isNotEmpty && issue.number != null;
+
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
-      child: ListTile(
-        leading: issue.user != null
-            ? UserAvatar(user: issue.user!, radius: 16)
-            : Icon(stateIcon, color: stateColor),
-        title: Text(
-          issue.title ?? 'Untitled',
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-        ),
-        subtitle: Row(
-          children: [
-            Text('#${issue.number ?? 0}'),
-            if (issue.labels != null && issue.labels!.isNotEmpty) ...[
-              const SizedBox(width: 8),
-              ...issue.labels!.take(3).map((label) {
-                return Padding(
-                  padding: const EdgeInsets.only(right: 4),
-                  child: Chip(
-                    label: Text(
-                      label.name ?? '',
-                      style: const TextStyle(fontSize: 11),
-                    ),
-                    visualDensity: VisualDensity.compact,
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      child: InkWell(
+        onTap: canNavigate
+            ? () {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (_) => IssueDetailPage(
+                    owner: owner,
+                    repo: repo,
+                    index: issue.number!,
                   ),
-                );
-              }),
-            ],
-          ],
-        ),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: [
-            if (issue.user?.login != null)
-              Text(issue.user!.login!, style: theme.textTheme.bodySmall),
-            if (issue.updated_at != null)
-              Text(
-                _formatDate(issue.updated_at!),
-                style: theme.textTheme.labelSmall,
+                ));
+              }
+            : null,
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(stateIcon, size: 16, color: stateColor),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      issue.title ?? 'Untitled',
+                      style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  if (issue.number != null)
+                    Text('#${issue.number}', style: theme.textTheme.bodySmall),
+                ],
               ),
-          ],
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  if (issue.user != null) ...[
+                    UserAvatar(user: issue.user!, radius: 10),
+                    const SizedBox(width: 4),
+                    Text(issue.user!.login ?? '', style: theme.textTheme.labelSmall),
+                  ],
+                  const Spacer(),
+                  if (repoFullName.isNotEmpty) ...[
+                    Text(repoFullName, style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    )),
+                  ],
+                ],
+              ),
+              if (issue.labels != null && issue.labels!.isNotEmpty) ...[
+                const SizedBox(height: 4),
+                Wrap(
+                  spacing: 4,
+                  runSpacing: 4,
+                  children: issue.labels!.take(3).map((label) {
+                    return Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: _parseColor(label.color)?.withValues(alpha: 0.2) ?? theme.colorScheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        label.name ?? '',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: _parseColor(label.color) ?? theme.colorScheme.onPrimaryContainer,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ],
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  if (issue.comments != null) ...[
+                    Icon(Icons.comment_outlined, size: 14, color: theme.colorScheme.onSurfaceVariant),
+                    const SizedBox(width: 2),
+                    Text('${issue.comments}', style: theme.textTheme.labelSmall),
+                    const SizedBox(width: 12),
+                  ],
+                  if (issue.updated_at != null) ...[
+                    Text(
+                      _formatDate(issue.updated_at!),
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -193,5 +262,14 @@ class _IssueCard extends StatelessWidget {
     if (diff.inDays > 0) return '${diff.inDays}d ago';
     if (diff.inHours > 0) return '${diff.inHours}h ago';
     return 'just now';
+  }
+
+  Color? _parseColor(String? colorStr) {
+    if (colorStr == null || colorStr.isEmpty) return null;
+    try {
+      return Color(int.parse(colorStr.replaceFirst('#', ''), radix: 16) + 0xFF000000);
+    } catch (_) {
+      return null;
+    }
   }
 }

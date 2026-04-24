@@ -68,3 +68,32 @@ class ListCronTasksUseCase {
     return _repository.listCron(page: page, limit: limit);
   }
 }
+
+class EditUserUseCase {
+  final AdminRepository _repository;
+
+  EditUserUseCase({required AdminRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, User>> call(EditUserParams params) async {
+    return _repository.editUser(params.username, params.body);
+  }
+}
+
+class EditUserParams {
+  final String username;
+  final Map<String, dynamic> body;
+
+  EditUserParams({required this.username, required this.body});
+}
+
+class RunCronTaskUseCase {
+  final AdminRepository _repository;
+
+  RunCronTaskUseCase({required AdminRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, void>> call(String task) async {
+    return _repository.runCron(task);
+  }
+}

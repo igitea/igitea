@@ -284,13 +284,13 @@ class IssueNotifier extends ChangeNotifier {
     }
   }
 
-  Future<void> searchIssues(String query) async {
+  Future<void> searchIssues(String query, {String? state}) async {
     _state = const IssueLoading();
     notifyListeners();
 
     lastSearchQuery = query;
     final result = await _searchIssuesUseCase.call(
-      SearchIssuesParams(q: query),
+      SearchIssuesParams(q: query.isEmpty ? null : query, state: state),
     );
     switch (result) {
       case Left<Failure, List<Issue>>(:final value):
