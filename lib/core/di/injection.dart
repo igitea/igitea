@@ -30,6 +30,7 @@ import '../../presentation/state/issue_notifier.dart';
 import '../../presentation/state/notification_notifier.dart';
 import '../../presentation/state/organization_notifier.dart';
 import '../../presentation/state/repo_notifier.dart';
+import '../../presentation/state/theme_notifier.dart';
 import '../../presentation/state/user_notifier.dart';
 
 class Injection {
@@ -105,6 +106,7 @@ class Injection {
   static late IssueNotifier issueNotifier;
   static late OrgNotifier organizationNotifier;
   static late NotificationNotifier notificationNotifier;
+  static late ThemeNotifier themeNotifier;
 
   static bool _initialized = false;
 
@@ -306,6 +308,7 @@ class Injection {
         markThreadReadUseCase: markThreadReadUseCase,
         checkNewAvailableUseCase: checkNewNotificationsUseCase,
       );
+      themeNotifier = ThemeNotifier();
       _initialized = true;
     }
   }

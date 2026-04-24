@@ -8,6 +8,7 @@ import 'repo_list_page.dart';
 import 'issue_list_page.dart';
 import 'notification_page.dart';
 import 'profile_page.dart';
+import 'settings_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -24,12 +25,9 @@ class _HomePageState extends State<HomePage> {
     _TabData(Icons.dashboard_outlined, Icons.dashboard, 'Dashboard'),
     _TabData(Icons.source_outlined, Icons.source, 'Repositories'),
     _TabData(Icons.bug_report_outlined, Icons.bug_report, 'Issues'),
-    _TabData(
-      Icons.notifications_outlined,
-      Icons.notifications,
-      'Notifications',
-    ),
+    _TabData(Icons.notifications_outlined, Icons.notifications, 'Notifications'),
     _TabData(Icons.person_outline, Icons.person, 'Profile'),
+    _TabData(Icons.settings_outlined, Icons.settings, 'Settings'),
   ];
 
   static final _pages = <Widget>[
@@ -39,6 +37,7 @@ class _HomePageState extends State<HomePage> {
     const IssueListPage(),
     const NotificationPage(),
     const ProfilePage(),
+    const SettingsPage(),
   ];
 
   @override
@@ -64,13 +63,6 @@ class _HomePageState extends State<HomePage> {
         return Scaffold(
           appBar: AppBar(
             title: Text(user.login ?? 'iGitea'),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.logout),
-                tooltip: 'Sign Out',
-                onPressed: _logout,
-              ),
-            ],
           ),
           body: Row(
             children: [

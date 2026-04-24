@@ -50,13 +50,17 @@ void main() {
       expect(find.text('testuser'), findsOneWidget);
     });
 
-    testWidgets('shows sign out button', (tester) async {
+    testWidgets('shows sign out in settings tab', (tester) async {
       Injection.authNotifier.state = testAuthState;
 
       await tester.pumpWidget(testWidget());
       await tester.pumpAndSettle();
 
-      expect(find.byIcon(Icons.logout), findsOneWidget);
+      // Navigate to settings tab
+      await tester.tap(find.text('Settings'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Sign Out'), findsOneWidget);
     });
 
     testWidgets('shows search page as default tab', (tester) async {

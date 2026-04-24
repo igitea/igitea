@@ -17,6 +17,7 @@ class _IGiteaAppState extends State<IGiteaApp> {
     super.initState();
     Injection.initialize();
     _tryRestoreSession();
+    Injection.themeNotifier.loadThemeMode();
   }
 
   Future<void> _tryRestoreSession() async {
@@ -26,7 +27,7 @@ class _IGiteaAppState extends State<IGiteaApp> {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: Injection.authNotifier,
+      listenable: Listenable.merge([Injection.authNotifier, Injection.themeNotifier]),
       builder: (context, child) {
         final state = Injection.authNotifier.state;
 
@@ -55,7 +56,7 @@ class _IGiteaAppState extends State<IGiteaApp> {
             ),
             useMaterial3: true,
           ),
-          themeMode: ThemeMode.system,
+          themeMode: Injection.themeNotifier.themeMode,
           home: home,
         );
       },
