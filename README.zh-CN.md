@@ -8,7 +8,7 @@
 
 <p float="left">
   <img src="doc/login.png" width="240" />
-  <img src="doc/dashboard.png" width="240" />
+  <img src="doc/profile.png" width="240" />
   <img src="doc/repos.png" width="240" />
   <img src="doc/issues.png" width="240" />
 </p>
