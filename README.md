@@ -15,7 +15,8 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 ### Core
 - Cross-platform: Android, iOS, macOS, Linux, Windows, **Web**
 - Clean Architecture + Repository Pattern
-- Material 3 Design System
+- Material 3 Design System with premium UI polish
+- Consistent 4px spacing grid and typography hierarchy across all pages
 - 120+ data models auto-generated from OpenAPI spec
 - 35+ domain use cases with `Either<Failure, T>` pattern
 

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/user_notifier.dart';
+import '../widgets/empty_state.dart';
+import '../widgets/premium_card.dart';
 import '../widgets/user_avatar.dart';
 import 'issue_list_page.dart';
 import 'notification_page.dart';
@@ -41,7 +44,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text('${l10n.error}: $message'),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: UIConstants.md),
                   FilledButton(
                     onPressed: () => Injection.userNotifier.loadCurrentUser(),
                     child: Text(l10n.retry),
@@ -58,27 +61,10 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Widget _buildWelcome(BuildContext context, AppLocalizations l10n) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.code,
-            size: 64,
-            color: Theme.of(context).colorScheme.primary,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            l10n.welcomeToIgitea,
-            style: Theme.of(context).textTheme.headlineMedium,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            l10n.signInToGetStarted,
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-        ],
-      ),
+    return EmptyState(
+      icon: Icons.code,
+      title: l10n.welcomeToIgitea,
+      subtitle: l10n.signInToGetStarted,
     );
   }
 
@@ -86,26 +72,35 @@ class _DashboardPageState extends State<DashboardPage> {
     return RefreshIndicator(
       onRefresh: () => Injection.userNotifier.loadCurrentUser(),
       child: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(UIConstants.md),
         children: [
           _WelcomeCard(user: user),
-          const SizedBox(height: 16),
-          Text(l10n.quickActions, style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 8),
+          const SizedBox(height: UIConstants.md),
+          Text(
+            l10n.quickActions,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: UIConstants.sm),
           _QuickActions(l10n: l10n),
-          const SizedBox(height: 16),
+          const SizedBox(height: UIConstants.md),
           Text(
             l10n.yourRepositories,
-            style: Theme.of(context).textTheme.titleMedium,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: UIConstants.sm),
           _RepoSummary(l10n: l10n),
-          const SizedBox(height: 16),
+          const SizedBox(height: UIConstants.md),
           Text(
             l10n.recentActivity,
-            style: Theme.of(context).textTheme.titleMedium,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: UIConstants.sm),
           _ActivityFeed(user: user),
         ],
       ),
@@ -122,28 +117,32 @@ class _WelcomeCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            UserAvatar(user: user, radius: 28),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    l10n.helloParams(user.full_name ?? user.login ?? l10n.user),
-                    style: theme.textTheme.titleLarge,
+    return PremiumCard(
+      child: Row(
+        children: [
+          UserAvatar(user: user, radius: UIConstants.avatarXl),
+          const SizedBox(width: UIConstants.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.helloParams(user.full_name ?? user.login ?? l10n.user),
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w600,
                   ),
-                  if (user.login != null)
-                    Text('@${user.login}', style: theme.textTheme.bodyMedium),
-                ],
-              ),
+                ),
+                if (user.login != null)
+                  Text(
+                    '@${user.login}',
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -167,7 +166,7 @@ class _QuickActions extends StatelessWidget {
             ).push(MaterialPageRoute(builder: (_) => const RepoListPage())),
           ),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: UIConstants.sm),
         Expanded(
           child: _ActionCard(
             icon: Icons.error_outline,
@@ -177,7 +176,7 @@ class _QuickActions extends StatelessWidget {
             ).push(MaterialPageRoute(builder: (_) => const IssueListPage())),
           ),
         ),
-        const SizedBox(width: 8),
+        const SizedBox(width: UIConstants.sm),
         Expanded(
           child: _ActionCard(
             icon: Icons.notifications,
@@ -206,20 +205,15 @@ class _ActionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-          child: Column(
-            children: [
-              Icon(icon, size: 28, color: theme.colorScheme.primary),
-              const SizedBox(height: 8),
-              Text(label, style: theme.textTheme.labelLarge),
-            ],
-          ),
-        ),
+    return PremiumCard(
+      onTap: onTap,
+      padding: const EdgeInsets.symmetric(vertical: UIConstants.md, horizontal: UIConstants.sm),
+      child: Column(
+        children: [
+          Icon(icon, size: UIConstants.iconLg, color: theme.colorScheme.primary),
+          const SizedBox(height: UIConstants.sm),
+          Text(label, style: theme.textTheme.labelLarge),
+        ],
       ),
     );
   }
@@ -237,62 +231,76 @@ class _RepoSummary extends StatelessWidget {
       builder: (context, _) {
         final repos = Injection.userNotifier.repos;
         if (repos.isEmpty) {
-          return Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text(l10n.noRepositoriesFound),
-            ),
+          return PremiumCard(
+            child: Text(l10n.noRepositoriesFound),
           );
         }
         return Column(
           children: repos.take(5).map((repo) {
-            return Card(
-              margin: const EdgeInsets.only(bottom: 8),
-              child: ListTile(
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (_) => RepoDetailPage(
-                      owner: repo.owner?.login ?? '',
-                      repo: repo.name ?? '',
+            return PremiumListCard(
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (_) => RepoDetailPage(
+                    owner: repo.owner?.login ?? '',
+                    repo: repo.name ?? '',
+                  ),
+                ));
+              },
+              child: Row(
+                children: [
+                  repo.owner != null
+                      ? UserAvatar(user: repo.owner!, radius: UIConstants.avatarMd)
+                      : Icon(
+                          repo.private == true ? Icons.lock : Icons.public,
+                          color: Theme.of(context).colorScheme.primary,
+                          size: UIConstants.iconMd,
+                        ),
+                  const SizedBox(width: UIConstants.md),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          repo.full_name ?? repo.name ?? '',
+                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        if (repo.description != null && repo.description!.isNotEmpty)
+                          Text(
+                            repo.description!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                      ],
                     ),
-                  ));
-                },
-                leading: repo.owner != null
-                    ? UserAvatar(user: repo.owner!, radius: 16)
-                    : Icon(
-                        repo.private == true ? Icons.lock : Icons.public,
-                        color: Theme.of(context).colorScheme.primary,
+                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (repo.language != null) ...[
+                        Text(
+                          repo.language!,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                        const SizedBox(width: UIConstants.sm),
+                      ],
+                      Icon(
+                        Icons.star_outline,
+                        size: UIConstants.iconSm,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
-                title: Text(repo.full_name ?? repo.name ?? ''),
-                subtitle:
-                    repo.description != null && repo.description!.isNotEmpty
-                    ? Text(
-                        repo.description!,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      )
-                    : null,
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (repo.language != null) ...[
+                      const SizedBox(width: UIConstants.xs),
                       Text(
-                        repo.language!,
+                        '${repo.stars_count ?? 0}',
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
-                      const SizedBox(width: 8),
                     ],
-                    Icon(
-                      Icons.star_outline,
-                      size: 16,
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
-                    ),
-                    Text(
-                      '${repo.stars_count ?? 0}',
-                      style: Theme.of(context).textTheme.bodySmall,
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             );
           }).toList(),
@@ -333,34 +341,49 @@ class _ActivityFeedState extends State<_ActivityFeed> {
         final activities = Injection.userNotifier.activities;
 
         if (activities.isEmpty) {
-          return Card(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Center(child: Text(l10n.noActivity)),
-            ),
+          return PremiumCard(
+            child: Center(child: Text(l10n.noActivity)),
           );
         }
 
         return Column(
           children: activities.take(10).map((activity) {
-            return Card(
-              margin: const EdgeInsets.only(bottom: 8),
-              child: ListTile(
-                leading: activity.act_user != null
-                    ? UserAvatar(user: activity.act_user!, radius: 16)
-                    : Icon(_activityIcon(activity.op_type), size: 20),
-                title: Text(
-                  _activityDescription(activity, l10n),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                subtitle: activity.created != null
-                    ? Text(
-                        _formatDate(activity.created!),
-                        style: theme.textTheme.bodySmall,
-                      )
-                    : null,
-                onTap: () => _navigateToActivity(activity, context),
+            return PremiumListCard(
+              onTap: () => _navigateToActivity(activity, context),
+              child: Row(
+                children: [
+                  activity.act_user != null
+                      ? UserAvatar(user: activity.act_user!, radius: UIConstants.avatarMd)
+                      : Container(
+                          padding: const EdgeInsets.all(UIConstants.xs),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(_activityIcon(activity.op_type), size: UIConstants.iconMd),
+                        ),
+                  const SizedBox(width: UIConstants.md),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          _activityDescription(activity, l10n),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodyMedium,
+                        ),
+                        if (activity.created != null)
+                          Text(
+                            _formatDate(activity.created!),
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             );
           }).toList(),

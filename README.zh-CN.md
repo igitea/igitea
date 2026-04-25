@@ -15,7 +15,8 @@
 ### 核心
 - 跨平台：Android、iOS、macOS、Linux、Windows、**Web**
 - Clean Architecture + Repository Pattern
-- Material 3 设计系统
+- Material 3 设计系统，高级 UI 打磨
+- 统一的 4px 间距网格和字体层级，覆盖所有页面
 - 120+ 个数据模型，基于 OpenAPI 规范自动生成
 - 35+ 个领域用例，采用 `Either<Failure, T>` 模式
 

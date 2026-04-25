@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../core/errors/failures.dart';
 import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../../presentation/state/user_notifier.dart';
+import '../widgets/empty_state.dart';
 import '../widgets/org_avatar.dart';
+import '../widgets/premium_card.dart';
 import '../widgets/user_avatar.dart';
 import 'create_org_page.dart';
 import 'organization_detail_page.dart';
@@ -109,27 +112,15 @@ class _ErrorView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(32),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
-            const SizedBox(height: 16),
-            Text(l10n.failedToLoadProfile, style: theme.textTheme.titleMedium),
-            const SizedBox(height: 8),
-            Text(message, style: theme.textTheme.bodyMedium, textAlign: TextAlign.center),
-            const SizedBox(height: 24),
-            FilledButton.icon(
-              onPressed: onRetry,
-              icon: const Icon(Icons.refresh),
-              label: Text(l10n.retry),
-            ),
-          ],
-        ),
+    return EmptyState(
+      icon: Icons.error_outline,
+      title: l10n.failedToLoadProfile,
+      subtitle: message,
+      action: FilledButton.icon(
+        onPressed: onRetry,
+        icon: const Icon(Icons.refresh),
+        label: Text(l10n.retry),
       ),
     );
   }
@@ -154,39 +145,49 @@ class _ProfileContent extends StatelessWidget {
     return RefreshIndicator(
       onRefresh: () async => onRefresh(),
       child: ListView(
-        padding: const EdgeInsets.only(bottom: 32),
+        padding: const EdgeInsets.only(bottom: UIConstants.xl),
         children: [
           _UserHeader(user: user),
-          const SizedBox(height: 16),
+          const SizedBox(height: UIConstants.md),
           _StatsRow(user: user, l10n: l10n),
-          const SizedBox(height: 16),
+          const SizedBox(height: UIConstants.md),
           _InfoCards(user: user, l10n: l10n),
           if (orgs.isNotEmpty) ...[
-            const SizedBox(height: 16),
+            const SizedBox(height: UIConstants.md),
             _OrgsSection(orgs: orgs, loading: orgsLoading, l10n: l10n),
           ],
-          const SizedBox(height: 16),
-          ListTile(
-            leading: const Icon(Icons.star_outline),
-            title: Text(l10n.starredRepos),
-            trailing: const Icon(Icons.chevron_right),
+          const SizedBox(height: UIConstants.md),
+          PremiumCard(
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
                 builder: (_) => const StarredReposPage(),
               ));
             },
+            child: Row(
+              children: [
+                Icon(Icons.star_outline, color: Theme.of(context).colorScheme.primary),
+                const SizedBox(width: UIConstants.md),
+                Expanded(child: Text(l10n.starredRepos)),
+                const Icon(Icons.chevron_right),
+              ],
+            ),
           ),
-          ListTile(
-            leading: const Icon(Icons.settings_outlined),
-            title: Text(l10n.settings),
-            trailing: const Icon(Icons.chevron_right),
+          PremiumCard(
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
                 builder: (_) => const SettingsPage(),
               ));
             },
+            child: Row(
+              children: [
+                Icon(Icons.settings_outlined, color: Theme.of(context).colorScheme.primary),
+                const SizedBox(width: UIConstants.md),
+                Expanded(child: Text(l10n.settings)),
+                const Icon(Icons.chevron_right),
+              ],
+            ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: UIConstants.lg),
           _SignOutButton(),
         ],
       ),
@@ -203,47 +204,59 @@ class _UserHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
-      child: Column(
-        children: [
-          UserAvatar(user: user, radius: 52),
-          const SizedBox(height: 12),
-          Text(
-            user.full_name ?? user.login ?? l10n.unknownUser,
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          if (user.login != null) ...[
-            const SizedBox(height: 2),
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
+            theme.colorScheme.surface,
+          ],
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(UIConstants.lg, UIConstants.lg, UIConstants.lg, UIConstants.md),
+        child: Column(
+          children: [
+            UserAvatar(user: user, radius: UIConstants.avatarXxl),
+            const SizedBox(height: UIConstants.sm),
             Text(
-              '@${user.login}',
-              style: theme.textTheme.bodyLarge?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
+              user.full_name ?? user.login ?? l10n.unknownUser,
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.bold,
               ),
             ),
-          ],
-          if (user.description != null && user.description!.isNotEmpty) ...[
-            const SizedBox(height: 8),
-            Text(
-              user.description!,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
+            if (user.login != null) ...[
+              const SizedBox(height: UIConstants.xs),
+              Text(
+                '@${user.login}',
+                style: theme.textTheme.bodyLarge?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
               ),
-              textAlign: TextAlign.center,
-            ),
+            ],
+            if (user.description != null && user.description!.isNotEmpty) ...[
+              const SizedBox(height: UIConstants.sm),
+              Text(
+                user.description!,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+            if (user.is_admin == true) ...[
+              const SizedBox(height: UIConstants.sm),
+              Chip(
+                label: Text(l10n.admin),
+                avatar: Icon(Icons.shield, size: UIConstants.iconSm, color: theme.colorScheme.onError),
+                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                visualDensity: VisualDensity.compact,
+              ),
+            ],
           ],
-          if (user.is_admin == true) ...[
-            const SizedBox(height: 8),
-            Chip(
-              label: Text(l10n.admin),
-              avatar: Icon(Icons.shield, size: 16, color: theme.colorScheme.onError),
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              visualDensity: VisualDensity.compact,
-            ),
-          ],
-        ],
+        ),
       ),
     );
   }
@@ -258,11 +271,13 @@ class _StatsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: UIConstants.pagePadding,
       child: Row(
         children: [
           Expanded(child: _StatItem(label: l10n.repos, value: '${user.starred_repos_count ?? 0}')),
+          const SizedBox(width: UIConstants.sm),
           Expanded(child: _StatItem(label: l10n.followers, value: '${user.followers_count ?? 0}')),
+          const SizedBox(width: UIConstants.sm),
           Expanded(child: _StatItem(label: l10n.following, value: '${user.following_count ?? 0}')),
         ],
       ),
@@ -279,18 +294,16 @@ class _StatItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        child: Column(
-          children: [
-            Text(value, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-            const SizedBox(height: 2),
-            Text(label, style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            )),
-          ],
-        ),
+    return PremiumCard(
+      padding: const EdgeInsets.symmetric(vertical: UIConstants.md),
+      child: Column(
+        children: [
+          Text(value, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+          const SizedBox(height: UIConstants.xs),
+          Text(label, style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          )),
+        ],
       ),
     );
   }
@@ -332,8 +345,9 @@ class _InfoCards extends StatelessWidget {
     if (items.isEmpty) return const SizedBox.shrink();
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Card(
+      padding: UIConstants.pagePadding,
+      child: PremiumCard(
+        padding: EdgeInsets.zero,
         child: Column(children: items),
       ),
     );
@@ -369,10 +383,10 @@ class _InfoTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return ListTile(
-      leading: Icon(icon, size: 20, color: theme.colorScheme.primary),
+      leading: Icon(icon, size: UIConstants.iconMd, color: theme.colorScheme.primary),
       title: Text(label, style: theme.textTheme.bodyMedium),
       dense: true,
-      trailing: onTap != null ? const Icon(Icons.open_in_new, size: 16) : null,
+      trailing: onTap != null ? const Icon(Icons.open_in_new, size: UIConstants.iconSm) : null,
       onTap: onTap,
     );
   }
@@ -392,13 +406,14 @@ class _OrgsSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
+          padding: UIConstants.pagePadding,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(l10n.organisations, style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              )),
+              Text(
+                l10n.organisations,
+                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+              ),
               IconButton(
                 icon: const Icon(Icons.add),
                 onPressed: () {
@@ -413,14 +428,14 @@ class _OrgsSection extends StatelessWidget {
             ],
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: UIConstants.sm),
         SizedBox(
           height: 56,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: UIConstants.pagePadding,
             itemCount: orgs.length,
-            separatorBuilder: (_, _) => const SizedBox(width: 12),
+            separatorBuilder: (_, _) => const SizedBox(width: UIConstants.md),
             itemBuilder: (context, index) {
               final org = orgs[index];
               return Tooltip(
@@ -436,7 +451,7 @@ class _OrgsSection extends StatelessWidget {
                       ),
                     );
                   },
-                  child: OrgAvatar(org: org, radius: 24),
+                  child: OrgAvatar(org: org, radius: UIConstants.avatarXl),
                 ),
               );
             },
@@ -453,7 +468,7 @@ class _SignOutButton extends StatelessWidget {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: UIConstants.pagePadding,
       child: FilledButton.icon(
         onPressed: () => _handleSignOut(context),
         icon: const Icon(Icons.logout),

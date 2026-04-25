@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.20.0] - 2026-04-26
+
+### Changed — UI Quality Enhancement
+
+- **Alignment fixes**: Established consistent 4px-based spacing grid (`UIConstants`) across all pages
+  - Standardized page padding to 16px horizontal, card margins to 12px bottom, internal card padding to 16px
+  - Fixed inconsistent list paddings, tab content misalignments, and mixed card margins
+- **Repo Detail Page redesign**: Major visual overhaul with premium feel
+  - Header: Added subtle gradient background using primary color at 30% opacity
+  - Stats: Redesigned as compact grid cards with icons above numbers
+  - Tab bar: Custom pill-shaped active indicator with rounded corners, smooth label color transitions
+  - File list: Redesigned items with file type color coding, monospace size display, hover effects
+  - Clone URLs: Styled as compact copy rows with subtle background
+  - All tabs: Consistent card-based list items with better visual hierarchy
+- **Premium effects across all pages**:
+  - New reusable `PremiumCard` widget with flat design, 12px border radius, subtle borders, and ink well tap effects
+  - New `EmptyState` widget with icons, titles, subtitles, and action buttons for consistent empty states
+  - All list pages (dashboard, issues, search, repos, notifications, profile) migrated to consistent card layouts
+  - Typography hierarchy: Bold for display, semi-bold (w600) for titles, medium (w500) for subtitles
+  - Consistent avatar sizing per context (xs/sm/md/lg/xl/xxl)
+- **New files**: `lib/core/constants/ui_constants.dart`, `lib/presentation/widgets/premium_card.dart`, `lib/presentation/widgets/empty_state.dart`
+- 247 tests passing, `flutter analyze` clean
+
 ## [0.19.0] - 2026-04-25
 
 ### Added — Team Detail, Edit Organization, Create Organization

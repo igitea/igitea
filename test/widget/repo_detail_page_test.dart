@@ -37,10 +37,13 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.text('Code'), findsOneWidget);
-    expect(find.text('Issues'), findsOneWidget);
-    expect(find.text('Pull Requests'), findsOneWidget);
-    expect(find.text('Releases'), findsOneWidget);
-    expect(find.text('Branches'), findsOneWidget);
+    expect(find.byType(Tab), findsNWidgets(7));
+    expect(find.text('Code'), findsAtLeast(1));
+    expect(find.text('Issues'), findsAtLeast(1));
+    expect(find.text('Pull Requests'), findsAtLeast(1));
+    expect(find.text('Releases'), findsAtLeast(1));
+    expect(find.text('Commits'), findsAtLeast(1));
+    expect(find.text('Branches'), findsAtLeast(1));
+    expect(find.text('Tags'), findsAtLeast(1));
   });
 }

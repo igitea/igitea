@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../state/repo_notifier.dart';
+import '../widgets/empty_state.dart';
+import '../widgets/premium_card.dart';
 import '../widgets/user_avatar.dart';
 import 'repo_detail_page.dart';
 
@@ -40,7 +43,7 @@ class _RepoListPageState extends State<RepoListPage> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(UIConstants.md),
             child: SearchBar(
               controller: _searchController,
               hintText: 'Search repositories...',
@@ -62,7 +65,7 @@ class _RepoListPageState extends State<RepoListPage> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text('Error: $message'),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: UIConstants.md),
                         FilledButton(
                           onPressed: () => Injection.repoNotifier.searchRepos(),
                           child: const Text('Retry'),
@@ -73,10 +76,14 @@ class _RepoListPageState extends State<RepoListPage> {
                   SearchResultsLoaded(:final results) => _RepoList(
                     repos: results.data ?? [],
                   ),
-                  RepoInitial() => const Center(
-                    child: Text('Search for repositories'),
+                  RepoInitial() => EmptyState(
+                    icon: Icons.search,
+                    title: 'Search for repositories',
                   ),
-                  _ => const Center(child: Text('Search for repositories')),
+                  _ => EmptyState(
+                    icon: Icons.search,
+                    title: 'Search for repositories',
+                  ),
                 };
               },
             ),
@@ -95,12 +102,12 @@ class _RepoList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (repos.isEmpty) {
-      return const Center(child: Text('No repositories found.'));
+      return EmptyState(icon: Icons.folder_open, title: 'No repositories found.');
     }
     return RefreshIndicator(
       onRefresh: () => Injection.repoNotifier.searchRepos(),
       child: ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: UIConstants.pagePadding + const EdgeInsets.symmetric(vertical: UIConstants.sm),
         itemCount: repos.length,
         itemBuilder: (context, index) {
           final repo = repos[index];
@@ -119,120 +126,98 @@ class _RepoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: InkWell(
-        onTap: () {
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (_) => RepoDetailPage(
-              owner: repo.owner?.login ?? '',
-              repo: repo.name ?? '',
-            ),
-          ));
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    return PremiumListCard(
+      onTap: () {
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (_) => RepoDetailPage(
+            owner: repo.owner?.login ?? '',
+            repo: repo.name ?? '',
+          ),
+        ));
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
-              Row(
-                children: [
-                  if (repo.owner != null)
-                    UserAvatar(user: repo.owner!, radius: 14)
-                  else
-                    Icon(
-                      repo.private == true ? Icons.lock : Icons.public,
-                      size: 18,
-                      color: theme.colorScheme.primary,
-                    ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Row(
-                      children: [
-                        Flexible(
-                          child: Text(
-                            repo.full_name ?? repo.name ?? '',
-                            style: theme.textTheme.titleSmall,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        if (repo.private == true) ...[
-                          const SizedBox(width: 8),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.errorContainer,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              'Private',
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: theme.colorScheme.onErrorContainer,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              if (repo.description != null && repo.description!.isNotEmpty) ...[
-                const SizedBox(height: 4),
-                Text(
-                  repo.description!,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodySmall,
+              if (repo.owner != null)
+                UserAvatar(user: repo.owner!, radius: UIConstants.avatarSm)
+              else
+                Icon(
+                  repo.private == true ? Icons.lock : Icons.public,
+                  size: UIConstants.iconMd,
+                  color: theme.colorScheme.primary,
                 ),
-              ],
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  if (repo.language != null) ...[
-                    Container(
-                      width: 10,
-                      height: 10,
-                      decoration: const BoxDecoration(
-                        color: Colors.blue,
-                        shape: BoxShape.circle,
+              const SizedBox(width: UIConstants.sm),
+              Expanded(
+                child: Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        repo.full_name ?? repo.name ?? '',
+                        style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500),
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                    const SizedBox(width: 4),
-                    Text(repo.language!, style: theme.textTheme.labelSmall),
-                    const SizedBox(width: 12),
+                    if (repo.private == true) ...[
+                      const SizedBox(width: UIConstants.sm),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.errorContainer,
+                          borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
+                        ),
+                        child: Text(
+                          'Private',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: theme.colorScheme.onErrorContainer,
+                          ),
+                        ),
+                      ),
+                    ],
                   ],
-                  Icon(
-                    Icons.star_outline,
-                    size: 14,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  const SizedBox(width: 2),
-                  Text(
-                    '${repo.stars_count ?? 0}',
-                    style: theme.textTheme.labelSmall,
-                  ),
-                  const SizedBox(width: 12),
-                  Icon(
-                    GitHubFork.icon,
-                    size: 14,
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  const SizedBox(width: 2),
-                  Text(
-                    '${repo.forks_count ?? 0}',
-                    style: theme.textTheme.labelSmall,
-                  ),
-                ],
+                ),
               ),
             ],
           ),
-        ),
+          if (repo.description != null && repo.description!.isNotEmpty) ...[
+            const SizedBox(height: UIConstants.sm),
+            Text(
+              repo.description!,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+          const SizedBox(height: UIConstants.sm),
+          Row(
+            children: [
+              if (repo.language != null) ...[
+                Container(
+                  width: 10,
+                  height: 10,
+                  decoration: const BoxDecoration(
+                    color: Colors.blue,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: UIConstants.xs),
+                Text(repo.language!, style: theme.textTheme.labelSmall),
+                const SizedBox(width: UIConstants.md),
+              ],
+              Icon(Icons.star_outline, size: UIConstants.iconSm, color: theme.colorScheme.onSurfaceVariant),
+              const SizedBox(width: UIConstants.xs),
+              Text('${repo.stars_count ?? 0}', style: theme.textTheme.labelSmall),
+              const SizedBox(width: UIConstants.md),
+              Icon(Icons.call_split, size: UIConstants.iconSm, color: theme.colorScheme.onSurfaceVariant),
+              const SizedBox(width: UIConstants.xs),
+              Text('${repo.forks_count ?? 0}', style: theme.textTheme.labelSmall),
+            ],
+          ),
+        ],
       ),
     );
   }
-}
-
-class GitHubFork {
-  static IconData get icon => Icons.call_split;
 }

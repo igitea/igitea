@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../../presentation/state/issue_notifier.dart';
+import '../widgets/empty_state.dart';
+import '../widgets/premium_card.dart';
 import '../widgets/user_avatar.dart';
 import 'issue_detail_page.dart';
 
@@ -45,7 +48,7 @@ class _IssueListPageState extends State<IssueListPage> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: UIConstants.md, vertical: UIConstants.sm),
             child: _FilterChips(
               selectedState: _selectedState,
               onSelected: (state) {
@@ -69,7 +72,7 @@ class _IssueListPageState extends State<IssueListPage> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text('${l10n.error}: $message'),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: UIConstants.md),
                         FilledButton(
                           onPressed: () => _forceReload(),
                           child: Text(l10n.retry),
@@ -101,7 +104,7 @@ class _FilterChips extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Wrap(
-      spacing: 8,
+      spacing: UIConstants.sm,
       children: [
         FilterChip(
           label: Text(l10n.all),
@@ -133,12 +136,12 @@ class _IssueList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (issues.isEmpty) {
-      return Center(child: Text(l10n.noIssuesFound));
+      return EmptyState(icon: Icons.bug_report_outlined, title: l10n.noIssuesFound);
     }
     return RefreshIndicator(
       onRefresh: () async => onRefresh(),
       child: ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: UIConstants.pagePadding + const EdgeInsets.symmetric(vertical: UIConstants.sm),
         itemCount: issues.length,
         itemBuilder: (context, index) {
           final issue = issues[index];
@@ -167,101 +170,98 @@ class _IssueCard extends StatelessWidget {
     final repo = issue.repository?.name ?? '';
     final canNavigate = owner.isNotEmpty && repo.isNotEmpty && issue.number != null;
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: InkWell(
-        onTap: canNavigate
-            ? () {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (_) => IssueDetailPage(
-                    owner: owner,
-                    repo: repo,
-                    index: issue.number!,
-                  ),
-                ));
-              }
-            : null,
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(stateIcon, size: 16, color: stateColor),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      issue.title ?? l10n.untitled,
-                      style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  if (issue.number != null)
-                    Text('#${issue.number}', style: theme.textTheme.bodySmall),
-                ],
-              ),
-              const SizedBox(height: 4),
-              Row(
-                children: [
-                  if (issue.user != null) ...[
-                    UserAvatar(user: issue.user!, radius: 10),
-                    const SizedBox(width: 4),
-                    Text(issue.user!.login ?? '', style: theme.textTheme.labelSmall),
-                  ],
-                  const Spacer(),
-                  if (repoFullName.isNotEmpty) ...[
-                    Text(repoFullName, style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    )),
-                  ],
-                ],
-              ),
-              if (issue.labels != null && issue.labels!.isNotEmpty) ...[
-                const SizedBox(height: 4),
-                Wrap(
-                  spacing: 4,
-                  runSpacing: 4,
-                  children: issue.labels!.take(3).map((label) {
-                    return Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: _parseColor(label.color)?.withValues(alpha: 0.2) ?? theme.colorScheme.primaryContainer,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        label.name ?? '',
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: _parseColor(label.color) ?? theme.colorScheme.onPrimaryContainer,
-                        ),
-                      ),
-                    );
-                  }).toList(),
+    return PremiumListCard(
+      onTap: canNavigate
+          ? () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => IssueDetailPage(
+                  owner: owner,
+                  repo: repo,
+                  index: issue.number!,
                 ),
-              ],
-              const SizedBox(height: 4),
-              Row(
-                children: [
-                  if (issue.comments != null) ...[
-                    Icon(Icons.comment_outlined, size: 14, color: theme.colorScheme.onSurfaceVariant),
-                    const SizedBox(width: 2),
-                    Text('${issue.comments}', style: theme.textTheme.labelSmall),
-                    const SizedBox(width: 12),
-                  ],
-                  if (issue.updated_at != null) ...[
-                    Text(
-                      _formatDate(issue.updated_at!),
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                    ),
-                  ],
-                ],
+              ));
+            }
+          : null,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(stateIcon, size: UIConstants.iconSm, color: stateColor),
+              const SizedBox(width: UIConstants.sm),
+              Expanded(
+                child: Text(
+                  issue.title ?? l10n.untitled,
+                  style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
+              if (issue.number != null)
+                Text('#${issue.number}', style: theme.textTheme.bodySmall),
             ],
           ),
-        ),
+          const SizedBox(height: UIConstants.sm),
+          Row(
+            children: [
+              if (issue.user != null) ...[
+                UserAvatar(user: issue.user!, radius: UIConstants.avatarXs),
+                const SizedBox(width: UIConstants.xs),
+                Text(issue.user!.login ?? '', style: theme.textTheme.labelSmall),
+              ],
+              const Spacer(),
+              if (repoFullName.isNotEmpty) ...[
+                Text(
+                  repoFullName,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ],
+          ),
+          if (issue.labels != null && issue.labels!.isNotEmpty) ...[
+            const SizedBox(height: UIConstants.sm),
+            Wrap(
+              spacing: UIConstants.xs,
+              runSpacing: UIConstants.xs,
+              children: issue.labels!.take(3).map((label) {
+                return Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: _parseColor(label.color)?.withValues(alpha: 0.2) ?? theme.colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(UIConstants.chipRadius),
+                  ),
+                  child: Text(
+                    label.name ?? '',
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: _parseColor(label.color) ?? theme.colorScheme.onPrimaryContainer,
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+          const SizedBox(height: UIConstants.sm),
+          Row(
+            children: [
+              if (issue.comments != null) ...[
+                Icon(Icons.comment_outlined, size: UIConstants.iconXs, color: theme.colorScheme.onSurfaceVariant),
+                const SizedBox(width: UIConstants.xs),
+                Text('${issue.comments}', style: theme.textTheme.labelSmall),
+                const SizedBox(width: UIConstants.md),
+              ],
+              if (issue.updated_at != null) ...[
+                Text(
+                  _formatDate(issue.updated_at!),
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ],
       ),
     );
   }

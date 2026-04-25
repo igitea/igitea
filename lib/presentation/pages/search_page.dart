@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../../presentation/state/issue_notifier.dart';
 import '../../presentation/state/repo_notifier.dart';
+import '../widgets/empty_state.dart';
+import '../widgets/premium_card.dart';
 import '../widgets/user_avatar.dart';
 import 'issue_detail_page.dart';
 import 'repo_detail_page.dart';
@@ -50,15 +53,15 @@ class _SearchPageState extends State<SearchPage>
         bottom: TabBar(
           controller: _tabController,
           tabs: [
-            Tab(icon: Icon(Icons.source), text: l10n.repositories),
-            Tab(icon: Icon(Icons.bug_report), text: l10n.issues),
+            Tab(icon: const Icon(Icons.source), text: l10n.repositories),
+            Tab(icon: const Icon(Icons.bug_report), text: l10n.issues),
           ],
         ),
       ),
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(UIConstants.md),
             child: SearchBar(
               controller: _searchController,
               hintText: l10n.search,
@@ -98,7 +101,7 @@ class _RepoSearchResults extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text('${l10n.error}: $message'),
-                const SizedBox(height: 16),
+                const SizedBox(height: UIConstants.md),
                 FilledButton(
                   onPressed: () => Injection.repoNotifier.searchRepos(),
                   child: Text(l10n.retry),
@@ -106,7 +109,7 @@ class _RepoSearchResults extends StatelessWidget {
               ],
             ),
           ),
-          _ => Center(child: Text(l10n.enterSearchQueryRepos)),
+          _ => EmptyState(icon: Icons.search, title: l10n.enterSearchQueryRepos),
         };
       },
     );
@@ -114,10 +117,10 @@ class _RepoSearchResults extends StatelessWidget {
 
   Widget _buildRepoList(BuildContext context, List<Repository> repos, AppLocalizations l10n) {
     if (repos.isEmpty) {
-      return Center(child: Text(l10n.noRepositoriesFound));
+      return EmptyState(icon: Icons.source, title: l10n.noRepositoriesFound);
     }
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: UIConstants.pagePadding + const EdgeInsets.symmetric(vertical: UIConstants.sm),
       itemCount: repos.length,
       itemBuilder: (context, index) {
         final repo = repos[index];
@@ -137,95 +140,91 @@ class _SearchRepoCard extends StatelessWidget {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: InkWell(
-        onTap: () {
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (_) => RepoDetailPage(
-              owner: repo.owner?.login ?? '',
-              repo: repo.name ?? '',
-            ),
-          ));
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    return PremiumListCard(
+      onTap: () {
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (_) => RepoDetailPage(
+            owner: repo.owner?.login ?? '',
+            repo: repo.name ?? '',
+          ),
+        ));
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
-              Row(
-                children: [
-                  if (repo.owner != null)
-                    UserAvatar(user: repo.owner!, radius: 14)
-                  else
-                    Icon(
-                      repo.private == true ? Icons.lock : Icons.public,
-                      size: 18,
-                      color: theme.colorScheme.primary,
-                    ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      repo.full_name ?? repo.name ?? '',
-                      style: theme.textTheme.titleSmall,
-                      overflow: TextOverflow.ellipsis,
+              if (repo.owner != null)
+                UserAvatar(user: repo.owner!, radius: UIConstants.avatarSm)
+              else
+                Icon(
+                  repo.private == true ? Icons.lock : Icons.public,
+                  size: UIConstants.iconMd,
+                  color: theme.colorScheme.primary,
+                ),
+              const SizedBox(width: UIConstants.sm),
+              Expanded(
+                child: Text(
+                  repo.full_name ?? repo.name ?? '',
+                  style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              if (repo.private == true) ...[
+                const SizedBox(width: UIConstants.sm),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.errorContainer,
+                    borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
+                  ),
+                  child: Text(
+                    l10n.private,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.onErrorContainer,
                     ),
                   ),
-                  if (repo.private == true) ...[
-                    const SizedBox(width: 8),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.errorContainer,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                      child: Text(
-                        l10n.private,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: theme.colorScheme.onErrorContainer,
-                        ),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-              if (repo.description != null && repo.description!.isNotEmpty) ...[
-                const SizedBox(height: 4),
-                Text(
-                  repo.description!,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: theme.textTheme.bodySmall,
                 ),
               ],
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  if (repo.language != null) ...[
-                    Container(
-                      width: 10,
-                      height: 10,
-                      decoration: const BoxDecoration(
-                        color: Colors.blue,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    const SizedBox(width: 4),
-                    Text(repo.language!, style: theme.textTheme.labelSmall),
-                    const SizedBox(width: 12),
-                  ],
-                  Icon(Icons.star_outline, size: 14, color: theme.colorScheme.onSurfaceVariant),
-                  const SizedBox(width: 2),
-                  Text('${repo.stars_count ?? 0}', style: theme.textTheme.labelSmall),
-                  const SizedBox(width: 12),
-                  Icon(Icons.call_split, size: 14, color: theme.colorScheme.onSurfaceVariant),
-                  const SizedBox(width: 2),
-                  Text('${repo.forks_count ?? 0}', style: theme.textTheme.labelSmall),
-                ],
-              ),
             ],
           ),
-        ),
+          if (repo.description != null && repo.description!.isNotEmpty) ...[
+            const SizedBox(height: UIConstants.sm),
+            Text(
+              repo.description!,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+          const SizedBox(height: UIConstants.sm),
+          Row(
+            children: [
+              if (repo.language != null) ...[
+                Container(
+                  width: 10,
+                  height: 10,
+                  decoration: const BoxDecoration(
+                    color: Colors.blue,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: UIConstants.xs),
+                Text(repo.language!, style: theme.textTheme.labelSmall),
+                const SizedBox(width: UIConstants.md),
+              ],
+              Icon(Icons.star_outline, size: UIConstants.iconSm, color: theme.colorScheme.onSurfaceVariant),
+              const SizedBox(width: UIConstants.xs),
+              Text('${repo.stars_count ?? 0}', style: theme.textTheme.labelSmall),
+              const SizedBox(width: UIConstants.md),
+              Icon(Icons.call_split, size: UIConstants.iconSm, color: theme.colorScheme.onSurfaceVariant),
+              const SizedBox(width: UIConstants.xs),
+              Text('${repo.forks_count ?? 0}', style: theme.textTheme.labelSmall),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -248,7 +247,7 @@ class _IssueSearchResults extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text('${l10n.error}: $message'),
-                const SizedBox(height: 16),
+                const SizedBox(height: UIConstants.md),
                 FilledButton(
                   onPressed: () {
                     final query = Injection.issueNotifier.lastSearchQuery ?? '';
@@ -259,7 +258,7 @@ class _IssueSearchResults extends StatelessWidget {
               ],
             ),
           ),
-          _ => Center(child: Text(l10n.enterSearchQueryIssues)),
+          _ => EmptyState(icon: Icons.search, title: l10n.enterSearchQueryIssues),
         };
       },
     );
@@ -267,10 +266,10 @@ class _IssueSearchResults extends StatelessWidget {
 
   Widget _buildIssueList(BuildContext context, List<Issue> issues, AppLocalizations l10n) {
     if (issues.isEmpty) {
-      return Center(child: Text(l10n.noIssuesFound));
+      return EmptyState(icon: Icons.bug_report_outlined, title: l10n.noIssuesFound);
     }
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: UIConstants.pagePadding + const EdgeInsets.symmetric(vertical: UIConstants.sm),
       itemCount: issues.length,
       itemBuilder: (context, index) {
         final issue = issues[index];
@@ -291,83 +290,77 @@ class _SearchIssueCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final isOpen = issue.state?.value == 'open';
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: InkWell(
-        onTap: () {
-          final repoUrl = issue.repository?.full_name ?? '';
-          final parts = repoUrl.split('/');
-          final owner = parts.isNotEmpty ? parts.first : '';
-          final repo = parts.length > 1 ? parts[1] : '';
-          if (owner.isNotEmpty && repo.isNotEmpty && issue.number != null) {
-            Navigator.of(context).push(MaterialPageRoute(
-              builder: (_) => IssueDetailPage(
-                owner: owner,
-                repo: repo,
-                index: issue.number!,
-              ),
-            ));
-          }
-        },
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    return PremiumListCard(
+      onTap: () {
+        final repoUrl = issue.repository?.full_name ?? '';
+        final parts = repoUrl.split('/');
+        final owner = parts.isNotEmpty ? parts.first : '';
+        final repo = parts.length > 1 ? parts[1] : '';
+        if (owner.isNotEmpty && repo.isNotEmpty && issue.number != null) {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (_) => IssueDetailPage(
+              owner: owner,
+              repo: repo,
+              index: issue.number!,
+            ),
+          ));
+        }
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: isOpen ? Colors.green.withValues(alpha: 0.2) : Colors.purple.withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      isOpen ? l10n.open : l10n.closed,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: isOpen ? Colors.green : Colors.purple,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      issue.title ?? l10n.untitled,
-                      style: theme.textTheme.titleSmall,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 4),
-              Row(
-                children: [
-                  if (issue.user != null) ...[
-                    UserAvatar(user: issue.user!, radius: 10),
-                    const SizedBox(width: 4),
-                    Text(issue.user!.login ?? '', style: theme.textTheme.labelSmall),
-                  ],
-                  const Spacer(),
-                  if (issue.comments != null) ...[
-                    Icon(Icons.comment_outlined, size: 14, color: theme.colorScheme.onSurfaceVariant),
-                    const SizedBox(width: 2),
-                    Text('${issue.comments}', style: theme.textTheme.labelSmall),
-                  ],
-                ],
-              ),
-              if (issue.repository?.full_name != null) ...[
-                const SizedBox(height: 4),
-                Text(
-                  issue.repository!.full_name!,
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: isOpen ? Colors.green.withValues(alpha: 0.2) : Colors.purple.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(UIConstants.chipRadius),
+                ),
+                child: Text(
+                  isOpen ? l10n.open : l10n.closed,
                   style: theme.textTheme.labelSmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
+                    color: isOpen ? Colors.green : Colors.purple,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
+              ),
+              const SizedBox(width: UIConstants.sm),
+              Expanded(
+                child: Text(
+                  issue.title ?? l10n.untitled,
+                  style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: UIConstants.sm),
+          Row(
+            children: [
+              if (issue.user != null) ...[
+                UserAvatar(user: issue.user!, radius: UIConstants.avatarXs),
+                const SizedBox(width: UIConstants.xs),
+                Text(issue.user!.login ?? '', style: theme.textTheme.labelSmall),
+              ],
+              const Spacer(),
+              if (issue.comments != null) ...[
+                Icon(Icons.comment_outlined, size: UIConstants.iconXs, color: theme.colorScheme.onSurfaceVariant),
+                const SizedBox(width: UIConstants.xs),
+                Text('${issue.comments}', style: theme.textTheme.labelSmall),
               ],
             ],
           ),
-        ),
+          if (issue.repository?.full_name != null) ...[
+            const SizedBox(height: UIConstants.sm),
+            Text(
+              issue.repository!.full_name!,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }

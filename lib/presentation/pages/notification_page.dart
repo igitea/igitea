@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/notification_notifier.dart';
+import '../widgets/empty_state.dart';
+import '../widgets/premium_card.dart';
 import '../widgets/user_avatar.dart';
 
 class NotificationPage extends StatefulWidget {
@@ -48,7 +51,7 @@ class _NotificationPageState extends State<NotificationPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text('${l10n.error}: $message'),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: UIConstants.md),
                   FilledButton(
                     onPressed: () =>
                         Injection.notificationNotifier.listNotifications(),
@@ -61,7 +64,7 @@ class _NotificationPageState extends State<NotificationPage> {
               notifications: notifications,
               l10n: l10n,
             ),
-            _ => Center(child: Text(l10n.noNotifications)),
+            _ => EmptyState(icon: Icons.notifications_none, title: l10n.noNotifications),
           };
         },
       ),
@@ -88,12 +91,12 @@ class _NotificationList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (notifications.isEmpty) {
-      return Center(child: Text(l10n.noNotifications));
+      return EmptyState(icon: Icons.notifications_none, title: l10n.noNotifications);
     }
     return RefreshIndicator(
       onRefresh: () => Injection.notificationNotifier.listNotifications(),
       child: ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: UIConstants.pagePadding + const EdgeInsets.symmetric(vertical: UIConstants.sm),
         itemCount: notifications.length,
         itemBuilder: (context, index) {
           final notification = notifications[index];
@@ -117,60 +120,86 @@ class _NotificationCard extends StatelessWidget {
     final isUnread = notification.unread == true;
     final iconData = _subjectIcon(subject?.type?.toString());
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      color: isUnread ? theme.colorScheme.primaryContainer : null,
-      child: ListTile(
-        leading: notification.repository?.owner != null
-            ? UserAvatar(
-                user: notification.repository!.owner!,
-                radius: 16,
-              )
-            : Icon(
+    return PremiumListCard(
+      onTap: () {},
+      child: Row(
+        children: [
+          if (notification.repository?.owner != null)
+            UserAvatar(
+              user: notification.repository!.owner!,
+              radius: UIConstants.avatarMd,
+            )
+          else
+            Container(
+              padding: const EdgeInsets.all(UIConstants.sm),
+              decoration: BoxDecoration(
+                color: isUnread
+                    ? theme.colorScheme.primaryContainer.withValues(alpha: 0.5)
+                    : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
                 iconData,
+                size: UIConstants.iconMd,
                 color: isUnread
                     ? theme.colorScheme.primary
                     : theme.colorScheme.onSurfaceVariant,
               ),
-        title: Text(
-          subject?.title ?? l10n.noTitle,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: isUnread ? const TextStyle(fontWeight: FontWeight.bold) : null,
-        ),
-        subtitle: Row(
-          children: [
-            if (notification.repository?.full_name != null)
-              Text(
-                notification.repository!.full_name!,
-                style: theme.textTheme.bodySmall,
+            ),
+          const SizedBox(width: UIConstants.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  subject?.title ?? l10n.noTitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: isUnread
+                      ? theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)
+                      : theme.textTheme.bodyMedium,
+                ),
+                const SizedBox(height: UIConstants.xs),
+                if (notification.repository?.full_name != null)
+                  Text(
+                    notification.repository!.full_name!,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          if (isUnread)
+            Container(
+              width: 8,
+              height: 8,
+              decoration: BoxDecoration(
+                color: theme.colorScheme.primary,
+                shape: BoxShape.circle,
               ),
-          ],
-        ),
-        trailing: isUnread
-            ? IconButton(
-                icon: const Icon(Icons.check_circle_outline),
-                tooltip: l10n.markRead,
-                onPressed: () => _markAsRead(context),
-              )
-            : null,
+            ),
+        ],
       ),
     );
   }
 
-  void _markAsRead(BuildContext context) async {
-    if (notification.id == null) return;
-    await Injection.notificationNotifier.markThreadRead(notification.id!.toString());
-    await Injection.notificationNotifier.listNotifications();
-  }
-
   IconData _subjectIcon(String? type) {
-    if (type == null) return Icons.notifications;
-    if (type.contains('Issue')) return Icons.error_outline;
-    if (type.contains('PullRequest') || type.contains('pull_request'))
+    if (type == null) {
+      return Icons.notifications;
+    }
+    if (type.contains('Issue')) {
+      return Icons.error_outline;
+    }
+    if (type.contains('PullRequest') || type.contains('pull_request')) {
       return Icons.merge_type;
-    if (type.contains('Commit')) return Icons.commit;
-    if (type.contains('Release')) return Icons.new_releases;
+    }
+    if (type.contains('Commit')) {
+      return Icons.commit;
+    }
+    if (type.contains('Release')) {
+      return Icons.new_releases;
+    }
     return Icons.notifications;
   }
 }
