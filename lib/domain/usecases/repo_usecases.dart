@@ -429,3 +429,44 @@ class DeleteRepoUseCase {
     return _repository.deleteRepo(params.owner, params.repo);
   }
 }
+
+class UpdateFileParams {
+  final String owner;
+  final String repo;
+  final String filepath;
+  final String content;
+  final String message;
+  final String? branch;
+  final String? sha;
+
+  const UpdateFileParams({
+    required this.owner,
+    required this.repo,
+    required this.filepath,
+    required this.content,
+    required this.message,
+    this.branch,
+    this.sha,
+  });
+}
+
+class UpdateFileUseCase {
+  final RepoRepository _repository;
+
+  UpdateFileUseCase({required RepoRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, FileResponse>> call(UpdateFileParams params) async {
+    return _repository.updateFile(
+      params.owner,
+      params.repo,
+      params.filepath,
+      UpdateFileOptions(
+        content: params.content,
+        message: params.message,
+        branch: params.branch,
+        sha: params.sha,
+      ),
+    );
+  }
+}

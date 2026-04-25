@@ -174,6 +174,17 @@ class FakeRepoRepository implements RepoRepository {
   }
 
   @override
+  Future<Either<Failure, FileResponse>> updateFile(
+    String owner,
+    String repo,
+    String filepath,
+    UpdateFileOptions body,
+  ) async {
+    if (shouldFail) return Left(failure);
+    return Right(const FileResponse(content: null, commit: null));
+  }
+
+  @override
   Future<Either<Failure, List<PullRequest>>> listPullRequests(
     String owner,
     String repo, {
@@ -253,6 +264,7 @@ void main() {
         createPullRequestUseCase: CreatePullRequestUseCase(repository: fakeRepo),
         editRepoUseCase: EditRepoUseCase(repository: fakeRepo),
         deleteRepoUseCase: DeleteRepoUseCase(repository: fakeRepo),
+        updateFileUseCase: UpdateFileUseCase(repository: fakeRepo),
       );
     });
 

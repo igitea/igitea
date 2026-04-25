@@ -289,5 +289,17 @@
   "enableIssues": "Enable Issues",
   "enablePullRequests": "Enable Pull Requests",
   "enableWiki": "Enable Wiki",
-  "defaultBranch": "Default branch"
+  "defaultBranch": "Default branch",
+  "preview": "Preview",
+  "edit": "Edit",
+  "commitMessage": "Commit message",
+  "commit": "Commit",
+  "commitMessageHint": "Enter a commit message...",
+  "cannotGetFileSha": "Cannot get file SHA. Please reload the file.",
+  "failedToSaveFile": "Failed to save file",
+  "fileSaved": "File saved successfully",
+  "discard": "Discard",
+  "save": "Save",
+  "message": "Message",
+  "ok": "OK"
 }

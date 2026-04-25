@@ -249,6 +249,23 @@ class RepoRepositoryImpl implements RepoRepository {
   }
 
   @override
+  Future<Either<Failure, FileResponse>> updateFile(
+    String owner,
+    String repo,
+    String filepath,
+    UpdateFileOptions body,
+  ) async {
+    return execute(
+      () => _apiService.repoUpdateFile(
+        owner: owner,
+        repo: repo,
+        filepath: filepath,
+        body: body,
+      ),
+    );
+  }
+
+  @override
   Future<Either<Failure, List<PullRequest>>> listPullRequests(
     String owner,
     String repo, {

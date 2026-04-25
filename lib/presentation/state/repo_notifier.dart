@@ -142,6 +142,7 @@ class RepoNotifier extends ChangeNotifier {
   CreatePullRequestUseCase _createPullRequestUseCase;
   EditRepoUseCase _editRepoUseCase;
   DeleteRepoUseCase _deleteRepoUseCase;
+  UpdateFileUseCase _updateFileUseCase;
 
   RepoState _state = const RepoInitial();
   RepoState get state => _state;
@@ -181,6 +182,7 @@ class RepoNotifier extends ChangeNotifier {
     required CreatePullRequestUseCase createPullRequestUseCase,
     required EditRepoUseCase editRepoUseCase,
     required DeleteRepoUseCase deleteRepoUseCase,
+    required UpdateFileUseCase updateFileUseCase,
   }) : _getRepoUseCase = getRepoUseCase,
        _searchReposUseCase = searchReposUseCase,
        _listBranchesUseCase = listBranchesUseCase,
@@ -196,7 +198,8 @@ class RepoNotifier extends ChangeNotifier {
        _mergePullRequestUseCase = mergePullRequestUseCase,
        _createPullRequestUseCase = createPullRequestUseCase,
        _editRepoUseCase = editRepoUseCase,
-       _deleteRepoUseCase = deleteRepoUseCase;
+       _deleteRepoUseCase = deleteRepoUseCase,
+       _updateFileUseCase = updateFileUseCase;
 
   void updateUseCases({
     required GetRepoUseCase getRepoUseCase,
@@ -215,6 +218,7 @@ class RepoNotifier extends ChangeNotifier {
     required CreatePullRequestUseCase createPullRequestUseCase,
     required EditRepoUseCase editRepoUseCase,
     required DeleteRepoUseCase deleteRepoUseCase,
+    required UpdateFileUseCase updateFileUseCase,
   }) {
     _getRepoUseCase = getRepoUseCase;
     _searchReposUseCase = searchReposUseCase;
@@ -232,6 +236,7 @@ class RepoNotifier extends ChangeNotifier {
     _createPullRequestUseCase = createPullRequestUseCase;
     _editRepoUseCase = editRepoUseCase;
     _deleteRepoUseCase = deleteRepoUseCase;
+    _updateFileUseCase = updateFileUseCase;
   }
 
   Future<void> getRepo(String owner, String repo) async {
@@ -521,5 +526,27 @@ class RepoNotifier extends ChangeNotifier {
         _state = const RepoInitial();
         notifyListeners();
     }
+  }
+
+  Future<Either<Failure, FileResponse>> updateFile(
+    String owner,
+    String repo,
+    String filepath,
+    String content,
+    String message, {
+    String? branch,
+    String? sha,
+  }) async {
+    return await _updateFileUseCase.call(
+      UpdateFileParams(
+        owner: owner,
+        repo: repo,
+        filepath: filepath,
+        content: content,
+        message: message,
+        branch: branch,
+        sha: sha,
+      ),
+    );
   }
 }

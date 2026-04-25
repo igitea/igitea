@@ -1822,6 +1822,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Enable Wiki'**
   String get enableWiki;
+
+  /// No description provided for @preview.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get preview;
+
+  /// No description provided for @commitMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Commit message'**
+  String get commitMessage;
+
+  /// No description provided for @commit.
+  ///
+  /// In en, this message translates to:
+  /// **'Commit'**
+  String get commit;
+
+  /// No description provided for @commitMessageHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a commit message...'**
+  String get commitMessageHint;
+
+  /// No description provided for @cannotGetFileSha.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot get file SHA. Please reload the file.'**
+  String get cannotGetFileSha;
+
+  /// No description provided for @failedToSaveFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save file'**
+  String get failedToSaveFile;
+
+  /// No description provided for @fileSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'File saved successfully'**
+  String get fileSaved;
+
+  /// No description provided for @discard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get discard;
+
+  /// No description provided for @message.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get message;
+
+  /// No description provided for @ok.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get ok;
 }
 
 class _AppLocalizationsDelegate

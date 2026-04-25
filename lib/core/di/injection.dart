@@ -73,6 +73,7 @@ class Injection {
   static late CreatePullRequestUseCase createPullRequestUseCase;
   static late EditRepoUseCase editRepoUseCase;
   static late DeleteRepoUseCase deleteRepoUseCase;
+  static late UpdateFileUseCase updateFileUseCase;
   static late ListIssuesUseCase listIssuesUseCase;
   static late GetIssueUseCase getIssueUseCase;
   static late CreateIssueUseCase createIssueUseCase;
@@ -162,6 +163,7 @@ class Injection {
     createPullRequestUseCase = CreatePullRequestUseCase(repository: repoRepository);
     editRepoUseCase = EditRepoUseCase(repository: repoRepository);
     deleteRepoUseCase = DeleteRepoUseCase(repository: repoRepository);
+    updateFileUseCase = UpdateFileUseCase(repository: repoRepository);
     listIssuesUseCase = ListIssuesUseCase(repository: issueRepository);
     getIssueUseCase = GetIssueUseCase(repository: issueRepository);
     createIssueUseCase = CreateIssueUseCase(repository: issueRepository);
@@ -267,6 +269,7 @@ class Injection {
         createPullRequestUseCase: createPullRequestUseCase,
         editRepoUseCase: editRepoUseCase,
         deleteRepoUseCase: deleteRepoUseCase,
+        updateFileUseCase: updateFileUseCase,
       );
       issueNotifier.updateUseCases(
         listIssuesUseCase: listIssuesUseCase,
@@ -323,6 +326,7 @@ class Injection {
         createPullRequestUseCase: createPullRequestUseCase,
         editRepoUseCase: editRepoUseCase,
         deleteRepoUseCase: deleteRepoUseCase,
+        updateFileUseCase: updateFileUseCase,
       );
       issueNotifier = IssueNotifier(
         listIssuesUseCase: listIssuesUseCase,
@@ -396,11 +400,12 @@ class Injection {
       starRepoUseCase: starRepoUseCase,
       unstarRepoUseCase: unstarRepoUseCase,
       checkStarredUseCase: checkStarredUseCase,
-        mergePullRequestUseCase: mergePullRequestUseCase,
-        createPullRequestUseCase: createPullRequestUseCase,
-        editRepoUseCase: editRepoUseCase,
-        deleteRepoUseCase: deleteRepoUseCase,
-      );
+      mergePullRequestUseCase: mergePullRequestUseCase,
+      createPullRequestUseCase: createPullRequestUseCase,
+      editRepoUseCase: editRepoUseCase,
+      deleteRepoUseCase: deleteRepoUseCase,
+      updateFileUseCase: updateFileUseCase,
+    );
     issueNotifier.updateUseCases(
       listIssuesUseCase: listIssuesUseCase,
       getIssueUseCase: getIssueUseCase,

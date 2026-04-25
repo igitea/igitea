@@ -482,6 +482,19 @@ class GiteaApiService {
     ];
   }
 
+  Future<FileResponse> repoUpdateFile({
+    required String owner,
+    required String repo,
+    required String filepath,
+    required UpdateFileOptions body,
+  }) async {
+    final response = await _client.put(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/contents/${Uri.encodeComponent(filepath)}',
+      body: body.toJson(),
+    );
+    return FileResponse.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+  }
+
   Future<List<PullRequest>> repoListPullRequests({
     required String owner,
     required String repo,

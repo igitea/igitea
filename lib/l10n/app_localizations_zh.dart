@@ -913,6 +913,36 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get enableWiki => '启用 Wiki';
+
+  @override
+  String get preview => 'Preview';
+
+  @override
+  String get commitMessage => 'Commit message';
+
+  @override
+  String get commit => 'Commit';
+
+  @override
+  String get commitMessageHint => 'Enter a commit message...';
+
+  @override
+  String get cannotGetFileSha => 'Cannot get file SHA. Please reload the file.';
+
+  @override
+  String get failedToSaveFile => 'Failed to save file';
+
+  @override
+  String get fileSaved => 'File saved successfully';
+
+  @override
+  String get discard => 'Discard';
+
+  @override
+  String get message => 'Message';
+
+  @override
+  String get ok => 'OK';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).

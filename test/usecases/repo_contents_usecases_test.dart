@@ -140,6 +140,14 @@ class MockRepoRepository implements RepoRepository {
   }
 
   @override
+  Future<Either<Failure, FileResponse>> updateFile(
+    String owner,
+    String repo,
+    String filepath,
+    UpdateFileOptions body,
+  ) => throw UnimplementedError();
+
+  @override
   Future<Either<Failure, List<PullRequest>>> listPullRequests(
     String owner,
     String repo, {

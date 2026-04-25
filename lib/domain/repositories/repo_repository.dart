@@ -123,6 +123,14 @@ abstract class RepoRepository {
     String? ref,
   });
 
+  /// Update a file in a repository.
+  Future<Either<Failure, FileResponse>> updateFile(
+    String owner,
+    String repo,
+    String filepath,
+    UpdateFileOptions body,
+  );
+
   /// List pull requests in a repository.
   Future<Either<Failure, List<PullRequest>>> listPullRequests(
     String owner,
