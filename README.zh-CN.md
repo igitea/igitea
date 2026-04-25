@@ -2,11 +2,16 @@
 
 基于 OpenAPI 规范构建的跨平台 [Gitea](https://gitea.io) Flutter 客户端。
 
+> 由 OpenCode 和 Kimi 2.6 构建 — 欢迎提交 PR！如果有多余的 token 帮帮我们吧，真的快撑不住了 lol！
+
 ## 截图
 
-| 登录 | 仪表盘 | 仓库详情 | Issue 详情 |
-|:----:|:------:|:--------:|:----------:|
-| ![登录](doc/login.png) | ![仪表盘](doc/dashboard.png) | ![仓库](doc/repos.png) | ![Issue](doc/issues.png) |
+<p float="left">
+  <img src="doc/login.png" width="240" />
+  <img src="doc/dashboard.png" width="240" />
+  <img src="doc/repos.png" width="240" />
+  <img src="doc/issues.png" width="240" />
+</p>
 
 ## 功能特性
 

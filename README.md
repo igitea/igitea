@@ -2,11 +2,16 @@
 
 A cross-platform Flutter client for [Gitea](https://gitea.io), built from the OpenAPI specification.
 
+> Built with OpenCode & Kimi 2.6 — PRs welcome! Help us if you have extra token, we are desperately waiting lol!
+
 ## Screenshots
 
-| Login | Dashboard | Repository Detail | Issue Detail |
-|:-----:|:---------:|:----------------:|:------------:|
-| ![Login](doc/login.png) | ![Dashboard](doc/dashboard.png) | ![Repo](doc/repos.png) | ![Issue](doc/issues.png) |
+<p float="left">
+  <img src="doc/login.png" width="240" />
+  <img src="doc/dashboard.png" width="240" />
+  <img src="doc/repos.png" width="240" />
+  <img src="doc/issues.png" width="240" />
+</p>
 
 ## Features
 
