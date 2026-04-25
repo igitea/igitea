@@ -5,6 +5,7 @@ import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../../presentation/state/issue_notifier.dart';
+import '../../presentation/state/user_notifier.dart';
 import '../widgets/user_avatar.dart';
 import 'edit_issue_page.dart';
 
@@ -372,6 +373,9 @@ class _IssueContent extends StatelessWidget {
     }
 
     final theme = Theme.of(context);
+    final currentUserState = Injection.userNotifier.state;
+    final currentUserId = currentUserState is UserLoaded ? currentUserState.user.id : null;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -380,7 +384,10 @@ class _IssueContent extends StatelessWidget {
           style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
-        ...comments.map((comment) => _CommentItem(comment: comment)),
+        ...comments.map((comment) => _CommentItem(
+          comment: comment,
+          isCurrentUser: currentUserId != null && comment.user?.id == currentUserId,
+        )),
       ],
     );
   }
@@ -503,51 +510,89 @@ class _IssueContent extends StatelessWidget {
 
 class _CommentItem extends StatelessWidget {
   final Comment comment;
+  final bool isCurrentUser;
 
-  const _CommentItem({required this.comment});
+  const _CommentItem({required this.comment, required this.isCurrentUser});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                if (comment.user != null) ...[
-                  UserAvatar(user: comment.user!, radius: 14),
-                  const SizedBox(width: 8),
+    final bubbleColor = isCurrentUser
+        ? theme.colorScheme.primaryContainer
+        : theme.colorScheme.surfaceContainerHighest;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: isCurrentUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        children: [
+          if (!isCurrentUser) ...[
+            if (comment.user != null)
+              UserAvatar(user: comment.user!, radius: 16)
+            else
+              CircleAvatar(radius: 16, child: Icon(Icons.person, size: 16)),
+            const SizedBox(width: 8),
+          ],
+          Flexible(
+            child: Container(
+              constraints: BoxConstraints(
+                maxWidth: MediaQuery.of(context).size.width * 0.7,
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: bubbleColor,
+                borderRadius: BorderRadius.only(
+                  topLeft: const Radius.circular(16),
+                  topRight: const Radius.circular(16),
+                  bottomLeft: Radius.circular(isCurrentUser ? 16 : 4),
+                  bottomRight: Radius.circular(isCurrentUser ? 4 : 16),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: isCurrentUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                children: [
+                  if (!isCurrentUser && comment.user?.login != null)
+                    Text(
+                      comment.user!.login!,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.primary,
+                      ),
+                    ),
+                  if (comment.body != null && comment.body!.isNotEmpty)
+                    MarkdownBody(
+                      data: comment.body!,
+                      selectable: true,
+                      styleSheet: MarkdownStyleSheet.fromTheme(theme).copyWith(
+                        p: theme.textTheme.bodyMedium,
+                      ),
+                      onTapLink: (text, href, title) {
+                        if (href != null) {
+                          launchUrl(Uri.parse(href), mode: LaunchMode.externalApplication);
+                        }
+                      },
+                    ),
+                  const SizedBox(height: 4),
                   Text(
-                    comment.user!.login ?? '',
-                    style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
+                    _formatDate(comment.created_at),
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                      fontSize: 10,
+                    ),
                   ),
                 ],
-                const Spacer(),
-                Text(
-                  _formatDate(comment.created_at),
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            if (comment.body != null && comment.body!.isNotEmpty)
-              MarkdownBody(
-                data: comment.body!,
-                selectable: true,
-                onTapLink: (text, href, title) {
-                  if (href != null) {
-                    launchUrl(Uri.parse(href), mode: LaunchMode.externalApplication);
-                  }
-                },
               ),
+            ),
+          ),
+          if (isCurrentUser) ...[
+            const SizedBox(width: 8),
+            if (comment.user != null)
+              UserAvatar(user: comment.user!, radius: 16)
+            else
+              CircleAvatar(radius: 16, child: Icon(Icons.person, size: 16)),
           ],
-        ),
+        ],
       ),
     );
   }
