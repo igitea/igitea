@@ -28,16 +28,19 @@ class OrgAvatar extends StatelessWidget {
       return _buildFallback(theme, fallbackInitial);
     }
 
-    return CircleAvatar(
-      radius: radius,
-      backgroundImage: NetworkImage(avatarUrl),
-      onBackgroundImageError: (_, __) {},
-      child: Text(
-        fallbackInitial,
-        style: TextStyle(
-          fontSize: radius * 0.9,
-          color: theme.colorScheme.onSurfaceVariant,
-        ),
+    return ClipOval(
+      child: Image.network(
+        avatarUrl,
+        width: radius * 2,
+        height: radius * 2,
+        fit: BoxFit.cover,
+        errorBuilder: (context, error, stackTrace) {
+          return _buildFallback(theme, fallbackInitial);
+        },
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return _buildFallback(theme, fallbackInitial);
+        },
       ),
     );
   }
