@@ -154,6 +154,8 @@ class _RepoDetailPageState extends State<RepoDetailPage>
                 dividerColor: Colors.transparent,
                 labelColor: Theme.of(context).colorScheme.onPrimaryContainer,
                 unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
+                splashFactory: NoSplash.splashFactory,
+                overlayColor: WidgetStateProperty.all(Colors.transparent),
                 tabs: [
                   Tab(icon: const Icon(Icons.code, size: UIConstants.iconMd), text: l10n.code),
                   Tab(icon: const Icon(Icons.bug_report_outlined, size: UIConstants.iconMd), text: l10n.issues),

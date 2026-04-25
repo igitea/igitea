@@ -13,6 +13,7 @@ import '../widgets/org_avatar.dart';
 import '../widgets/premium_card.dart';
 import '../widgets/user_avatar.dart';
 import 'create_org_page.dart';
+import 'create_repo_page.dart';
 import 'organization_detail_page.dart';
 import 'settings_page.dart';
 import 'starred_repos_page.dart';
@@ -157,6 +158,24 @@ class _ProfileContent extends StatelessWidget {
             _OrgsSection(orgs: orgs, loading: orgsLoading, l10n: l10n),
           ],
           const SizedBox(height: UIConstants.md),
+          PremiumCard(
+            onTap: () async {
+              final result = await Navigator.of(context).push<bool>(
+                MaterialPageRoute(builder: (_) => const CreateRepoPage()),
+              );
+              if (result == true && context.mounted) {
+                await Injection.userNotifier.listCurrentUserRepos();
+              }
+            },
+            child: Row(
+              children: [
+                Icon(Icons.add, color: Theme.of(context).colorScheme.primary),
+                const SizedBox(width: UIConstants.md),
+                Expanded(child: Text(l10n.createRepository)),
+                const Icon(Icons.chevron_right),
+              ],
+            ),
+          ),
           PremiumCard(
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(

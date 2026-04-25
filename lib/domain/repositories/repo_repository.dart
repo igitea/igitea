@@ -20,6 +20,9 @@ abstract class RepoRepository {
   /// Migrate an external repository.
   Future<Either<Failure, Repository>> migrateRepo(Map<String, dynamic> body);
 
+  /// Create a new repository.
+  Future<Either<Failure, Repository>> createRepo(Map<String, dynamic> body);
+
   /// List branches in a repository.
   Future<Either<Failure, List<Branch>>> listBranches(
     String owner,

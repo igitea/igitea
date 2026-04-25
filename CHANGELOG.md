@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.21.0] - 2026-04-26
+
+### Added — Create Repository
+
+- `CreateRepoPage` for creating new repositories
+  - Form fields: repository name (required), description (optional)
+  - Visibility selector: Public / Private with descriptive subtitles and checkmark indicators
+  - README initialization toggle with SwitchListTile
+  - Form validation for required name field
+  - Error display in styled container
+  - Success SnackBar with created repository name
+  - Auto-refreshes user's repository list on success
+- `CreateRepoUseCase` with `CreateRepoParams` supporting name, description, private, autoInit, defaultBranch, license, readme
+- `userCreateRepo` API method in `GiteaApiService` (POST /user/repos)
+- New ARB keys: `createRepository`, `repositoryName`, `repositoryNameHint`, `repositoryNameRequired`, `descriptionHint`, `publicDescription`, `privateDescription`, `initializeWithReadme`, `initializeWithReadmeDescription`, `repoCreated`
+- Entry point: `ProfilePage` "Create Repository" card above Starred Repositories
+- 247 tests passing, `flutter analyze` clean
+
 ## [0.20.0] - 2026-04-26
 
 ### Changed — UI Quality Enhancement

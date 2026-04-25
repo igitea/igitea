@@ -41,6 +41,13 @@ class RepoRepositoryImpl implements RepoRepository {
   }
 
   @override
+  Future<Either<Failure, Repository>> createRepo(
+    Map<String, dynamic> body,
+  ) async {
+    return execute(() => _apiService.userCreateRepo(body: body));
+  }
+
+  @override
   Future<Either<Failure, List<Branch>>> listBranches(
     String owner,
     String repo, {

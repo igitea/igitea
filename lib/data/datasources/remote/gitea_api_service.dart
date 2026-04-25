@@ -1374,6 +1374,11 @@ class GiteaApiService {
     return Repository.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
   }
 
+  Future<Repository> userCreateRepo({Map<String, dynamic>? body}) async {
+    final response = await _client.post('/user/repos', body: body);
+    return Repository.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+  }
+
   Future<List<Activity>> listUserActivities(String username, {int? page, int? limit}) async {
     final query = <String, String>{};
     if (page != null) query['page'] = page.toString();

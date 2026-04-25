@@ -336,5 +336,17 @@
   "members": "Members",
   "noMembers": "No members",
   "editOrganization": "Edit Organization",
-  "createOrganization": "Create Organization"
+  "createOrganization": "Create Organization",
+  "createRepository": "Create Repository",
+  "repositoryName": "Repository Name",
+  "repositoryNameHint": "my-awesome-repo",
+  "repositoryNameRequired": "Repository name is required",
+  "descriptionHint": "Short description of your repository",
+  "public": "Public",
+  "publicDescription": "Anyone on the internet can see this repository",
+  "private": "Private",
+  "privateDescription": "You choose who can see and commit to this repository",
+  "initializeWithReadme": "Initialize with README",
+  "initializeWithReadmeDescription": "Add a README file to help others understand your project",
+  "repoCreated": "Repository '{repoName}' created successfully"
 }

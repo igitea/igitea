@@ -2074,6 +2074,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Create Organization'**
   String get createOrganization;
+
+  /// No description provided for @createRepository.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Repository'**
+  String get createRepository;
+
+  /// No description provided for @repositoryName.
+  ///
+  /// In en, this message translates to:
+  /// **'Repository Name'**
+  String get repositoryName;
+
+  /// No description provided for @repositoryNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'my-awesome-repo'**
+  String get repositoryNameHint;
+
+  /// No description provided for @repositoryNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Repository name is required'**
+  String get repositoryNameRequired;
+
+  /// No description provided for @descriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Short description of your repository'**
+  String get descriptionHint;
+
+  /// No description provided for @public.
+  ///
+  /// In en, this message translates to:
+  /// **'Public'**
+  String get public;
+
+  /// No description provided for @publicDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Anyone on the internet can see this repository'**
+  String get publicDescription;
+
+  /// No description provided for @privateDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'You choose who can see and commit to this repository'**
+  String get privateDescription;
+
+  /// No description provided for @initializeWithReadme.
+  ///
+  /// In en, this message translates to:
+  /// **'Initialize with README'**
+  String get initializeWithReadme;
+
+  /// No description provided for @initializeWithReadmeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a README file to help others understand your project'**
+  String get initializeWithReadmeDescription;
+
+  /// No description provided for @repoCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Repository \'{repoName}\' created successfully'**
+  String repoCreated(Object repoName);
 }
 
 class _AppLocalizationsDelegate

@@ -525,3 +525,42 @@ class CreateForkUseCase {
     );
   }
 }
+
+class CreateRepoParams {
+  final String name;
+  final String? description;
+  final bool? isPrivate;
+  final bool? autoInit;
+  final String? defaultBranch;
+  final String? license;
+  final String? readme;
+
+  const CreateRepoParams({
+    required this.name,
+    this.description,
+    this.isPrivate,
+    this.autoInit,
+    this.defaultBranch,
+    this.license,
+    this.readme,
+  });
+}
+
+class CreateRepoUseCase {
+  final RepoRepository _repository;
+
+  CreateRepoUseCase({required RepoRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, Repository>> call(CreateRepoParams params) async {
+    return _repository.createRepo({
+      'name': params.name,
+      if (params.description != null) 'description': params.description,
+      if (params.isPrivate != null) 'private': params.isPrivate,
+      if (params.autoInit != null) 'auto_init': params.autoInit,
+      if (params.defaultBranch != null) 'default_branch': params.defaultBranch,
+      if (params.license != null) 'license': params.license,
+      if (params.readme != null) 'readme': params.readme,
+    });
+  }
+}

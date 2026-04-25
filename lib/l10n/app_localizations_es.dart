@@ -1042,4 +1042,42 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get createOrganization => 'Create Organization';
+
+  @override
+  String get createRepository => 'Create Repository';
+
+  @override
+  String get repositoryName => 'Repository Name';
+
+  @override
+  String get repositoryNameHint => 'my-awesome-repo';
+
+  @override
+  String get repositoryNameRequired => 'Repository name is required';
+
+  @override
+  String get descriptionHint => 'Short description of your repository';
+
+  @override
+  String get public => 'Public';
+
+  @override
+  String get publicDescription =>
+      'Anyone on the internet can see this repository';
+
+  @override
+  String get privateDescription =>
+      'You choose who can see and commit to this repository';
+
+  @override
+  String get initializeWithReadme => 'Initialize with README';
+
+  @override
+  String get initializeWithReadmeDescription =>
+      'Add a README file to help others understand your project';
+
+  @override
+  String repoCreated(Object repoName) {
+    return 'Repository \'$repoName\' created successfully';
+  }
 }

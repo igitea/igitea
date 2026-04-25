@@ -77,6 +77,7 @@ class Injection {
   static late DeleteRepoUseCase deleteRepoUseCase;
   static late UpdateFileUseCase updateFileUseCase;
   static late CreateForkUseCase createForkUseCase;
+  static late CreateRepoUseCase createRepoUseCase;
   static late ListIssuesUseCase listIssuesUseCase;
   static late GetIssueUseCase getIssueUseCase;
   static late CreateIssueUseCase createIssueUseCase;
@@ -173,6 +174,7 @@ class Injection {
     deleteRepoUseCase = DeleteRepoUseCase(repository: repoRepository);
     updateFileUseCase = UpdateFileUseCase(repository: repoRepository);
     createForkUseCase = CreateForkUseCase(repository: repoRepository);
+    createRepoUseCase = CreateRepoUseCase(repository: repoRepository);
     listIssuesUseCase = ListIssuesUseCase(repository: issueRepository);
     getIssueUseCase = GetIssueUseCase(repository: issueRepository);
     createIssueUseCase = CreateIssueUseCase(repository: issueRepository);

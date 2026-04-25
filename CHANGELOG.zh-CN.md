@@ -1,5 +1,23 @@
 # 更新日志
 
+## [0.21.0] - 2026-04-26
+
+### 新增 — 创建仓库
+
+- `CreateRepoPage`：创建新仓库页面
+  - 表单字段：仓库名称（必填）、描述（可选）
+  - 可见性选择器：公开/私有，带描述性副标题和勾选标记指示器
+  - README 初始化开关：使用 SwitchListTile
+  - 表单验证：名称必填
+  - 错误显示：带样式的容器
+  - 成功提示：Snackbar 显示创建的仓库名称
+  - 创建成功后自动刷新用户仓库列表
+- `CreateRepoUseCase` 和 `CreateRepoParams`：支持名称、描述、私有、自动初始化、默认分支、许可证、README
+- `userCreateRepo` API 方法：GiteaApiService（POST /user/repos）
+- 新增 ARB 键值：`createRepository`、`repositoryName`、`repositoryNameHint`、`repositoryNameRequired`、`descriptionHint`、`publicDescription`、`privateDescription`、`initializeWithReadme`、`initializeWithReadmeDescription`、`repoCreated`
+- 入口：`ProfilePage` 中"创建仓库"卡片位于"星标仓库"上方
+- 247 个测试通过，`flutter analyze` 无警告
+
 ## [0.20.0] - 2026-04-26
 
 ### 变更 — UI 品质提升

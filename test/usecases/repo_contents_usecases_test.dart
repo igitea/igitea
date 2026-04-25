@@ -29,6 +29,10 @@ class MockRepoRepository implements RepoRepository {
       throw UnimplementedError();
 
   @override
+  Future<Either<Failure, Repository>> createRepo(Map<String, dynamic> body) =>
+      throw UnimplementedError();
+
+  @override
   Future<Either<Failure, List<Branch>>> listBranches(
     String owner,
     String repo, {

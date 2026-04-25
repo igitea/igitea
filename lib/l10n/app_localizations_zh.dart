@@ -563,7 +563,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get user => 'User';
 
   @override
-  String get private => 'Private';
+  String get private => '私有';
 
   @override
   String get untitled => 'Untitled';
@@ -1039,6 +1039,41 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get createOrganization => '创建组织';
+
+  @override
+  String get createRepository => '创建仓库';
+
+  @override
+  String get repositoryName => '仓库名称';
+
+  @override
+  String get repositoryNameHint => 'my-awesome-repo';
+
+  @override
+  String get repositoryNameRequired => '仓库名称不能为空';
+
+  @override
+  String get descriptionHint => '简短描述你的仓库';
+
+  @override
+  String get public => '公开';
+
+  @override
+  String get publicDescription => '互联网上的任何人都可以看到这个仓库';
+
+  @override
+  String get privateDescription => '你可以选择谁可以看到并提交到这个仓库';
+
+  @override
+  String get initializeWithReadme => '使用 README 初始化';
+
+  @override
+  String get initializeWithReadmeDescription => '添加 README 文件帮助他人了解你的项目';
+
+  @override
+  String repoCreated(Object repoName) {
+    return '仓库 \'$repoName\' 创建成功';
+  }
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).

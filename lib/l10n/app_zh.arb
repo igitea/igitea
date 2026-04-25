@@ -210,5 +210,17 @@
   "members": "成员",
   "noMembers": "暂无成员",
   "editOrganization": "编辑组织",
-  "createOrganization": "创建组织"
+  "createOrganization": "创建组织",
+  "createRepository": "创建仓库",
+  "repositoryName": "仓库名称",
+  "repositoryNameHint": "my-awesome-repo",
+  "repositoryNameRequired": "仓库名称不能为空",
+  "descriptionHint": "简短描述你的仓库",
+  "public": "公开",
+  "publicDescription": "互联网上的任何人都可以看到这个仓库",
+  "private": "私有",
+  "privateDescription": "你可以选择谁可以看到并提交到这个仓库",
+  "initializeWithReadme": "使用 README 初始化",
+  "initializeWithReadmeDescription": "添加 README 文件帮助他人了解你的项目",
+  "repoCreated": "仓库 '{repoName}' 创建成功"
 }

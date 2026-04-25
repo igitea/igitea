@@ -89,6 +89,10 @@ class FakeRepoRepository implements RepoRepository {
       throw UnimplementedError();
 
   @override
+  Future<Either<Failure, Repository>> createRepo(Map<String, dynamic> body) =>
+      throw UnimplementedError();
+
+  @override
   Future<Either<Failure, Branch>> getBranch(
     String owner,
     String repoName,
