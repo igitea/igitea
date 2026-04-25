@@ -4,50 +4,138 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 
 ## Screenshots
 
-| Login | Repositories | Issues | Profile |
-|:-----:|:-----------:|:------:|:-------:|
-| ![Login](doc/login.png) | ![Repos](doc/repos.png) | ![Issues](doc/issues.png) | ![Profile](doc/profile.png) |
+| Login | Dashboard | Repository Detail | Issue Detail |
+|:-----:|:---------:|:----------------:|:------------:|
+| ![Login](doc/login.png) | ![Dashboard](doc/dashboard.png) | ![Repo](doc/repos.png) | ![Issue](doc/issues.png) |
 
 ## Features
 
-- Cross-platform support: Android, iOS, macOS, Linux, Windows, **Web**
-- Clean Architecture with Repository Pattern
-- 120+ auto-generated data models from Gitea OpenAPI spec
-- Full REST API client covering all Gitea API endpoint tags
-- 8 repository interfaces + implementations with exception→failure mapping
+### Core
+- Cross-platform: Android, iOS, macOS, Linux, Windows, **Web**
+- Clean Architecture + Repository Pattern
+- Material 3 Design System
+- 120+ data models auto-generated from OpenAPI spec
 - 35+ domain use cases with `Either<Failure, T>` pattern
-- ChangeNotifier-based state managers for Auth, User, Repo, Issue, Org, Notification, Theme
-- Material 3 UI: Login, Dashboard, Search, Repo List, Issue List, Notifications, Profile, Settings
-- Adaptive layout: NavigationRail (desktop) / NavigationBar (mobile)
-- Login page: username/password (primary), token (secondary), OAuth2 planned
-- Avatar display: user/org avatars with NetworkImage, graceful fallback to initials
-- Repo detail page with 7 tabs: Code (file browser), Issues, Pull Requests, Releases, Commits, Branches, Tags
-- Issue and PR detail pages with Markdown body, state badges, author avatars, labels, branch info
-- Comments on Issue and PR detail pages with Markdown rendering and input
-- Close/reopen issues, merge PRs with confirmation dialog
-- Global search page for repositories and issues
-- Star/unstar repositories with toggle button in repo detail
-- File browser with breadcrumb navigation and directory browsing
-- File viewer: Markdown rendering, image display, code syntax highlighting
-- Dark mode with light/dark/system theme switcher
-- Settings page with theme picker, account info, sign-out, and admin panel
-- **i18n**: Full internationalization support with 10 languages (EN, ZH, ZH_TW, JA, KO, ES, FR, DE, PT, RU)
-- Language selector in Settings with persistent preference
-- Admin user management: list, create, edit, delete users (admin only)
-- Notification actions: mark single as read, mark all as read
-- Create Issue page for creating new issues in any repository
-- Deep link support: open issues, PRs, and repositories via URL paths
-- Activity feed on Dashboard: shows recent user activities (create repo, push tag, create/close issue, PR, etc.)
-- Repository settings: edit description, visibility, feature toggles, and delete repository
-- Organization detail page with info, repositories, and teams tabs
-- Release detail page with asset downloads and source code links
-- Starred repositories page accessible from Profile
-- Fork repository button in repo detail AppBar
-- 247 unit/widget tests, `flutter analyze` clean
+
+### Authentication
+- Username/password login (primary)
+- Access token login (secondary)
+- OAuth2 support (planned)
+- Session persistence and auto-restore
+
+### Repositories
+- List, search, and browse repositories
+- Collapsible header with star/fork actions
+- 7 tabs: Code, Issues, Pull Requests, Releases, Commits, Branches, Tags
+- File browser with breadcrumb navigation
+- File viewer with Markdown rendering, images, and syntax highlighting
+- Edit files with commit message dialog
+- Repository settings: edit description, visibility, features, or delete
+
+### Issues & Pull Requests
+- List, search, filter issues and PRs
+- Detail pages with Markdown body, state badges, author avatars, labels
+- Comments with Markdown rendering
+- Close/reopen issues, merge PRs with confirmation
+
+### Organizations & Teams
+- View organization info, repositories, and teams
+- Click org avatars to navigate to detail page
+- List organization repositories with navigation
+
+### Releases
+- Browse releases with assets download
+- Release detail page with body, assets, tarball/zipball links
+
+### Starred Repositories
+- View all starred repositories from profile
+- Star/unstar with toggle button
+
+### Activity Feed
+- Dashboard shows recent activities
+- Supports: create/delete repo, push/delete tag, create/close/reopen issues and PRs, comments, fork, transfer
+
+### Notifications
+- List notifications with unread badge
+- Mark single or all as read
+
+### Search
+- Global search for repositories and issues
+- Real-time search results
+
+### Settings
+- Theme: Light / Dark / System
+- Language selection (10 supported)
+- Account info display
+- Admin panel for user management (admin only)
+
+### Internationalization
+- English (en)
+- Chinese Simplified (zh)
+- Chinese Traditional (zh_TW)
+- Japanese (ja)
+- Korean (ko)
+- Spanish (es)
+- French (fr)
+- German (de)
+- Portuguese (pt)
+- Russian (ru)
+
+### Deep Links
+- `/{owner}/{repo}` — repository
+- `/{owner}/{repo}/issues/{id}` — issue
+- `/{owner}/{repo}/pulls/{id}` — pull request
+
+## Tech Stack
+
+| Layer | Technology |
+|-------|------------|
+| Framework | Flutter |
+| State | ChangeNotifier + ListenableBuilder |
+| HTTP | http package |
+| Storage | path_provider, shared_preferences |
+| i18n | flutter_localizations |
+| UI | Material 3 |
+| Links | url_launcher |
+| File Picker | file_picker |
+| Markdown | flutter_markdown |
+
+## Getting Started
+
+### Prerequisites
+
+- Flutter SDK >= 3.11.5
+- Dart SDK >= 3.11.5
+
+### Build
+
+```bash
+# Install dependencies
+flutter pub get
+
+# Run (dev)
+flutter run
+
+# Build APK (Android)
+flutter build apk --debug
+
+# Build macOS
+flutter build macos
+
+# Build web
+flutter build web
+```
+
+### Test
+
+```bash
+flutter analyze
+flutter test
+```
 
 ## Project Status
 
-Phases 1–12 complete:
+All phases complete.
 
 | Phase | Description | Status |
 |-------|-------------|--------|
@@ -60,80 +148,10 @@ Phases 1–12 complete:
 | 7 | UI Layer | ✅ Done |
 | 8 | Testing & Quality | ✅ Done |
 | 9 | Repo Detail & File Browser | ✅ Done |
-| 10 | Issue/PR Detail Pages & Search | ✅ Done |
-| 11 | Settings Page & Admin Features | ✅ Done |
-| 12 | Internationalization (i18n) | ✅ Done |
-
-## Getting Started
-
-### Prerequisites
-
-- Flutter SDK >= 3.11.5
-- Dart SDK >= 3.11.5
-
-### Build
-
-```bash
-flutter pub get
-flutter run
-```
-
-### Build for Desktop
-
-```bash
-# macOS
-flutter build macos
-
-# Linux
-flutter build linux
-
-# Windows
-flutter build windows
-```
-
-### Build for Mobile
-
-```bash
-# Android
-flutter build apk
-
-# iOS
-flutter build ios
-```
-
-### Build for Web
-
-```bash
-flutter build web
-```
-
-## Architecture
-
-```
-lib/
-├── core/            # Utilities, constants, error/failure types
-├── data/
-│   ├── datasources/ # ApiClient, GiteaApiService
-│   ├── models/      # 120+ generated Dart model classes
-│   └── repositories/# 8 repository implementations
-├── domain/
-│   ├── repositories/# 8 repository interfaces
-│   └── usecases/    # 30+ use case classes
-└── presentation/
-     ├── pages/       # Material 3 UI pages
-     ├── state/       # ChangeNotifier state managers
-     └── widgets/     # Reusable avatar and file icon widgets
-```
-
-## Tech Stack
-
-- **Flutter 3.x** / **Dart 3.x**
-- **Material 3** design system
-- **Clean Architecture** — domain/data/presentation separation
-- **ChangeNotifier** for state management (no third-party dependencies)
-- **Either\<Failure, T\>** for typed error handling
-- **http** package for HTTP
+| 10 | Issue/PR Detail & Search | ✅ Done |
+| 11 | Settings & Admin | ✅ Done |
+| 12 | Internationalization | ✅ Done |
 
 ## License
 
-MIT License. See [LICENSE](LICENSE).
+MIT
