@@ -6,12 +6,9 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 
 ## Screenshots
 
-<p float="left">
-  <img src="doc/login.png" width="240" />
-  <img src="doc/profile.png" width="240" />
-  <img src="doc/repos.png" width="240" />
-  <img src="doc/issues.png" width="240" />
-</p>
+| Login | Profile | Repository | Issue |
+|:-----:|:-------:|:----------:|:-----:|
+| <img src="doc/login.png" width="200" /> | <img src="doc/profile.png" width="200" /> | <img src="doc/repos.png" width="200" /> | <img src="doc/issues.png" width="200" /> |
 
 ## Features
 

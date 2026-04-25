@@ -6,12 +6,9 @@
 
 ## 截图
 
-<p float="left">
-  <img src="doc/login.png" width="240" />
-  <img src="doc/profile.png" width="240" />
-  <img src="doc/repos.png" width="240" />
-  <img src="doc/issues.png" width="240" />
-</p>
+| 登录 | 个人资料 | 仓库 | Issue |
+|:----:|:--------:|:----:|:-----:|
+| <img src="doc/login.png" width="200" /> | <img src="doc/profile.png" width="200" /> | <img src="doc/repos.png" width="200" /> | <img src="doc/issues.png" width="200" /> |
 
 ## 功能特性
 
