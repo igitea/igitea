@@ -56,6 +56,7 @@ class Injection {
   static late ListFollowersUseCase listFollowersUseCase;
   static late ListFollowingUseCase listFollowingUseCase;
   static late GetUserActivitiesUseCase getUserActivitiesUseCase;
+  static late ListStarredReposUseCase listStarredReposUseCase;
   static late GetRepoUseCase getRepoUseCase;
   static late SearchReposUseCase searchReposUseCase;
   static late ListBranchesUseCase listBranchesUseCase;
@@ -75,6 +76,7 @@ class Injection {
   static late EditRepoUseCase editRepoUseCase;
   static late DeleteRepoUseCase deleteRepoUseCase;
   static late UpdateFileUseCase updateFileUseCase;
+  static late CreateForkUseCase createForkUseCase;
   static late ListIssuesUseCase listIssuesUseCase;
   static late GetIssueUseCase getIssueUseCase;
   static late CreateIssueUseCase createIssueUseCase;
@@ -147,6 +149,7 @@ class Injection {
     listFollowersUseCase = ListFollowersUseCase(repository: userRepository);
     listFollowingUseCase = ListFollowingUseCase(repository: userRepository);
     getUserActivitiesUseCase = GetUserActivitiesUseCase(repository: userRepository);
+    listStarredReposUseCase = ListStarredReposUseCase(repository: userRepository);
     getRepoUseCase = GetRepoUseCase(repository: repoRepository);
     searchReposUseCase = SearchReposUseCase(repository: repoRepository);
     listBranchesUseCase = ListBranchesUseCase(repository: repoRepository);
@@ -166,6 +169,7 @@ class Injection {
     editRepoUseCase = EditRepoUseCase(repository: repoRepository);
     deleteRepoUseCase = DeleteRepoUseCase(repository: repoRepository);
     updateFileUseCase = UpdateFileUseCase(repository: repoRepository);
+    createForkUseCase = CreateForkUseCase(repository: repoRepository);
     listIssuesUseCase = ListIssuesUseCase(repository: issueRepository);
     getIssueUseCase = GetIssueUseCase(repository: issueRepository);
     createIssueUseCase = CreateIssueUseCase(repository: issueRepository);
@@ -253,6 +257,7 @@ class Injection {
         getCurrentUserUseCase: getCurrentUserUseCase,
         listCurrentUserReposUseCase: listCurrentUserReposUseCase,
         getUserActivitiesUseCase: getUserActivitiesUseCase,
+        listStarredReposUseCase: listStarredReposUseCase,
       );
       repoNotifier.updateUseCases(
         getRepoUseCase: getRepoUseCase,
@@ -274,6 +279,7 @@ class Injection {
         editRepoUseCase: editRepoUseCase,
         deleteRepoUseCase: deleteRepoUseCase,
         updateFileUseCase: updateFileUseCase,
+        createForkUseCase: createForkUseCase,
       );
       issueNotifier.updateUseCases(
         listIssuesUseCase: listIssuesUseCase,
@@ -290,6 +296,7 @@ class Injection {
         getOrgUseCase: getOrgUseCase,
         listCurrentUserOrgsUseCase: listCurrentUserOrgsUseCase,
         listOrgReposUseCase: listOrgReposUseCase,
+        listOrgTeamsUseCase: listOrgTeamsUseCase,
       );
       notificationNotifier.updateUseCases(
         listNotificationsUseCase: listNotificationsUseCase,
@@ -312,6 +319,7 @@ class Injection {
         getCurrentUserUseCase: getCurrentUserUseCase,
         listCurrentUserReposUseCase: listCurrentUserReposUseCase,
         getUserActivitiesUseCase: getUserActivitiesUseCase,
+        listStarredReposUseCase: listStarredReposUseCase,
       );
       repoNotifier = RepoNotifier(
         getRepoUseCase: getRepoUseCase,
@@ -333,6 +341,7 @@ class Injection {
         editRepoUseCase: editRepoUseCase,
         deleteRepoUseCase: deleteRepoUseCase,
         updateFileUseCase: updateFileUseCase,
+        createForkUseCase: createForkUseCase,
       );
       issueNotifier = IssueNotifier(
         listIssuesUseCase: listIssuesUseCase,
@@ -349,6 +358,7 @@ class Injection {
         getOrgUseCase: getOrgUseCase,
         listCurrentUserOrgsUseCase: listCurrentUserOrgsUseCase,
         listOrgReposUseCase: listOrgReposUseCase,
+        listOrgTeamsUseCase: listOrgTeamsUseCase,
       );
       notificationNotifier = NotificationNotifier(
         listNotificationsUseCase: listNotificationsUseCase,
@@ -392,6 +402,7 @@ class Injection {
       getCurrentUserUseCase: getCurrentUserUseCase,
       listCurrentUserReposUseCase: listCurrentUserReposUseCase,
       getUserActivitiesUseCase: getUserActivitiesUseCase,
+      listStarredReposUseCase: listStarredReposUseCase,
     );
     repoNotifier.updateUseCases(
       getRepoUseCase: getRepoUseCase,
@@ -413,6 +424,7 @@ class Injection {
       editRepoUseCase: editRepoUseCase,
       deleteRepoUseCase: deleteRepoUseCase,
       updateFileUseCase: updateFileUseCase,
+      createForkUseCase: createForkUseCase,
     );
     issueNotifier.updateUseCases(
       listIssuesUseCase: listIssuesUseCase,
@@ -429,6 +441,7 @@ class Injection {
       getOrgUseCase: getOrgUseCase,
       listCurrentUserOrgsUseCase: listCurrentUserOrgsUseCase,
       listOrgReposUseCase: listOrgReposUseCase,
+      listOrgTeamsUseCase: listOrgTeamsUseCase,
     );
     notificationNotifier.updateUseCases(
       listNotificationsUseCase: listNotificationsUseCase,

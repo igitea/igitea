@@ -21,7 +21,7 @@
 - 自适应布局：桌面端 NavigationRail / 移动端 NavigationBar
 - 登录页：用户名/密码（主要）、Token（次要），OAuth2 计划中
 - 头像显示：用户/组织头像通过 NetworkImage 获取，无头像时优雅回退至首字母
-- 仓库详情页：5 个标签页——代码（文件浏览器）、Issue、Pull Request、Release、分支
+- 仓库详情页：7 个标签页——代码（文件浏览器）、Issue、Pull Request、Release、提交、分支、标签
 - Issue 和 PR 详情页：Markdown 正文渲染、状态徽章、作者头像、标签、分支信息
 - Issue 和 PR 详情页评论加载与显示，支持 Markdown 渲染和评论输入
 - 关闭/重开 Issue、合并 PR（带确认对话框）
@@ -39,6 +39,10 @@
 - Deep Link 支持：通过 URL 路径打开 Issue、PR 和仓库
 - Dashboard 活动流：显示最近用户活动（创建仓库、推送标签、创建/关闭 Issue、PR 等）
 - 仓库设置：编辑描述、可见性、功能开关，以及删除仓库
+- 组织详情页：信息、仓库、团队标签页
+- 发布详情页：资源文件下载和源代码链接
+- 个人主页可访问星标仓库页面
+- 仓库详情页 AppBar 新增 Fork 按钮
 - 247 个单元/Widget 测试，`flutter analyze` 无警告
 
 ## 项目进度

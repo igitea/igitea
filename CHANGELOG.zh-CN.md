@@ -1,5 +1,21 @@
 # 更新日志
 
+## [0.18.0] - 2026-04-25
+
+### 新增 — 组织详情、发布详情、星标仓库、分叉仓库
+
+- `OrganizationDetailPage`：可折叠头部 + 3 个标签页：信息、仓库、团队
+- `ReleaseDetailPage`：显示发布信息、正文、资源文件下载链接、tarball/zipball 下载
+- `StarredReposPage`：显示用户星标仓库列表，支持下拉刷新
+- `RepoDetailPage` AppBar 新增 Fork 按钮，调用 `createFork()` API
+- `RepoNotifier` 新增 `createFork()` 方法，使用 `CreateForkUseCase`
+- `OrgNotifier` 新增 `ListOrgTeamsUseCase`，支持团队标签页
+- `ProfilePage` 组织头像可点击，跳转到 `OrganizationDetailPage`
+- 发布列表项可点击，跳转到 `ReleaseDetailPage`
+- `ProfilePage` "我的星标"可点击，跳转到 `StarredReposPage`
+- 新增 ARB 键：`info`、`teams`、`noTeams`、`location`、`visibility`、`assets`、`publishedAt`、`target`、`forked`
+- 247 个测试通过，`flutter analyze` 无警告
+
 ## [0.17.1] - 2026-04-25
 
 ### 新增 — 仓库删除

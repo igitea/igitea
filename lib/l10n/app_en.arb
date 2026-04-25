@@ -320,5 +320,14 @@
   "zipball": "Zipball",
   "downloadTarball": "Download Tarball",
   "downloadZipball": "Download Zipball",
-  "url": "URL"
+  "url": "URL",
+  "info": "Info",
+  "teams": "Teams",
+  "noTeams": "No teams",
+  "location": "Location",
+  "visibility": "Visibility",
+  "assets": "Assets",
+  "publishedAt": "Published At",
+  "target": "Target",
+  "forked": "Forked"
 }

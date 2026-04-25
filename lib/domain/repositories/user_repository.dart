@@ -67,4 +67,10 @@ abstract class UserRepository {
     int? page,
     int? limit,
   });
+
+  /// List repositories starred by the current user.
+  Future<Either<Failure, List<Repository>>> listStarredRepos({
+    int? page,
+    int? limit,
+  });
 }

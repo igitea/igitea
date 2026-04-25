@@ -493,3 +493,35 @@ class UpdateFileUseCase {
     );
   }
 }
+
+class CreateForkParams {
+  final String owner;
+  final String repo;
+  final String? name;
+  final String? organization;
+
+  const CreateForkParams({
+    required this.owner,
+    required this.repo,
+    this.name,
+    this.organization,
+  });
+}
+
+class CreateForkUseCase {
+  final RepoRepository _repository;
+
+  CreateForkUseCase({required RepoRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, Repository>> call(CreateForkParams params) async {
+    return _repository.createFork(
+      params.owner,
+      params.repo,
+      body: CreateForkOption(
+        name: params.name,
+        organization: params.organization,
+      ),
+    );
+  }
+}

@@ -31,6 +31,7 @@ class UserNotifier extends ChangeNotifier {
   GetCurrentUserUseCase _getCurrentUserUseCase;
   ListCurrentUserReposUseCase _listCurrentUserReposUseCase;
   GetUserActivitiesUseCase _getUserActivitiesUseCase;
+  ListStarredReposUseCase _listStarredReposUseCase;
 
   UserState _state = const UserInitial();
   UserState get state => _state;
@@ -38,22 +39,29 @@ class UserNotifier extends ChangeNotifier {
   List<Activity> _activities = [];
   List<Activity> get activities => _activities;
 
+  List<Repository> _starredRepos = [];
+  List<Repository> get starredRepos => _starredRepos;
+
   UserNotifier({
     required GetCurrentUserUseCase getCurrentUserUseCase,
     required ListCurrentUserReposUseCase listCurrentUserReposUseCase,
     required GetUserActivitiesUseCase getUserActivitiesUseCase,
+    required ListStarredReposUseCase listStarredReposUseCase,
   }) : _getCurrentUserUseCase = getCurrentUserUseCase,
        _listCurrentUserReposUseCase = listCurrentUserReposUseCase,
-       _getUserActivitiesUseCase = getUserActivitiesUseCase;
+       _getUserActivitiesUseCase = getUserActivitiesUseCase,
+       _listStarredReposUseCase = listStarredReposUseCase;
 
   void updateUseCases({
     required GetCurrentUserUseCase getCurrentUserUseCase,
     required ListCurrentUserReposUseCase listCurrentUserReposUseCase,
     required GetUserActivitiesUseCase getUserActivitiesUseCase,
+    required ListStarredReposUseCase listStarredReposUseCase,
   }) {
     _getCurrentUserUseCase = getCurrentUserUseCase;
     _listCurrentUserReposUseCase = listCurrentUserReposUseCase;
     _getUserActivitiesUseCase = getUserActivitiesUseCase;
+    _listStarredReposUseCase = listStarredReposUseCase;
   }
 
   Future<void> loadCurrentUser() async {
@@ -98,6 +106,20 @@ class UserNotifier extends ChangeNotifier {
         notifyListeners();
       case Right<Failure, List<Activity>>(:final value):
         _activities = value;
+        notifyListeners();
+    }
+  }
+
+  Future<void> listStarredRepos({int? page, int? limit}) async {
+    final result = await _listStarredReposUseCase.call(
+      ListStarredReposParams(page: page, limit: limit),
+    );
+    switch (result) {
+      case Left<Failure, List<Repository>>():
+        _starredRepos = [];
+        notifyListeners();
+      case Right<Failure, List<Repository>>(:final value):
+        _starredRepos = value;
         notifyListeners();
     }
   }

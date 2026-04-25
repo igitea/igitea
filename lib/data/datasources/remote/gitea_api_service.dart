@@ -1350,6 +1350,30 @@ class GiteaApiService {
     }
   }
 
+  Future<List<Repository>> userCurrentListStarred({int? page, int? limit}) async {
+    final query = <String, String>{};
+    if (page != null) query['page'] = page.toString();
+    if (limit != null) query['limit'] = limit.toString();
+    final response = await _client.get(
+      '/user/starred',
+      queryParameters: query.isNotEmpty ? query : null,
+    );
+    final list = jsonDecode(response.body) as List<dynamic>;
+    return list.map((e) => Repository.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<Repository> repoCreateFork({
+    required String owner,
+    required String repo,
+    CreateForkOption? body,
+  }) async {
+    final response = await _client.post(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/forks',
+      body: body?.toJson(),
+    );
+    return Repository.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+  }
+
   Future<List<Activity>> listUserActivities(String username, {int? page, int? limit}) async {
     final query = <String, String>{};
     if (page != null) query['page'] = page.toString();

@@ -991,6 +991,33 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get url => 'URL';
+
+  @override
+  String get info => '信息';
+
+  @override
+  String get teams => '团队';
+
+  @override
+  String get noTeams => '暂无团队';
+
+  @override
+  String get location => '位置';
+
+  @override
+  String get visibility => '可见性';
+
+  @override
+  String get assets => '资源';
+
+  @override
+  String get publishedAt => '发布时间';
+
+  @override
+  String get target => '目标';
+
+  @override
+  String get forked => '已分叉';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).

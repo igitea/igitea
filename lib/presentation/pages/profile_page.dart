@@ -9,7 +9,9 @@ import '../../l10n/app_localizations.dart';
 import '../../presentation/state/user_notifier.dart';
 import '../widgets/org_avatar.dart';
 import '../widgets/user_avatar.dart';
+import 'organization_detail_page.dart';
 import 'settings_page.dart';
+import 'starred_repos_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -163,6 +165,16 @@ class _ProfileContent extends StatelessWidget {
             _OrgsSection(orgs: orgs, loading: orgsLoading, l10n: l10n),
           ],
           const SizedBox(height: 16),
+          ListTile(
+            leading: const Icon(Icons.star_outline),
+            title: Text(l10n.starredRepos),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => const StarredReposPage(),
+              ));
+            },
+          ),
           ListTile(
             leading: const Icon(Icons.settings_outlined),
             title: Text(l10n.settings),
@@ -396,7 +408,19 @@ class _OrgsSection extends StatelessWidget {
               final org = orgs[index];
               return Tooltip(
                 message: org.full_name ?? org.username ?? '',
-                child: OrgAvatar(org: org, radius: 24),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => OrganizationDetailPage(
+                          orgName: org.username ?? '',
+                        ),
+                      ),
+                    );
+                  },
+                  child: OrgAvatar(org: org, radius: 24),
+                ),
               );
             },
           ),

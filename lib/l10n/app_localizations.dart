@@ -1978,6 +1978,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'URL'**
   String get url;
+
+  /// No description provided for @info.
+  ///
+  /// In en, this message translates to:
+  /// **'Info'**
+  String get info;
+
+  /// No description provided for @teams.
+  ///
+  /// In en, this message translates to:
+  /// **'Teams'**
+  String get teams;
+
+  /// No description provided for @noTeams.
+  ///
+  /// In en, this message translates to:
+  /// **'No teams'**
+  String get noTeams;
+
+  /// No description provided for @location.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get location;
+
+  /// No description provided for @visibility.
+  ///
+  /// In en, this message translates to:
+  /// **'Visibility'**
+  String get visibility;
+
+  /// No description provided for @assets.
+  ///
+  /// In en, this message translates to:
+  /// **'Assets'**
+  String get assets;
+
+  /// No description provided for @publishedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Published At'**
+  String get publishedAt;
+
+  /// No description provided for @target.
+  ///
+  /// In en, this message translates to:
+  /// **'Target'**
+  String get target;
+
+  /// No description provided for @forked.
+  ///
+  /// In en, this message translates to:
+  /// **'Forked'**
+  String get forked;
 }
 
 class _AppLocalizationsDelegate

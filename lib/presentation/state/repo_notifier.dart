@@ -155,6 +155,7 @@ class RepoNotifier extends ChangeNotifier {
   EditRepoUseCase _editRepoUseCase;
   DeleteRepoUseCase _deleteRepoUseCase;
   UpdateFileUseCase _updateFileUseCase;
+  CreateForkUseCase _createForkUseCase;
 
   RepoState _state = const RepoInitial();
   RepoState get state => _state;
@@ -197,6 +198,7 @@ class RepoNotifier extends ChangeNotifier {
     required EditRepoUseCase editRepoUseCase,
     required DeleteRepoUseCase deleteRepoUseCase,
     required UpdateFileUseCase updateFileUseCase,
+    required CreateForkUseCase createForkUseCase,
   }) : _getRepoUseCase = getRepoUseCase,
        _searchReposUseCase = searchReposUseCase,
        _listBranchesUseCase = listBranchesUseCase,
@@ -215,7 +217,8 @@ class RepoNotifier extends ChangeNotifier {
        _createPullRequestUseCase = createPullRequestUseCase,
        _editRepoUseCase = editRepoUseCase,
        _deleteRepoUseCase = deleteRepoUseCase,
-       _updateFileUseCase = updateFileUseCase;
+       _updateFileUseCase = updateFileUseCase,
+       _createForkUseCase = createForkUseCase;
 
   void updateUseCases({
     required GetRepoUseCase getRepoUseCase,
@@ -237,6 +240,7 @@ class RepoNotifier extends ChangeNotifier {
     required EditRepoUseCase editRepoUseCase,
     required DeleteRepoUseCase deleteRepoUseCase,
     required UpdateFileUseCase updateFileUseCase,
+    required CreateForkUseCase createForkUseCase,
   }) {
     _getRepoUseCase = getRepoUseCase;
     _searchReposUseCase = searchReposUseCase;
@@ -257,6 +261,7 @@ class RepoNotifier extends ChangeNotifier {
     _editRepoUseCase = editRepoUseCase;
     _deleteRepoUseCase = deleteRepoUseCase;
     _updateFileUseCase = updateFileUseCase;
+    _createForkUseCase = createForkUseCase;
   }
 
   Future<void> getRepo(String owner, String repo) async {
@@ -600,6 +605,22 @@ class RepoNotifier extends ChangeNotifier {
         message: message,
         branch: branch,
         sha: sha,
+      ),
+    );
+  }
+
+  Future<Either<Failure, Repository>> createFork(
+    String owner,
+    String repo, {
+    String? name,
+    String? organization,
+  }) async {
+    return await _createForkUseCase.call(
+      CreateForkParams(
+        owner: owner,
+        repo: repo,
+        name: name,
+        organization: organization,
       ),
     );
   }

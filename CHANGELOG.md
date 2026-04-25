@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.18.0] - 2026-04-25
+
+### Added — Organization Detail, Release Detail, Starred Repos, Fork
+
+- `OrganizationDetailPage` with collapsible header and 3 tabs: Info, Repositories, Teams
+- `ReleaseDetailPage` showing release info, body, assets with download links, tarball/zipball downloads
+- `StarredReposPage` displaying user's starred repositories with pull-to-refresh
+- Fork button in `RepoDetailPage` AppBar calling `createFork()` API
+- `createFork()` method in `RepoNotifier` with `CreateForkUseCase`
+- `ListOrgTeamsUseCase` added to `OrgNotifier` for teams tab
+- Navigation from org avatars in `ProfilePage` to `OrganizationDetailPage`
+- Navigation from release list items to `ReleaseDetailPage`
+- Navigation from "My Stars" in `ProfilePage` to `StarredReposPage`
+- New ARB keys: `info`, `teams`, `noTeams`, `location`, `visibility`, `assets`, `publishedAt`, `target`, `forked`
+- 247 tests passing, `flutter analyze` clean
+
 ## [0.17.1] - 2026-04-25
 
 ### Added — Repository Deletion

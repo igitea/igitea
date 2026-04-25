@@ -21,7 +21,7 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 - Adaptive layout: NavigationRail (desktop) / NavigationBar (mobile)
 - Login page: username/password (primary), token (secondary), OAuth2 planned
 - Avatar display: user/org avatars with NetworkImage, graceful fallback to initials
-- Repo detail page with 5 tabs: Code (file browser), Issues, Pull Requests, Releases, Branches
+- Repo detail page with 7 tabs: Code (file browser), Issues, Pull Requests, Releases, Commits, Branches, Tags
 - Issue and PR detail pages with Markdown body, state badges, author avatars, labels, branch info
 - Comments on Issue and PR detail pages with Markdown rendering and input
 - Close/reopen issues, merge PRs with confirmation dialog
@@ -39,6 +39,10 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 - Deep link support: open issues, PRs, and repositories via URL paths
 - Activity feed on Dashboard: shows recent user activities (create repo, push tag, create/close issue, PR, etc.)
 - Repository settings: edit description, visibility, feature toggles, and delete repository
+- Organization detail page with info, repositories, and teams tabs
+- Release detail page with asset downloads and source code links
+- Starred repositories page accessible from Profile
+- Fork repository button in repo detail AppBar
 - 247 unit/widget tests, `flutter analyze` clean
 
 ## Project Status

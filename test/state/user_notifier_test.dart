@@ -93,6 +93,15 @@ class FakeUserRepository implements UserRepository {
     int? page,
     int? limit,
   }) => throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, List<Repository>>> listStarredRepos({
+    int? page,
+    int? limit,
+  }) async {
+    if (shouldFailListCurrentUserRepos) return Left(failure);
+    return Right(repos);
+  }
 }
 
 void main() {
@@ -108,6 +117,7 @@ void main() {
         listCurrentUserReposUseCase: ListCurrentUserReposUseCase(
           repository: fakeRepo,
         ),
+        listStarredReposUseCase: ListStarredReposUseCase(repository: fakeRepo),
       );
     });
 

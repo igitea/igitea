@@ -245,6 +245,16 @@ class FakeRepoRepository implements RepoRepository {
     if (shouldFail) return Left(failure);
     return Right(null);
   }
+
+  @override
+  Future<Either<Failure, Repository>> createFork(
+    String owner,
+    String repo, {
+    CreateForkOption? body,
+  }) async {
+    if (shouldFail) return Left(failure);
+    return Right(Repository(id: 2, name: '${repo}-fork'));
+  }
 }
 
 void main() {
@@ -274,6 +284,7 @@ void main() {
         editRepoUseCase: EditRepoUseCase(repository: fakeRepo),
         deleteRepoUseCase: DeleteRepoUseCase(repository: fakeRepo),
         updateFileUseCase: UpdateFileUseCase(repository: fakeRepo),
+        createForkUseCase: CreateForkUseCase(repository: fakeRepo),
       );
     });
 

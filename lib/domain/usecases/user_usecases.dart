@@ -141,3 +141,24 @@ class GetUserActivitiesUseCase {
     );
   }
 }
+
+class ListStarredReposParams {
+  final int? page;
+  final int? limit;
+
+  const ListStarredReposParams({this.page, this.limit});
+}
+
+class ListStarredReposUseCase {
+  final UserRepository _repository;
+
+  ListStarredReposUseCase({required UserRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, List<Repository>>> call(ListStarredReposParams params) async {
+    return _repository.listStarredRepos(
+      page: params.page,
+      limit: params.limit,
+    );
+  }
+}

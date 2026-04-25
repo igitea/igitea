@@ -208,6 +208,14 @@ class MockRepoRepository implements RepoRepository {
     MergePullRequestOption? body,
   }) =>
       throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, Repository>> createFork(
+    String owner,
+    String repo, {
+    CreateForkOption? body,
+  }) =>
+      throw UnimplementedError();
 }
 
 void main() {

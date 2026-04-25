@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../core/di/injection.dart';
+import '../../core/errors/failures.dart';
+import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../domain/usecases/issue_usecases.dart';
 import '../../l10n/app_localizations.dart';
@@ -13,6 +15,7 @@ import 'branch_detail_page.dart';
 import 'commit_detail_page.dart';
 import 'issue_detail_page.dart';
 import 'pr_detail_page.dart';
+import 'release_detail_page.dart';
 import 'repo_file_page.dart';
 import 'tag_detail_page.dart';
 
@@ -104,6 +107,10 @@ class _RepoDetailPageState extends State<RepoDetailPage>
           SliverAppBar(
             title: Text('${widget.owner}/${widget.repo}'),
             actions: [
+              IconButton(
+                icon: const Icon(Icons.fork_right),
+                onPressed: () => _showForkDialog(context, l10n),
+              ),
               ListenableBuilder(
                 listenable: Injection.repoNotifier,
                 builder: (context, _) {
@@ -167,6 +174,21 @@ class _RepoDetailPageState extends State<RepoDetailPage>
         ],
       ),
     );
+  }
+
+  Future<void> _showForkDialog(BuildContext context, AppLocalizations l10n) async {
+    final result = await Injection.repoNotifier.createFork(widget.owner, widget.repo);
+    if (!context.mounted) return;
+    switch (result) {
+      case Left<Failure, Repository>(:final value):
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${l10n.error}: ${value.message}')),
+        );
+      case Right<Failure, Repository>(:final value):
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${l10n.forked}: ${value.full_name ?? value.name ?? ''}')),
+        );
+    }
   }
 }
 
@@ -989,6 +1011,14 @@ class _ReleaseItem extends StatelessWidget {
             ? Text(_formatDate(release.published_at!),
                 style: theme.textTheme.labelSmall)
             : null,
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ReleaseDetailPage(release: release),
+            ),
+          );
+        },
       ),
     );
   }

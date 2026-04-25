@@ -232,6 +232,13 @@ class MockRepoRepository implements RepoRepository {
     if (shouldFail) return Left(failure);
     return Right(null);
   }
+
+  @override
+  Future<Either<Failure, Repository>> createFork(
+    String owner,
+    String repo, {
+    CreateForkOption? body,
+  }) => throw UnimplementedError();
 }
 
 void main() {

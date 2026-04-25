@@ -174,6 +174,13 @@ abstract class RepoRepository {
     Map<String, dynamic> body,
   );
 
+  /// Fork a repository.
+  Future<Either<Failure, Repository>> createFork(
+    String owner,
+    String repo, {
+    CreateForkOption? body,
+  });
+
   /// Merge a pull request.
   Future<Either<Failure, void>> mergePullRequest(
     String owner,

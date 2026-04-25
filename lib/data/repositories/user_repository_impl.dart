@@ -131,4 +131,14 @@ class UserRepositoryImpl implements UserRepository {
       () => _apiService.listUserActivities(username, page: page, limit: limit),
     );
   }
+
+  @override
+  Future<Either<Failure, List<Repository>>> listStarredRepos({
+    int? page,
+    int? limit,
+  }) async {
+    return execute(
+      () => _apiService.userCurrentListStarred(page: page, limit: limit),
+    );
+  }
 }

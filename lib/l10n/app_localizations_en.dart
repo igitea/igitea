@@ -994,4 +994,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get url => 'URL';
+
+  @override
+  String get info => 'Info';
+
+  @override
+  String get teams => 'Teams';
+
+  @override
+  String get noTeams => 'No teams';
+
+  @override
+  String get location => 'Location';
+
+  @override
+  String get visibility => 'Visibility';
+
+  @override
+  String get assets => 'Assets';
+
+  @override
+  String get publishedAt => 'Published At';
+
+  @override
+  String get target => 'Target';
+
+  @override
+  String get forked => 'Forked';
 }

@@ -194,5 +194,14 @@
   "enableIssues": "启用 Issues",
   "enablePullRequests": "启用 Pull Requests",
   "enableWiki": "启用 Wiki",
-  "defaultBranch": "默认分支"
+  "defaultBranch": "默认分支",
+  "info": "信息",
+  "teams": "团队",
+  "noTeams": "暂无团队",
+  "location": "位置",
+  "visibility": "可见性",
+  "assets": "资源",
+  "publishedAt": "发布时间",
+  "target": "目标",
+  "forked": "已分叉"
 }

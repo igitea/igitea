@@ -366,4 +366,15 @@ class RepoRepositoryImpl implements RepoRepository {
       ),
     );
   }
+
+  @override
+  Future<Either<Failure, Repository>> createFork(
+    String owner,
+    String repo, {
+    CreateForkOption? body,
+  }) async {
+    return execute(
+      () => _apiService.repoCreateFork(owner: owner, repo: repo, body: body),
+    );
+  }
 }
