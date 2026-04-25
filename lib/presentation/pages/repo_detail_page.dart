@@ -75,27 +75,6 @@ class _RepoDetailPageState extends State<RepoDetailPage>
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(
-        title: Text('${widget.owner}/${widget.repo}'),
-        actions: [
-          ListenableBuilder(
-            listenable: Injection.repoNotifier,
-            builder: (context, _) {
-              final isStarred = Injection.repoNotifier.isStarred;
-              final starLoading = Injection.repoNotifier.starLoading;
-              return IconButton(
-                icon: Icon(
-                  isStarred ? Icons.star : Icons.star_outline,
-                  color: isStarred ? Colors.amber : null,
-                ),
-                onPressed: starLoading
-                    ? null
-                    : () => Injection.repoNotifier.toggleStar(widget.owner, widget.repo),
-              );
-            },
-          ),
-        ],
-      ),
       body: ListenableBuilder(
         listenable: Injection.repoNotifier,
         builder: (context, _) {
@@ -116,39 +95,70 @@ class _RepoDetailPageState extends State<RepoDetailPage>
   }
 
   Widget _buildContent(BuildContext context, Repository repo, AppLocalizations l10n) {
-    return Column(
-      children: [
-        _RepoHeader(repo: repo, l10n: l10n),
-        TabBar(
-          controller: _tabController,
-          isScrollable: true,
-          tabs: [
-            Tab(icon: Icon(Icons.code), text: l10n.code),
-            Tab(icon: Icon(Icons.bug_report_outlined), text: l10n.issues),
-            Tab(icon: Icon(Icons.merge_type), text: l10n.pullRequests),
-            Tab(icon: Icon(Icons.new_releases_outlined), text: l10n.releases),
-            Tab(icon: Icon(Icons.call_split), text: l10n.branches),
-          ],
-        ),
-        Expanded(
-          child: TabBarView(
-            controller: _tabController,
-            children: [
-              _CodeTab(
-                  owner: widget.owner,
-                  repo: widget.repo,
-                  defaultBranch: repo.default_branch),
-              _IssuesTab(owner: widget.owner, repo: widget.repo, l10n: l10n),
-              _PullRequestsTab(owner: widget.owner, repo: widget.repo, l10n: l10n),
-              _ReleasesTab(owner: widget.owner, repo: widget.repo, l10n: l10n),
-              _BranchesTab(
-                  owner: widget.owner,
-                  repo: widget.repo,
-                  defaultBranch: repo.default_branch),
+    return NestedScrollView(
+      headerSliverBuilder: (context, innerBoxIsScrolled) {
+        return [
+          SliverAppBar(
+            title: Text('${widget.owner}/${widget.repo}'),
+            actions: [
+              ListenableBuilder(
+                listenable: Injection.repoNotifier,
+                builder: (context, _) {
+                  final isStarred = Injection.repoNotifier.isStarred;
+                  final starLoading = Injection.repoNotifier.starLoading;
+                  return IconButton(
+                    icon: Icon(
+                      isStarred ? Icons.star : Icons.star_outline,
+                      color: isStarred ? Colors.amber : null,
+                    ),
+                    onPressed: starLoading
+                        ? null
+                        : () => Injection.repoNotifier.toggleStar(widget.owner, widget.repo),
+                  );
+                },
+              ),
             ],
+            pinned: true,
+            floating: true,
+            forceElevated: innerBoxIsScrolled,
           ),
-        ),
-      ],
+          SliverToBoxAdapter(
+            child: _RepoHeader(repo: repo, l10n: l10n),
+          ),
+          SliverPersistentHeader(
+            delegate: _SliverTabBarDelegate(
+              TabBar(
+                controller: _tabController,
+                isScrollable: true,
+                tabs: [
+                  Tab(icon: Icon(Icons.code), text: l10n.code),
+                  Tab(icon: Icon(Icons.bug_report_outlined), text: l10n.issues),
+                  Tab(icon: Icon(Icons.merge_type), text: l10n.pullRequests),
+                  Tab(icon: Icon(Icons.new_releases_outlined), text: l10n.releases),
+                  Tab(icon: Icon(Icons.call_split), text: l10n.branches),
+                ],
+              ),
+            ),
+            pinned: true,
+          ),
+        ];
+      },
+      body: TabBarView(
+        controller: _tabController,
+        children: [
+          _CodeTab(
+              owner: widget.owner,
+              repo: widget.repo,
+              defaultBranch: repo.default_branch),
+          _IssuesTab(owner: widget.owner, repo: widget.repo, l10n: l10n),
+          _PullRequestsTab(owner: widget.owner, repo: widget.repo, l10n: l10n),
+          _ReleasesTab(owner: widget.owner, repo: widget.repo, l10n: l10n),
+          _BranchesTab(
+              owner: widget.owner,
+              repo: widget.repo,
+              defaultBranch: repo.default_branch),
+        ],
+      ),
     );
   }
 }
@@ -1080,5 +1090,30 @@ class _BranchesTabState extends State<_BranchesTab> {
         return const Center(child: CircularProgressIndicator());
       },
     );
+  }
+}
+
+class _SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
+  final TabBar tabBar;
+
+  _SliverTabBarDelegate(this.tabBar);
+
+  @override
+  double get minExtent => tabBar.preferredSize.height;
+
+  @override
+  double get maxExtent => tabBar.preferredSize.height;
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return Container(
+      color: Theme.of(context).colorScheme.surface,
+      child: tabBar,
+    );
+  }
+
+  @override
+  bool shouldRebuild(covariant _SliverTabBarDelegate oldDelegate) {
+    return false;
   }
 }
