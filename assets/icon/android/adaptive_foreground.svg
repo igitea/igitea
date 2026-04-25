@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 108 108">
+  <!-- Android Adaptive Icon foreground: safe zone is 72x72 centered -->
+  <g transform="translate(54, 54)">
+    <!-- Teapot centered in safe zone -->
+    <g transform="translate(-28, -24) scale(0.12)">
+      <!-- Body -->
+      <path d="M250,75 C165,75 95,135 95,240 C95,360 160,415 250,415 C340,415 405,360 405,240 C405,135 335,75 250,75Z" fill="#FFFFFF"/>
+      <!-- Spout -->
+      <path d="M380,210 C440,190 485,145 510,95 C520,75 545,85 535,110 C500,180 445,250 390,275 C365,285 355,260 365,240 C370,230 375,220 380,210Z" fill="#FFFFFF"/>
+      <!-- Handle -->
+      <path d="M125,205 C70,185 25,230 35,295 C40,340 70,385 115,395 C130,400 135,375 125,365 C90,355 70,325 67,290 C62,250 90,225 130,235 C140,238 135,215 125,205Z" fill="#FFFFFF"/>
+      <!-- Lid -->
+      <ellipse cx="250" cy="82" rx="68" ry="22" fill="#FFFFFF"/>
+      <rect x="235" y="48" width="30" height="38" rx="10" fill="#FFFFFF"/>
+      <!-- Leaf -->
+      <path d="M250,30 C268,8 292,18 280,42 C270,54 250,48 250,30Z" fill="#84C766"/>
+      <path d="M250,30 C256,38 262,40 268,36" stroke="#55963A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    </g>
+
+    <!-- Phone badge at bottom right (within safe zone) -->
+    <g transform="translate(14, 12)">
+      <circle cx="10" cy="10" r="10" fill="#FFFFFF"/>
+      <rect x="5" y="3" width="6" height="10" rx="1.2" fill="none" stroke="#55963A" stroke-width="0.8"/>
+      <line x1="6.5" y1="5" x2="9.5" y2="5" stroke="#55963A" stroke-width="0.6" stroke-linecap="round"/>
+      <circle cx="8" cy="11" r="0.7" fill="#55963A"/>
+    </g>
+  </g>
+</svg>

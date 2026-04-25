@@ -27,21 +27,6 @@ class RepoListLoaded extends RepoState {
   const RepoListLoaded(this.repos);
 }
 
-class BranchesLoaded extends RepoState {
-  final List<Branch> branches;
-  const BranchesLoaded(this.branches);
-}
-
-class CommitsLoaded extends RepoState {
-  final List<Commit> commits;
-  const CommitsLoaded(this.commits);
-}
-
-class TagsLoaded extends RepoState {
-  final List<Tag> tags;
-  const TagsLoaded(this.tags);
-}
-
 class CommitDetailLoaded extends RepoState {
   final Commit commit;
   const CommitDetailLoaded(this.commit);
@@ -135,6 +120,72 @@ class ReleasesError extends ReleasesState {
   const ReleasesError(this.message);
 }
 
+sealed class CommitsState {
+  const CommitsState();
+}
+
+class CommitsInitial extends CommitsState {
+  const CommitsInitial();
+}
+
+class CommitsLoading extends CommitsState {
+  const CommitsLoading();
+}
+
+class CommitsLoaded extends CommitsState {
+  final List<Commit> commits;
+  const CommitsLoaded(this.commits);
+}
+
+class CommitsError extends CommitsState {
+  final String message;
+  const CommitsError(this.message);
+}
+
+sealed class BranchesState {
+  const BranchesState();
+}
+
+class BranchesInitial extends BranchesState {
+  const BranchesInitial();
+}
+
+class BranchesLoading extends BranchesState {
+  const BranchesLoading();
+}
+
+class BranchesLoaded extends BranchesState {
+  final List<Branch> branches;
+  const BranchesLoaded(this.branches);
+}
+
+class BranchesError extends BranchesState {
+  final String message;
+  const BranchesError(this.message);
+}
+
+sealed class TagsState {
+  const TagsState();
+}
+
+class TagsInitial extends TagsState {
+  const TagsInitial();
+}
+
+class TagsLoading extends TagsState {
+  const TagsLoading();
+}
+
+class TagsLoaded extends TagsState {
+  final List<Tag> tags;
+  const TagsLoaded(this.tags);
+}
+
+class TagsError extends TagsState {
+  final String message;
+  const TagsError(this.message);
+}
+
 class RepoNotifier extends ChangeNotifier {
   GetRepoUseCase _getRepoUseCase;
   SearchReposUseCase _searchReposUseCase;
@@ -172,6 +223,15 @@ class RepoNotifier extends ChangeNotifier {
 
   ReleasesState _releasesState = const ReleasesInitial();
   ReleasesState get releasesState => _releasesState;
+
+  CommitsState _commitsState = const CommitsInitial();
+  CommitsState get commitsState => _commitsState;
+
+  BranchesState _branchesState = const BranchesInitial();
+  BranchesState get branchesState => _branchesState;
+
+  TagsState _tagsState = const TagsInitial();
+  TagsState get tagsState => _tagsState;
 
   bool _isStarred = false;
   bool get isStarred => _isStarred;
@@ -304,7 +364,7 @@ class RepoNotifier extends ChangeNotifier {
     int? page,
     int? limit,
   }) async {
-    _state = const RepoLoading();
+    _branchesState = const BranchesLoading();
     notifyListeners();
 
     final result = await _listBranchesUseCase.call(
@@ -312,10 +372,10 @@ class RepoNotifier extends ChangeNotifier {
     );
     switch (result) {
       case Left<Failure, List<Branch>>(:final value):
-        _state = RepoError(value.message);
+        _branchesState = BranchesError(value.message);
         notifyListeners();
       case Right<Failure, List<Branch>>(:final value):
-        _state = BranchesLoaded(value);
+        _branchesState = BranchesLoaded(value);
         notifyListeners();
     }
   }
@@ -327,7 +387,7 @@ class RepoNotifier extends ChangeNotifier {
     int? page,
     int? limit,
   }) async {
-    _state = const RepoLoading();
+    _commitsState = const CommitsLoading();
     notifyListeners();
 
     final result = await _listCommitsUseCase.call(
@@ -341,10 +401,10 @@ class RepoNotifier extends ChangeNotifier {
     );
     switch (result) {
       case Left<Failure, List<Commit>>(:final value):
-        _state = RepoError(value.message);
+        _commitsState = CommitsError(value.message);
         notifyListeners();
       case Right<Failure, List<Commit>>(:final value):
-        _state = CommitsLoaded(value);
+        _commitsState = CommitsLoaded(value);
         notifyListeners();
     }
   }
@@ -355,7 +415,7 @@ class RepoNotifier extends ChangeNotifier {
     int? page,
     int? limit,
   }) async {
-    _state = const RepoLoading();
+    _tagsState = const TagsLoading();
     notifyListeners();
 
     final result = await _listTagsUseCase.call(
@@ -363,10 +423,10 @@ class RepoNotifier extends ChangeNotifier {
     );
     switch (result) {
       case Left<Failure, List<Tag>>(:final value):
-        _state = RepoError(value.message);
+        _tagsState = TagsError(value.message);
         notifyListeners();
       case Right<Failure, List<Tag>>(:final value):
-        _state = TagsLoaded(value);
+        _tagsState = TagsLoaded(value);
         notifyListeners();
     }
   }

@@ -378,17 +378,17 @@ void main() {
 
     group('listBranches', () {
       test(
-        'transitions through RepoLoading to BranchesLoaded on success',
+        'transitions through BranchesLoading to BranchesLoaded on success',
         () async {
-          final states = <RepoState>[];
+          final states = <BranchesState>[];
           notifier.addListener(() {
-            states.add(notifier.state);
+            states.add(notifier.branchesState);
           });
 
           await notifier.listBranches('owner', 'repo');
 
           expect(states.length, 2);
-          expect(states[0], isA<RepoLoading>());
+          expect(states[0], isA<BranchesLoading>());
           expect(states[1], isA<BranchesLoaded>());
 
           final loaded = states[1] as BranchesLoaded;
@@ -397,29 +397,29 @@ void main() {
         },
       );
 
-      test('transitions to RepoError on failure', () async {
+      test('transitions to BranchesError on failure', () async {
         fakeRepo.shouldFail = true;
         fakeRepo.failure = const ServerFailure('fail');
 
         await notifier.listBranches('owner', 'repo');
 
-        expect(notifier.state, isA<RepoError>());
+        expect(notifier.branchesState, isA<BranchesError>());
       });
     });
 
     group('listCommits', () {
       test(
-        'transitions through RepoLoading to CommitsLoaded on success',
+        'transitions through CommitsLoading to CommitsLoaded on success',
         () async {
-          final states = <RepoState>[];
+          final states = <CommitsState>[];
           notifier.addListener(() {
-            states.add(notifier.state);
+            states.add(notifier.commitsState);
           });
 
           await notifier.listCommits('owner', 'repo');
 
           expect(states.length, 2);
-          expect(states[0], isA<RepoLoading>());
+          expect(states[0], isA<CommitsLoading>());
           expect(states[1], isA<CommitsLoaded>());
 
           final loaded = states[1] as CommitsLoaded;
@@ -428,28 +428,28 @@ void main() {
         },
       );
 
-      test('transitions to RepoError on failure', () async {
+      test('transitions to CommitsError on failure', () async {
         fakeRepo.shouldFail = true;
 
         await notifier.listCommits('owner', 'repo');
 
-        expect(notifier.state, isA<RepoError>());
+        expect(notifier.commitsState, isA<CommitsError>());
       });
     });
 
     group('listTags', () {
       test(
-        'transitions through RepoLoading to TagsLoaded on success',
+        'transitions through TagsLoading to TagsLoaded on success',
         () async {
-          final states = <RepoState>[];
+          final states = <TagsState>[];
           notifier.addListener(() {
-            states.add(notifier.state);
+            states.add(notifier.tagsState);
           });
 
           await notifier.listTags('owner', 'repo');
 
           expect(states.length, 2);
-          expect(states[0], isA<RepoLoading>());
+          expect(states[0], isA<TagsLoading>());
           expect(states[1], isA<TagsLoaded>());
 
           final loaded = states[1] as TagsLoaded;
@@ -458,12 +458,12 @@ void main() {
         },
       );
 
-      test('transitions to RepoError on failure', () async {
+      test('transitions to TagsError on failure', () async {
         fakeRepo.shouldFail = true;
 
         await notifier.listTags('owner', 'repo');
 
-        expect(notifier.state, isA<RepoError>());
+        expect(notifier.tagsState, isA<TagsError>());
       });
     });
   });

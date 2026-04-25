@@ -42,7 +42,7 @@ class _CreatePRPageState extends State<CreatePRPage> {
   Future<void> _loadBranches() async {
     await Injection.repoNotifier.listBranches(widget.owner, widget.repo);
     if (mounted) {
-      final state = Injection.repoNotifier.state;
+      final state = Injection.repoNotifier.branchesState;
       if (state is BranchesLoaded) {
         setState(() {
           _branches = state.branches;

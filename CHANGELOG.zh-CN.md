@@ -1,5 +1,18 @@
 # 更新日志
 
+## [0.18.1] - 2026-04-25
+
+### 修复 — Commits/Branches/Tags 标签页状态隔离
+
+- **根因**：`RepoNotifier` 所有标签页共用同一个 `_state` 字段。调用 `listCommits()`/`listBranches()`/`listTags()` 时会覆盖 `_state`，导致 `RepoDetailPage` 主构建器丢失 `RepoLoaded` 状态，显示加载转圈而非标签页。
+- **修复**：创建独立的状态轨道（`CommitsState`、`BranchesState`、`TagsState`），各含 `Initial/Loading/Loaded/Error` 子类，与现有的 `PullRequestsState` 和 `ReleasesState` 模式一致。
+- `RepoNotifier` 新增 `_commitsState`、`_branchesState`、`_tagsState` 字段及 getter
+- `listCommits()`、`listBranches()`、`listTags()` 分别更新各自的状态轨道，不再共用 `_state`
+- UI 标签页（`_CommitsTab`、`_BranchesTab`、`_TagsTab`）分别监听 `commitsState`/`branchesState`/`tagsState`
+- `CreatePRPage` 更新为使用 `branchesState`
+- 从 `RepoState` 层级中移除旧的 `BranchesLoaded`/`CommitsLoaded`/`TagsLoaded`
+- 247 个测试通过，`flutter analyze` 无警告
+
 ## [0.18.0] - 2026-04-25
 
 ### 新增 — 组织详情、发布详情、星标仓库、分叉仓库

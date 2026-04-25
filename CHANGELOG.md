@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.18.1] - 2026-04-25
+
+### Fixed — Commits/Branches/Tags Tab State Isolation
+
+- **Root cause**: `RepoNotifier` used a single `_state` field for all tabs. When `listCommits()`/`listBranches()`/`listTags()` were called, they overwrote `_state`, causing the `RepoDetailPage` main builder to lose `RepoLoaded` and show loading spinners instead of tabs.
+- **Fix**: Created separate state tracks (`CommitsState`, `BranchesState`, `TagsState`) with their own `Initial/Loading/Loaded/Error` classes, matching the existing `PullRequestsState` and `ReleasesState` pattern.
+- `RepoNotifier` now has `_commitsState`, `_branchesState`, `_tagsState` fields with getters
+- `listCommits()`, `listBranches()`, `listTags()` update their respective state tracks instead of the shared `_state`
+- UI tabs (`_CommitsTab`, `_BranchesTab`, `_TagsTab`) now listen to `commitsState`/`branchesState`/`tagsState` respectively
+- `CreatePRPage` updated to use `branchesState`
+- Removed old `BranchesLoaded`/`CommitsLoaded`/`TagsLoaded` from `RepoState` hierarchy
+- 247 tests passing, `flutter analyze` clean
+
 ## [0.18.0] - 2026-04-25
 
 ### Added — Organization Detail, Release Detail, Starred Repos, Fork

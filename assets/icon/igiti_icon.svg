@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <defs>
+    <!-- Background gradient: fresh Gitea green -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#84C766"/>
+      <stop offset="50%" stop-color="#6BB14B"/>
+      <stop offset="100%" stop-color="#55963A"/>
+    </linearGradient>
+
+    <!-- Top glossy highlight -->
+    <linearGradient id="gloss" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.20"/>
+      <stop offset="40%" stop-color="#FFFFFF" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Soft drop shadow for the teapot -->
+    <filter id="potShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="16" stdDeviation="20" flood-color="#2D5A1E" flood-opacity="0.35"/>
+    </filter>
+
+    <!-- Badge shadow -->
+    <filter id="badgeShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#2D5A1E" flood-opacity="0.40"/>
+    </filter>
+  </defs>
+
+  <!-- Base rounded square (iOS / modern Android style) -->
+  <rect width="1024" height="1024" rx="230" ry="230" fill="url(#bgGrad)"/>
+
+  <!-- Top gloss layer -->
+  <path d="M0,230 C0,103 103,0 230,0 L794,0 C921,0 1024,103 1024,230 L1024,380 C1024,280 921,200 794,200 L230,200 C103,200 0,280 0,380 Z" fill="url(#gloss)"/>
+
+  <!-- Subtle decorative circles (organic feel) -->
+  <g opacity="0.06" fill="#FFFFFF">
+    <circle cx="820" cy="240" r="160"/>
+    <circle cx="940" cy="400" r="110"/>
+    <circle cx="160" cy="860" r="140"/>
+  </g>
+
+  <!-- ========== MAIN TEAPOT ========== -->
+  <g transform="translate(512, 495)" filter="url(#potShadow)">
+    <g transform="translate(-250, -210) scale(1.05)">
+      <!-- Teapot body (rounded, slightly squat like Gitea) -->
+      <path d="M250,75
+               C165,75 95,135 95,240
+               C95,360 160,415 250,415
+               C340,415 405,360 405,240
+               C405,135 335,75 250,75Z"
+            fill="#FFFFFF"/>
+
+      <!-- Teapot spout (curved upward like Gitea) -->
+      <path d="M380,210
+               C440,190 485,145 510,95
+               C520,75 545,85 535,110
+               C500,180 445,250 390,275
+               C365,285 355,260 365,240
+               C370,230 375,220 380,210Z"
+            fill="#FFFFFF"/>
+
+      <!-- Teapot handle (classic C-shape) -->
+      <path d="M125,205
+               C70,185 25,230 35,295
+               C40,340 70,385 115,395
+               C130,400 135,375 125,365
+               C90,355 70,325 67,290
+               C62,250 90,225 130,235
+               C140,238 135,215 125,205Z"
+            fill="#FFFFFF"/>
+
+      <!-- Lid base -->
+      <ellipse cx="250" cy="82" rx="68" ry="22" fill="#FFFFFF"/>
+      <!-- Lid knob -->
+      <rect x="235" y="48" width="30" height="38" rx="10" fill="#FFFFFF"/>
+
+      <!-- Signature leaf on lid -->
+      <path d="M250,30
+               C268,8 292,18 280,42
+               C270,54 250,48 250,30Z"
+            fill="#84C766"/>
+      <path d="M250,30 C256,38 262,40 268,36" stroke="#55963A" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    </g>
+  </g>
+
+  <!-- ========== CLIENT BADGE (bottom right) ========== -->
+  <g transform="translate(745, 745)">
+    <!-- White circle badge -->
+    <circle cx="85" cy="85" r="92" fill="#FFFFFF" filter="url(#badgeShadow)"/>
+    <!-- Phone outline -->
+    <rect x="44" y="28" width="58" height="98" rx="12" fill="none" stroke="#55963A" stroke-width="7"/>
+    <!-- Screen notch / speaker -->
+    <line x1="60" y1="47" x2="86" y2="47" stroke="#55963A" stroke-width="6" stroke-linecap="round"/>
+    <!-- Home indicator -->
+    <circle cx="73" cy="106" r="6.5" fill="#55963A"/>
+  </g>
+</svg>

@@ -1061,77 +1061,74 @@ class _BranchesTabState extends State<_BranchesTab> {
     return ListenableBuilder(
       listenable: Injection.repoNotifier,
       builder: (context, _) {
-        final state = Injection.repoNotifier.state;
-        if (state is BranchesLoaded) {
-          final branches = state.branches;
-          if (branches.isEmpty) {
-            return Center(child: Text(l10n.noBranches));
-          }
-          return ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: branches.length,
-            itemBuilder: (context, index) {
-              final branch = branches[index];
-              final isDefault = branch.name == widget.defaultBranch;
-              return Card(
-                margin: const EdgeInsets.only(bottom: 8),
-                child: ListTile(
-                  leading: Icon(Icons.call_split,
-                      color: isDefault
-                          ? Theme.of(context).colorScheme.primary
-                          : null),
-                  title: Row(
-                    children: [
-                      Flexible(child: Text(branch.name ?? '')),
-                      if (isDefault) ...[
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 6, vertical: 1),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context)
-                                .colorScheme
-                                .primaryContainer,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(l10n.defaultBranch,
-                              style: Theme.of(context).textTheme.labelSmall?.copyWith(
+        final state = Injection.repoNotifier.branchesState;
+        return switch (state) {
+          BranchesLoading() => const Center(child: CircularProgressIndicator()),
+          BranchesError(:final message) => Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('${l10n.error}: $message'),
+                  const SizedBox(height: 16),
+                  FilledButton(
+                    onPressed: () => Injection.repoNotifier.listBranches(
+                        widget.owner, widget.repo),
+                    child: Text(l10n.retry),
+                  ),
+                ],
+              ),
+            ),
+          BranchesLoaded(:final branches) => branches.isEmpty
+              ? Center(child: Text(l10n.noBranches))
+              : ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: branches.length,
+                  itemBuilder: (context, index) {
+                    final branch = branches[index];
+                    final isDefault = branch.name == widget.defaultBranch;
+                    return Card(
+                      margin: const EdgeInsets.only(bottom: 8),
+                      child: ListTile(
+                        leading: Icon(Icons.call_split,
+                            color: isDefault
+                                ? Theme.of(context).colorScheme.primary
+                                : null),
+                        title: Row(
+                          children: [
+                            Flexible(child: Text(branch.name ?? '')),
+                            if (isDefault) ...[
+                              const SizedBox(width: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 6, vertical: 1),
+                                decoration: BoxDecoration(
                                   color: Theme.of(context)
                                       .colorScheme
-                                      .onPrimaryContainer)),
+                                      .primaryContainer,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(l10n.defaultBranch,
+                                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                        color: Theme.of(context)
+                                            .colorScheme
+                                            .onPrimaryContainer)),
+                              ),
+                            ],
+                          ],
                         ),
-                      ],
-                    ],
-                  ),
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => BranchDetailPage(branch: branch),
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => BranchDetailPage(branch: branch),
+                            ),
+                          );
+                        },
                       ),
                     );
                   },
                 ),
-              );
-            },
-          );
-        }
-        if (state is RepoError) {
-          return Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('${l10n.error}: ${state.message}'),
-                const SizedBox(height: 16),
-                FilledButton(
-                  onPressed: () => Injection.repoNotifier.listBranches(
-                      widget.owner, widget.repo),
-                  child: Text(l10n.retry),
-                ),
-              ],
-            ),
-          );
-        }
-        return const Center(child: CircularProgressIndicator());
+          _ => const Center(child: CircularProgressIndicator()),
+        };
       },
     );
   }
@@ -1188,43 +1185,40 @@ class _CommitsTabState extends State<_CommitsTab> {
     return ListenableBuilder(
       listenable: Injection.repoNotifier,
       builder: (context, _) {
-        final state = Injection.repoNotifier.state;
-        if (state is CommitsLoaded) {
-          final commits = state.commits;
-          if (commits.isEmpty) {
-            return Center(child: Text(widget.l10n.noCommits));
-          }
-          return ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: commits.length,
-            itemBuilder: (context, index) {
-              final commit = commits[index];
-              return _CommitItem(
-                commit: commit,
-                owner: widget.owner,
-                repo: widget.repo,
-                l10n: widget.l10n,
-              );
-            },
-          );
-        }
-        if (state is RepoError) {
-          return Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('${widget.l10n.error}: ${state.message}'),
-                const SizedBox(height: 16),
-                FilledButton(
-                  onPressed: () => Injection.repoNotifier.listCommits(
-                      widget.owner, widget.repo),
-                  child: Text(widget.l10n.retry),
-                ),
-              ],
+        final state = Injection.repoNotifier.commitsState;
+        return switch (state) {
+          CommitsLoading() => const Center(child: CircularProgressIndicator()),
+          CommitsError(:final message) => Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('${widget.l10n.error}: $message'),
+                  const SizedBox(height: 16),
+                  FilledButton(
+                    onPressed: () => Injection.repoNotifier.listCommits(
+                        widget.owner, widget.repo),
+                    child: Text(widget.l10n.retry),
+                  ),
+                ],
+              ),
             ),
-          );
-        }
-        return const Center(child: CircularProgressIndicator());
+          CommitsLoaded(:final commits) => commits.isEmpty
+              ? Center(child: Text(widget.l10n.noCommits))
+              : ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: commits.length,
+                  itemBuilder: (context, index) {
+                    final commit = commits[index];
+                    return _CommitItem(
+                      commit: commit,
+                      owner: widget.owner,
+                      repo: widget.repo,
+                      l10n: widget.l10n,
+                    );
+                  },
+                ),
+          _ => const Center(child: CircularProgressIndicator()),
+        };
       },
     );
   }
@@ -1345,38 +1339,35 @@ class _TagsTabState extends State<_TagsTab> {
     return ListenableBuilder(
       listenable: Injection.repoNotifier,
       builder: (context, _) {
-        final state = Injection.repoNotifier.state;
-        if (state is TagsLoaded) {
-          final tags = state.tags;
-          if (tags.isEmpty) {
-            return Center(child: Text(widget.l10n.noTags));
-          }
-          return ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            itemCount: tags.length,
-            itemBuilder: (context, index) {
-              final tag = tags[index];
-              return _TagItem(tag: tag, l10n: widget.l10n);
-            },
-          );
-        }
-        if (state is RepoError) {
-          return Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('${widget.l10n.error}: ${state.message}'),
-                const SizedBox(height: 16),
-                FilledButton(
-                  onPressed: () => Injection.repoNotifier.listTags(
-                      widget.owner, widget.repo),
-                  child: Text(widget.l10n.retry),
-                ),
-              ],
+        final state = Injection.repoNotifier.tagsState;
+        return switch (state) {
+          TagsLoading() => const Center(child: CircularProgressIndicator()),
+          TagsError(:final message) => Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('${widget.l10n.error}: $message'),
+                  const SizedBox(height: 16),
+                  FilledButton(
+                    onPressed: () => Injection.repoNotifier.listTags(
+                        widget.owner, widget.repo),
+                    child: Text(widget.l10n.retry),
+                  ),
+                ],
+              ),
             ),
-          );
-        }
-        return const Center(child: CircularProgressIndicator());
+          TagsLoaded(:final tags) => tags.isEmpty
+              ? Center(child: Text(widget.l10n.noTags))
+              : ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: tags.length,
+                  itemBuilder: (context, index) {
+                    final tag = tags[index];
+                    return _TagItem(tag: tag, l10n: widget.l10n);
+                  },
+                ),
+          _ => const Center(child: CircularProgressIndicator()),
+        };
       },
     );
   }
