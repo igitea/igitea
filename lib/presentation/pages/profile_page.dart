@@ -9,6 +9,7 @@ import '../../l10n/app_localizations.dart';
 import '../../presentation/state/user_notifier.dart';
 import '../widgets/org_avatar.dart';
 import '../widgets/user_avatar.dart';
+import 'create_org_page.dart';
 import 'organization_detail_page.dart';
 import 'settings_page.dart';
 import 'starred_repos_page.dart';
@@ -392,9 +393,25 @@ class _OrgsSection extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text(l10n.organisations, style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          )),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(l10n.organisations, style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              )),
+              IconButton(
+                icon: const Icon(Icons.add),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const CreateOrgPage(),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
         ),
         const SizedBox(height: 8),
         SizedBox(

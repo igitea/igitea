@@ -1,5 +1,24 @@
 # 更新日志
 
+## [0.19.0] - 2026-04-25
+
+### 新增 — 团队详情、编辑组织、创建组织
+
+- `TeamDetailPage`：可折叠头部 + 3 个标签页：信息、成员、仓库
+  - 信息标签页：团队描述、工作单元、权限、全部仓库标识
+  - 成员标签页：团队成员列表，带头像
+  - 仓库标签页：团队仓库列表，支持跳转到 `RepoDetailPage`
+- `EditOrgPage`：编辑组织名称、描述、位置、网站、邮箱、可见性
+  - 通过 `OrganizationDetailPage` AppBar 的编辑按钮进入
+  - 保存成功后自动刷新组织详情
+- `CreateOrgPage`：创建新组织
+  - 通过 `ProfilePage` 组织区域的添加按钮进入
+  - 用户名必填字段验证
+- 所有组织和团队标签页支持下拉刷新（`_ReposTab`、`_TeamsTab`、`_MembersTab`）
+- 新增用例：`GetTeamUseCase`、`ListTeamMembersUseCase`、`ListTeamReposUseCase`、`EditOrgUseCase`、`CreateOrgUseCase`
+- 新增 ARB 键：`members`、`noMembers`、`editOrganization`、`createOrganization`
+- 247 个测试通过，`flutter analyze` 无警告
+
 ## [0.18.2] - 2026-04-25
 
 ### 新增 — 编辑 Issue 页面

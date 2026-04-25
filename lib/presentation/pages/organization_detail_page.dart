@@ -5,7 +5,9 @@ import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/organization_notifier.dart';
 import '../widgets/org_avatar.dart';
+import 'edit_org_page.dart';
 import 'repo_detail_page.dart';
+import 'team_detail_page.dart';
 
 class OrganizationDetailPage extends StatefulWidget {
   final String orgName;
@@ -70,6 +72,23 @@ class _OrganizationDetailPageState extends State<OrganizationDetailPage>
             pinned: true,
             floating: true,
             forceElevated: innerBoxIsScrolled,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.edit),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => EditOrgPage(org: org),
+                    ),
+                  ).then((result) {
+                    if (result == true) {
+                      Injection.organizationNotifier.getOrg(widget.orgName);
+                    }
+                  });
+                },
+              ),
+            ],
           ),
           SliverToBoxAdapter(
             child: _OrgHeader(org: org),
@@ -258,38 +277,51 @@ class _ReposTabState extends State<_ReposTab>
         if (state is OrgReposLoaded) {
           final repos = state.repos;
           if (repos.isEmpty) {
-            return Center(child: Text(l10n.noData));
+            return RefreshIndicator(
+              onRefresh: () => Injection.organizationNotifier.listOrgRepos(widget.orgName),
+              child: ListView(
+                children: [Center(child: Text(l10n.noData))],
+              ),
+            );
           }
-          return ListView.builder(
-            itemCount: repos.length,
-            itemBuilder: (context, index) {
-              final repo = repos[index];
-              return ListTile(
-                leading: const Icon(Icons.folder_outlined),
-                title: Text(repo.name ?? ''),
-                subtitle: repo.description != null
-                    ? Text(
-                        repo.description!,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      )
-                    : null,
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => RepoDetailPage(
-                        owner: repo.owner?.login ?? widget.orgName,
-                        repo: repo.name ?? '',
+          return RefreshIndicator(
+            onRefresh: () => Injection.organizationNotifier.listOrgRepos(widget.orgName),
+            child: ListView.builder(
+              itemCount: repos.length,
+              itemBuilder: (context, index) {
+                final repo = repos[index];
+                return ListTile(
+                  leading: const Icon(Icons.folder_outlined),
+                  title: Text(repo.name ?? ''),
+                  subtitle: repo.description != null
+                      ? Text(
+                          repo.description!,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        )
+                      : null,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => RepoDetailPage(
+                          owner: repo.owner?.login ?? widget.orgName,
+                          repo: repo.name ?? '',
+                        ),
                       ),
-                    ),
-                  );
-                },
-              );
-            },
+                    );
+                  },
+                );
+              },
+            ),
           );
         } else if (state is OrgError) {
-          return Center(child: Text(state.message));
+          return RefreshIndicator(
+            onRefresh: () => Injection.organizationNotifier.listOrgRepos(widget.orgName),
+            child: ListView(
+              children: [Center(child: Text(state.message))],
+            ),
+          );
         }
         return const Center(child: CircularProgressIndicator());
       },
@@ -330,27 +362,50 @@ class _TeamsTabState extends State<_TeamsTab>
         if (state is OrgTeamsLoaded) {
           final teams = state.teams;
           if (teams.isEmpty) {
-            return Center(child: Text(l10n.noTeams));
+            return RefreshIndicator(
+              onRefresh: () => Injection.organizationNotifier.listOrgTeams(widget.orgName),
+              child: ListView(
+                children: [Center(child: Text(l10n.noTeams))],
+              ),
+            );
           }
-          return ListView.builder(
-            itemCount: teams.length,
-            itemBuilder: (context, index) {
-              final team = teams[index];
-              return ListTile(
-                leading: const Icon(Icons.people_outline),
-                title: Text(team.name ?? ''),
-                subtitle: team.description != null
-                    ? Text(
-                        team.description!,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      )
-                    : null,
-              );
-            },
+          return RefreshIndicator(
+            onRefresh: () => Injection.organizationNotifier.listOrgTeams(widget.orgName),
+            child: ListView.builder(
+              itemCount: teams.length,
+              itemBuilder: (context, index) {
+                final team = teams[index];
+                return ListTile(
+                  leading: const Icon(Icons.people_outline),
+                  title: Text(team.name ?? ''),
+                  subtitle: team.description != null
+                      ? Text(
+                          team.description!,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        )
+                      : null,
+                  onTap: () {
+                    if (team.id != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => TeamDetailPage(teamId: team.id!),
+                        ),
+                      );
+                    }
+                  },
+                );
+              },
+            ),
           );
         } else if (state is OrgError) {
-          return Center(child: Text(state.message));
+          return RefreshIndicator(
+            onRefresh: () => Injection.organizationNotifier.listOrgTeams(widget.orgName),
+            child: ListView(
+              children: [Center(child: Text(state.message))],
+            ),
+          );
         }
         return const Center(child: CircularProgressIndicator());
       },

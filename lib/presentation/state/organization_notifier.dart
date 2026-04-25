@@ -37,6 +37,21 @@ class OrgTeamsLoaded extends OrgState {
   const OrgTeamsLoaded(this.teams);
 }
 
+class OrgTeamDetailLoaded extends OrgState {
+  final Team team;
+  const OrgTeamDetailLoaded(this.team);
+}
+
+class OrgTeamMembersLoaded extends OrgState {
+  final List<User> members;
+  const OrgTeamMembersLoaded(this.members);
+}
+
+class OrgTeamReposLoaded extends OrgState {
+  final List<Repository> repos;
+  const OrgTeamReposLoaded(this.repos);
+}
+
 class OrgError extends OrgState {
   final String message;
   const OrgError(this.message);
@@ -47,6 +62,11 @@ class OrgNotifier extends ChangeNotifier {
   ListCurrentUserOrgsUseCase _listCurrentUserOrgsUseCase;
   ListOrgReposUseCase _listOrgReposUseCase;
   ListOrgTeamsUseCase _listOrgTeamsUseCase;
+  GetTeamUseCase _getTeamUseCase;
+  ListTeamMembersUseCase _listTeamMembersUseCase;
+  ListTeamReposUseCase _listTeamReposUseCase;
+  EditOrgUseCase _editOrgUseCase;
+  CreateOrgUseCase _createOrgUseCase;
 
   OrgState _state = const OrgInitial();
   OrgState get state => _state;
@@ -56,21 +76,41 @@ class OrgNotifier extends ChangeNotifier {
     required ListCurrentUserOrgsUseCase listCurrentUserOrgsUseCase,
     required ListOrgReposUseCase listOrgReposUseCase,
     required ListOrgTeamsUseCase listOrgTeamsUseCase,
+    required GetTeamUseCase getTeamUseCase,
+    required ListTeamMembersUseCase listTeamMembersUseCase,
+    required ListTeamReposUseCase listTeamReposUseCase,
+    required EditOrgUseCase editOrgUseCase,
+    required CreateOrgUseCase createOrgUseCase,
   }) : _getOrgUseCase = getOrgUseCase,
        _listCurrentUserOrgsUseCase = listCurrentUserOrgsUseCase,
        _listOrgReposUseCase = listOrgReposUseCase,
-       _listOrgTeamsUseCase = listOrgTeamsUseCase;
+       _listOrgTeamsUseCase = listOrgTeamsUseCase,
+       _getTeamUseCase = getTeamUseCase,
+       _listTeamMembersUseCase = listTeamMembersUseCase,
+       _listTeamReposUseCase = listTeamReposUseCase,
+       _editOrgUseCase = editOrgUseCase,
+       _createOrgUseCase = createOrgUseCase;
 
   void updateUseCases({
     required GetOrgUseCase getOrgUseCase,
     required ListCurrentUserOrgsUseCase listCurrentUserOrgsUseCase,
     required ListOrgReposUseCase listOrgReposUseCase,
     required ListOrgTeamsUseCase listOrgTeamsUseCase,
+    required GetTeamUseCase getTeamUseCase,
+    required ListTeamMembersUseCase listTeamMembersUseCase,
+    required ListTeamReposUseCase listTeamReposUseCase,
+    required EditOrgUseCase editOrgUseCase,
+    required CreateOrgUseCase createOrgUseCase,
   }) {
     _getOrgUseCase = getOrgUseCase;
     _listCurrentUserOrgsUseCase = listCurrentUserOrgsUseCase;
     _listOrgReposUseCase = listOrgReposUseCase;
     _listOrgTeamsUseCase = listOrgTeamsUseCase;
+    _getTeamUseCase = getTeamUseCase;
+    _listTeamMembersUseCase = listTeamMembersUseCase;
+    _listTeamReposUseCase = listTeamReposUseCase;
+    _editOrgUseCase = editOrgUseCase;
+    _createOrgUseCase = createOrgUseCase;
   }
 
   Future<void> getOrg(String org) async {
@@ -136,6 +176,85 @@ class OrgNotifier extends ChangeNotifier {
         notifyListeners();
       case Right<Failure, List<Team>>(:final value):
         _state = OrgTeamsLoaded(value);
+        notifyListeners();
+    }
+  }
+
+  Future<void> getTeam(int id) async {
+    _state = const OrgLoading();
+    notifyListeners();
+
+    final result = await _getTeamUseCase.call(id);
+    switch (result) {
+      case Left<Failure, Team>(:final value):
+        _state = OrgError(value.message);
+        notifyListeners();
+      case Right<Failure, Team>(:final value):
+        _state = OrgTeamDetailLoaded(value);
+        notifyListeners();
+    }
+  }
+
+  Future<void> listTeamMembers(int id, {int? page, int? limit}) async {
+    _state = const OrgLoading();
+    notifyListeners();
+
+    final result = await _listTeamMembersUseCase.call(
+      ListTeamMembersParams(id: id, page: page, limit: limit),
+    );
+    switch (result) {
+      case Left<Failure, List<User>>(:final value):
+        _state = OrgError(value.message);
+        notifyListeners();
+      case Right<Failure, List<User>>(:final value):
+        _state = OrgTeamMembersLoaded(value);
+        notifyListeners();
+    }
+  }
+
+  Future<void> listTeamRepos(int id, {int? page, int? limit}) async {
+    _state = const OrgLoading();
+    notifyListeners();
+
+    final result = await _listTeamReposUseCase.call(
+      ListTeamReposParams(id: id, page: page, limit: limit),
+    );
+    switch (result) {
+      case Left<Failure, List<Repository>>(:final value):
+        _state = OrgError(value.message);
+        notifyListeners();
+      case Right<Failure, List<Repository>>(:final value):
+        _state = OrgTeamReposLoaded(value);
+        notifyListeners();
+    }
+  }
+
+  Future<void> editOrg(String org, Map<String, dynamic> body) async {
+    _state = const OrgLoading();
+    notifyListeners();
+
+    final result = await _editOrgUseCase.call(EditOrgParams(org: org, body: body));
+    switch (result) {
+      case Left<Failure, Organization>(:final value):
+        _state = OrgError(value.message);
+        notifyListeners();
+      case Right<Failure, Organization>(:final value):
+        _state = OrgLoaded(value);
+        notifyListeners();
+    }
+  }
+
+  Future<void> createOrg(Map<String, dynamic> body) async {
+    _state = const OrgLoading();
+    notifyListeners();
+
+    final result = await _createOrgUseCase.call(body);
+    switch (result) {
+      case Left<Failure, Organization>(:final value):
+        _state = OrgError(value.message);
+        notifyListeners();
+      case Right<Failure, Organization>(:final value):
+        _state = OrgLoaded(value);
         notifyListeners();
     }
   }

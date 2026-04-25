@@ -1027,4 +1027,16 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get selectMilestone => 'Select milestone';
+
+  @override
+  String get members => 'Members';
+
+  @override
+  String get noMembers => 'No members';
+
+  @override
+  String get editOrganization => 'Edit Organization';
+
+  @override
+  String get createOrganization => 'Create Organization';
 }

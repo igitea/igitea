@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.19.0] - 2026-04-25
+
+### Added — Team Detail, Edit Organization, Create Organization
+
+- `TeamDetailPage` with collapsible header and 3 tabs: Info, Members, Repositories
+  - Info tab: team description, units, permission, all-repositories flag
+  - Members tab: list of team members with avatars
+  - Repositories tab: list of team repos with navigation to `RepoDetailPage`
+- `EditOrgPage` for editing organization name, description, location, website, email, visibility
+  - Accessible via edit button in `OrganizationDetailPage` AppBar
+  - Auto-refreshes org detail on save success
+- `CreateOrgPage` for creating new organizations
+  - Accessible via add button in `ProfilePage` organisations section
+  - Form validation for required username field
+- Pull-to-refresh on all organization and team tabs (`_ReposTab`, `_TeamsTab`, `_MembersTab`)
+- New use cases: `GetTeamUseCase`, `ListTeamMembersUseCase`, `ListTeamReposUseCase`, `EditOrgUseCase`, `CreateOrgUseCase`
+- New ARB keys: `members`, `noMembers`, `editOrganization`, `createOrganization`
+- 247 tests passing, `flutter analyze` clean
+
 ## [0.18.2] - 2026-04-25
 
 ### Added — Edit Issue Page

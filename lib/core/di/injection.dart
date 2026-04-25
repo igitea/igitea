@@ -94,6 +94,9 @@ class Injection {
   static late ListOrgTeamsUseCase listOrgTeamsUseCase;
   static late GetTeamUseCase getTeamUseCase;
   static late ListTeamMembersUseCase listTeamMembersUseCase;
+  static late ListTeamReposUseCase listTeamReposUseCase;
+  static late EditOrgUseCase editOrgUseCase;
+  static late CreateOrgUseCase createOrgUseCase;
   static late ListNotificationsUseCase listNotificationsUseCase;
   static late ListRepoNotificationsUseCase listRepoNotificationsUseCase;
   static late MarkNotificationsReadUseCase markNotificationsReadUseCase;
@@ -197,6 +200,11 @@ class Injection {
     listTeamMembersUseCase = ListTeamMembersUseCase(
       repository: organizationRepository,
     );
+    listTeamReposUseCase = ListTeamReposUseCase(
+      repository: organizationRepository,
+    );
+    editOrgUseCase = EditOrgUseCase(repository: organizationRepository);
+    createOrgUseCase = CreateOrgUseCase(repository: organizationRepository);
     listNotificationsUseCase = ListNotificationsUseCase(
       repository: notificationRepository,
     );
@@ -297,6 +305,11 @@ class Injection {
         listCurrentUserOrgsUseCase: listCurrentUserOrgsUseCase,
         listOrgReposUseCase: listOrgReposUseCase,
         listOrgTeamsUseCase: listOrgTeamsUseCase,
+        getTeamUseCase: getTeamUseCase,
+        listTeamMembersUseCase: listTeamMembersUseCase,
+        listTeamReposUseCase: listTeamReposUseCase,
+        editOrgUseCase: editOrgUseCase,
+        createOrgUseCase: createOrgUseCase,
       );
       notificationNotifier.updateUseCases(
         listNotificationsUseCase: listNotificationsUseCase,
@@ -359,6 +372,11 @@ class Injection {
         listCurrentUserOrgsUseCase: listCurrentUserOrgsUseCase,
         listOrgReposUseCase: listOrgReposUseCase,
         listOrgTeamsUseCase: listOrgTeamsUseCase,
+        getTeamUseCase: getTeamUseCase,
+        listTeamMembersUseCase: listTeamMembersUseCase,
+        listTeamReposUseCase: listTeamReposUseCase,
+        editOrgUseCase: editOrgUseCase,
+        createOrgUseCase: createOrgUseCase,
       );
       notificationNotifier = NotificationNotifier(
         listNotificationsUseCase: listNotificationsUseCase,
@@ -442,6 +460,11 @@ class Injection {
       listCurrentUserOrgsUseCase: listCurrentUserOrgsUseCase,
       listOrgReposUseCase: listOrgReposUseCase,
       listOrgTeamsUseCase: listOrgTeamsUseCase,
+      getTeamUseCase: getTeamUseCase,
+      listTeamMembersUseCase: listTeamMembersUseCase,
+      listTeamReposUseCase: listTeamReposUseCase,
+      editOrgUseCase: editOrgUseCase,
+      createOrgUseCase: createOrgUseCase,
     );
     notificationNotifier.updateUseCases(
       listNotificationsUseCase: listNotificationsUseCase,

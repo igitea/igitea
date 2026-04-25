@@ -206,5 +206,9 @@
   "forked": "已分叉",
   "editIssue": "编辑 Issue",
   "titleRequired": "标题不能为空",
-  "selectMilestone": "选择里程碑"
+  "selectMilestone": "选择里程碑",
+  "members": "成员",
+  "noMembers": "暂无成员",
+  "editOrganization": "编辑组织",
+  "createOrganization": "创建组织"
 }

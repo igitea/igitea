@@ -2050,6 +2050,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select milestone'**
   String get selectMilestone;
+
+  /// No description provided for @members.
+  ///
+  /// In en, this message translates to:
+  /// **'Members'**
+  String get members;
+
+  /// No description provided for @noMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'No members'**
+  String get noMembers;
+
+  /// No description provided for @editOrganization.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Organization'**
+  String get editOrganization;
+
+  /// No description provided for @createOrganization.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Organization'**
+  String get createOrganization;
 }
 
 class _AppLocalizationsDelegate

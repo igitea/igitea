@@ -332,5 +332,9 @@
   "forked": "Forked",
   "editIssue": "Edit Issue",
   "titleRequired": "Title is required",
-  "selectMilestone": "Select milestone"
+  "selectMilestone": "Select milestone",
+  "members": "Members",
+  "noMembers": "No members",
+  "editOrganization": "Edit Organization",
+  "createOrganization": "Create Organization"
 }

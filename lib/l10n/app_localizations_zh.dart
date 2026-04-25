@@ -1027,6 +1027,18 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get selectMilestone => '选择里程碑';
+
+  @override
+  String get members => '成员';
+
+  @override
+  String get noMembers => '暂无成员';
+
+  @override
+  String get editOrganization => '编辑组织';
+
+  @override
+  String get createOrganization => '创建组织';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
