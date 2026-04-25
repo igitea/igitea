@@ -94,11 +94,10 @@ class AuthNotifier extends ChangeNotifier {
   }
 
   Future<void> restoreSession() async {
+    if (_state is AuthAuthenticated) return;
+
     final saved = await _storage.loadCredentials();
     if (saved == null) return;
-
-    _state = const AuthLoading();
-    notifyListeners();
 
     if (saved.method == AuthMethod.token) {
       await loginWithToken(saved.baseUrl, saved.token!);
