@@ -329,5 +329,8 @@
   "assets": "Assets",
   "publishedAt": "Published At",
   "target": "Target",
-  "forked": "Forked"
+  "forked": "Forked",
+  "editIssue": "Edit Issue",
+  "titleRequired": "Title is required",
+  "selectMilestone": "Select milestone"
 }

@@ -203,5 +203,8 @@
   "assets": "资源",
   "publishedAt": "发布时间",
   "target": "目标",
-  "forked": "已分叉"
+  "forked": "已分叉",
+  "editIssue": "编辑 Issue",
+  "titleRequired": "标题不能为空",
+  "selectMilestone": "选择里程碑"
 }

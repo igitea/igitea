@@ -1,5 +1,21 @@
 # 更新日志
 
+## [0.18.2] - 2026-04-25
+
+### 新增 — 编辑 Issue 页面
+
+- `EditIssuePage`：支持编辑 Issue 标题、正文、状态、标签和里程碑
+- SegmentedButton 切换 Open/Closed 状态
+- FilterChip 多选标签（从 API 加载可用标签）
+- Dropdown 选择里程碑（从 API 加载可用里程碑）
+- Markdown 预览切换（编辑/预览正文）
+- 标题验证：禁止保存空标题
+- AppBar 保存按钮带加载指示器
+- 保存成功后返回 `IssueDetailPage` 并自动刷新 Issue 和评论
+- 将原来的内联标签编辑器对话框替换为完整的编辑页面导航
+- 新增 ARB 键：`editIssue`、`titleRequired`、`selectMilestone`
+- 247 个测试通过，`flutter analyze` 无警告
+
 ## [0.18.1] - 2026-04-25
 
 ### 修复 — Commits/Branches/Tags 标签页状态隔离

@@ -1018,4 +1018,13 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get forked => 'Forked';
+
+  @override
+  String get editIssue => 'Edit Issue';
+
+  @override
+  String get titleRequired => 'Title is required';
+
+  @override
+  String get selectMilestone => 'Select milestone';
 }

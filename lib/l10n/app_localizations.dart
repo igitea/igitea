@@ -2032,6 +2032,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Forked'**
   String get forked;
+
+  /// No description provided for @editIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Issue'**
+  String get editIssue;
+
+  /// No description provided for @titleRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Title is required'**
+  String get titleRequired;
+
+  /// No description provided for @selectMilestone.
+  ///
+  /// In en, this message translates to:
+  /// **'Select milestone'**
+  String get selectMilestone;
 }
 
 class _AppLocalizationsDelegate

@@ -1018,6 +1018,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get forked => '已分叉';
+
+  @override
+  String get editIssue => '编辑 Issue';
+
+  @override
+  String get titleRequired => '标题不能为空';
+
+  @override
+  String get selectMilestone => '选择里程碑';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).

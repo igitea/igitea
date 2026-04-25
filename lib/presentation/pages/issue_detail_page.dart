@@ -6,6 +6,7 @@ import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../../presentation/state/issue_notifier.dart';
 import '../widgets/user_avatar.dart';
+import 'edit_issue_page.dart';
 
 class IssueDetailPage extends StatefulWidget {
   final String owner;
@@ -197,7 +198,22 @@ class _IssueContent extends StatelessWidget {
               ActionChip(
                 label: Text(l10n.edit),
                 avatar: const Icon(Icons.edit, size: 16),
-                onPressed: () => _showLabelEditor(context, issue),
+                onPressed: () async {
+                  final result = await Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => EditIssuePage(
+                        owner: owner,
+                        repo: repo,
+                        index: index,
+                        issue: issue,
+                      ),
+                    ),
+                  );
+                  if (result == true && context.mounted) {
+                    Injection.issueNotifier.getIssue(owner, repo, index);
+                    Injection.issueNotifier.listComments(owner, repo, index);
+                  }
+                },
               ),
             ],
           ),
@@ -483,74 +499,6 @@ class _IssueContent extends StatelessWidget {
     );
   }
 
-  void _showLabelEditor(BuildContext context, Issue issue) async {
-    final l10n = AppLocalizations.of(context)!;
-    await Injection.issueNotifier.listLabels(owner, repo);
-    final labelsState = Injection.issueNotifier.state;
-    if (labelsState is! LabelsLoaded) return;
-
-    final allLabels = labelsState.labels;
-    final currentLabelNames = issue.labels?.map((l) => l.name ?? '').toSet() ?? {};
-    final selectedLabels = Set<String>.from(currentLabelNames);
-
-    if (!context.mounted) return;
-
-    await showDialog(
-      context: context,
-      builder: (ctx) {
-        return StatefulBuilder(
-          builder: (ctx, setState) {
-            return AlertDialog(
-              title: Text(l10n.labels),
-              content: SizedBox(
-                width: double.maxFinite,
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: allLabels.length,
-                  itemBuilder: (ctx, index) {
-                    final label = allLabels[index];
-                    final isSelected = selectedLabels.contains(label.name);
-                    return CheckboxListTile(
-                      title: Text(label.name ?? ''),
-                      value: isSelected,
-                      onChanged: (checked) {
-                        setState(() {
-                          if (checked == true) {
-                            selectedLabels.add(label.name!);
-                          } else {
-                            selectedLabels.remove(label.name);
-                          }
-                        });
-                      },
-                    );
-                  },
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(ctx).pop(),
-                  child: Text(l10n.cancel),
-                ),
-                FilledButton(
-                  onPressed: () async {
-                    Navigator.of(ctx).pop();
-                    await Injection.issueNotifier.editIssue(
-                      owner,
-                      repo,
-                      index,
-                      {'labels': selectedLabels.toList()},
-                    );
-                    await Injection.issueNotifier.getIssue(owner, repo, index);
-                  },
-                  child: Text(l10n.save),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
 }
 
 class _CommentItem extends StatelessWidget {

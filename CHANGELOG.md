@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.18.2] - 2026-04-25
+
+### Added — Edit Issue Page
+
+- `EditIssuePage` for editing issue title, body, state, labels, and milestone
+- Segmented button for Open/Closed state toggle
+- Filter chips for multi-select labels (loads available labels from API)
+- Dropdown for milestone selection (loads available milestones from API)
+- Markdown preview toggle for body editing
+- Title validation: prevents saving empty titles
+- Save button with loading indicator in AppBar
+- On save success, returns to `IssueDetailPage` and auto-refreshes issue + comments
+- Replaced inline label-only editor dialog with full edit page navigation
+- New ARB keys: `editIssue`, `titleRequired`, `selectMilestone`
+- 247 tests passing, `flutter analyze` clean
+
 ## [0.18.1] - 2026-04-25
 
 ### Fixed — Commits/Branches/Tags Tab State Isolation
