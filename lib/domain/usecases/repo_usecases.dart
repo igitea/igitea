@@ -106,6 +106,29 @@ class ListTagsUseCase {
   }
 }
 
+class GetTagParams {
+  final String owner;
+  final String repo;
+  final String tag;
+
+  const GetTagParams({
+    required this.owner,
+    required this.repo,
+    required this.tag,
+  });
+}
+
+class GetTagUseCase {
+  final RepoRepository _repository;
+
+  GetTagUseCase({required RepoRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, Tag>> call(GetTagParams params) async {
+    return _repository.getTag(params.owner, params.repo, params.tag);
+  }
+}
+
 class ListCommitsParams {
   final String owner;
   final String repo;

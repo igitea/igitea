@@ -43,6 +43,13 @@ abstract class RepoRepository {
     int? limit,
   });
 
+  /// Get a specific tag.
+  Future<Either<Failure, Tag>> getTag(
+    String owner,
+    String repo,
+    String tag,
+  );
+
   /// List commits in a repository.
   Future<Either<Failure, List<Commit>>> listCommits(
     String owner,

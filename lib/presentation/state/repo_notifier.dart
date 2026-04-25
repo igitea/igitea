@@ -42,6 +42,16 @@ class TagsLoaded extends RepoState {
   const TagsLoaded(this.tags);
 }
 
+class CommitDetailLoaded extends RepoState {
+  final Commit commit;
+  const CommitDetailLoaded(this.commit);
+}
+
+class TagDetailLoaded extends RepoState {
+  final Tag tag;
+  const TagDetailLoaded(this.tag);
+}
+
 class SearchResultsLoaded extends RepoState {
   final SearchResults results;
   const SearchResultsLoaded(this.results);
@@ -130,7 +140,9 @@ class RepoNotifier extends ChangeNotifier {
   SearchReposUseCase _searchReposUseCase;
   ListBranchesUseCase _listBranchesUseCase;
   ListCommitsUseCase _listCommitsUseCase;
+  GetCommitUseCase _getCommitUseCase;
   ListTagsUseCase _listTagsUseCase;
+  GetTagUseCase _getTagUseCase;
   GetRepoContentsUseCase _getRepoContentsUseCase;
   ListPullRequestsUseCase _listPullRequestsUseCase;
   GetPullRequestUseCase _getPullRequestUseCase;
@@ -170,7 +182,9 @@ class RepoNotifier extends ChangeNotifier {
     required SearchReposUseCase searchReposUseCase,
     required ListBranchesUseCase listBranchesUseCase,
     required ListCommitsUseCase listCommitsUseCase,
+    required GetCommitUseCase getCommitUseCase,
     required ListTagsUseCase listTagsUseCase,
+    required GetTagUseCase getTagUseCase,
     required GetRepoContentsUseCase getRepoContentsUseCase,
     required ListPullRequestsUseCase listPullRequestsUseCase,
     required GetPullRequestUseCase getPullRequestUseCase,
@@ -187,7 +201,9 @@ class RepoNotifier extends ChangeNotifier {
        _searchReposUseCase = searchReposUseCase,
        _listBranchesUseCase = listBranchesUseCase,
        _listCommitsUseCase = listCommitsUseCase,
+       _getCommitUseCase = getCommitUseCase,
        _listTagsUseCase = listTagsUseCase,
+       _getTagUseCase = getTagUseCase,
        _getRepoContentsUseCase = getRepoContentsUseCase,
        _listPullRequestsUseCase = listPullRequestsUseCase,
        _getPullRequestUseCase = getPullRequestUseCase,
@@ -206,7 +222,9 @@ class RepoNotifier extends ChangeNotifier {
     required SearchReposUseCase searchReposUseCase,
     required ListBranchesUseCase listBranchesUseCase,
     required ListCommitsUseCase listCommitsUseCase,
+    required GetCommitUseCase getCommitUseCase,
     required ListTagsUseCase listTagsUseCase,
+    required GetTagUseCase getTagUseCase,
     required GetRepoContentsUseCase getRepoContentsUseCase,
     required ListPullRequestsUseCase listPullRequestsUseCase,
     required GetPullRequestUseCase getPullRequestUseCase,
@@ -224,7 +242,9 @@ class RepoNotifier extends ChangeNotifier {
     _searchReposUseCase = searchReposUseCase;
     _listBranchesUseCase = listBranchesUseCase;
     _listCommitsUseCase = listCommitsUseCase;
+    _getCommitUseCase = getCommitUseCase;
     _listTagsUseCase = listTagsUseCase;
+    _getTagUseCase = getTagUseCase;
     _getRepoContentsUseCase = getRepoContentsUseCase;
     _listPullRequestsUseCase = listPullRequestsUseCase;
     _getPullRequestUseCase = getPullRequestUseCase;
@@ -342,6 +362,40 @@ class RepoNotifier extends ChangeNotifier {
         notifyListeners();
       case Right<Failure, List<Tag>>(:final value):
         _state = TagsLoaded(value);
+        notifyListeners();
+    }
+  }
+
+  Future<void> getCommit(String owner, String repo, String sha) async {
+    _state = const RepoLoading();
+    notifyListeners();
+
+    final result = await _getCommitUseCase.call(
+      GetCommitParams(owner: owner, repo: repo, sha: sha),
+    );
+    switch (result) {
+      case Left<Failure, Commit>(:final value):
+        _state = RepoError(value.message);
+        notifyListeners();
+      case Right<Failure, Commit>(:final value):
+        _state = CommitDetailLoaded(value);
+        notifyListeners();
+    }
+  }
+
+  Future<void> getTag(String owner, String repo, String tag) async {
+    _state = const RepoLoading();
+    notifyListeners();
+
+    final result = await _getTagUseCase.call(
+      GetTagParams(owner: owner, repo: repo, tag: tag),
+    );
+    switch (result) {
+      case Left<Failure, Tag>(:final value):
+        _state = RepoError(value.message);
+        notifyListeners();
+      case Right<Failure, Tag>(:final value):
+        _state = TagDetailLoaded(value);
         notifyListeners();
     }
   }

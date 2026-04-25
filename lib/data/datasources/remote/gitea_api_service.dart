@@ -346,6 +346,17 @@ class GiteaApiService {
     return list.map((e) => Tag.fromJson(e as Map<String, dynamic>)).toList();
   }
 
+  Future<Tag> repoGetTag({
+    required String owner,
+    required String repo,
+    required String tag,
+  }) async {
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/tags/${Uri.encodeComponent(tag)}',
+    );
+    return Tag.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+  }
+
   Future<List<Release>> repoListReleases({
     required String owner,
     required String repo,

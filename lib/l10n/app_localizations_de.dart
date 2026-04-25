@@ -946,4 +946,52 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get ok => 'OK';
+
+  @override
+  String get sha => 'SHA';
+
+  @override
+  String get changedFiles => 'Changed Files';
+
+  @override
+  String get tags => 'Tags';
+
+  @override
+  String get noCommits => 'No commits';
+
+  @override
+  String get noTags => 'No tags';
+
+  @override
+  String get protected => 'Protected';
+
+  @override
+  String get latestCommit => 'Latest Commit';
+
+  @override
+  String get permissions => 'Permissions';
+
+  @override
+  String get canPush => 'Can Push';
+
+  @override
+  String get canMerge => 'Can Merge';
+
+  @override
+  String get downloads => 'Downloads';
+
+  @override
+  String get tarball => 'Tarball';
+
+  @override
+  String get zipball => 'Zipball';
+
+  @override
+  String get downloadTarball => 'Download Tarball';
+
+  @override
+  String get downloadZipball => 'Download Zipball';
+
+  @override
+  String get url => 'URL';
 }

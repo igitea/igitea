@@ -193,6 +193,14 @@ class MockRepoRepository implements RepoRepository {
     String owner, String repo, Map<String, dynamic> body) => throw UnimplementedError();
 
   @override
+  Future<Either<Failure, Tag>> getTag(
+    String owner,
+    String repo,
+    String tag,
+  ) =>
+      throw UnimplementedError();
+
+  @override
   Future<Either<Failure, void>> mergePullRequest(
     String owner,
     String repo,

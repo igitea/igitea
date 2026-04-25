@@ -103,6 +103,13 @@ class FakeRepoRepository implements RepoRepository {
   ) => throw UnimplementedError();
 
   @override
+  Future<Either<Failure, Tag>> getTag(
+    String owner,
+    String repoName,
+    String tag,
+  ) => throw UnimplementedError();
+
+  @override
   Future<Either<Failure, List<Release>>> listReleases(
     String owner,
     String repoName, {
@@ -252,7 +259,9 @@ void main() {
         searchReposUseCase: SearchReposUseCase(repository: fakeRepo),
         listBranchesUseCase: ListBranchesUseCase(repository: fakeRepo),
         listCommitsUseCase: ListCommitsUseCase(repository: fakeRepo),
+        getCommitUseCase: GetCommitUseCase(repository: fakeRepo),
         listTagsUseCase: ListTagsUseCase(repository: fakeRepo),
+        getTagUseCase: GetTagUseCase(repository: fakeRepo),
         getRepoContentsUseCase: GetRepoContentsUseCase(repository: fakeRepo),
         listPullRequestsUseCase: ListPullRequestsUseCase(repository: fakeRepo),
         getPullRequestUseCase: GetPullRequestUseCase(repository: fakeRepo),

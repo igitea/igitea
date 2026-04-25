@@ -9,9 +9,12 @@ import '../state/repo_notifier.dart';
 import '../state/issue_notifier.dart';
 import '../widgets/user_avatar.dart';
 import '../widgets/file_icon.dart';
+import 'branch_detail_page.dart';
+import 'commit_detail_page.dart';
 import 'issue_detail_page.dart';
 import 'pr_detail_page.dart';
 import 'repo_file_page.dart';
+import 'tag_detail_page.dart';
 
 const _languageColors = <String, Color>{
   'Dart': Color(0xFF00B4AB),
@@ -58,7 +61,7 @@ class _RepoDetailPageState extends State<RepoDetailPage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 5, vsync: this);
+    _tabController = TabController(length: 7, vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Injection.repoNotifier.getRepo(widget.owner, widget.repo);
       Injection.repoNotifier.checkStarred(widget.owner, widget.repo);
@@ -135,7 +138,9 @@ class _RepoDetailPageState extends State<RepoDetailPage>
                   Tab(icon: Icon(Icons.bug_report_outlined), text: l10n.issues),
                   Tab(icon: Icon(Icons.merge_type), text: l10n.pullRequests),
                   Tab(icon: Icon(Icons.new_releases_outlined), text: l10n.releases),
+                  Tab(icon: Icon(Icons.commit), text: l10n.commits),
                   Tab(icon: Icon(Icons.call_split), text: l10n.branches),
+                  Tab(icon: Icon(Icons.label), text: l10n.tags),
                 ],
               ),
             ),
@@ -153,10 +158,12 @@ class _RepoDetailPageState extends State<RepoDetailPage>
           _IssuesTab(owner: widget.owner, repo: widget.repo, l10n: l10n),
           _PullRequestsTab(owner: widget.owner, repo: widget.repo, l10n: l10n),
           _ReleasesTab(owner: widget.owner, repo: widget.repo, l10n: l10n),
+          _CommitsTab(owner: widget.owner, repo: widget.repo, l10n: l10n),
           _BranchesTab(
               owner: widget.owner,
               repo: widget.repo,
               defaultBranch: repo.default_branch),
+          _TagsTab(owner: widget.owner, repo: widget.repo, l10n: l10n),
         ],
       ),
     );
@@ -1066,6 +1073,13 @@ class _BranchesTabState extends State<_BranchesTab> {
                       ],
                     ],
                   ),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => BranchDetailPage(branch: branch),
+                      ),
+                    );
+                  },
                 ),
               );
             },
@@ -1115,5 +1129,275 @@ class _SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
   @override
   bool shouldRebuild(covariant _SliverTabBarDelegate oldDelegate) {
     return false;
+  }
+}
+
+class _CommitsTab extends StatefulWidget {
+  final String owner;
+  final String repo;
+  final AppLocalizations l10n;
+
+  const _CommitsTab(
+      {required this.owner, required this.repo, required this.l10n});
+
+  @override
+  State<_CommitsTab> createState() => _CommitsTabState();
+}
+
+class _CommitsTabState extends State<_CommitsTab> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Injection.repoNotifier.listCommits(widget.owner, widget.repo);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListenableBuilder(
+      listenable: Injection.repoNotifier,
+      builder: (context, _) {
+        final state = Injection.repoNotifier.state;
+        if (state is CommitsLoaded) {
+          final commits = state.commits;
+          if (commits.isEmpty) {
+            return Center(child: Text(widget.l10n.noCommits));
+          }
+          return ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemCount: commits.length,
+            itemBuilder: (context, index) {
+              final commit = commits[index];
+              return _CommitItem(
+                commit: commit,
+                owner: widget.owner,
+                repo: widget.repo,
+                l10n: widget.l10n,
+              );
+            },
+          );
+        }
+        if (state is RepoError) {
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('${widget.l10n.error}: ${state.message}'),
+                const SizedBox(height: 16),
+                FilledButton(
+                  onPressed: () => Injection.repoNotifier.listCommits(
+                      widget.owner, widget.repo),
+                  child: Text(widget.l10n.retry),
+                ),
+              ],
+            ),
+          );
+        }
+        return const Center(child: CircularProgressIndicator());
+      },
+    );
+  }
+}
+
+class _CommitItem extends StatelessWidget {
+  final Commit commit;
+  final String owner;
+  final String repo;
+  final AppLocalizations l10n;
+
+  const _CommitItem({
+    required this.commit,
+    required this.owner,
+    required this.repo,
+    required this.l10n,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: ListTile(
+        leading: commit.author != null
+            ? UserAvatar(user: commit.author!, radius: 16)
+            : const Icon(Icons.person_outline),
+        title: Text(
+          commit.commit?.message ?? '',
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        subtitle: Row(
+          children: [
+            if (commit.author?.login != null)
+              Text(
+                commit.author!.login!,
+                style: theme.textTheme.bodySmall,
+              ),
+            if (commit.created != null) ...[
+              const SizedBox(width: 8),
+              Text(
+                _formatDate(commit.created!),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ],
+        ),
+        trailing: commit.sha != null
+            ? Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Text(
+                  commit.sha!.substring(0, 7),
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    fontFamily: 'monospace',
+                  ),
+                ),
+              )
+            : null,
+        onTap: () {
+          if (commit.sha != null) {
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => CommitDetailPage(
+                  owner: owner,
+                  repo: repo,
+                  sha: commit.sha!,
+                ),
+              ),
+            );
+          }
+        },
+      ),
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    final now = DateTime.now();
+    final diff = now.difference(date);
+    if (diff.inDays > 365) return '${diff.inDays ~/ 365}y ago';
+    if (diff.inDays > 30) return '${diff.inDays ~/ 30}mo ago';
+    if (diff.inDays > 0) return '${diff.inDays}d ago';
+    if (diff.inHours > 0) return '${diff.inHours}h ago';
+    if (diff.inMinutes > 0) return '${diff.inMinutes}m ago';
+    return 'just now';
+  }
+}
+
+class _TagsTab extends StatefulWidget {
+  final String owner;
+  final String repo;
+  final AppLocalizations l10n;
+
+  const _TagsTab(
+      {required this.owner, required this.repo, required this.l10n});
+
+  @override
+  State<_TagsTab> createState() => _TagsTabState();
+}
+
+class _TagsTabState extends State<_TagsTab> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Injection.repoNotifier.listTags(widget.owner, widget.repo);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListenableBuilder(
+      listenable: Injection.repoNotifier,
+      builder: (context, _) {
+        final state = Injection.repoNotifier.state;
+        if (state is TagsLoaded) {
+          final tags = state.tags;
+          if (tags.isEmpty) {
+            return Center(child: Text(widget.l10n.noTags));
+          }
+          return ListView.builder(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            itemCount: tags.length,
+            itemBuilder: (context, index) {
+              final tag = tags[index];
+              return _TagItem(tag: tag, l10n: widget.l10n);
+            },
+          );
+        }
+        if (state is RepoError) {
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('${widget.l10n.error}: ${state.message}'),
+                const SizedBox(height: 16),
+                FilledButton(
+                  onPressed: () => Injection.repoNotifier.listTags(
+                      widget.owner, widget.repo),
+                  child: Text(widget.l10n.retry),
+                ),
+              ],
+            ),
+          );
+        }
+        return const Center(child: CircularProgressIndicator());
+      },
+    );
+  }
+}
+
+class _TagItem extends StatelessWidget {
+  final Tag tag;
+  final AppLocalizations l10n;
+
+  const _TagItem({required this.tag, required this.l10n});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: ListTile(
+        leading: Icon(Icons.label, color: theme.colorScheme.primary),
+        title: Text(tag.name ?? ''),
+        subtitle: tag.commit?.sha != null
+            ? Text(
+                tag.commit!.sha!.substring(0, 7),
+                style: theme.textTheme.bodySmall?.copyWith(
+                  fontFamily: 'monospace',
+                ),
+              )
+            : null,
+        trailing: tag.tarball_url != null || tag.zipball_url != null
+            ? PopupMenuButton<String>(
+                itemBuilder: (context) => [
+                  if (tag.tarball_url != null)
+                    PopupMenuItem(
+                      value: 'tarball',
+                      child: Text(l10n.downloadTarball),
+                    ),
+                  if (tag.zipball_url != null)
+                    PopupMenuItem(
+                      value: 'zipball',
+                      child: Text(l10n.downloadZipball),
+                    ),
+                ],
+              )
+            : null,
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => TagDetailPage(tag: tag),
+            ),
+          );
+        },
+      ),
+    );
   }
 }

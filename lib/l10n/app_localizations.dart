@@ -1882,6 +1882,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'OK'**
   String get ok;
+
+  /// No description provided for @sha.
+  ///
+  /// In en, this message translates to:
+  /// **'SHA'**
+  String get sha;
+
+  /// No description provided for @changedFiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Changed Files'**
+  String get changedFiles;
+
+  /// No description provided for @tags.
+  ///
+  /// In en, this message translates to:
+  /// **'Tags'**
+  String get tags;
+
+  /// No description provided for @noCommits.
+  ///
+  /// In en, this message translates to:
+  /// **'No commits'**
+  String get noCommits;
+
+  /// No description provided for @noTags.
+  ///
+  /// In en, this message translates to:
+  /// **'No tags'**
+  String get noTags;
+
+  /// No description provided for @protected.
+  ///
+  /// In en, this message translates to:
+  /// **'Protected'**
+  String get protected;
+
+  /// No description provided for @latestCommit.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest Commit'**
+  String get latestCommit;
+
+  /// No description provided for @permissions.
+  ///
+  /// In en, this message translates to:
+  /// **'Permissions'**
+  String get permissions;
+
+  /// No description provided for @canPush.
+  ///
+  /// In en, this message translates to:
+  /// **'Can Push'**
+  String get canPush;
+
+  /// No description provided for @canMerge.
+  ///
+  /// In en, this message translates to:
+  /// **'Can Merge'**
+  String get canMerge;
+
+  /// No description provided for @downloads.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloads'**
+  String get downloads;
+
+  /// No description provided for @tarball.
+  ///
+  /// In en, this message translates to:
+  /// **'Tarball'**
+  String get tarball;
+
+  /// No description provided for @zipball.
+  ///
+  /// In en, this message translates to:
+  /// **'Zipball'**
+  String get zipball;
+
+  /// No description provided for @downloadTarball.
+  ///
+  /// In en, this message translates to:
+  /// **'Download Tarball'**
+  String get downloadTarball;
+
+  /// No description provided for @downloadZipball.
+  ///
+  /// In en, this message translates to:
+  /// **'Download Zipball'**
+  String get downloadZipball;
+
+  /// No description provided for @url.
+  ///
+  /// In en, this message translates to:
+  /// **'URL'**
+  String get url;
 }
 
 class _AppLocalizationsDelegate

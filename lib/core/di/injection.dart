@@ -62,6 +62,7 @@ class Injection {
   static late ListTagsUseCase listTagsUseCase;
   static late ListCommitsUseCase listCommitsUseCase;
   static late GetCommitUseCase getCommitUseCase;
+  static late GetTagUseCase getTagUseCase;
   static late ListReleasesUseCase listReleasesUseCase;
   static late GetRepoContentsUseCase getRepoContentsUseCase;
   static late ListPullRequestsUseCase listPullRequestsUseCase;
@@ -152,6 +153,7 @@ class Injection {
     listTagsUseCase = ListTagsUseCase(repository: repoRepository);
     listCommitsUseCase = ListCommitsUseCase(repository: repoRepository);
     getCommitUseCase = GetCommitUseCase(repository: repoRepository);
+    getTagUseCase = GetTagUseCase(repository: repoRepository);
     listReleasesUseCase = ListReleasesUseCase(repository: repoRepository);
     getRepoContentsUseCase = GetRepoContentsUseCase(repository: repoRepository);
     listPullRequestsUseCase = ListPullRequestsUseCase(repository: repoRepository);
@@ -257,7 +259,9 @@ class Injection {
         searchReposUseCase: searchReposUseCase,
         listBranchesUseCase: listBranchesUseCase,
         listCommitsUseCase: listCommitsUseCase,
+        getCommitUseCase: getCommitUseCase,
         listTagsUseCase: listTagsUseCase,
+        getTagUseCase: getTagUseCase,
         getRepoContentsUseCase: getRepoContentsUseCase,
         listPullRequestsUseCase: listPullRequestsUseCase,
         getPullRequestUseCase: getPullRequestUseCase,
@@ -314,7 +318,9 @@ class Injection {
         searchReposUseCase: searchReposUseCase,
         listBranchesUseCase: listBranchesUseCase,
         listCommitsUseCase: listCommitsUseCase,
+        getCommitUseCase: getCommitUseCase,
         listTagsUseCase: listTagsUseCase,
+        getTagUseCase: getTagUseCase,
         getRepoContentsUseCase: getRepoContentsUseCase,
         listPullRequestsUseCase: listPullRequestsUseCase,
         getPullRequestUseCase: getPullRequestUseCase,
@@ -392,7 +398,9 @@ class Injection {
       searchReposUseCase: searchReposUseCase,
       listBranchesUseCase: listBranchesUseCase,
       listCommitsUseCase: listCommitsUseCase,
+      getCommitUseCase: getCommitUseCase,
       listTagsUseCase: listTagsUseCase,
+      getTagUseCase: getTagUseCase,
       getRepoContentsUseCase: getRepoContentsUseCase,
       listPullRequestsUseCase: listPullRequestsUseCase,
       getPullRequestUseCase: getPullRequestUseCase,

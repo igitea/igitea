@@ -86,6 +86,17 @@ class RepoRepositoryImpl implements RepoRepository {
   }
 
   @override
+  Future<Either<Failure, Tag>> getTag(
+    String owner,
+    String repo,
+    String tag,
+  ) async {
+    return execute(
+      () => _apiService.repoGetTag(owner: owner, repo: repo, tag: tag),
+    );
+  }
+
+  @override
   Future<Either<Failure, List<Commit>>> listCommits(
     String owner,
     String repo, {
