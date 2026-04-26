@@ -442,7 +442,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get updatedAt => 'Updated at';
 
   @override
-  String get dueDate => 'Due date';
+  String get dueDate => 'Due';
 
   @override
   String get noMilestones => 'No milestones';
@@ -1080,4 +1080,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String repoCreated(Object repoName) {
     return 'Repository \'$repoName\' created successfully';
   }
+
+  @override
+  String get complete => 'complete';
 }

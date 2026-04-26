@@ -1,5 +1,16 @@
 # 更新日志
 
+## [0.22.0] - 2026-04-26
+
+### 新增 — 里程碑
+
+- `RepoDetailPage` 里程碑标签页（第8个标签）：显示仓库所有里程碑，带进度条和问题计数
+- `MilestoneDetailPage`：里程碑详情页，含进度指示器、打开/关闭问题统计、关联问题列表
+- 里程碑卡片 UI：使用 `PremiumCard` 样式，进度条、截止日期、完成百分比
+- 使用现有 `listIssuesUseCase` 的 `milestones` 参数按里程碑过滤问题
+- 新增 ARB 键值：`milestones`、`noMilestonesFound`、`milestoneProgress`、`linkedIssues`、`total`、`complete`
+- 247 个测试通过（更新 `RepoDetailPage` 组件测试为8个标签），`flutter analyze` 无警告
+
 ## [0.21.0] - 2026-04-26
 
 ### 新增 — 创建仓库

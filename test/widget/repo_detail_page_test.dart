@@ -37,9 +37,10 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.byType(Tab), findsNWidgets(7));
+    expect(find.byType(Tab), findsNWidgets(8));
     expect(find.text('Code'), findsAtLeast(1));
     expect(find.text('Issues'), findsAtLeast(1));
+    expect(find.text('Milestones'), findsAtLeast(1));
     expect(find.text('Pull Requests'), findsAtLeast(1));
     expect(find.text('Releases'), findsAtLeast(1));
     expect(find.text('Commits'), findsAtLeast(1));

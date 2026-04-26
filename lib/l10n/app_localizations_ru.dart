@@ -1080,4 +1080,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String repoCreated(Object repoName) {
     return 'Repository \'$repoName\' created successfully';
   }
+
+  @override
+  String get complete => 'complete';
 }

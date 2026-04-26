@@ -222,5 +222,7 @@
   "privateDescription": "你可以选择谁可以看到并提交到这个仓库",
   "initializeWithReadme": "使用 README 初始化",
   "initializeWithReadmeDescription": "添加 README 文件帮助他人了解你的项目",
-  "repoCreated": "仓库 '{repoName}' 创建成功"
+  "repoCreated": "仓库 '{repoName}' 创建成功",
+  "dueDate": "截止日期",
+  "complete": "完成"
 }

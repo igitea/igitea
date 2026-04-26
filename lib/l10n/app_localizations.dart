@@ -908,7 +908,7 @@ abstract class AppLocalizations {
   /// No description provided for @dueDate.
   ///
   /// In en, this message translates to:
-  /// **'Due date'**
+  /// **'Due'**
   String get dueDate;
 
   /// No description provided for @noMilestones.
@@ -2140,6 +2140,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Repository \'{repoName}\' created successfully'**
   String repoCreated(Object repoName);
+
+  /// No description provided for @complete.
+  ///
+  /// In en, this message translates to:
+  /// **'complete'**
+  String get complete;
 }
 
 class _AppLocalizationsDelegate

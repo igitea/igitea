@@ -348,5 +348,7 @@
   "privateDescription": "You choose who can see and commit to this repository",
   "initializeWithReadme": "Initialize with README",
   "initializeWithReadmeDescription": "Add a README file to help others understand your project",
-  "repoCreated": "Repository '{repoName}' created successfully"
+  "repoCreated": "Repository '{repoName}' created successfully",
+  "dueDate": "Due",
+  "complete": "complete"
 }

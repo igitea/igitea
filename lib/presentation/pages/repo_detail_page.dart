@@ -17,6 +17,7 @@ import '../widgets/file_icon.dart';
 import 'branch_detail_page.dart';
 import 'commit_detail_page.dart';
 import 'issue_detail_page.dart';
+import 'milestone_detail_page.dart';
 import 'pr_detail_page.dart';
 import 'release_detail_page.dart';
 import 'repo_file_page.dart';
@@ -67,7 +68,7 @@ class _RepoDetailPageState extends State<RepoDetailPage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 7, vsync: this);
+    _tabController = TabController(length: 8, vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Injection.repoNotifier.getRepo(widget.owner, widget.repo);
       Injection.repoNotifier.checkStarred(widget.owner, widget.repo);
@@ -159,6 +160,7 @@ class _RepoDetailPageState extends State<RepoDetailPage>
                 tabs: [
                   Tab(icon: const Icon(Icons.code, size: UIConstants.iconMd), text: l10n.code),
                   Tab(icon: const Icon(Icons.bug_report_outlined, size: UIConstants.iconMd), text: l10n.issues),
+                  Tab(icon: const Icon(Icons.flag, size: UIConstants.iconMd), text: l10n.milestones),
                   Tab(icon: const Icon(Icons.merge_type, size: UIConstants.iconMd), text: l10n.pullRequests),
                   Tab(icon: const Icon(Icons.new_releases_outlined, size: UIConstants.iconMd), text: l10n.releases),
                   Tab(icon: const Icon(Icons.commit, size: UIConstants.iconMd), text: l10n.commits),
@@ -179,6 +181,7 @@ class _RepoDetailPageState extends State<RepoDetailPage>
               repo: widget.repo,
               defaultBranch: repo.default_branch),
           _IssuesTab(owner: widget.owner, repo: widget.repo, l10n: l10n),
+          _MilestonesTab(owner: widget.owner, repo: widget.repo, l10n: l10n),
           _PullRequestsTab(owner: widget.owner, repo: widget.repo, l10n: l10n),
           _ReleasesTab(owner: widget.owner, repo: widget.repo, l10n: l10n),
           _CommitsTab(owner: widget.owner, repo: widget.repo, l10n: l10n),
@@ -1541,6 +1544,147 @@ class _BranchesTabState extends State<_BranchesTab> {
         };
       },
     );
+  }
+}
+
+class _MilestonesTab extends StatefulWidget {
+  final String owner;
+  final String repo;
+  final AppLocalizations l10n;
+
+  const _MilestonesTab({required this.owner, required this.repo, required this.l10n});
+
+  @override
+  State<_MilestonesTab> createState() => _MilestonesTabState();
+}
+
+class _MilestonesTabState extends State<_MilestonesTab> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Injection.issueNotifier.listMilestones(
+        widget.owner,
+        widget.repo,
+      );
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return ListenableBuilder(
+      listenable: Injection.issueNotifier,
+      builder: (context, _) {
+        final state = Injection.issueNotifier.state;
+        return switch (state) {
+          IssueLoading() => const Center(child: CircularProgressIndicator()),
+          IssueError(:final message) => Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text('${widget.l10n.error}: $message'),
+                  const SizedBox(height: UIConstants.md),
+                  FilledButton(
+                    onPressed: () => Injection.issueNotifier.listMilestones(
+                        widget.owner, widget.repo),
+                    child: Text(widget.l10n.retry),
+                  ),
+                ],
+              ),
+            ),
+          MilestonesLoaded(:final milestones) => milestones.isEmpty
+              ? EmptyState(icon: Icons.flag, title: widget.l10n.noMilestones)
+              : ListView.builder(
+                  padding: UIConstants.pagePadding + const EdgeInsets.symmetric(vertical: UIConstants.sm),
+                  itemCount: milestones.length,
+                  itemBuilder: (context, index) {
+                    final milestone = milestones[index];
+                    final total = (milestone.open_issues ?? 0) + (milestone.closed_issues ?? 0);
+                    final progress = total > 0 ? (milestone.closed_issues ?? 0) / total : 0.0;
+                    return PremiumListCard(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => MilestoneDetailPage(
+                              owner: widget.owner,
+                              repo: widget.repo,
+                              milestone: milestone,
+                            ),
+                          ),
+                        );
+                      },
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  milestone.title ?? '',
+                                  style: theme.textTheme.titleSmall?.copyWith(
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                              if (milestone.due_on != null)
+                                Text(
+                                  _formatDate(milestone.due_on!),
+                                  style: theme.textTheme.labelSmall?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                            ],
+                          ),
+                          const SizedBox(height: UIConstants.sm),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
+                            child: LinearProgressIndicator(
+                              value: progress,
+                              minHeight: 6,
+                              backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                progress >= 1.0 ? Colors.green : theme.colorScheme.primary,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: UIConstants.xs),
+                          Row(
+                            children: [
+                              Text(
+                                '${(progress * 100).toStringAsFixed(0)}%',
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                              const Spacer(),
+                              Text(
+                                '${milestone.open_issues ?? 0} ${widget.l10n.open} · ${milestone.closed_issues ?? 0} ${widget.l10n.closed}',
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+          _ => EmptyState(icon: Icons.flag, title: widget.l10n.noMilestones),
+        };
+      },
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    final now = DateTime.now();
+    final diff = now.difference(date);
+    if (diff.inDays > 365) return '${diff.inDays ~/ 365}y ago';
+    if (diff.inDays > 30) return '${diff.inDays ~/ 30}mo ago';
+    if (diff.inDays > 0) return '${diff.inDays}d ago';
+    if (diff.inHours > 0) return '${diff.inHours}h ago';
+    return 'just now';
   }
 }
 

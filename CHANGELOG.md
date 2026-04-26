@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.22.0] - 2026-04-26
+
+### Added — Milestones
+
+- Milestones tab in `RepoDetailPage` (8th tab) showing all repository milestones with progress bars and issue counts
+- `MilestoneDetailPage` with milestone progress indicator, open/closed issue statistics, and linked issue list
+- Milestone card UI with `PremiumCard` styling, progress bar, due date display, and completion percentage
+- Issue list filtering by milestone using existing `listIssuesUseCase` with `milestones` parameter
+- New ARB keys: `milestones`, `noMilestonesFound`, `milestoneProgress`, `linkedIssues`, `total`, `complete`
+- 247 tests passing (updated `RepoDetailPage` widget test for 8 tabs), `flutter analyze` clean
+
 ## [0.21.0] - 2026-04-26
 
 ### Added — Create Repository

@@ -1074,6 +1074,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String repoCreated(Object repoName) {
     return '仓库 \'$repoName\' 创建成功';
   }
+
+  @override
+  String get complete => '完成';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
