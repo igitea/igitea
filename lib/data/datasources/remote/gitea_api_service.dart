@@ -1407,4 +1407,63 @@ class GiteaApiService {
   Future<void> activitypubPersonInbox({required int user_id}) async {
     await _client.post('/activitypub/user-id/${user_id.toString()}/inbox');
   }
+
+  // Wiki
+
+  Future<List<WikiPageMetaData>> repoGetWikiPages({
+    required String owner,
+    required String repo,
+  }) async {
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/wiki/pages',
+    );
+    final list = jsonDecode(response.body) as List<dynamic>;
+    return list.map((e) => WikiPageMetaData.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<WikiPage> repoGetWikiPage({
+    required String owner,
+    required String repo,
+    required String pageName,
+  }) async {
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/wiki/page/${Uri.encodeComponent(pageName)}',
+    );
+    return WikiPage.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+  }
+
+  Future<WikiPage> repoCreateWikiPage({
+    required String owner,
+    required String repo,
+    required Map<String, dynamic> body,
+  }) async {
+    final response = await _client.post(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/wiki/new',
+      body: body,
+    );
+    return WikiPage.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+  }
+
+  Future<WikiPage> repoEditWikiPage({
+    required String owner,
+    required String repo,
+    required String pageName,
+    required Map<String, dynamic> body,
+  }) async {
+    final response = await _client.post(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/wiki/page/${Uri.encodeComponent(pageName)}',
+      body: body,
+    );
+    return WikiPage.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+  }
+
+  Future<void> repoDeleteWikiPage({
+    required String owner,
+    required String repo,
+    required String pageName,
+  }) async {
+    await _client.delete(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/wiki/page/${Uri.encodeComponent(pageName)}',
+    );
+  }
 }
