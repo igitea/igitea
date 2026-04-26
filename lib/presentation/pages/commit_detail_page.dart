@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../core/animations/animated_wrapper.dart';
 import '../../core/di/injection.dart';
-import '../../core/errors/failures.dart';
-import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../../presentation/state/repo_notifier.dart';
@@ -147,7 +146,10 @@ class _CommitDetailPageState extends State<CommitDetailPage> {
             ),
           ),
           const SizedBox(height: 8),
-          ...commit.files!.map((file) => _buildFileItem(file)),
+          ...commit.files!.asMap().entries.map((entry) => FadeInWrapper(
+            delay: Duration(milliseconds: entry.key * 30),
+            child: _buildFileItem(entry.value),
+          )),
         ],
       ],
     );

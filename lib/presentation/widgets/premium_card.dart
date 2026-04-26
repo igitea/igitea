@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import '../../core/animations/app_animations.dart';
 import '../../core/constants/ui_constants.dart';
 
-class PremiumCard extends StatelessWidget {
+class PremiumCard extends StatefulWidget {
   final Widget child;
   final VoidCallback? onTap;
   final EdgeInsetsGeometry? padding;
@@ -20,15 +21,23 @@ class PremiumCard extends StatelessWidget {
   });
 
   @override
+  State<PremiumCard> createState() => _PremiumCardState();
+}
+
+class _PremiumCardState extends State<PremiumCard> {
+  bool _isPressed = false;
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return AnimatedScale(
-      scale: 1.0,
-      duration: const Duration(milliseconds: 100),
+      scale: _isPressed ? 0.98 : 1.0,
+      duration: AppAnimations.fast,
+      curve: AppAnimations.easeOut,
       child: Card(
-        margin: margin ?? UIConstants.cardMargin,
-        elevation: elevation ?? 0,
-        color: color ?? theme.colorScheme.surface,
+        margin: widget.margin ?? UIConstants.cardMargin,
+        elevation: widget.elevation ?? 0,
+        color: widget.color ?? theme.colorScheme.surface,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(UIConstants.cardRadius),
           side: BorderSide(
@@ -38,11 +47,14 @@ class PremiumCard extends StatelessWidget {
         ),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
-          onTap: onTap,
+          onTap: widget.onTap,
+          onTapDown: (_) => setState(() => _isPressed = true),
+          onTapUp: (_) => setState(() => _isPressed = false),
+          onTapCancel: () => setState(() => _isPressed = false),
           borderRadius: BorderRadius.circular(UIConstants.cardRadius),
           child: Padding(
-            padding: padding ?? UIConstants.cardPadding,
-            child: child,
+            padding: widget.padding ?? UIConstants.cardPadding,
+            child: widget.child,
           ),
         ),
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/animations/animated_wrapper.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
@@ -290,27 +291,30 @@ class _ReposTabState extends State<_ReposTab>
               itemCount: repos.length,
               itemBuilder: (context, index) {
                 final repo = repos[index];
-                return ListTile(
-                  leading: const Icon(Icons.folder_outlined),
-                  title: Text(repo.name ?? ''),
-                  subtitle: repo.description != null
-                      ? Text(
-                          repo.description!,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        )
-                      : null,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => RepoDetailPage(
-                          owner: repo.owner?.login ?? widget.orgName,
-                          repo: repo.name ?? '',
+                return FadeInWrapper(
+                  delay: Duration(milliseconds: index * 30),
+                  child: ListTile(
+                    leading: const Icon(Icons.folder_outlined),
+                    title: Text(repo.name ?? ''),
+                    subtitle: repo.description != null
+                        ? Text(
+                            repo.description!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          )
+                        : null,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => RepoDetailPage(
+                            owner: repo.owner?.login ?? widget.orgName,
+                            repo: repo.name ?? '',
+                          ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 );
               },
             ),
@@ -375,26 +379,29 @@ class _TeamsTabState extends State<_TeamsTab>
               itemCount: teams.length,
               itemBuilder: (context, index) {
                 final team = teams[index];
-                return ListTile(
-                  leading: const Icon(Icons.people_outline),
-                  title: Text(team.name ?? ''),
-                  subtitle: team.description != null
-                      ? Text(
-                          team.description!,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        )
-                      : null,
-                  onTap: () {
-                    if (team.id != null) {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => TeamDetailPage(teamId: team.id!),
-                        ),
-                      );
-                    }
-                  },
+                return FadeInWrapper(
+                  delay: Duration(milliseconds: index * 30),
+                  child: ListTile(
+                    leading: const Icon(Icons.people_outline),
+                    title: Text(team.name ?? ''),
+                    subtitle: team.description != null
+                        ? Text(
+                            team.description!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          )
+                        : null,
+                    onTap: () {
+                      if (team.id != null) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => TeamDetailPage(teamId: team.id!),
+                          ),
+                        );
+                      }
+                    },
+                  ),
                 );
               },
             ),

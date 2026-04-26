@@ -8,6 +8,7 @@ import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../../presentation/state/user_notifier.dart';
+import '../../core/animations/animated_wrapper.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/org_avatar.dart';
 import '../widgets/premium_card.dart';
@@ -148,7 +149,7 @@ class _ProfileContent extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.only(bottom: UIConstants.xl),
         children: [
-          _UserHeader(user: user),
+          FadeInWrapper(child: _UserHeader(user: user)),
           const SizedBox(height: UIConstants.md),
           _StatsRow(user: user, l10n: l10n),
           const SizedBox(height: UIConstants.md),
@@ -242,9 +243,9 @@ class _UserHeader extends StatelessWidget {
             const SizedBox(height: UIConstants.sm),
             Text(
               user.full_name ?? user.login ?? l10n.unknownUser,
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                style: theme.textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
             ),
             if (user.login != null) ...[
               const SizedBox(height: UIConstants.xs),
@@ -317,7 +318,7 @@ class _StatItem extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: UIConstants.md),
       child: Column(
         children: [
-          Text(value, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+          Text(value, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600)),
           const SizedBox(height: UIConstants.xs),
           Text(label, style: theme.textTheme.bodySmall?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
@@ -457,20 +458,23 @@ class _OrgsSection extends StatelessWidget {
             separatorBuilder: (_, _) => const SizedBox(width: UIConstants.md),
             itemBuilder: (context, index) {
               final org = orgs[index];
-              return Tooltip(
-                message: org.full_name ?? org.username ?? '',
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => OrganizationDetailPage(
-                          orgName: org.username ?? '',
+              return FadeInWrapper(
+                delay: Duration(milliseconds: index * 30),
+                child: Tooltip(
+                  message: org.full_name ?? org.username ?? '',
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => OrganizationDetailPage(
+                            orgName: org.username ?? '',
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                  child: OrgAvatar(org: org, radius: UIConstants.avatarXl),
+                      );
+                    },
+                    child: OrgAvatar(org: org, radius: UIConstants.avatarXl),
+                  ),
                 ),
               );
             },

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/animations/animated_wrapper.dart';
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
@@ -47,15 +48,17 @@ class _IssueListPageState extends State<IssueListPage> {
       appBar: AppBar(title: Text(l10n.issues)),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: UIConstants.md, vertical: UIConstants.sm),
-            child: _FilterChips(
-              selectedState: _selectedState,
-              onSelected: (state) {
-                setState(() => _selectedState = state);
-                _forceReload();
-              },
-              l10n: l10n,
+          FadeInWrapper(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: UIConstants.md, vertical: UIConstants.sm),
+              child: _FilterChips(
+                selectedState: _selectedState,
+                onSelected: (state) {
+                  setState(() => _selectedState = state);
+                  _forceReload();
+                },
+                l10n: l10n,
+              ),
             ),
           ),
           Expanded(
@@ -145,7 +148,10 @@ class _IssueList extends StatelessWidget {
         itemCount: issues.length,
         itemBuilder: (context, index) {
           final issue = issues[index];
-          return _IssueCard(issue: issue, l10n: l10n);
+          return FadeInWrapper(
+            delay: Duration(milliseconds: index * 40),
+            child: _IssueCard(issue: issue, l10n: l10n),
+          );
         },
       ),
     );
@@ -198,7 +204,12 @@ class _IssueCard extends StatelessWidget {
                 ),
               ),
               if (issue.number != null)
-                Text('#${issue.number}', style: theme.textTheme.bodySmall),
+                Text(
+                  '#${issue.number}',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                  ),
+                ),
             ],
           ),
           const SizedBox(height: UIConstants.sm),
@@ -207,7 +218,12 @@ class _IssueCard extends StatelessWidget {
               if (issue.user != null) ...[
                 UserAvatar(user: issue.user!, radius: UIConstants.avatarXs),
                 const SizedBox(width: UIConstants.xs),
-                Text(issue.user!.login ?? '', style: theme.textTheme.labelSmall),
+                Text(
+                  issue.user!.login ?? '',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
               ],
               const Spacer(),
               if (repoFullName.isNotEmpty) ...[
@@ -248,14 +264,19 @@ class _IssueCard extends StatelessWidget {
               if (issue.comments != null) ...[
                 Icon(Icons.comment_outlined, size: UIConstants.iconXs, color: theme.colorScheme.onSurfaceVariant),
                 const SizedBox(width: UIConstants.xs),
-                Text('${issue.comments}', style: theme.textTheme.labelSmall),
+                Text(
+                  '${issue.comments}',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                  ),
+                ),
                 const SizedBox(width: UIConstants.md),
               ],
               if (issue.updated_at != null) ...[
                 Text(
                   _formatDate(issue.updated_at!),
                   style: theme.textTheme.labelSmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
+                    color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                   ),
                 ),
               ],

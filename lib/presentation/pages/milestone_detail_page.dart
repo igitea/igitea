@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+
+import '../../core/animations/animated_wrapper.dart';
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../core/errors/failures.dart';
@@ -204,11 +206,14 @@ class _MilestoneDetailPageState extends State<MilestoneDetailPage> {
                 title: l10n.noIssues,
               )
             else
-              ..._issues.map((issue) => _IssueItem(
-                issue: issue,
-                owner: widget.owner,
-                repo: widget.repo,
-                l10n: l10n,
+              ..._issues.asMap().entries.map((entry) => FadeInWrapper(
+                delay: Duration(milliseconds: entry.key * 30),
+                child: _IssueItem(
+                  issue: entry.value,
+                  owner: widget.owner,
+                  repo: widget.repo,
+                  l10n: l10n,
+                ),
               )),
           ],
         ),

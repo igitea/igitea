@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/animations/animated_wrapper.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
@@ -63,7 +64,10 @@ class _StarredReposPageState extends State<StarredReposPage> {
                       itemCount: starredRepos.length,
                       itemBuilder: (context, index) {
                         final repo = starredRepos[index];
-                        return _RepoCard(repo: repo);
+                        return FadeInWrapper(
+                          delay: Duration(milliseconds: index * 30),
+                          child: _RepoCard(repo: repo),
+                        );
                       },
                     ),
                   ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/animations/animated_wrapper.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
@@ -108,35 +109,38 @@ class _UserList extends StatelessWidget {
       itemCount: users.length,
       itemBuilder: (context, index) {
         final user = users[index];
-        return Card(
-          margin: const EdgeInsets.only(bottom: 8),
-          child: ListTile(
-            leading: UserAvatar(user: user, radius: 20),
-            title: Text(user.login ?? l10n.unknown),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (user.email?.isNotEmpty == true) Text(user.email!),
-                if (user.is_admin == true)
-                  Chip(
-                    label: Text(l10n.admin),
-                    padding: EdgeInsets.zero,
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  ),
-              ],
-            ),
-            trailing: PopupMenuButton<String>(
-              onSelected: (value) {
-                if (value == 'edit') {
-                  _showEditUserDialog(context, user);
-                } else if (value == 'delete') {
-                  _showDeleteUserDialog(context, user);
-                }
-              },
-              itemBuilder: (ctx) => [
-                PopupMenuItem(value: 'edit', child: Text(l10n.edit)),
-                PopupMenuItem(value: 'delete', child: Text(l10n.delete)),
-              ],
+        return FadeInWrapper(
+          delay: Duration(milliseconds: index * 30),
+          child: Card(
+            margin: const EdgeInsets.only(bottom: 8),
+            child: ListTile(
+              leading: UserAvatar(user: user, radius: 20),
+              title: Text(user.login ?? l10n.unknown),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (user.email?.isNotEmpty == true) Text(user.email!),
+                  if (user.is_admin == true)
+                    Chip(
+                      label: Text(l10n.admin),
+                      padding: EdgeInsets.zero,
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    ),
+                ],
+              ),
+              trailing: PopupMenuButton<String>(
+                onSelected: (value) {
+                  if (value == 'edit') {
+                    _showEditUserDialog(context, user);
+                  } else if (value == 'delete') {
+                    _showDeleteUserDialog(context, user);
+                  }
+                },
+                itemBuilder: (ctx) => [
+                  PopupMenuItem(value: 'edit', child: Text(l10n.edit)),
+                  PopupMenuItem(value: 'delete', child: Text(l10n.delete)),
+                ],
+              ),
             ),
           ),
         );

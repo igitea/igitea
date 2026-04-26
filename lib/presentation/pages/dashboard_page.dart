@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/animations/animated_wrapper.dart';
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
@@ -74,34 +75,52 @@ class _DashboardPageState extends State<DashboardPage> {
       child: ListView(
         padding: const EdgeInsets.all(UIConstants.md),
         children: [
-          _WelcomeCard(user: user),
+          FadeInWrapper(child: _WelcomeCard(user: user)),
           const SizedBox(height: UIConstants.md),
-          Text(
-            l10n.quickActions,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
+          FadeInWrapper(
+            delay: const Duration(milliseconds: 100),
+            child: Text(
+              l10n.quickActions,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
           const SizedBox(height: UIConstants.sm),
-          _QuickActions(l10n: l10n),
+          FadeInWrapper(
+            delay: const Duration(milliseconds: 150),
+            child: _QuickActions(l10n: l10n),
+          ),
           const SizedBox(height: UIConstants.md),
-          Text(
-            l10n.yourRepositories,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
+          FadeInWrapper(
+            delay: const Duration(milliseconds: 200),
+            child: Text(
+              l10n.yourRepositories,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
           const SizedBox(height: UIConstants.sm),
-          _RepoSummary(l10n: l10n),
+          FadeInWrapper(
+            delay: const Duration(milliseconds: 250),
+            child: _RepoSummary(l10n: l10n),
+          ),
           const SizedBox(height: UIConstants.md),
-          Text(
-            l10n.recentActivity,
-            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
+          FadeInWrapper(
+            delay: const Duration(milliseconds: 300),
+            child: Text(
+              l10n.recentActivity,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
           const SizedBox(height: UIConstants.sm),
-          _ActivityFeed(user: user),
+          FadeInWrapper(
+            delay: const Duration(milliseconds: 350),
+            child: _ActivityFeed(user: user),
+          ),
         ],
       ),
     );
@@ -158,32 +177,41 @@ class _QuickActions extends StatelessWidget {
     return Row(
       children: [
         Expanded(
-          child: _ActionCard(
-            icon: Icons.source,
-            label: l10n.repositories,
-            onTap: () => Navigator.of(
-              context,
-            ).push(MaterialPageRoute(builder: (_) => const RepoListPage())),
+          child: FadeInWrapper(
+            delay: const Duration(milliseconds: 200),
+            child: _ActionCard(
+              icon: Icons.source,
+              label: l10n.repositories,
+              onTap: () => Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (_) => const RepoListPage())),
+            ),
           ),
         ),
         const SizedBox(width: UIConstants.sm),
         Expanded(
-          child: _ActionCard(
-            icon: Icons.error_outline,
-            label: l10n.issues,
-            onTap: () => Navigator.of(
-              context,
-            ).push(MaterialPageRoute(builder: (_) => const IssueListPage())),
+          child: FadeInWrapper(
+            delay: const Duration(milliseconds: 230),
+            child: _ActionCard(
+              icon: Icons.error_outline,
+              label: l10n.issues,
+              onTap: () => Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (_) => const IssueListPage())),
+            ),
           ),
         ),
         const SizedBox(width: UIConstants.sm),
         Expanded(
-          child: _ActionCard(
-            icon: Icons.notifications,
-            label: l10n.notifications,
-            onTap: () => Navigator.of(
-              context,
-            ).push(MaterialPageRoute(builder: (_) => const NotificationPage())),
+          child: FadeInWrapper(
+            delay: const Duration(milliseconds: 260),
+            child: _ActionCard(
+              icon: Icons.notifications,
+              label: l10n.notifications,
+              onTap: () => Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (_) => const NotificationPage())),
+            ),
           ),
         ),
       ],
@@ -236,71 +264,80 @@ class _RepoSummary extends StatelessWidget {
           );
         }
         return Column(
-          children: repos.take(5).map((repo) {
-            return PremiumListCard(
-              onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (_) => RepoDetailPage(
-                    owner: repo.owner?.login ?? '',
-                    repo: repo.name ?? '',
-                  ),
-                ));
-              },
-              child: Row(
-                children: [
-                  repo.owner != null
-                      ? UserAvatar(user: repo.owner!, radius: UIConstants.avatarMd)
-                      : Icon(
-                          repo.private == true ? Icons.lock : Icons.public,
-                          color: Theme.of(context).colorScheme.primary,
-                          size: UIConstants.iconMd,
-                        ),
-                  const SizedBox(width: UIConstants.md),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          repo.full_name ?? repo.name ?? '',
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w500,
+          children: repos.take(5).toList().asMap().entries.map((entry) {
+            final index = entry.key;
+            final repo = entry.value;
+            return FadeInWrapper(
+              delay: Duration(milliseconds: index * 40),
+              child: PremiumListCard(
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (_) => RepoDetailPage(
+                      owner: repo.owner?.login ?? '',
+                      repo: repo.name ?? '',
+                    ),
+                  ));
+                },
+                child: Row(
+                  children: [
+                    repo.owner != null
+                        ? UserAvatar(user: repo.owner!, radius: UIConstants.avatarMd)
+                        : Icon(
+                            repo.private == true ? Icons.lock : Icons.public,
+                            color: Theme.of(context).colorScheme.primary,
+                            size: UIConstants.iconMd,
                           ),
-                        ),
-                        if (repo.description != null && repo.description!.isNotEmpty)
+                    const SizedBox(width: UIConstants.md),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
                           Text(
-                            repo.description!,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                            repo.full_name ?? repo.name ?? '',
+                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                          ),
+                          if (repo.description != null && repo.description!.isNotEmpty)
+                            Text(
+                              repo.description!,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (repo.language != null) ...[
+                          Text(
+                            repo.language!,
                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                             ),
                           ),
+                          const SizedBox(width: UIConstants.sm),
+                        ],
+                        Icon(
+                          Icons.star_outline,
+                          size: UIConstants.iconSm,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        ),
+                        const SizedBox(width: UIConstants.xs),
+                        Text(
+                          '${repo.stars_count ?? 0}',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                          ),
+                        ),
                       ],
                     ),
-                  ),
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (repo.language != null) ...[
-                        Text(
-                          repo.language!,
-                          style: Theme.of(context).textTheme.bodySmall,
-                        ),
-                        const SizedBox(width: UIConstants.sm),
-                      ],
-                      Icon(
-                        Icons.star_outline,
-                        size: UIConstants.iconSm,
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
-                      ),
-                      const SizedBox(width: UIConstants.xs),
-                      Text(
-                        '${repo.stars_count ?? 0}',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                    ],
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
           }).toList(),
@@ -347,43 +384,48 @@ class _ActivityFeedState extends State<_ActivityFeed> {
         }
 
         return Column(
-          children: activities.take(10).map((activity) {
-            return PremiumListCard(
-              onTap: () => _navigateToActivity(activity, context),
-              child: Row(
-                children: [
-                  activity.act_user != null
-                      ? UserAvatar(user: activity.act_user!, radius: UIConstants.avatarMd)
-                      : Container(
-                          padding: const EdgeInsets.all(UIConstants.xs),
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
-                            shape: BoxShape.circle,
-                          ),
-                          child: Icon(_activityIcon(activity.op_type), size: UIConstants.iconMd),
-                        ),
-                  const SizedBox(width: UIConstants.md),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          _activityDescription(activity, l10n),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.bodyMedium,
-                        ),
-                        if (activity.created != null)
-                          Text(
-                            _formatDate(activity.created!),
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
+          children: activities.take(10).toList().asMap().entries.map((entry) {
+            final index = entry.key;
+            final activity = entry.value;
+            return FadeInWrapper(
+              delay: Duration(milliseconds: index * 30),
+              child: PremiumListCard(
+                onTap: () => _navigateToActivity(activity, context),
+                child: Row(
+                  children: [
+                    activity.act_user != null
+                        ? UserAvatar(user: activity.act_user!, radius: UIConstants.avatarMd)
+                        : Container(
+                            padding: const EdgeInsets.all(UIConstants.xs),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
+                              shape: BoxShape.circle,
                             ),
+                            child: Icon(_activityIcon(activity.op_type), size: UIConstants.iconMd),
                           ),
-                      ],
+                    const SizedBox(width: UIConstants.md),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _activityDescription(activity, l10n),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                          if (activity.created != null)
+                            Text(
+                              _formatDate(activity.created!),
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
           }).toList(),

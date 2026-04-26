@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../../core/animations/animated_wrapper.dart';
+import '../../core/animations/app_animations.dart';
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../core/errors/failures.dart';
@@ -137,7 +139,10 @@ class _RepoDetailPageState extends State<RepoDetailPage>
             forceElevated: innerBoxIsScrolled,
           ),
           SliverToBoxAdapter(
-            child: _RepoHeader(repo: repo, l10n: l10n),
+            child: FadeInWrapper(
+              duration: AppAnimations.slow,
+              child: _RepoHeader(repo: repo, l10n: l10n),
+            ),
           ),
           SliverPersistentHeader(
             delegate: _SliverTabBarDelegate(
@@ -282,7 +287,7 @@ class _RepoHeader extends StatelessWidget {
                             child: Text(
                               repo.full_name ?? repo.name ?? '',
                               style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.bold,
+                                fontWeight: FontWeight.w600,
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -424,7 +429,7 @@ class _StatCard extends StatelessWidget {
           const SizedBox(height: UIConstants.xs),
           Text(
             value,
-            style: theme.textTheme.labelMedium?.copyWith(fontWeight: FontWeight.bold),
+            style: theme.textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600),
           ),
           Text(
             label,
@@ -457,7 +462,7 @@ class _LanguageBadge extends StatelessWidget {
             color: _languageColors[language] ?? const Color(0xFF8B949E),
           ),
         ),
-        const SizedBox(width: 4),
+        const SizedBox(width: UIConstants.xs),
         Text(language, style: theme.textTheme.labelSmall),
       ],
     );
@@ -481,7 +486,7 @@ class _Badge extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: UIConstants.sm, vertical: 2),
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
@@ -491,7 +496,7 @@ class _Badge extends StatelessWidget {
         children: [
           if (icon != null) ...[
             Icon(icon, size: 12, color: color),
-            const SizedBox(width: 4),
+            const SizedBox(width: UIConstants.xs),
           ],
           Text(
             label,
@@ -552,13 +557,15 @@ class _UrlRow extends StatelessWidget {
             width: 48,
             child: Text(label, style: theme.textTheme.labelSmall),
           ),
-          Expanded(
-            child: Text(
-              url,
-              style: theme.textTheme.bodySmall,
-              overflow: TextOverflow.ellipsis,
+            Expanded(
+              child: Text(
+                url,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-          ),
           IconButton(
             icon: const Icon(Icons.copy, size: UIConstants.iconSm),
             visualDensity: VisualDensity.compact,
@@ -668,13 +675,15 @@ class _CodeTabState extends State<_CodeTab> {
                   onPressed: _navigateUp,
                   visualDensity: VisualDensity.compact,
                 ),
-                Expanded(
-                  child: Text(
-                    _breadcrumbText,
-                    style: theme.textTheme.bodySmall,
-                    overflow: TextOverflow.ellipsis,
+                  Expanded(
+                    child: Text(
+                      _breadcrumbText,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                ),
               ],
             ),
           ),
@@ -733,15 +742,18 @@ class _CodeTabState extends State<_CodeTab> {
       itemCount: sorted.length,
       itemBuilder: (context, index) {
         final item = sorted[index];
-        return _FileItem(
-          item: item,
-          onTap: () {
-            if (item.type == 'dir') {
-              _navigateTo(item.path ?? item.name ?? '');
-            } else {
-              _openFile(item);
-            }
-          },
+        return FadeInWrapper(
+          delay: Duration(milliseconds: index * 20),
+          child: _FileItem(
+            item: item,
+            onTap: () {
+              if (item.type == 'dir') {
+                _navigateTo(item.path ?? item.name ?? '');
+              } else {
+                _openFile(item);
+              }
+            },
+          ),
         );
       },
     );
@@ -784,7 +796,7 @@ class _FileItem extends StatelessWidget {
                 _formatSize(item.size!),
                 style: theme.textTheme.labelSmall?.copyWith(
                   fontFamily: 'monospace',
-                  color: theme.colorScheme.onSurfaceVariant,
+                  color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                 ),
               )
             : null,
@@ -852,11 +864,14 @@ class _IssuesTabState extends State<_IssuesTab> {
                   itemCount: issues.length,
                   itemBuilder: (context, index) {
                     final issue = issues[index];
-                    return _IssueItem(
-                      issue: issue,
-                      owner: widget.owner,
-                      repo: widget.repo,
-                      l10n: widget.l10n,
+                    return FadeInWrapper(
+                      delay: Duration(milliseconds: index * 20),
+                      child: _IssueItem(
+                        issue: issue,
+                        owner: widget.owner,
+                        repo: widget.repo,
+                        l10n: widget.l10n,
+                      ),
                     );
                   },
                 ),
@@ -905,7 +920,7 @@ class _IssueItem extends StatelessWidget {
                       child: Text(
                         issue.title ?? l10n.untitled,
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w600,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -915,7 +930,7 @@ class _IssueItem extends StatelessWidget {
                     Text(
                       '#${issue.number ?? 0}',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                       ),
                     ),
                   ],
@@ -991,11 +1006,14 @@ class _PullRequestsTabState extends State<_PullRequestsTab> {
                   itemCount: pullRequests.length,
                   itemBuilder: (context, index) {
                     final pr = pullRequests[index];
-                    return _PRItem(
-                      pr: pr,
-                      owner: widget.owner,
-                      repo: widget.repo,
-                      l10n: widget.l10n,
+                    return FadeInWrapper(
+                      delay: Duration(milliseconds: index * 20),
+                      child: _PRItem(
+                        pr: pr,
+                        owner: widget.owner,
+                        repo: widget.repo,
+                        l10n: widget.l10n,
+                      ),
                     );
                   },
                 ),
@@ -1053,7 +1071,7 @@ class _PRItem extends StatelessWidget {
                       child: Text(
                         pr.title ?? l10n.untitled,
                         style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w600,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -1063,7 +1081,7 @@ class _PRItem extends StatelessWidget {
                     Text(
                       '#${pr.number ?? 0}',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                       ),
                     ),
                   ],
@@ -1139,7 +1157,10 @@ class _ReleasesTabState extends State<_ReleasesTab> {
                   itemCount: releases.length,
                   itemBuilder: (context, index) {
                     final release = releases[index];
-                    return _ReleaseItem(release: release, l10n: widget.l10n);
+                    return FadeInWrapper(
+                      delay: Duration(milliseconds: index * 20),
+                      child: _ReleaseItem(release: release, l10n: widget.l10n),
+                    );
                   },
                 ),
           _ => EmptyState(icon: Icons.new_releases_outlined, title: widget.l10n.noReleases),
@@ -1192,7 +1213,7 @@ class _ReleaseItem extends StatelessWidget {
                       child: Text(
                         release.tag_name ?? '',
                         style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
@@ -1217,7 +1238,7 @@ class _ReleaseItem extends StatelessWidget {
                   Text(
                     release.author!.login ?? release.author!.full_name ?? '',
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
+                      color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                     ),
                   ),
                 ],
@@ -1228,7 +1249,7 @@ class _ReleaseItem extends StatelessWidget {
             Text(
               _formatDate(release.published_at!),
               style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
+                color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
               ),
             ),
         ],
@@ -1321,11 +1342,14 @@ class _CommitsTabState extends State<_CommitsTab> {
                   itemCount: commits.length,
                   itemBuilder: (context, index) {
                     final commit = commits[index];
-                    return _CommitItem(
-                      commit: commit,
-                      owner: widget.owner,
-                      repo: widget.repo,
-                      l10n: widget.l10n,
+                    return FadeInWrapper(
+                      delay: Duration(milliseconds: index * 20),
+                      child: _CommitItem(
+                        commit: commit,
+                        owner: widget.owner,
+                        repo: widget.repo,
+                        l10n: widget.l10n,
+                      ),
                     );
                   },
                 ),
@@ -1385,9 +1409,9 @@ class _CommitItem extends StatelessWidget {
               children: [
                 Text(
                   commit.commit?.message ?? '',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -1397,14 +1421,16 @@ class _CommitItem extends StatelessWidget {
                     if (commit.author?.login != null)
                       Text(
                         commit.author!.login!,
-                        style: theme.textTheme.bodySmall,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
                       ),
                     if (commit.created != null) ...[
                       const SizedBox(width: UIConstants.sm),
                       Text(
                         _formatDate(commit.created!),
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
+                          color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                         ),
                       ),
                     ],
@@ -1415,7 +1441,7 @@ class _CommitItem extends StatelessWidget {
           ),
           if (commit.sha != null)
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+              padding: const EdgeInsets.symmetric(horizontal: UIConstants.sm, vertical: UIConstants.xs),
               decoration: BoxDecoration(
                 color: theme.colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
@@ -1495,47 +1521,50 @@ class _BranchesTabState extends State<_BranchesTab> {
                   itemBuilder: (context, index) {
                     final branch = branches[index];
                     final isDefault = branch.name == widget.defaultBranch;
-                    return PremiumListCard(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => BranchDetailPage(branch: branch),
-                          ),
-                        );
-                      },
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.call_split,
-                            size: UIConstants.iconMd,
-                            color: isDefault
-                                ? Theme.of(context).colorScheme.primary
-                                : Theme.of(context).colorScheme.onSurfaceVariant,
-                          ),
-                          const SizedBox(width: UIConstants.md),
-                          Expanded(
-                            child: Text(
-                              branch.name ?? '',
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                fontWeight: isDefault ? FontWeight.w500 : null,
-                              ),
+                    return FadeInWrapper(
+                      delay: Duration(milliseconds: index * 20),
+                      child: PremiumListCard(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => BranchDetailPage(branch: branch),
                             ),
-                          ),
-                          if (isDefault)
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.primaryContainer,
-                                borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
-                              ),
+                          );
+                        },
+                        child: Row(
+                          children: [
+                            Icon(
+                              Icons.call_split,
+                              size: UIConstants.iconMd,
+                              color: isDefault
+                                  ? Theme.of(context).colorScheme.primary
+                                  : Theme.of(context).colorScheme.onSurfaceVariant,
+                            ),
+                            const SizedBox(width: UIConstants.md),
+                            Expanded(
                               child: Text(
-                                l10n.defaultBranch,
-                                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                  color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                branch.name ?? '',
+                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                  fontWeight: isDefault ? FontWeight.w600 : null,
                                 ),
                               ),
                             ),
-                        ],
+                            if (isDefault)
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: UIConstants.sm, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.primaryContainer,
+                                  borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
+                                ),
+                                child: Text(
+                                  l10n.defaultBranch,
+                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
                     );
                   },
@@ -1602,19 +1631,21 @@ class _MilestonesTabState extends State<_MilestonesTab> {
                     final milestone = milestones[index];
                     final total = (milestone.open_issues ?? 0) + (milestone.closed_issues ?? 0);
                     final progress = total > 0 ? (milestone.closed_issues ?? 0) / total : 0.0;
-                    return PremiumListCard(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => MilestoneDetailPage(
-                              owner: widget.owner,
-                              repo: widget.repo,
-                              milestone: milestone,
+                    return FadeInWrapper(
+                      delay: Duration(milliseconds: index * 20),
+                      child: PremiumListCard(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => MilestoneDetailPage(
+                                owner: widget.owner,
+                                repo: widget.repo,
+                                milestone: milestone,
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                      child: Column(
+                          );
+                        },
+                        child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
@@ -1622,16 +1653,16 @@ class _MilestonesTabState extends State<_MilestonesTab> {
                               Expanded(
                                 child: Text(
                                   milestone.title ?? '',
-                                  style: theme.textTheme.titleSmall?.copyWith(
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                                    style: theme.textTheme.titleSmall?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                    ),
                                 ),
                               ),
                               if (milestone.due_on != null)
                                 Text(
                                   _formatDate(milestone.due_on!),
                                   style: theme.textTheme.labelSmall?.copyWith(
-                                    color: theme.colorScheme.onSurfaceVariant,
+                                    color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                                   ),
                                 ),
                             ],
@@ -1654,21 +1685,22 @@ class _MilestonesTabState extends State<_MilestonesTab> {
                               Text(
                                 '${(progress * 100).toStringAsFixed(0)}%',
                                 style: theme.textTheme.labelSmall?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
+                                  color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                                 ),
                               ),
                               const Spacer(),
                               Text(
-                                '${milestone.open_issues ?? 0} ${widget.l10n.open} · ${milestone.closed_issues ?? 0} ${widget.l10n.closed}',
+                                '${milestone.open_issues ?? 0} ${widget.l10n.open} \u00b7 ${milestone.closed_issues ?? 0} ${widget.l10n.closed}',
                                 style: theme.textTheme.labelSmall?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
+                                  color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                                 ),
                               ),
                             ],
                           ),
                         ],
                       ),
-                    );
+                    ),
+                  );
                   },
                 ),
           _ => EmptyState(icon: Icons.flag, title: widget.l10n.noMilestones),
@@ -1737,69 +1769,72 @@ class _TagsTabState extends State<_TagsTab> {
                   itemCount: tags.length,
                   itemBuilder: (context, index) {
                     final tag = tags[index];
-                    return PremiumListCard(
-                      onTap: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => TagDetailPage(tag: tag),
-                          ),
-                        );
-                      },
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(UIConstants.sm),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.5),
-                              shape: BoxShape.circle,
+                    return FadeInWrapper(
+                      delay: Duration(milliseconds: index * 20),
+                      child: PremiumListCard(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => TagDetailPage(tag: tag),
                             ),
-                            child: Icon(
-                              Icons.label,
-                              size: UIConstants.iconMd,
-                              color: Theme.of(context).colorScheme.primary,
+                          );
+                        },
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(UIConstants.sm),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.5),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.label,
+                                size: UIConstants.iconMd,
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: UIConstants.md),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  tag.name ?? '',
-                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                if (tag.commit?.sha != null) ...[
-                                  const SizedBox(height: UIConstants.xs),
+                            const SizedBox(width: UIConstants.md),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
                                   Text(
-                                    tag.commit!.sha!.substring(0, 7),
-                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      fontFamily: 'monospace',
-                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                                    tag.name ?? '',
+                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
+                                  if (tag.commit?.sha != null) ...[
+                                    const SizedBox(height: UIConstants.xs),
+                                    Text(
+                                      tag.commit!.sha!.substring(0, 7),
+                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                        fontFamily: 'monospace',
+                                        color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                                      ),
+                                    ),
+                                  ],
                                 ],
-                              ],
+                              ),
                             ),
-                          ),
-                          if (tag.tarball_url != null || tag.zipball_url != null)
-                            PopupMenuButton<String>(
-                              icon: const Icon(Icons.more_vert, size: UIConstants.iconMd),
-                              itemBuilder: (context) => [
-                                if (tag.tarball_url != null)
-                                  PopupMenuItem(
-                                    value: 'tarball',
-                                    child: Text(widget.l10n.downloadTarball),
-                                  ),
-                                if (tag.zipball_url != null)
-                                  PopupMenuItem(
-                                    value: 'zipball',
-                                    child: Text(widget.l10n.downloadZipball),
-                                  ),
-                              ],
-                            ),
-                        ],
+                            if (tag.tarball_url != null || tag.zipball_url != null)
+                              PopupMenuButton<String>(
+                                icon: const Icon(Icons.more_vert, size: UIConstants.iconMd),
+                                itemBuilder: (context) => [
+                                  if (tag.tarball_url != null)
+                                    PopupMenuItem(
+                                      value: 'tarball',
+                                      child: Text(widget.l10n.downloadTarball),
+                                    ),
+                                  if (tag.zipball_url != null)
+                                    PopupMenuItem(
+                                      value: 'zipball',
+                                      child: Text(widget.l10n.downloadZipball),
+                                    ),
+                                ],
+                              ),
+                          ],
+                        ),
                       ),
                     );
                   },

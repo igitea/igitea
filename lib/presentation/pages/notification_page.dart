@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/animations/animated_wrapper.dart';
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
@@ -100,7 +101,10 @@ class _NotificationList extends StatelessWidget {
         itemCount: notifications.length,
         itemBuilder: (context, index) {
           final notification = notifications[index];
-          return _NotificationCard(notification: notification, l10n: l10n);
+          return FadeInWrapper(
+            delay: Duration(milliseconds: index * 30),
+            child: _NotificationCard(notification: notification, l10n: l10n),
+          );
         },
       ),
     );

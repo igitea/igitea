@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/animations/animated_wrapper.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
@@ -318,10 +319,13 @@ class _MembersTabState extends State<_MembersTab>
               itemCount: members.length,
               itemBuilder: (context, index) {
                 final member = members[index];
-                return ListTile(
-                  leading: UserAvatar(user: member, radius: 16),
-                  title: Text(member.login ?? member.full_name ?? ''),
-                  subtitle: member.full_name != null ? Text(member.full_name!) : null,
+                return FadeInWrapper(
+                  delay: Duration(milliseconds: index * 30),
+                  child: ListTile(
+                    leading: UserAvatar(user: member, radius: 16),
+                    title: Text(member.login ?? member.full_name ?? ''),
+                    subtitle: member.full_name != null ? Text(member.full_name!) : null,
+                  ),
                 );
               },
             ),
@@ -386,27 +390,30 @@ class _ReposTabState extends State<_ReposTab>
               itemCount: repos.length,
               itemBuilder: (context, index) {
                 final repo = repos[index];
-                return ListTile(
-                  leading: const Icon(Icons.folder_outlined),
-                  title: Text(repo.name ?? ''),
-                  subtitle: repo.description != null
-                      ? Text(
-                          repo.description!,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        )
-                      : null,
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => RepoDetailPage(
-                          owner: repo.owner?.login ?? '',
-                          repo: repo.name ?? '',
+                return FadeInWrapper(
+                  delay: Duration(milliseconds: index * 30),
+                  child: ListTile(
+                    leading: const Icon(Icons.folder_outlined),
+                    title: Text(repo.name ?? ''),
+                    subtitle: repo.description != null
+                        ? Text(
+                            repo.description!,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          )
+                        : null,
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => RepoDetailPage(
+                            owner: repo.owner?.login ?? '',
+                            repo: repo.name ?? '',
+                          ),
                         ),
-                      ),
-                    );
-                  },
+                      );
+                    },
+                  ),
                 );
               },
             ),

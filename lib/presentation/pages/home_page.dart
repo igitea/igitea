@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/animations/app_animations.dart';
 import '../../core/di/injection.dart';
 import '../../domain/entities/auth_state.dart';
 import '../../l10n/app_localizations.dart';
@@ -26,10 +27,10 @@ class _HomePageState extends State<HomePage> {
   ];
 
   static final _pages = <Widget>[
-    const DashboardPage(),
-    const SearchPage(),
-    const NotificationPage(),
-    const ProfilePage(),
+    const DashboardPage(key: ValueKey('dashboard')),
+    const SearchPage(key: ValueKey('search')),
+    const NotificationPage(key: ValueKey('notifications')),
+    const ProfilePage(key: ValueKey('profile')),
   ];
 
   @override

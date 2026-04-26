@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../core/animations/animated_wrapper.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../widgets/user_avatar.dart';
@@ -121,7 +122,10 @@ class ReleaseDetailPage extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 8),
-          ...release.assets!.map((asset) => _buildAssetTile(context, asset, l10n)),
+          ...release.assets!.asMap().entries.map((entry) => FadeInWrapper(
+            delay: Duration(milliseconds: entry.key * 30),
+            child: _buildAssetTile(context, entry.value, l10n),
+          )),
         ],
         if (release.tarball_url != null || release.zipball_url != null) ...[
           const SizedBox(height: 24),

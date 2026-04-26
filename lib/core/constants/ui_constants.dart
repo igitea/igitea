@@ -30,4 +30,10 @@ class UIConstants {
   static const EdgeInsets cardMargin = EdgeInsets.only(bottom: 12);
   static const EdgeInsets sectionSpacing = EdgeInsets.symmetric(vertical: md);
   static const EdgeInsets elementSpacing = EdgeInsets.symmetric(vertical: sm);
+
+  // 新增间距常量
+  static const double cardSpacing = 16;
+  static const double cardContentPadding = 20;
+  static const double iconTextSpacing = 12;
+  static const double sectionTitleSpacing = 24;
 }

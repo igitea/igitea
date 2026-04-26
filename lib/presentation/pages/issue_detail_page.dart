@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../../core/animations/animated_wrapper.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
@@ -384,9 +385,12 @@ class _IssueContent extends StatelessWidget {
           style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
-        ...comments.map((comment) => _CommentItem(
-          comment: comment,
-          isCurrentUser: currentUserId != null && comment.user?.id == currentUserId,
+        ...comments.asMap().entries.map((entry) => FadeInWrapper(
+          delay: Duration(milliseconds: entry.key * 30),
+          child: _CommentItem(
+            comment: entry.value,
+            isCurrentUser: currentUserId != null && entry.value.user?.id == currentUserId,
+          ),
         )),
       ],
     );

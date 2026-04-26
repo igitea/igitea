@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../core/animations/animated_wrapper.dart';
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
@@ -124,7 +125,10 @@ class _RepoSearchResults extends StatelessWidget {
       itemCount: repos.length,
       itemBuilder: (context, index) {
         final repo = repos[index];
-        return _SearchRepoCard(repo: repo);
+        return FadeInWrapper(
+          delay: Duration(milliseconds: index * 30),
+          child: _SearchRepoCard(repo: repo),
+        );
       },
     );
   }
@@ -273,7 +277,10 @@ class _IssueSearchResults extends StatelessWidget {
       itemCount: issues.length,
       itemBuilder: (context, index) {
         final issue = issues[index];
-        return _SearchIssueCard(issue: issue);
+        return FadeInWrapper(
+          delay: Duration(milliseconds: index * 30),
+          child: _SearchIssueCard(issue: issue),
+        );
       },
     );
   }
