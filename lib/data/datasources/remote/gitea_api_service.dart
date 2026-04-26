@@ -1408,6 +1408,19 @@ class GiteaApiService {
     await _client.post('/activitypub/user-id/${user_id.toString()}/inbox');
   }
 
+  // Pull Request Diff
+
+  Future<List<dynamic>> repoGetPullRequestFiles({
+    required String owner,
+    required String repo,
+    required int index,
+  }) async {
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/pulls/${index.toString()}/files',
+    );
+    return jsonDecode(response.body) as List<dynamic>;
+  }
+
   // Wiki
 
   Future<List<WikiPageMetaData>> repoGetWikiPages({
