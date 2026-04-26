@@ -46,17 +46,17 @@ class _TeamDetailPageState extends State<TeamDetailPage>
       body: ListenableBuilder(
         listenable: Injection.organizationNotifier,
         builder: (context, _) {
-          final state = Injection.organizationNotifier.state;
-          return switch (state) {
-            OrgLoading() => const Center(child: CircularProgressIndicator()),
-            OrgError(:final message) => _ErrorView(
-                message: message,
-                onRetry: () =>
-                    Injection.organizationNotifier.getTeam(widget.teamId),
-              ),
-            OrgTeamDetailLoaded(:final team) => _buildContent(context, team, l10n),
-            _ => const Center(child: CircularProgressIndicator()),
-          };
+        final state = Injection.organizationNotifier.teamDetailState;
+        return switch (state) {
+          OrgLoading() => const Center(child: CircularProgressIndicator()),
+          OrgError(:final message) => _ErrorView(
+              message: message,
+              onRetry: () =>
+                  Injection.organizationNotifier.getTeam(widget.teamId),
+            ),
+          OrgTeamDetailLoaded(:final team) => _buildContent(context, team, l10n),
+          _ => const Center(child: CircularProgressIndicator()),
+        };
         },
       ),
     );
@@ -302,7 +302,7 @@ class _MembersTabState extends State<_MembersTab>
     return ListenableBuilder(
       listenable: Injection.organizationNotifier,
       builder: (context, _) {
-        final state = Injection.organizationNotifier.state;
+        final state = Injection.organizationNotifier.teamDetailState;
         if (state is OrgTeamMembersLoaded) {
           final members = state.members;
           if (members.isEmpty) {
@@ -373,7 +373,7 @@ class _ReposTabState extends State<_ReposTab>
     return ListenableBuilder(
       listenable: Injection.organizationNotifier,
       builder: (context, _) {
-        final state = Injection.organizationNotifier.state;
+        final state = Injection.organizationNotifier.teamDetailState;
         if (state is OrgTeamReposLoaded) {
           final repos = state.repos;
           if (repos.isEmpty) {

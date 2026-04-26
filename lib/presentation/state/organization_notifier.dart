@@ -68,8 +68,19 @@ class OrgNotifier extends ChangeNotifier {
   EditOrgUseCase _editOrgUseCase;
   CreateOrgUseCase _createOrgUseCase;
 
+  // Main state for org operations (getOrg, editOrg, createOrg, listOrgs)
   OrgState _state = const OrgInitial();
   OrgState get state => _state;
+
+  // Separate state tracks for tabs to avoid parent rebuilds
+  OrgState _reposState = const OrgInitial();
+  OrgState get reposState => _reposState;
+
+  OrgState _teamsState = const OrgInitial();
+  OrgState get teamsState => _teamsState;
+
+  OrgState _teamDetailState = const OrgInitial();
+  OrgState get teamDetailState => _teamDetailState;
 
   OrgNotifier({
     required GetOrgUseCase getOrgUseCase,
@@ -147,7 +158,7 @@ class OrgNotifier extends ChangeNotifier {
   }
 
   Future<void> listOrgRepos(String org, {int? page, int? limit}) async {
-    _state = const OrgLoading();
+    _reposState = const OrgLoading();
     notifyListeners();
 
     final result = await _listOrgReposUseCase.call(
@@ -155,16 +166,16 @@ class OrgNotifier extends ChangeNotifier {
     );
     switch (result) {
       case Left<Failure, List<Repository>>(:final value):
-        _state = OrgError(value.message);
+        _reposState = OrgError(value.message);
         notifyListeners();
       case Right<Failure, List<Repository>>(:final value):
-        _state = OrgReposLoaded(value);
+        _reposState = OrgReposLoaded(value);
         notifyListeners();
     }
   }
 
   Future<void> listOrgTeams(String org, {int? page, int? limit}) async {
-    _state = const OrgLoading();
+    _teamsState = const OrgLoading();
     notifyListeners();
 
     final result = await _listOrgTeamsUseCase.call(
@@ -172,31 +183,31 @@ class OrgNotifier extends ChangeNotifier {
     );
     switch (result) {
       case Left<Failure, List<Team>>(:final value):
-        _state = OrgError(value.message);
+        _teamsState = OrgError(value.message);
         notifyListeners();
       case Right<Failure, List<Team>>(:final value):
-        _state = OrgTeamsLoaded(value);
+        _teamsState = OrgTeamsLoaded(value);
         notifyListeners();
     }
   }
 
   Future<void> getTeam(int id) async {
-    _state = const OrgLoading();
+    _teamDetailState = const OrgLoading();
     notifyListeners();
 
     final result = await _getTeamUseCase.call(id);
     switch (result) {
       case Left<Failure, Team>(:final value):
-        _state = OrgError(value.message);
+        _teamDetailState = OrgError(value.message);
         notifyListeners();
       case Right<Failure, Team>(:final value):
-        _state = OrgTeamDetailLoaded(value);
+        _teamDetailState = OrgTeamDetailLoaded(value);
         notifyListeners();
     }
   }
 
   Future<void> listTeamMembers(int id, {int? page, int? limit}) async {
-    _state = const OrgLoading();
+    _teamDetailState = const OrgLoading();
     notifyListeners();
 
     final result = await _listTeamMembersUseCase.call(
@@ -204,16 +215,16 @@ class OrgNotifier extends ChangeNotifier {
     );
     switch (result) {
       case Left<Failure, List<User>>(:final value):
-        _state = OrgError(value.message);
+        _teamDetailState = OrgError(value.message);
         notifyListeners();
       case Right<Failure, List<User>>(:final value):
-        _state = OrgTeamMembersLoaded(value);
+        _teamDetailState = OrgTeamMembersLoaded(value);
         notifyListeners();
     }
   }
 
   Future<void> listTeamRepos(int id, {int? page, int? limit}) async {
-    _state = const OrgLoading();
+    _teamDetailState = const OrgLoading();
     notifyListeners();
 
     final result = await _listTeamReposUseCase.call(
@@ -221,10 +232,10 @@ class OrgNotifier extends ChangeNotifier {
     );
     switch (result) {
       case Left<Failure, List<Repository>>(:final value):
-        _state = OrgError(value.message);
+        _teamDetailState = OrgError(value.message);
         notifyListeners();
       case Right<Failure, List<Repository>>(:final value):
-        _state = OrgTeamReposLoaded(value);
+        _teamDetailState = OrgTeamReposLoaded(value);
         notifyListeners();
     }
   }
