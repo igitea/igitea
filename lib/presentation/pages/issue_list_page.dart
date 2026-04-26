@@ -19,6 +19,8 @@ class IssueListPage extends StatefulWidget {
 
 class _IssueListPageState extends State<IssueListPage> {
   String? _selectedState;
+  String _searchQuery = '';
+  final _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -26,6 +28,12 @@ class _IssueListPageState extends State<IssueListPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadIssues();
     });
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   void _loadIssues() {
@@ -38,7 +46,15 @@ class _IssueListPageState extends State<IssueListPage> {
 
   void _forceReload() {
     final state = _selectedState ?? 'open';
-    Injection.issueNotifier.searchIssues('', state: state);
+    Injection.issueNotifier.searchIssues(
+      _searchQuery,
+      state: state,
+    );
+  }
+
+  void _onSearch(String query) {
+    setState(() => _searchQuery = query);
+    _forceReload();
   }
 
   @override
@@ -48,6 +64,30 @@ class _IssueListPageState extends State<IssueListPage> {
       appBar: AppBar(title: Text(l10n.issues)),
       body: Column(
         children: [
+          FadeInWrapper(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: UIConstants.md, vertical: UIConstants.sm),
+              child: SearchBar(
+                controller: _searchController,
+                hintText: l10n.searchIssues,
+                leading: const Icon(Icons.search),
+                trailing: [
+                  if (_searchQuery.isNotEmpty)
+                    IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: () {
+                        _searchController.clear();
+                        _onSearch('');
+                      },
+                    ),
+                ],
+                onChanged: _onSearch,
+                padding: const WidgetStatePropertyAll(
+                  EdgeInsets.symmetric(horizontal: UIConstants.md),
+                ),
+              ),
+            ),
+          ),
           FadeInWrapper(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: UIConstants.md, vertical: UIConstants.sm),

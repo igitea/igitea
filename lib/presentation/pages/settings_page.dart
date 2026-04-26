@@ -7,6 +7,7 @@ import '../../data/models/generated/generated_models.dart';
 import '../../domain/entities/auth_state.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/theme_notifier.dart';
+import 'ssh_keys_page.dart';
 import 'user_management_page.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -122,6 +123,19 @@ class _SettingsPageState extends State<SettingsPage> {
                       leading: const Icon(Icons.person_outline),
                       title: Text(l10n.account),
                       subtitle: Text('${state.user.login ?? ''}@${state.baseUrl}'),
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.key_outlined),
+                      title: const Text('SSH Keys'),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const SshKeysPage(),
+                          ),
+                        );
+                      },
                     ),
                     ListTile(
                       leading: const Icon(Icons.logout),

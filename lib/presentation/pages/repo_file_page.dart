@@ -2,6 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_highlight/flutter_highlight.dart';
+import 'package:flutter_highlight/themes/github.dart';
+import 'package:flutter_highlight/themes/vs2015.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -419,29 +422,77 @@ class _RepoFilePageState extends State<RepoFilePage> {
 
   Widget _buildSelectableCode(ThemeData theme) {
     final lang = _languageForHighlight(_fileExtension);
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return SingleChildScrollView(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minWidth: constraints.maxWidth,
-                minHeight: constraints.maxHeight,
-              ),
-              child: SelectableText(
-                _decodedContent!,
-                style: TextStyle(
-                  fontSize: 13,
-                  height: 1.4,
-                  fontFamily: 'monospace',
-                  color: theme.colorScheme.onSurface,
+    final isDark = theme.brightness == Brightness.dark;
+    final codeTheme = isDark ? vs2015Theme : githubTheme;
+    final lines = _decodedContent!.split('\n');
+    final lineCount = lines.length;
+    final lineNumberWidth = (lineCount.toString().length * 10.0) + 16;
+
+    return Container(
+      color: isDark ? const Color(0xFF1E1E1E) : const Color(0xFFF5F5F5),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  minWidth: constraints.maxWidth,
+                  minHeight: constraints.maxHeight,
+                ),
+                child: IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Line numbers
+                      Container(
+                        width: lineNumberWidth,
+                        color: isDark
+                            ? const Color(0xFF252526)
+                            : const Color(0xFFEEEEEE),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: List.generate(
+                            lineCount,
+                            (index) => Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
+                              child: Text(
+                                '${index + 1}',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  height: 1.4,
+                                  fontFamily: 'monospace',
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      // Code with syntax highlighting
+                      Expanded(
+                        child: HighlightView(
+                          _decodedContent!,
+                          language: lang,
+                          theme: codeTheme,
+                          padding: const EdgeInsets.all(12),
+                          textStyle: const TextStyle(
+                            fontSize: 13,
+                            height: 1.4,
+                            fontFamily: 'monospace',
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 
