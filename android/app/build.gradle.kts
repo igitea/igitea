@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.igitea"
+    namespace = "com.charleypeng.igitea"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
