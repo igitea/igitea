@@ -428,6 +428,10 @@ class _RepoFilePageState extends State<RepoFilePage> {
     final lineCount = lines.length;
     final lineNumberWidth = (lineCount.toString().length * 10.0) + 16;
 
+    // Disable syntax highlighting for large files to prevent performance issues on web
+    const maxLinesForHighlighting = 500;
+    final useHighlighting = lineCount <= maxLinesForHighlighting;
+
     return Container(
       color: isDark ? const Color(0xFF1E1E1E) : const Color(0xFFF5F5F5),
       child: LayoutBuilder(
@@ -471,19 +475,34 @@ class _RepoFilePageState extends State<RepoFilePage> {
                           ),
                         ),
                       ),
-                      // Code with syntax highlighting
+                      // Code with syntax highlighting or plain text fallback
                       Expanded(
-                        child: HighlightView(
-                          _decodedContent!,
-                          language: lang,
-                          theme: codeTheme,
-                          padding: const EdgeInsets.all(12),
-                          textStyle: const TextStyle(
-                            fontSize: 13,
-                            height: 1.4,
-                            fontFamily: 'monospace',
-                          ),
-                        ),
+                        child: useHighlighting
+                            ? HighlightView(
+                                _decodedContent!,
+                                language: lang,
+                                theme: codeTheme,
+                                padding: const EdgeInsets.all(12),
+                                textStyle: const TextStyle(
+                                  fontSize: 13,
+                                  height: 1.4,
+                                  fontFamily: 'monospace',
+                                ),
+                              )
+                            : Padding(
+                                padding: const EdgeInsets.all(12),
+                                child: SelectableText(
+                                  _decodedContent!,
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    height: 1.4,
+                                    fontFamily: 'monospace',
+                                    color: isDark
+                                        ? const Color(0xFFD4D4D4)
+                                        : const Color(0xFF24292E),
+                                  ),
+                                ),
+                              ),
                       ),
                     ],
                   ),
