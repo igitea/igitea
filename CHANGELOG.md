@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- Web freeze when viewing large Go source files: add 500-line threshold for syntax highlighting, fall back to plain text for larger files (`repo_file_page.dart`)
+
 ## [0.22.0] - 2026-04-26
 
 ### Added — Milestones
