@@ -4,7 +4,7 @@
 
 ### 修复
 
-- Web 端查看大体积 Go 源文件时卡死：为语法高亮添加 500 行阈值，超过则降级为纯文本显示（`repo_file_page.dart`）
+- 修复文件查看器中 `RenderFlex` 溢出错误：在水平滚动视图中将 `Expanded` 替换为 `ConstrainedBox`（`repo_file_page.dart`）
 
 ## [0.22.0] - 2026-04-26
 

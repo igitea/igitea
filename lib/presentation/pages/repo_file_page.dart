@@ -2,10 +2,13 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_code_editor/flutter_code_editor.dart';
 import 'package:flutter_highlight/flutter_highlight.dart';
 import 'package:flutter_highlight/themes/github.dart';
 import 'package:flutter_highlight/themes/vs2015.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:highlight/highlight.dart';
+import 'package:highlight/languages/all.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/di/injection.dart';
@@ -47,12 +50,12 @@ class _RepoFilePageState extends State<RepoFilePage> {
   ContentsResponse? _rawResponse;
   bool _isEditing = false;
   bool _hasChanges = false;
-  late TextEditingController _editController;
+  late CodeController _editController;
 
   @override
   void initState() {
     super.initState();
-    _editController = TextEditingController();
+    _editController = CodeController();
     _editController.addListener(_onTextChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadFile();
@@ -231,6 +234,7 @@ class _RepoFilePageState extends State<RepoFilePage> {
       _isEditing = !_isEditing;
       if (_isEditing) {
         _editController.text = _decodedContent ?? '';
+        _editController.language = _getHighlightLanguage(_fileExtension);
         _hasChanges = false;
       }
     });
@@ -404,18 +408,20 @@ class _RepoFilePageState extends State<RepoFilePage> {
   }
 
   Widget _buildEditor(ThemeData theme) {
-    return TextField(
-      controller: _editController,
-      maxLines: null,
-      expands: true,
-      decoration: const InputDecoration(
-        contentPadding: EdgeInsets.all(12),
-        border: InputBorder.none,
-      ),
-      style: const TextStyle(
-        fontSize: 13,
-        height: 1.4,
-        fontFamily: 'monospace',
+    final isDark = theme.brightness == Brightness.dark;
+    final codeTheme = isDark ? vs2015Theme : githubTheme;
+
+    return CodeTheme(
+      data: CodeThemeData(styles: codeTheme),
+      child: CodeField(
+        controller: _editController,
+        expands: true,
+        gutterStyle: GutterStyle.none,
+        textStyle: const TextStyle(
+          fontSize: 13,
+          height: 1.4,
+          fontFamily: 'monospace',
+        ),
       ),
     );
   }
@@ -427,10 +433,6 @@ class _RepoFilePageState extends State<RepoFilePage> {
     final lines = _decodedContent!.split('\n');
     final lineCount = lines.length;
     final lineNumberWidth = (lineCount.toString().length * 10.0) + 16;
-
-    // Disable syntax highlighting for large files to prevent performance issues on web
-    const maxLinesForHighlighting = 500;
-    final useHighlighting = lineCount <= maxLinesForHighlighting;
 
     return Container(
       color: isDark ? const Color(0xFF1E1E1E) : const Color(0xFFF5F5F5),
@@ -475,34 +477,23 @@ class _RepoFilePageState extends State<RepoFilePage> {
                           ),
                         ),
                       ),
-                      // Code with syntax highlighting or plain text fallback
-                      Expanded(
-                        child: useHighlighting
-                            ? HighlightView(
-                                _decodedContent!,
-                                language: lang,
-                                theme: codeTheme,
-                                padding: const EdgeInsets.all(12),
-                                textStyle: const TextStyle(
-                                  fontSize: 13,
-                                  height: 1.4,
-                                  fontFamily: 'monospace',
-                                ),
-                              )
-                            : Padding(
-                                padding: const EdgeInsets.all(12),
-                                child: SelectableText(
-                                  _decodedContent!,
-                                  style: TextStyle(
-                                    fontSize: 13,
-                                    height: 1.4,
-                                    fontFamily: 'monospace',
-                                    color: isDark
-                                        ? const Color(0xFFD4D4D4)
-                                        : const Color(0xFF24292E),
-                                  ),
-                                ),
-                              ),
+                      // Code with syntax highlighting
+                      ConstrainedBox(
+                        constraints: BoxConstraints(
+                          minWidth: (constraints.maxWidth - lineNumberWidth)
+                              .clamp(0, double.infinity),
+                        ),
+                        child: HighlightView(
+                          _decodedContent!,
+                          language: lang,
+                          theme: codeTheme,
+                          padding: const EdgeInsets.all(12),
+                          textStyle: const TextStyle(
+                            fontSize: 13,
+                            height: 1.4,
+                            fontFamily: 'monospace',
+                          ),
+                        ),
                       ),
                     ],
                   ),
@@ -589,6 +580,12 @@ class _RepoFilePageState extends State<RepoFilePage> {
       'zig' => 'zig',
       _ => 'plaintext',
     };
+  }
+
+  Mode? _getHighlightLanguage(String ext) {
+    final langName = _languageForHighlight(ext);
+    if (langName == 'plaintext') return null;
+    return allLanguages[langName];
   }
 
   String _formatSize(int bytes) {
