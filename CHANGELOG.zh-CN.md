@@ -4,7 +4,11 @@
 
 ### 修复
 
-- 修复文件查看器中 `RenderFlex` 溢出错误：在水平滚动视图中将 `Expanded` 替换为 `ConstrainedBox`（`repo_file_page.dart`）
+- 修复文件查看器 `RangeError` 崩溃：为语法高亮添加 try-catch、修复嵌套 setState、移除不支持的 'zig' 语言（`repo_file_page.dart`）
+- 修复末尾换行符产生幽灵行号的问题
+- 修复 Dockerfile 和 Makefile 的文件扩展名检测
+- 退出编辑模式时重置编辑器文本（丢弃未保存的更改）
+- 修复文件查看器中 `RenderFlex` 溢出错误：在水平滚动视图中将 `Expanded` 替换为 `ConstrainedBox`
 
 ## [0.22.0] - 2026-04-26
 

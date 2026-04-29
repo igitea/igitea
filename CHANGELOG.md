@@ -4,7 +4,11 @@
 
 ### Fixed
 
-- Fix `RenderFlex` overflow in file viewer by replacing `Expanded` with `ConstrainedBox` in horizontal scrollable (`repo_file_page.dart`)
+- Fix `RangeError` crash in file viewer: wrap syntax highlighting in try-catch, fix nested setState, remove unsupported 'zig' language (`repo_file_page.dart`)
+- Fix trailing newline creating phantom line number
+- Fix file extension detection for Dockerfile and Makefile
+- Reset editor text when exiting edit mode to discard unsaved changes
+- Fix `RenderFlex` overflow in file viewer by replacing `Expanded` with `ConstrainedBox` in horizontal scrollable
 
 ## [0.22.0] - 2026-04-26
 
