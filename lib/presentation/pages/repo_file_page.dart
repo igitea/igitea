@@ -50,13 +50,11 @@ class _RepoFilePageState extends State<RepoFilePage> {
   ContentsResponse? _rawResponse;
   bool _isEditing = false;
   bool _hasChanges = false;
-  late CodeController _editController;
+  CodeController? _editController;
 
   @override
   void initState() {
     super.initState();
-    _editController = CodeController();
-    _editController.addListener(_onTextChanged);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadFile();
     });
@@ -64,14 +62,14 @@ class _RepoFilePageState extends State<RepoFilePage> {
 
   @override
   void dispose() {
-    _editController.removeListener(_onTextChanged);
-    _editController.dispose();
+    _editController?.removeListener(_onTextChanged);
+    _editController?.dispose();
     super.dispose();
   }
 
   void _onTextChanged() {
-    if (!_isEditing) return;
-    final hasChanges = _editController.text != _originalContent;
+    if (!_isEditing || _editController == null) return;
+    final hasChanges = _editController!.text != _originalContent;
     if (hasChanges != _hasChanges) {
       setState(() {
         _hasChanges = hasChanges;
@@ -109,7 +107,6 @@ class _RepoFilePageState extends State<RepoFilePage> {
               decoded = null;
             }
           }
-          _editController.text = decoded ?? '';
           setState(() {
             _rawResponse = item;
             _decodedContent = decoded;
@@ -237,10 +234,16 @@ class _RepoFilePageState extends State<RepoFilePage> {
   void _toggleEditMode() {
     final newEditing = !_isEditing;
     if (newEditing) {
-      _editController.text = _decodedContent ?? '';
-      _editController.language = _getHighlightLanguage(_fileExtension);
+      _editController?.dispose();
+      _editController = CodeController(
+        text: _decodedContent ?? '',
+        language: _getHighlightLanguage(_fileExtension),
+      );
+      _editController!.addListener(_onTextChanged);
     } else {
-      _editController.text = _decodedContent ?? '';
+      _editController?.removeListener(_onTextChanged);
+      _editController?.dispose();
+      _editController = null;
     }
     setState(() {
       _isEditing = newEditing;
@@ -250,9 +253,9 @@ class _RepoFilePageState extends State<RepoFilePage> {
 
   Future<void> _saveFile() async {
     final l10n = AppLocalizations.of(context)!;
-    if (!_hasChanges || _originalContent == null) return;
+    if (!_hasChanges || _originalContent == null || _editController == null) return;
 
-    final content = _editController.text;
+    final content = _editController!.text;
     final sha = _rawResponse?.sha;
 
     if (sha == null) {
@@ -419,11 +422,15 @@ class _RepoFilePageState extends State<RepoFilePage> {
     final isDark = theme.brightness == Brightness.dark;
     final codeTheme = isDark ? vs2015Theme : githubTheme;
 
+    if (_editController == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+
     try {
       return CodeTheme(
         data: CodeThemeData(styles: codeTheme),
         child: CodeField(
-          controller: _editController,
+          controller: _editController!,
           expands: true,
           gutterStyle: GutterStyle.none,
           textStyle: const TextStyle(
@@ -435,7 +442,7 @@ class _RepoFilePageState extends State<RepoFilePage> {
       );
     } catch (e) {
       return TextField(
-        controller: _editController,
+        controller: _editController!,
         maxLines: null,
         expands: true,
         decoration: const InputDecoration(
