@@ -79,6 +79,8 @@ class _RepoFilePageState extends State<RepoFilePage> {
     }
   }
 
+  static final _whitespaceRe = RegExp(r'\s');
+
   Future<void> _loadFile() async {
     final result = await Injection.getRepoContentsUseCase(
       GetRepoContentsParams(
@@ -101,7 +103,7 @@ class _RepoFilePageState extends State<RepoFilePage> {
           String? decoded;
           if (item.content != null) {
             try {
-              final cleaned = item.content!.replaceAll(RegExp(r'\s'), '');
+              final cleaned = item.content!.replaceAll(_whitespaceRe, '');
               decoded = utf8.decode(base64Decode(cleaned));
             } catch (_) {
               decoded = null;
@@ -148,6 +150,9 @@ class _RepoFilePageState extends State<RepoFilePage> {
   }
 
   String get _fileExtension {
+    final lower = widget.name.toLowerCase();
+    if (lower == 'dockerfile') return 'dockerfile';
+    if (lower == 'makefile') return 'makefile';
     if (!widget.name.contains('.')) return '';
     return widget.name.split('.').last;
   }
@@ -230,13 +235,16 @@ class _RepoFilePageState extends State<RepoFilePage> {
   }
 
   void _toggleEditMode() {
+    final newEditing = !_isEditing;
+    if (newEditing) {
+      _editController.text = _decodedContent ?? '';
+      _editController.language = _getHighlightLanguage(_fileExtension);
+    } else {
+      _editController.text = _decodedContent ?? '';
+    }
     setState(() {
-      _isEditing = !_isEditing;
-      if (_isEditing) {
-        _editController.text = _decodedContent ?? '';
-        _editController.language = _getHighlightLanguage(_fileExtension);
-        _hasChanges = false;
-      }
+      _isEditing = newEditing;
+      _hasChanges = false;
     });
   }
 
@@ -411,35 +419,84 @@ class _RepoFilePageState extends State<RepoFilePage> {
     final isDark = theme.brightness == Brightness.dark;
     final codeTheme = isDark ? vs2015Theme : githubTheme;
 
-    return CodeTheme(
-      data: CodeThemeData(styles: codeTheme),
-      child: CodeField(
+    try {
+      return CodeTheme(
+        data: CodeThemeData(styles: codeTheme),
+        child: CodeField(
+          controller: _editController,
+          expands: true,
+          gutterStyle: GutterStyle.none,
+          textStyle: const TextStyle(
+            fontSize: 13,
+            height: 1.4,
+            fontFamily: 'monospace',
+          ),
+        ),
+      );
+    } catch (e) {
+      return TextField(
         controller: _editController,
+        maxLines: null,
         expands: true,
-        gutterStyle: GutterStyle.none,
-        textStyle: const TextStyle(
+        decoration: const InputDecoration(
+          contentPadding: EdgeInsets.all(12),
+          border: InputBorder.none,
+        ),
+        style: TextStyle(
           fontSize: 13,
           height: 1.4,
           fontFamily: 'monospace',
+          color: isDark ? const Color(0xFFD4D4D4) : const Color(0xFF24292E),
         ),
-      ),
-    );
+      );
+    }
   }
 
   Widget _buildSelectableCode(ThemeData theme) {
     final lang = _languageForHighlight(_fileExtension);
     final isDark = theme.brightness == Brightness.dark;
     final codeTheme = isDark ? vs2015Theme : githubTheme;
-    final lines = _decodedContent!.split('\n');
+    final content = _decodedContent!.replaceAll(RegExp(r'\n$'), '');
+    final lines = content.split('\n');
     final lineCount = lines.length;
     final lineNumberWidth = (lineCount.toString().length * 10.0) + 16;
+
+    Widget codeWidget;
+    try {
+      codeWidget = HighlightView(
+        content,
+        language: lang,
+        theme: codeTheme,
+        padding: const EdgeInsets.all(12),
+        textStyle: const TextStyle(
+          fontSize: 13,
+          height: 1.4,
+          fontFamily: 'monospace',
+        ),
+      );
+    } catch (e) {
+      codeWidget = Padding(
+        padding: const EdgeInsets.all(12),
+        child: SelectableText(
+          content,
+          style: TextStyle(
+            fontSize: 13,
+            height: 1.4,
+            fontFamily: 'monospace',
+            color: isDark ? const Color(0xFFD4D4D4) : const Color(0xFF24292E),
+          ),
+        ),
+      );
+    }
 
     return Container(
       color: isDark ? const Color(0xFF1E1E1E) : const Color(0xFFF5F5F5),
       child: LayoutBuilder(
         builder: (context, constraints) {
           return SingleChildScrollView(
+            primary: false,
             child: SingleChildScrollView(
+              primary: false,
               scrollDirection: Axis.horizontal,
               child: ConstrainedBox(
                 constraints: BoxConstraints(
@@ -483,17 +540,7 @@ class _RepoFilePageState extends State<RepoFilePage> {
                           minWidth: (constraints.maxWidth - lineNumberWidth)
                               .clamp(0, double.infinity),
                         ),
-                        child: HighlightView(
-                          _decodedContent!,
-                          language: lang,
-                          theme: codeTheme,
-                          padding: const EdgeInsets.all(12),
-                          textStyle: const TextStyle(
-                            fontSize: 13,
-                            height: 1.4,
-                            fontFamily: 'monospace',
-                          ),
-                        ),
+                        child: codeWidget,
                       ),
                     ],
                   ),
@@ -577,7 +624,6 @@ class _RepoFilePageState extends State<RepoFilePage> {
       'perl' => 'perl',
       'php' => 'php',
       'r' => 'r',
-      'zig' => 'zig',
       _ => 'plaintext',
     };
   }
