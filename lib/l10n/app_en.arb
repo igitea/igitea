@@ -430,5 +430,18 @@
   "oauth2ExchangeCode": "Exchange Code for Token",
   "oauth2AuthorizationCode": "Authorization Code",
   "oauth2AuthorizationCodeHint": "Paste the code from the redirect URL",
-  "oauth2TokenRefreshed": "Token refreshed successfully"
+  "oauth2TokenRefreshed": "Token refreshed successfully",
+  "labels": "Labels",
+  "noLabels": "No labels",
+  "createLabel": "Create Label",
+  "editLabel": "Edit Label",
+  "deleteLabel": "Delete Label",
+  "deleteLabelConfirm": "Are you sure you want to delete this label?",
+  "labelDeleted": "Label deleted",
+  "labelName": "Name",
+  "labelNameHint": "e.g. bug",
+  "labelDescription": "Description",
+  "labelDescriptionHint": "Optional description",
+  "labelColor": "Color",
+  "labelColorHint": "Hex color, e.g. #FF0000"
 }

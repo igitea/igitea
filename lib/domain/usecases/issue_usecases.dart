@@ -256,6 +256,59 @@ class CreateLabelParams {
   });
 }
 
+class EditLabelUseCase {
+  final IssueRepository _repository;
+
+  EditLabelUseCase({required IssueRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, Label>> call(EditLabelParams params) async {
+    return _repository.editLabel(
+      params.owner,
+      params.repo,
+      params.id,
+      params.body,
+    );
+  }
+}
+
+class EditLabelParams {
+  final String owner;
+  final String repo;
+  final int id;
+  final Map<String, dynamic> body;
+
+  EditLabelParams({
+    required this.owner,
+    required this.repo,
+    required this.id,
+    required this.body,
+  });
+}
+
+class DeleteLabelUseCase {
+  final IssueRepository _repository;
+
+  DeleteLabelUseCase({required IssueRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, void>> call(DeleteLabelParams params) async {
+    return _repository.deleteLabel(params.owner, params.repo, params.id);
+  }
+}
+
+class DeleteLabelParams {
+  final String owner;
+  final String repo;
+  final int id;
+
+  DeleteLabelParams({
+    required this.owner,
+    required this.repo,
+    required this.id,
+  });
+}
+
 class ListMilestonesUseCase {
   final IssueRepository _repository;
 

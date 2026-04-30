@@ -1,0 +1,233 @@
+import 'package:flutter/material.dart';
+
+import '../../core/constants/ui_constants.dart';
+import '../../core/di/injection.dart';
+import '../../core/utils/either.dart';
+import '../../l10n/app_localizations.dart';
+
+class CreateLabelPage extends StatefulWidget {
+  final String owner;
+  final String repo;
+
+  const CreateLabelPage({
+    super.key,
+    required this.owner,
+    required this.repo,
+  });
+
+  @override
+  State<CreateLabelPage> createState() => _CreateLabelPageState();
+}
+
+class _CreateLabelPageState extends State<CreateLabelPage> {
+  late final TextEditingController _nameController;
+  late final TextEditingController _descriptionController;
+  late final TextEditingController _colorController;
+  bool _isSaving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController();
+    _descriptionController = TextEditingController();
+    _colorController = TextEditingController(text: '#00B4AB');
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _descriptionController.dispose();
+    _colorController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickColor() async {
+    final color = await showDialog<Color>(
+      context: context,
+      builder: (context) => _ColorPickerDialog(initial: _parseColor(_colorController.text)),
+    );
+    if (color != null) {
+      final hex = '#${color.value.toRadixString(16).substring(2).toUpperCase()}';
+      setState(() => _colorController.text = hex);
+    }
+  }
+
+  Color _parseColor(String hex) {
+    final h = hex.replaceFirst('#', '');
+    return Color(int.parse('FF$h', radix: 16));
+  }
+
+  Future<void> _save() async {
+    final l10n = AppLocalizations.of(context)!;
+    final name = _nameController.text.trim();
+
+    if (name.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.titleRequired)),
+      );
+      return;
+    }
+
+    setState(() => _isSaving = true);
+
+    final body = <String, dynamic>{
+      'name': name,
+      'color': _colorController.text.replaceFirst('#', ''),
+      if (_descriptionController.text.trim().isNotEmpty)
+        'description': _descriptionController.text.trim(),
+    };
+
+    final result = await Injection.issueNotifier.createLabel(
+      widget.owner,
+      widget.repo,
+      body,
+    );
+
+    if (mounted) {
+      setState(() => _isSaving = false);
+      switch (result) {
+        case Left(:final value):
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('${l10n.error}: ${value.message}')),
+          );
+        case Right():
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.created)),
+          );
+          Navigator.of(context).pop(true);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(l10n.createLabel),
+        actions: [
+          IconButton(
+            icon: _isSaving
+                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+                : const Icon(Icons.save),
+            onPressed: _isSaving ? null : _save,
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(UIConstants.md),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextField(
+              controller: _nameController,
+              decoration: InputDecoration(
+                labelText: l10n.labelName,
+                hintText: l10n.labelNameHint,
+                border: const OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: UIConstants.md),
+            TextField(
+              controller: _descriptionController,
+              decoration: InputDecoration(
+                labelText: l10n.labelDescription,
+                hintText: l10n.labelDescriptionHint,
+                border: const OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: UIConstants.md),
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: _colorController,
+                    decoration: InputDecoration(
+                      labelText: l10n.labelColor,
+                      hintText: l10n.labelColorHint,
+                      border: const OutlineInputBorder(),
+                      prefixIcon: Container(
+                        margin: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: _parseColor(_colorController.text),
+                          shape: BoxShape.circle,
+                        ),
+                        width: 24,
+                        height: 24,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: UIConstants.sm),
+                IconButton(
+                  icon: const Icon(Icons.colorize),
+                  onPressed: _pickColor,
+                  tooltip: l10n.labelColor,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ColorPickerDialog extends StatefulWidget {
+  final Color initial;
+  const _ColorPickerDialog({required this.initial});
+
+  @override
+  State<_ColorPickerDialog> createState() => _ColorPickerDialogState();
+}
+
+class _ColorPickerDialogState extends State<_ColorPickerDialog> {
+  late Color _selected;
+
+  static const _presetColors = [
+    '#DC3545', '#E83E8C', '#6F42C1', '#6610F2',
+    '#007BFF', '#17A2B8', '#00B4AB', '#28A745',
+    '#FFC107', '#FD7E14', '#6C757D', '#343A40',
+  ];
+
+  @override
+  void initState() {
+    super.initState();
+    _selected = widget.initial;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Pick Color'),
+      content: Wrap(
+        spacing: 8,
+        runSpacing: 8,
+        children: _presetColors.map((hex) {
+          final color = Color(int.parse('FF${hex.replaceFirst('#', '')}', radix: 16));
+          return GestureDetector(
+            onTap: () => Navigator.of(context).pop(color),
+            child: Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: color,
+                shape: BoxShape.circle,
+                border: _selected.value == color.value
+                    ? Border.all(color: Colors.white, width: 3)
+                    : null,
+              ),
+            ),
+          );
+        }).toList(),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
+      ],
+    );
+  }
+}

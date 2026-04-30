@@ -95,6 +95,8 @@ class Injection {
   static late SearchIssuesUseCase searchIssuesUseCase;
   static late ListLabelsUseCase listLabelsUseCase;
   static late CreateLabelUseCase createLabelUseCase;
+  static late EditLabelUseCase editLabelUseCase;
+  static late DeleteLabelUseCase deleteLabelUseCase;
   static late ListMilestonesUseCase listMilestonesUseCase;
   static late CreateMilestoneUseCase createMilestoneUseCase;
   static late GetMilestoneUseCase getMilestoneUseCase;
@@ -203,6 +205,8 @@ class Injection {
     searchIssuesUseCase = SearchIssuesUseCase(repository: issueRepository);
     listLabelsUseCase = ListLabelsUseCase(repository: issueRepository);
     createLabelUseCase = CreateLabelUseCase(repository: issueRepository);
+    editLabelUseCase = EditLabelUseCase(repository: issueRepository);
+    deleteLabelUseCase = DeleteLabelUseCase(repository: issueRepository);
     listMilestonesUseCase = ListMilestonesUseCase(repository: issueRepository);
     createMilestoneUseCase = CreateMilestoneUseCase(
       repository: issueRepository,
@@ -335,6 +339,9 @@ class Injection {
         createMilestoneUseCase: createMilestoneUseCase,
         editMilestoneUseCase: editMilestoneUseCase,
         deleteMilestoneUseCase: deleteMilestoneUseCase,
+        createLabelUseCase: createLabelUseCase,
+        editLabelUseCase: editLabelUseCase,
+        deleteLabelUseCase: deleteLabelUseCase,
       );
       organizationNotifier.updateUseCases(
         getOrgUseCase: getOrgUseCase,
@@ -414,6 +421,9 @@ class Injection {
         createMilestoneUseCase: createMilestoneUseCase,
         editMilestoneUseCase: editMilestoneUseCase,
         deleteMilestoneUseCase: deleteMilestoneUseCase,
+        createLabelUseCase: createLabelUseCase,
+        editLabelUseCase: editLabelUseCase,
+        deleteLabelUseCase: deleteLabelUseCase,
       );
       organizationNotifier = OrgNotifier(
         getOrgUseCase: getOrgUseCase,
@@ -514,6 +524,9 @@ class Injection {
       createMilestoneUseCase: createMilestoneUseCase,
       editMilestoneUseCase: editMilestoneUseCase,
       deleteMilestoneUseCase: deleteMilestoneUseCase,
+      createLabelUseCase: createLabelUseCase,
+      editLabelUseCase: editLabelUseCase,
+      deleteLabelUseCase: deleteLabelUseCase,
     );
     organizationNotifier.updateUseCases(
       getOrgUseCase: getOrgUseCase,

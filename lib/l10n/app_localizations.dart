@@ -69,8 +69,7 @@ import 'app_localizations_zh.dart';
 /// be consistent with the languages listed in the AppLocalizations.supportedLocales
 /// property.
 abstract class AppLocalizations {
-  AppLocalizations(String locale)
-    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+  AppLocalizations(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -78,8 +77,7 @@ abstract class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
-  static const LocalizationsDelegate<AppLocalizations> delegate =
-      _AppLocalizationsDelegate();
+  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
 
   /// A list of this localizations delegate along with the default localizations
   /// delegates.
@@ -91,13 +89,12 @@ abstract class AppLocalizations {
   /// Additional delegates can be added by appending to this list in
   /// MaterialApp. This list does not have to be used at all if a custom list
   /// of delegates is preferred or required.
-  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
-      <LocalizationsDelegate<dynamic>>[
-        delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ];
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
+    delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+  ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
@@ -110,7 +107,7 @@ abstract class AppLocalizations {
     Locale('pt'),
     Locale('ru'),
     Locale('zh'),
-    Locale('zh', 'TW'),
+    Locale('zh', 'TW')
   ];
 
   /// No description provided for @appTitle.
@@ -2608,10 +2605,75 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Token refreshed successfully'**
   String get oauth2TokenRefreshed;
+
+  /// No description provided for @createLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Label'**
+  String get createLabel;
+
+  /// No description provided for @editLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Label'**
+  String get editLabel;
+
+  /// No description provided for @deleteLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Label'**
+  String get deleteLabel;
+
+  /// No description provided for @deleteLabelConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this label?'**
+  String get deleteLabelConfirm;
+
+  /// No description provided for @labelDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Label deleted'**
+  String get labelDeleted;
+
+  /// No description provided for @labelName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get labelName;
+
+  /// No description provided for @labelNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. bug'**
+  String get labelNameHint;
+
+  /// No description provided for @labelDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get labelDescription;
+
+  /// No description provided for @labelDescriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional description'**
+  String get labelDescriptionHint;
+
+  /// No description provided for @labelColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Color'**
+  String get labelColor;
+
+  /// No description provided for @labelColorHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Hex color, e.g. #FF0000'**
+  String get labelColorHint;
 }
 
-class _AppLocalizationsDelegate
-    extends LocalizationsDelegate<AppLocalizations> {
+class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override
@@ -2620,61 +2682,41 @@ class _AppLocalizationsDelegate
   }
 
   @override
-  bool isSupported(Locale locale) => <String>[
-    'de',
-    'en',
-    'es',
-    'fr',
-    'ja',
-    'ko',
-    'pt',
-    'ru',
-    'zh',
-  ].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>['de', 'en', 'es', 'fr', 'ja', 'ko', 'pt', 'ru', 'zh'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
 }
 
 AppLocalizations lookupAppLocalizations(Locale locale) {
+
   // Lookup logic when language+country codes are specified.
   switch (locale.languageCode) {
-    case 'zh':
-      {
-        switch (locale.countryCode) {
-          case 'TW':
-            return AppLocalizationsZhTw();
-        }
-        break;
-      }
+    case 'zh': {
+  switch (locale.countryCode) {
+    case 'TW': return AppLocalizationsZhTw();
+   }
+  break;
+   }
   }
 
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
-    case 'de':
-      return AppLocalizationsDe();
-    case 'en':
-      return AppLocalizationsEn();
-    case 'es':
-      return AppLocalizationsEs();
-    case 'fr':
-      return AppLocalizationsFr();
-    case 'ja':
-      return AppLocalizationsJa();
-    case 'ko':
-      return AppLocalizationsKo();
-    case 'pt':
-      return AppLocalizationsPt();
-    case 'ru':
-      return AppLocalizationsRu();
-    case 'zh':
-      return AppLocalizationsZh();
+    case 'de': return AppLocalizationsDe();
+    case 'en': return AppLocalizationsEn();
+    case 'es': return AppLocalizationsEs();
+    case 'fr': return AppLocalizationsFr();
+    case 'ja': return AppLocalizationsJa();
+    case 'ko': return AppLocalizationsKo();
+    case 'pt': return AppLocalizationsPt();
+    case 'ru': return AppLocalizationsRu();
+    case 'zh': return AppLocalizationsZh();
   }
 
   throw FlutterError(
     'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
     'an issue with the localizations generation tool. Please file an issue '
     'on GitHub with a reproducible sample app and the gen-l10n configuration '
-    'that was used.',
+    'that was used.'
   );
 }

@@ -95,6 +95,9 @@ class IssueNotifier extends ChangeNotifier {
   CreateMilestoneUseCase _createMilestoneUseCase;
   EditMilestoneUseCase _editMilestoneUseCase;
   DeleteMilestoneUseCase _deleteMilestoneUseCase;
+  CreateLabelUseCase _createLabelUseCase;
+  EditLabelUseCase _editLabelUseCase;
+  DeleteLabelUseCase _deleteLabelUseCase;
 
   IssueState _state = const IssueInitial();
   IssueState get state => _state;
@@ -121,6 +124,9 @@ class IssueNotifier extends ChangeNotifier {
     required CreateMilestoneUseCase createMilestoneUseCase,
     required EditMilestoneUseCase editMilestoneUseCase,
     required DeleteMilestoneUseCase deleteMilestoneUseCase,
+    required CreateLabelUseCase createLabelUseCase,
+    required EditLabelUseCase editLabelUseCase,
+    required DeleteLabelUseCase deleteLabelUseCase,
   }) : _listIssuesUseCase = listIssuesUseCase,
        _getIssueUseCase = getIssueUseCase,
        _createIssueUseCase = createIssueUseCase,
@@ -133,7 +139,10 @@ class IssueNotifier extends ChangeNotifier {
        _getMilestoneUseCase = getMilestoneUseCase,
        _createMilestoneUseCase = createMilestoneUseCase,
        _editMilestoneUseCase = editMilestoneUseCase,
-       _deleteMilestoneUseCase = deleteMilestoneUseCase;
+       _deleteMilestoneUseCase = deleteMilestoneUseCase,
+       _editLabelUseCase = editLabelUseCase,
+       _deleteLabelUseCase = deleteLabelUseCase,
+       _createLabelUseCase = createLabelUseCase;
 
   void updateUseCases({
     required ListIssuesUseCase listIssuesUseCase,
@@ -149,6 +158,9 @@ class IssueNotifier extends ChangeNotifier {
     required CreateMilestoneUseCase createMilestoneUseCase,
     required EditMilestoneUseCase editMilestoneUseCase,
     required DeleteMilestoneUseCase deleteMilestoneUseCase,
+    required CreateLabelUseCase createLabelUseCase,
+    required EditLabelUseCase editLabelUseCase,
+    required DeleteLabelUseCase deleteLabelUseCase,
   }) {
     _listIssuesUseCase = listIssuesUseCase;
     _getIssueUseCase = getIssueUseCase;
@@ -163,6 +175,9 @@ class IssueNotifier extends ChangeNotifier {
     _createMilestoneUseCase = createMilestoneUseCase;
     _editMilestoneUseCase = editMilestoneUseCase;
     _deleteMilestoneUseCase = deleteMilestoneUseCase;
+    _editLabelUseCase = editLabelUseCase;
+    _deleteLabelUseCase = deleteLabelUseCase;
+    _createLabelUseCase = createLabelUseCase;
   }
 
   Future<void> listIssues(ListIssuesParams params) async {
@@ -238,6 +253,37 @@ class IssueNotifier extends ChangeNotifier {
         _state = LabelsLoaded(value);
         notifyListeners();
     }
+  }
+
+  Future<Either<Failure, Label>> createLabel(
+    String owner,
+    String repo,
+    Map<String, dynamic> body,
+  ) async {
+    return _createLabelUseCase.call(
+      CreateLabelParams(owner: owner, repo: repo, body: body),
+    );
+  }
+
+  Future<Either<Failure, Label>> editLabel(
+    String owner,
+    String repo,
+    int id,
+    Map<String, dynamic> body,
+  ) async {
+    return _editLabelUseCase.call(
+      EditLabelParams(owner: owner, repo: repo, id: id, body: body),
+    );
+  }
+
+  Future<Either<Failure, void>> deleteLabel(
+    String owner,
+    String repo,
+    int id,
+  ) async {
+    return _deleteLabelUseCase.call(
+      DeleteLabelParams(owner: owner, repo: repo, id: id),
+    );
   }
 
   Future<void> listMilestones(
