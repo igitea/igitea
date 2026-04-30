@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../domain/entities/auth_state.dart';
 import '../../l10n/app_localizations.dart';
@@ -18,18 +19,11 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
-  static const _tabs = [
-    _TabData(Icons.dashboard_outlined, Icons.dashboard, 'Dashboard'),
-    _TabData(Icons.search_outlined, Icons.search, 'Search'),
-    _TabData(Icons.notifications_outlined, Icons.notifications, 'Notifications'),
-    _TabData(Icons.person_outline, Icons.person, 'Profile'),
-  ];
-
-  static final _pages = <Widget>[
-    const DashboardPage(key: ValueKey('dashboard')),
-    const SearchPage(key: ValueKey('search')),
-    const NotificationPage(key: ValueKey('notifications')),
-    const ProfilePage(key: ValueKey('profile')),
+  static const _pages = <Widget>[
+    DashboardPage(key: ValueKey('dashboard')),
+    SearchPage(key: ValueKey('search')),
+    NotificationPage(key: ValueKey('notifications')),
+    ProfilePage(key: ValueKey('profile')),
   ];
 
   @override
@@ -55,47 +49,10 @@ class _HomePageState extends State<HomePage> {
         final isWide = MediaQuery.of(context).size.width >= 600;
 
         return Scaffold(
-          appBar: AppBar(
-            title: Text(user.login ?? l10n.appTitle),
-          ),
+          appBar: AppBar(title: Text(user.login ?? l10n.appTitle)),
           body: Row(
             children: [
-              if (isWide)
-                NavigationRail(
-                  selectedIndex: _selectedIndex,
-                  onDestinationSelected: _onDestinationSelected,
-                  labelType: NavigationRailLabelType.all,
-                  leading: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    child: Icon(
-                      Icons.code,
-                      color: Theme.of(context).colorScheme.primary,
-                      size: 32,
-                    ),
-                  ),
-                  destinations: [
-                    NavigationRailDestination(
-                      icon: Icon(_tabs[0].icon),
-                      selectedIcon: Icon(_tabs[0].selectedIcon),
-                      label: Text(l10n.dashboard),
-                    ),
-                    NavigationRailDestination(
-                      icon: Icon(_tabs[1].icon),
-                      selectedIcon: Icon(_tabs[1].selectedIcon),
-                      label: Text(l10n.search),
-                    ),
-                    NavigationRailDestination(
-                      icon: Icon(_tabs[2].icon),
-                      selectedIcon: Icon(_tabs[2].selectedIcon),
-                      label: Text(l10n.notifications),
-                    ),
-                    NavigationRailDestination(
-                      icon: Icon(_tabs[3].icon),
-                      selectedIcon: Icon(_tabs[3].selectedIcon),
-                      label: Text(l10n.profile),
-                    ),
-                  ],
-                ),
+              if (isWide) _buildNavigationRail(l10n),
               Expanded(
                 child: IndexedStack(
                   index: _selectedIndex,
@@ -104,50 +61,82 @@ class _HomePageState extends State<HomePage> {
               ),
             ],
           ),
-          bottomNavigationBar: isWide
-              ? null
-              : NavigationBar(
-                  selectedIndex: _selectedIndex,
-                  onDestinationSelected: _onDestinationSelected,
-                  destinations: [
-                    NavigationDestination(
-                      icon: Icon(_tabs[0].icon),
-                      selectedIcon: Icon(_tabs[0].selectedIcon),
-                      label: l10n.dashboard,
-                    ),
-                    NavigationDestination(
-                      icon: Icon(_tabs[1].icon),
-                      selectedIcon: Icon(_tabs[1].selectedIcon),
-                      label: l10n.search,
-                    ),
-                    NavigationDestination(
-                      icon: Icon(_tabs[2].icon),
-                      selectedIcon: Icon(_tabs[2].selectedIcon),
-                      label: l10n.notifications,
-                    ),
-                    NavigationDestination(
-                      icon: Icon(_tabs[3].icon),
-                      selectedIcon: Icon(_tabs[3].selectedIcon),
-                      label: l10n.profile,
-                    ),
-                  ],
-                ),
+          bottomNavigationBar:
+              isWide ? null : _buildNavigationBar(l10n),
         );
       },
     );
   }
 
-  void _onDestinationSelected(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+  Widget _buildNavigationRail(AppLocalizations l10n) {
+    final theme = Theme.of(context);
+    return NavigationRail(
+      selectedIndex: _selectedIndex,
+      onDestinationSelected: _onDestinationSelected,
+      labelType: NavigationRailLabelType.all,
+      leading: Padding(
+        padding: const EdgeInsets.symmetric(vertical: UIConstants.md),
+        child: Icon(
+          Icons.code,
+          color: theme.colorScheme.primary,
+          size: 32,
+        ),
+      ),
+      destinations: [
+        NavigationRailDestination(
+          icon: const Icon(Icons.dashboard_outlined),
+          selectedIcon: const Icon(Icons.dashboard),
+          label: Text(l10n.dashboard),
+        ),
+        NavigationRailDestination(
+          icon: const Icon(Icons.search_outlined),
+          selectedIcon: const Icon(Icons.search),
+          label: Text(l10n.search),
+        ),
+        NavigationRailDestination(
+          icon: const Icon(Icons.notifications_outlined),
+          selectedIcon: const Icon(Icons.notifications),
+          label: Text(l10n.notifications),
+        ),
+        NavigationRailDestination(
+          icon: const Icon(Icons.person_outline),
+          selectedIcon: const Icon(Icons.person),
+          label: Text(l10n.profile),
+        ),
+      ],
+    );
   }
-}
 
-class _TabData {
-  final IconData icon;
-  final IconData selectedIcon;
-  final String label;
+  Widget _buildNavigationBar(AppLocalizations l10n) {
+    return NavigationBar(
+      selectedIndex: _selectedIndex,
+      onDestinationSelected: _onDestinationSelected,
+      destinations: [
+        NavigationDestination(
+          icon: const Icon(Icons.dashboard_outlined),
+          selectedIcon: const Icon(Icons.dashboard),
+          label: l10n.dashboard,
+        ),
+        NavigationDestination(
+          icon: const Icon(Icons.search_outlined),
+          selectedIcon: const Icon(Icons.search),
+          label: l10n.search,
+        ),
+        NavigationDestination(
+          icon: const Icon(Icons.notifications_outlined),
+          selectedIcon: const Icon(Icons.notifications),
+          label: l10n.notifications,
+        ),
+        NavigationDestination(
+          icon: const Icon(Icons.person_outline),
+          selectedIcon: const Icon(Icons.person),
+          label: l10n.profile,
+        ),
+      ],
+    );
+  }
 
-  const _TabData(this.icon, this.selectedIcon, this.label);
+  void _onDestinationSelected(int index) {
+    setState(() => _selectedIndex = index);
+  }
 }

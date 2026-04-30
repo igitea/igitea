@@ -483,7 +483,7 @@ class _Badge extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: UIConstants.sm, vertical: 2),
+      padding: const EdgeInsets.symmetric(horizontal: UIConstants.sm, vertical: UIConstants.xs),
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
@@ -1217,7 +1217,7 @@ class _ReleaseItem extends StatelessWidget {
                     if (release.prerelease == true) ...[
                       const SizedBox(width: UIConstants.sm),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                        padding: const EdgeInsets.symmetric(horizontal: UIConstants.sm, vertical: UIConstants.xs),
                         decoration: BoxDecoration(
                           color: Colors.orange.withValues(alpha: 0.2),
                           borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
@@ -1657,7 +1657,7 @@ class _BranchesTabState extends State<_BranchesTab> {
                             ),
                             if (isDefault)
                               Container(
-                                padding: const EdgeInsets.symmetric(horizontal: UIConstants.sm, vertical: 2),
+                                padding: const EdgeInsets.symmetric(horizontal: UIConstants.sm, vertical: UIConstants.xs),
                                 decoration: BoxDecoration(
                                   color: Theme.of(context).colorScheme.primaryContainer,
                                   borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
