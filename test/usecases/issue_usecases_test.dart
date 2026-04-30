@@ -139,6 +139,14 @@ class MockIssueRepository implements IssueRepository {
   ) => throw UnimplementedError();
 
   @override
+  Future<Either<Failure, List<Label>>> replaceIssueLabels(
+    String owner,
+    String repo,
+    int index,
+    Map<String, dynamic> body,
+  ) => throw UnimplementedError();
+
+  @override
   Future<Either<Failure, List<Milestone>>> listMilestones(
     String owner,
     String repo, {

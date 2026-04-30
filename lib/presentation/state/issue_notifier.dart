@@ -98,6 +98,7 @@ class IssueNotifier extends ChangeNotifier {
   CreateLabelUseCase _createLabelUseCase;
   EditLabelUseCase _editLabelUseCase;
   DeleteLabelUseCase _deleteLabelUseCase;
+  ReplaceIssueLabelsUseCase _replaceIssueLabelsUseCase;
 
   IssueState _state = const IssueInitial();
   IssueState get state => _state;
@@ -129,6 +130,7 @@ class IssueNotifier extends ChangeNotifier {
     required CreateLabelUseCase createLabelUseCase,
     required EditLabelUseCase editLabelUseCase,
     required DeleteLabelUseCase deleteLabelUseCase,
+    required ReplaceIssueLabelsUseCase replaceIssueLabelsUseCase,
   }) : _listIssuesUseCase = listIssuesUseCase,
        _getIssueUseCase = getIssueUseCase,
        _createIssueUseCase = createIssueUseCase,
@@ -144,7 +146,8 @@ class IssueNotifier extends ChangeNotifier {
        _deleteMilestoneUseCase = deleteMilestoneUseCase,
        _editLabelUseCase = editLabelUseCase,
        _deleteLabelUseCase = deleteLabelUseCase,
-       _createLabelUseCase = createLabelUseCase;
+       _createLabelUseCase = createLabelUseCase,
+       _replaceIssueLabelsUseCase = replaceIssueLabelsUseCase;
 
   void updateUseCases({
     required ListIssuesUseCase listIssuesUseCase,
@@ -163,6 +166,7 @@ class IssueNotifier extends ChangeNotifier {
     required CreateLabelUseCase createLabelUseCase,
     required EditLabelUseCase editLabelUseCase,
     required DeleteLabelUseCase deleteLabelUseCase,
+    required ReplaceIssueLabelsUseCase replaceIssueLabelsUseCase,
   }) {
     _listIssuesUseCase = listIssuesUseCase;
     _getIssueUseCase = getIssueUseCase;
@@ -179,6 +183,7 @@ class IssueNotifier extends ChangeNotifier {
     _deleteMilestoneUseCase = deleteMilestoneUseCase;
     _editLabelUseCase = editLabelUseCase;
     _deleteLabelUseCase = deleteLabelUseCase;
+    _replaceIssueLabelsUseCase = replaceIssueLabelsUseCase;
     _createLabelUseCase = createLabelUseCase;
   }
 
@@ -285,6 +290,22 @@ class IssueNotifier extends ChangeNotifier {
   ) async {
     return _deleteLabelUseCase.call(
       DeleteLabelParams(owner: owner, repo: repo, id: id),
+    );
+  }
+
+  Future<Either<Failure, List<Label>>> replaceIssueLabels(
+    String owner,
+    String repo,
+    int index,
+    Map<String, dynamic> body,
+  ) async {
+    return _replaceIssueLabelsUseCase.call(
+      ReplaceIssueLabelsParams(
+        owner: owner,
+        repo: repo,
+        index: index,
+        body: body,
+      ),
     );
   }
 

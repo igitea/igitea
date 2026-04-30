@@ -1502,4 +1502,19 @@ class GiteaApiService {
     );
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
+
+  Future<List<Label>> issueReplaceLabels({
+    required String owner,
+    required String repo,
+    required int index,
+    required Map<String, dynamic> body,
+  }) async {
+    final response = await _client.put(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues/${index.toString()}/labels',
+      body: body,
+    );
+    return (jsonDecode(response.body) as List<dynamic>)
+        .map((e) => Label.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
 }

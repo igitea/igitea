@@ -109,6 +109,14 @@ abstract class IssueRepository {
   /// Delete a label.
   Future<Either<Failure, void>> deleteLabel(String owner, String repo, int id);
 
+  /// Replace all labels on an issue.
+  Future<Either<Failure, List<Label>>> replaceIssueLabels(
+    String owner,
+    String repo,
+    int index,
+    Map<String, dynamic> body,
+  );
+
   /// List milestones in a repository.
   Future<Either<Failure, List<Milestone>>> listMilestones(
     String owner,

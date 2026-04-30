@@ -3,6 +3,7 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
+import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/issue_notifier.dart';
@@ -113,10 +114,6 @@ class _EditIssuePageState extends State<EditIssuePage> {
       'title': _titleController.text.trim(),
       'body': _bodyController.text.trim(),
       'state': _state,
-      if (_selectedLabels.isNotEmpty)
-        'labels': _selectedLabels.toList()
-      else
-        'labels': <int>[],
       if (_selectedMilestoneId != null)
         'milestone': _selectedMilestoneId,
     };
@@ -129,14 +126,32 @@ class _EditIssuePageState extends State<EditIssuePage> {
     );
 
     if (mounted) {
-      setState(() => _isSaving = false);
       final s = Injection.issueNotifier.state;
       if (s is IssueError) {
+        setState(() => _isSaving = false);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('${l10n.error}: ${s.message}')),
         );
-      } else {
-        Navigator.of(context).pop(true);
+        return;
+      }
+    }
+
+    final labelResult = await Injection.issueNotifier.replaceIssueLabels(
+      widget.owner,
+      widget.repo,
+      widget.index,
+      {'labels': _selectedLabels.toList()},
+    );
+
+    if (mounted) {
+      setState(() => _isSaving = false);
+      switch (labelResult) {
+        case Left(:final value):
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('${l10n.error}: ${value.message}')),
+          );
+        case Right():
+          Navigator.of(context).pop(true);
       }
     }
   }

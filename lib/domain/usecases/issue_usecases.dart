@@ -309,6 +309,38 @@ class DeleteLabelParams {
   });
 }
 
+class ReplaceIssueLabelsUseCase {
+  final IssueRepository _repository;
+
+  ReplaceIssueLabelsUseCase({required IssueRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, List<Label>>> call(
+    ReplaceIssueLabelsParams params,
+  ) async {
+    return _repository.replaceIssueLabels(
+      params.owner,
+      params.repo,
+      params.index,
+      params.body,
+    );
+  }
+}
+
+class ReplaceIssueLabelsParams {
+  final String owner;
+  final String repo;
+  final int index;
+  final Map<String, dynamic> body;
+
+  ReplaceIssueLabelsParams({
+    required this.owner,
+    required this.repo,
+    required this.index,
+    required this.body,
+  });
+}
+
 class ListMilestonesUseCase {
   final IssueRepository _repository;
 

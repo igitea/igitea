@@ -232,6 +232,23 @@ class IssueRepositoryImpl implements IssueRepository {
   }
 
   @override
+  Future<Either<Failure, List<Label>>> replaceIssueLabels(
+    String owner,
+    String repo,
+    int index,
+    Map<String, dynamic> body,
+  ) async {
+    return execute(
+      () => _apiService.issueReplaceLabels(
+        owner: owner,
+        repo: repo,
+        index: index,
+        body: body,
+      ),
+    );
+  }
+
+  @override
   Future<Either<Failure, List<Milestone>>> listMilestones(
     String owner,
     String repo, {

@@ -97,6 +97,7 @@ class Injection {
   static late CreateLabelUseCase createLabelUseCase;
   static late EditLabelUseCase editLabelUseCase;
   static late DeleteLabelUseCase deleteLabelUseCase;
+  static late ReplaceIssueLabelsUseCase replaceIssueLabelsUseCase;
   static late ListMilestonesUseCase listMilestonesUseCase;
   static late CreateMilestoneUseCase createMilestoneUseCase;
   static late GetMilestoneUseCase getMilestoneUseCase;
@@ -207,6 +208,7 @@ class Injection {
     createLabelUseCase = CreateLabelUseCase(repository: issueRepository);
     editLabelUseCase = EditLabelUseCase(repository: issueRepository);
     deleteLabelUseCase = DeleteLabelUseCase(repository: issueRepository);
+    replaceIssueLabelsUseCase = ReplaceIssueLabelsUseCase(repository: issueRepository);
     listMilestonesUseCase = ListMilestonesUseCase(repository: issueRepository);
     createMilestoneUseCase = CreateMilestoneUseCase(
       repository: issueRepository,
@@ -342,6 +344,7 @@ class Injection {
         createLabelUseCase: createLabelUseCase,
         editLabelUseCase: editLabelUseCase,
         deleteLabelUseCase: deleteLabelUseCase,
+      replaceIssueLabelsUseCase: replaceIssueLabelsUseCase,
       );
       organizationNotifier.updateUseCases(
         getOrgUseCase: getOrgUseCase,
@@ -424,6 +427,7 @@ class Injection {
         createLabelUseCase: createLabelUseCase,
         editLabelUseCase: editLabelUseCase,
         deleteLabelUseCase: deleteLabelUseCase,
+      replaceIssueLabelsUseCase: replaceIssueLabelsUseCase,
       );
       organizationNotifier = OrgNotifier(
         getOrgUseCase: getOrgUseCase,
@@ -527,6 +531,7 @@ class Injection {
       createLabelUseCase: createLabelUseCase,
       editLabelUseCase: editLabelUseCase,
       deleteLabelUseCase: deleteLabelUseCase,
+      replaceIssueLabelsUseCase: replaceIssueLabelsUseCase,
     );
     organizationNotifier.updateUseCases(
       getOrgUseCase: getOrgUseCase,
