@@ -136,7 +136,7 @@ class _ActionRunDetailPageState extends State<ActionRunDetailPage> {
                       const SizedBox(width: UIConstants.sm),
                       Expanded(
                         child: Text(
-                          widget.runData['title'] as String? ?? '$l10n.run #$runNum',
+                          widget.runData['display_title'] as String? ?? '$l10n.run #$runNum',
                           style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                         ),
                       ),
@@ -148,16 +148,16 @@ class _ActionRunDetailPageState extends State<ActionRunDetailPage> {
                     runSpacing: UIConstants.xs,
                     children: [
                       _infoChip(l10n.status, status, color),
-                      if (widget.runData['branch'] != null)
-                        _infoChip(l10n.branch, widget.runData['branch'] as String, theme.colorScheme.primary),
+                      if (widget.runData['head_branch'] != null)
+                        _infoChip(l10n.branch, widget.runData['head_branch'] as String, theme.colorScheme.primary),
                       if (widget.runData['actor']?['login'] != null)
                         _infoChip(l10n.author, widget.runData['actor']['login'] as String, theme.colorScheme.primary),
                     ],
                   ),
-                  if (widget.runData['head_commit']?['message'] != null) ...[
+                  if (widget.runData['display_title'] != null) ...[
                     const SizedBox(height: UIConstants.sm),
                     Text(
-                      widget.runData['head_commit']['message'] as String,
+                      widget.runData['display_title'] as String,
                       style: theme.textTheme.bodySmall,
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,

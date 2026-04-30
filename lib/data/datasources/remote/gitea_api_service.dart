@@ -1545,15 +1545,9 @@ class GiteaApiService {
   Future<Map<String, dynamic>> repoListActionArtifacts({
     required String owner,
     required String repo,
-    int? page,
-    int? limit,
   }) async {
-    final query = <String, String>{};
-    if (page != null) query['page'] = page.toString();
-    if (limit != null) query['limit'] = limit.toString();
     final response = await _client.get(
       '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/actions/artifacts',
-      queryParameters: query,
     );
     return jsonDecode(response.body) as Map<String, dynamic>;
   }

@@ -68,7 +68,7 @@ class _ActionsListPageState extends State<ActionsListPage> with AutomaticKeepAli
         status: _statusFilter, actor: _actorFilter,
         page: page, limit: _pageSize,
       );
-      final newRuns = (result['runs'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
+      final newRuns = (result['workflow_runs'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
       final total = (result['total_count'] as num?)?.toInt() ?? newRuns.length;
 
       if (mounted) {
@@ -105,11 +105,11 @@ class _ActionsListPageState extends State<ActionsListPage> with AutomaticKeepAli
     return runs;
   }
 
-  Map<int, List<Map<String, dynamic>>> get _groupedRuns {
-    final groups = <int, List<Map<String, dynamic>>>{};
+  Map<String, List<Map<String, dynamic>>> get _groupedRuns {
+    final groups = <String, List<Map<String, dynamic>>>{};
     for (final r in _filteredRuns) {
-      final wfId = _toInt(r['workflow_id']);
-      groups.putIfAbsent(wfId, () => []).add(r);
+      final path = r['path'] as String? ?? '_other_';
+      groups.putIfAbsent(path, () => []).add(r);
     }
     return groups;
   }
@@ -327,7 +327,7 @@ class _ActionsListPageState extends State<ActionsListPage> with AutomaticKeepAli
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(run['title'] as String? ?? 'Run #$runNumber',
+                    Text(run['display_title'] as String? ?? 'Run #$runNumber',
                       style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
                       maxLines: 1, overflow: TextOverflow.ellipsis),
                     const SizedBox(height: UIConstants.xs),
@@ -341,11 +341,11 @@ class _ActionsListPageState extends State<ActionsListPage> with AutomaticKeepAli
                           Text(actor!['login'] as String,
                             style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
                         ],
-                        if (run['branch'] != null) ...[
+                        if (run['head_branch'] != null) ...[
                           const SizedBox(width: UIConstants.sm),
                           Icon(Icons.call_split, size: 12, color: theme.colorScheme.onSurfaceVariant),
                           const SizedBox(width: 2),
-                          Text(run['branch'] as String,
+                          Text(run['head_branch'] as String,
                             style: theme.textTheme.labelSmall?.copyWith(fontFamily: 'monospace', color: theme.colorScheme.onSurfaceVariant)),
                         ],
                       ],
