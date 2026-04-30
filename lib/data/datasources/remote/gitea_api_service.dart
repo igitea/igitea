@@ -313,6 +313,20 @@ class GiteaApiService {
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
 
+  /// Get blame info for a file.
+  Future<Map<String, dynamic>> repoGetBlame({
+    required String owner,
+    required String repo,
+    required String ref,
+    required String path,
+  }) async {
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/git/blame/${Uri.encodeComponent(ref)}',
+      queryParameters: {'path': path},
+    );
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
   Future<List<Branch>> repoListBranches({
     required String owner,
     required String repo,

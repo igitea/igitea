@@ -4,14 +4,24 @@ import 'package:flutter/material.dart';
 
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
+import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/repo_notifier.dart';
+import '../widgets/user_avatar.dart';
+import 'commit_detail_page.dart';
 
-class _BlameLine {
-  final String content;
-  final int lineNum;
+class _BlameRange {
+  final int startLine;
+  final int endLine;
+  final Commit? commit;
+  final String sha;
 
-  const _BlameLine({required this.content, required this.lineNum});
+  const _BlameRange({
+    required this.startLine,
+    required this.endLine,
+    this.commit,
+    required this.sha,
+  });
 }
 
 class FileBlamePage extends StatefulWidget {
@@ -33,9 +43,11 @@ class FileBlamePage extends StatefulWidget {
 }
 
 class _FileBlamePageState extends State<FileBlamePage> {
-  List<_BlameLine> _lines = [];
+  List<String> _lines = [];
+  List<_BlameRange> _ranges = [];
   bool _loading = true;
   String? _error;
+  bool _blameApiSupported = true;
 
   @override
   void initState() {
@@ -50,57 +62,118 @@ class _FileBlamePageState extends State<FileBlamePage> {
     });
 
     try {
+      final ref = widget.ref ?? 'HEAD';
+
+      // Try blame API first
+      final blameResult = await Injection.apiService.repoGetBlame(
+        owner: widget.owner,
+        repo: widget.repo,
+        ref: ref,
+        path: widget.path,
+      );
+
+      final rangeList = blameResult['ranges'] as List<dynamic>? ?? [];
+      final commitsMap = blameResult['commits'] as Map<String, dynamic>? ?? {};
+
+      // Parse commit map
+      final commitBySha = <String, Commit>{};
+      for (final entry in commitsMap.entries) {
+        commitBySha[entry.key] = Commit.fromJson(
+          entry.value as Map<String, dynamic>,
+        );
+      }
+
+      final parsedRanges = rangeList.map((r) {
+        final map = r as Map<String, dynamic>;
+        final sha = map['commit_sha'] as String? ?? '';
+        return _BlameRange(
+          startLine: (map['starting_line'] as num?)?.toInt() ?? 1,
+          endLine: (map['ending_line'] as num?)?.toInt() ?? 1,
+          sha: sha,
+          commit: commitBySha[sha],
+        );
+      }).toList();
+
+      // Get file content to display
       await Injection.repoNotifier.loadContents(
         widget.owner,
         widget.repo,
         path: widget.path,
-        ref: widget.ref,
+        ref: ref,
       );
-      if (mounted) {
-        final cs = Injection.repoNotifier.contentsState;
-        switch (cs) {
-          case ContentsError(:final message):
-            setState(() {
-              _error = message;
-              _loading = false;
-            });
-            return;
-          case ContentsLoaded(:final contents):
-            if (contents.isEmpty) {
-              setState(() => _loading = false);
-              return;
-            }
 
-            final file = contents.first;
+      final cs = Injection.repoNotifier.contentsState;
+      String content = '';
+      if (cs is ContentsLoaded && cs.contents.isNotEmpty) {
+        final file = cs.contents.first;
+        if (file.content != null && file.encoding == 'base64') {
+          content = utf8.decode(base64Decode(file.content!));
+        } else {
+          content = file.content ?? '';
+        }
+      }
+
+      if (mounted) {
+        setState(() {
+          _ranges = parsedRanges;
+          _lines = content.split('\n');
+          _loading = false;
+        });
+      }
+    } catch (_) {
+      // Blame API not supported - fallback to simple line view
+      _blameApiSupported = false;
+      try {
+        await Injection.repoNotifier.loadContents(
+          widget.owner,
+          widget.repo,
+          path: widget.path,
+          ref: widget.ref,
+        );
+
+        if (mounted) {
+          final cs = Injection.repoNotifier.contentsState;
+          if (cs is ContentsLoaded && cs.contents.isNotEmpty) {
+            final file = cs.contents.first;
             String content;
             if (file.content != null && file.encoding == 'base64') {
               content = utf8.decode(base64Decode(file.content!));
             } else {
               content = file.content ?? '';
             }
-
-            final textLines = content.split('\n');
-            final blameLines = textLines.asMap().entries.map((e) =>
-              _BlameLine(content: e.value, lineNum: e.key + 1)
-            ).toList();
-
+            if (mounted) {
+              setState(() {
+                _lines = content.split('\n');
+                _loading = false;
+              });
+            }
+          } else if (cs is ContentsError) {
             setState(() {
-              _lines = blameLines;
+              _error = cs.message;
               _loading = false;
             });
-            return;
-          default:
+          } else {
             setState(() => _loading = false);
+          }
+        }
+      } catch (e) {
+        if (mounted) {
+          setState(() {
+            _error = e.toString();
+            _loading = false;
+          });
         }
       }
-    } catch (e) {
-      if (mounted) {
-        setState(() {
-          _error = e.toString();
-          _loading = false;
-        });
+    }
+  }
+
+  Commit? _commitForLine(int lineNum) {
+    for (final range in _ranges) {
+      if (lineNum >= range.startLine && lineNum <= range.endLine) {
+        return range.commit;
       }
     }
+    return null;
   }
 
   @override
@@ -135,10 +208,130 @@ class _FileBlamePageState extends State<FileBlamePage> {
     if (_lines.isEmpty) {
       return Center(child: Text(l10n.noContent));
     }
+    if (_blameApiSupported && _ranges.isNotEmpty) {
+      return _buildBlameView(l10n);
+    }
+    return _buildSimpleView();
+  }
+
+  Widget _buildBlameView(AppLocalizations l10n) {
+    final uniqueShas = <String>{};
     return ListView.builder(
       itemCount: _lines.length,
       itemBuilder: (context, index) {
-        final line = _lines[index];
+        final lineNum = index + 1;
+        final commit = _commitForLine(lineNum);
+        final sha = commit?.sha ?? '';
+        final isFirstInRange = sha.isNotEmpty && !uniqueShas.contains(sha);
+        if (sha.isNotEmpty) uniqueShas.add(sha);
+
+        return Container(
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: Theme.of(context).colorScheme.outlineVariant,
+                width: 0.5,
+              ),
+            ),
+          ),
+          child: InkWell(
+            onTap: sha.isNotEmpty
+                ? () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => CommitDetailPage(
+                        owner: widget.owner,
+                        repo: widget.repo,
+                        sha: sha,
+                      ),
+                    ),
+                  )
+                : null,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: 80,
+                  child: commit != null
+                      ? Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: UIConstants.xs,
+                            vertical: UIConstants.xs,
+                          ),
+                          child: Row(
+                            children: [
+                              if (commit.author != null)
+                                UserAvatar(
+                                  user: commit.author!,
+                                  radius: UIConstants.avatarXs,
+                                ),
+                              const SizedBox(width: UIConstants.xs),
+                              Expanded(
+                                child: Text(
+                                  commit.sha?.substring(0, 7) ?? '',
+                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                    fontFamily: 'monospace',
+                                    color: Theme.of(context).colorScheme.primary,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      : null,
+                ),
+                Container(
+                  width: 1,
+                  color: Theme.of(context).colorScheme.outlineVariant,
+                ),
+                SizedBox(
+                  width: 40,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: UIConstants.xs,
+                      vertical: UIConstants.xs,
+                    ),
+                    child: Text(
+                      '$lineNum',
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        fontFamily: 'monospace',
+                        color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                      ),
+                      textAlign: TextAlign.right,
+                    ),
+                  ),
+                ),
+                Container(
+                  width: 1,
+                  color: Theme.of(context).colorScheme.outlineVariant,
+                ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: UIConstants.xs,
+                      vertical: UIConstants.xs,
+                    ),
+                    child: Text(
+                      _lines[index],
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        fontFamily: 'monospace',
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildSimpleView() {
+    return ListView.builder(
+      itemCount: _lines.length,
+      itemBuilder: (context, index) {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: UIConstants.xs),
           child: Row(
@@ -147,7 +340,7 @@ class _FileBlamePageState extends State<FileBlamePage> {
               SizedBox(
                 width: 48,
                 child: Text(
-                  '${line.lineNum}',
+                  '${index + 1}',
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     fontFamily: 'monospace',
                     color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
@@ -163,7 +356,7 @@ class _FileBlamePageState extends State<FileBlamePage> {
               ),
               Expanded(
                 child: Text(
-                  line.content,
+                  _lines[index],
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     fontFamily: 'monospace',
                   ),
