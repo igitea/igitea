@@ -317,6 +317,86 @@ class CreateMilestoneParams {
   });
 }
 
+class GetMilestoneUseCase {
+  final IssueRepository _repository;
+
+  GetMilestoneUseCase({required IssueRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, Milestone>> call(GetMilestoneParams params) async {
+    return _repository.getMilestone(params.owner, params.repo, params.id);
+  }
+}
+
+class GetMilestoneParams {
+  final String owner;
+  final String repo;
+  final String id;
+
+  GetMilestoneParams({
+    required this.owner,
+    required this.repo,
+    required this.id,
+  });
+}
+
+class EditMilestoneUseCase {
+  final IssueRepository _repository;
+
+  EditMilestoneUseCase({required IssueRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, Milestone>> call(EditMilestoneParams params) async {
+    return _repository.editMilestone(
+      params.owner,
+      params.repo,
+      params.id,
+      params.body,
+    );
+  }
+}
+
+class EditMilestoneParams {
+  final String owner;
+  final String repo;
+  final String id;
+  final Map<String, dynamic> body;
+
+  EditMilestoneParams({
+    required this.owner,
+    required this.repo,
+    required this.id,
+    required this.body,
+  });
+}
+
+class DeleteMilestoneUseCase {
+  final IssueRepository _repository;
+
+  DeleteMilestoneUseCase({required IssueRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, void>> call(DeleteMilestoneParams params) async {
+    return _repository.deleteMilestone(
+      params.owner,
+      params.repo,
+      params.id.toString(),
+    );
+  }
+}
+
+class DeleteMilestoneParams {
+  final String owner;
+  final String repo;
+  final int id;
+
+  DeleteMilestoneParams({
+    required this.owner,
+    required this.repo,
+    required this.id,
+  });
+}
+
 class SearchIssuesUseCase {
   final IssueRepository _repository;
 

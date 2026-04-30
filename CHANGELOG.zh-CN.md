@@ -2,6 +2,30 @@
 
 ## [Unreleased]
 
+### 新增 — 里程碑 CRUD
+
+- `CreateMilestonePage`：创建里程碑页面
+  - 标题输入（必填验证）
+  - 描述输入（Markdown，多行）
+  - 日期选择器设置截止日期
+  - AppBar 保存按钮带加载指示器
+- `EditMilestonePage`：编辑里程碑页面
+  - 预填现有数据（标题、描述、截止日期）
+  - 支持清除截止日期
+  - 保存成功自动刷新列表
+- `MilestoneDetailPage` 增强：
+  - AppBar 添加编辑和删除按钮
+  - 删除前显示确认对话框
+  - 编辑后返回自动刷新
+- `_MilestonesTab` 增强：
+  - 添加浮动操作按钮（FAB）用于新建里程碑
+  - 空状态显示时仍可创建
+  - 创建/编辑后自动刷新
+- 新增 UseCases：`GetMilestoneUseCase`、`EditMilestoneUseCase`、`DeleteMilestoneUseCase`
+- 新增 ARB 键：`createMilestone`、`editMilestone`、`deleteMilestone`、`deleteMilestoneConfirm`、`milestoneDeleted`、`milestoneTitle`、`milestoneDescription`、`milestoneDueDate` 等
+- 更新 `Injection` 类：三个初始化路径均添加里程碑 CRUD use cases
+- 更新 `IssueNotifier`：新增 `createMilestone`、`editMilestone`、`deleteMilestone` 方法
+
 ### 新增 — Wiki 完整支持
 
 - `WikiEditPage`：创建和编辑 Wiki 页面

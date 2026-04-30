@@ -1133,6 +1133,43 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get created => 'Created';
+
+  @override
+  String get createMilestone => 'Create Milestone';
+
+  @override
+  String get editMilestone => 'Edit Milestone';
+
+  @override
+  String get deleteMilestone => 'Delete Milestone';
+
+  @override
+  String get deleteMilestoneConfirm =>
+      'Are you sure you want to delete this milestone? This action cannot be undone.';
+
+  @override
+  String get milestoneDeleted => 'Milestone deleted';
+
+  @override
+  String get milestoneTitle => 'Title';
+
+  @override
+  String get milestoneDescription => 'Description';
+
+  @override
+  String get milestoneDescriptionHint => 'Describe this milestone';
+
+  @override
+  String get milestoneDueDate => 'Due Date';
+
+  @override
+  String get milestoneState => 'State';
+
+  @override
+  String get milestoneStateOpen => 'Open';
+
+  @override
+  String get milestoneStateClosed => 'Closed';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).

@@ -91,6 +91,10 @@ class IssueNotifier extends ChangeNotifier {
   SearchIssuesUseCase _searchIssuesUseCase;
   ListLabelsUseCase _listLabelsUseCase;
   ListMilestonesUseCase _listMilestonesUseCase;
+  GetMilestoneUseCase _getMilestoneUseCase;
+  CreateMilestoneUseCase _createMilestoneUseCase;
+  EditMilestoneUseCase _editMilestoneUseCase;
+  DeleteMilestoneUseCase _deleteMilestoneUseCase;
 
   IssueState _state = const IssueInitial();
   IssueState get state => _state;
@@ -113,6 +117,10 @@ class IssueNotifier extends ChangeNotifier {
     required SearchIssuesUseCase searchIssuesUseCase,
     required ListLabelsUseCase listLabelsUseCase,
     required ListMilestonesUseCase listMilestonesUseCase,
+    required GetMilestoneUseCase getMilestoneUseCase,
+    required CreateMilestoneUseCase createMilestoneUseCase,
+    required EditMilestoneUseCase editMilestoneUseCase,
+    required DeleteMilestoneUseCase deleteMilestoneUseCase,
   }) : _listIssuesUseCase = listIssuesUseCase,
        _getIssueUseCase = getIssueUseCase,
        _createIssueUseCase = createIssueUseCase,
@@ -121,7 +129,11 @@ class IssueNotifier extends ChangeNotifier {
        _createCommentUseCase = createCommentUseCase,
        _searchIssuesUseCase = searchIssuesUseCase,
        _listLabelsUseCase = listLabelsUseCase,
-       _listMilestonesUseCase = listMilestonesUseCase;
+       _listMilestonesUseCase = listMilestonesUseCase,
+       _getMilestoneUseCase = getMilestoneUseCase,
+       _createMilestoneUseCase = createMilestoneUseCase,
+       _editMilestoneUseCase = editMilestoneUseCase,
+       _deleteMilestoneUseCase = deleteMilestoneUseCase;
 
   void updateUseCases({
     required ListIssuesUseCase listIssuesUseCase,
@@ -133,6 +145,10 @@ class IssueNotifier extends ChangeNotifier {
     required SearchIssuesUseCase searchIssuesUseCase,
     required ListLabelsUseCase listLabelsUseCase,
     required ListMilestonesUseCase listMilestonesUseCase,
+    required GetMilestoneUseCase getMilestoneUseCase,
+    required CreateMilestoneUseCase createMilestoneUseCase,
+    required EditMilestoneUseCase editMilestoneUseCase,
+    required DeleteMilestoneUseCase deleteMilestoneUseCase,
   }) {
     _listIssuesUseCase = listIssuesUseCase;
     _getIssueUseCase = getIssueUseCase;
@@ -143,6 +159,10 @@ class IssueNotifier extends ChangeNotifier {
     _searchIssuesUseCase = searchIssuesUseCase;
     _listLabelsUseCase = listLabelsUseCase;
     _listMilestonesUseCase = listMilestonesUseCase;
+    _getMilestoneUseCase = getMilestoneUseCase;
+    _createMilestoneUseCase = createMilestoneUseCase;
+    _editMilestoneUseCase = editMilestoneUseCase;
+    _deleteMilestoneUseCase = deleteMilestoneUseCase;
   }
 
   Future<void> listIssues(ListIssuesParams params) async {
@@ -249,6 +269,37 @@ class IssueNotifier extends ChangeNotifier {
         _state = MilestonesLoaded(value);
         notifyListeners();
     }
+  }
+
+  Future<Either<Failure, Milestone>> createMilestone(
+    String owner,
+    String repo,
+    Map<String, dynamic> body,
+  ) async {
+    return _createMilestoneUseCase.call(
+      CreateMilestoneParams(owner: owner, repo: repo, body: body),
+    );
+  }
+
+  Future<Either<Failure, Milestone>> editMilestone(
+    String owner,
+    String repo,
+    String id,
+    Map<String, dynamic> body,
+  ) async {
+    return _editMilestoneUseCase.call(
+      EditMilestoneParams(owner: owner, repo: repo, id: id, body: body),
+    );
+  }
+
+  Future<Either<Failure, void>> deleteMilestone(
+    String owner,
+    String repo,
+    int id,
+  ) async {
+    return _deleteMilestoneUseCase.call(
+      DeleteMilestoneParams(owner: owner, repo: repo, id: id),
+    );
   }
 
   Future<void> listComments(String owner, String repo, int index) async {

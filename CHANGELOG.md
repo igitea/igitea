@@ -2,6 +2,29 @@
 
 ## [Unreleased]
 
+### Added — Milestone CRUD
+
+- `CreateMilestonePage`: create milestone page
+  - Title input (required validation)
+  - Description input (Markdown, multiline)
+  - Date picker for due date
+  - AppBar save button with loading indicator
+- `EditMilestonePage`: edit milestone page
+  - Pre-filled with existing data (title, description, due date)
+  - Support clearing due date
+  - Auto-refresh list after save
+- `MilestoneDetailPage` enhanced:
+  - AppBar edit and delete buttons
+  - Confirmation dialog before deletion
+  - Auto-refresh after editing
+- `_MilestonesTab` enhanced:
+  - Add FAB for creating new milestones
+  - Create/edit triggers auto-refresh
+- New UseCases: `GetMilestoneUseCase`, `EditMilestoneUseCase`, `DeleteMilestoneUseCase`
+- New ARB keys: `createMilestone`, `editMilestone`, `deleteMilestone`, `deleteMilestoneConfirm`, `milestoneDeleted`, `milestoneTitle`, `milestoneDescription`, `milestoneDueDate`, etc.
+- Update `Injection` class: add milestone CRUD use cases to all three init paths
+- Update `IssueNotifier`: add `createMilestone`, `editMilestone`, `deleteMilestone` methods
+
 ### Added — Full Wiki Support
 
 - `WikiEditPage`: create and edit wiki pages

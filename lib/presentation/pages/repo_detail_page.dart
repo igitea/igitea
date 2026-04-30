@@ -25,6 +25,7 @@ import 'release_detail_page.dart';
 import 'repo_file_page.dart';
 import 'tag_detail_page.dart';
 import 'wiki_list_page.dart';
+import 'create_milestone_page.dart';
 
 const _languageColors = <String, Color>{
   'Dart': Color(0xFF00B4AB),
@@ -1704,6 +1705,21 @@ class _MilestonesTabState extends State<_MilestonesTab> {
     });
   }
 
+  Future<void> _createMilestone() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CreateMilestonePage(
+          owner: widget.owner,
+          repo: widget.repo,
+        ),
+      ),
+    );
+    if (result == true) {
+      Injection.issueNotifier.listMilestones(widget.owner, widget.repo);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -1727,90 +1743,113 @@ class _MilestonesTabState extends State<_MilestonesTab> {
                 ],
               ),
             ),
-          MilestonesLoaded(:final milestones) => milestones.isEmpty
-              ? EmptyState(icon: Icons.flag, title: widget.l10n.noMilestones)
-              : ListView.builder(
-                  padding: UIConstants.pagePadding + const EdgeInsets.symmetric(vertical: UIConstants.sm),
-                  itemCount: milestones.length,
-                  itemBuilder: (context, index) {
-                    final milestone = milestones[index];
-                    final total = (milestone.open_issues ?? 0) + (milestone.closed_issues ?? 0);
-                    final progress = total > 0 ? (milestone.closed_issues ?? 0) / total : 0.0;
-                    return FadeInWrapper(
-                      delay: Duration(milliseconds: index * 20),
-                      child: PremiumListCard(
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => MilestoneDetailPage(
-                                owner: widget.owner,
-                                repo: widget.repo,
-                                milestone: milestone,
-                              ),
-                            ),
-                          );
-                        },
-                        child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Expanded(
-                                child: Text(
-                                  milestone.title ?? '',
-                                    style: theme.textTheme.titleSmall?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                ),
-                              ),
-                              if (milestone.due_on != null)
-                                Text(
-                                  _formatDate(milestone.due_on!),
-                                  style: theme.textTheme.labelSmall?.copyWith(
-                                    color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-                                  ),
-                                ),
-                            ],
-                          ),
-                          const SizedBox(height: UIConstants.sm),
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
-                            child: LinearProgressIndicator(
-                              value: progress,
-                              minHeight: 6,
-                              backgroundColor: theme.colorScheme.surfaceContainerHighest,
-                              valueColor: AlwaysStoppedAnimation<Color>(
-                                progress >= 1.0 ? Colors.green : theme.colorScheme.primary,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: UIConstants.xs),
-                          Row(
-                            children: [
-                              Text(
-                                '${(progress * 100).toStringAsFixed(0)}%',
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-                                ),
-                              ),
-                              const Spacer(),
-                              Text(
-                                '${milestone.open_issues ?? 0} ${widget.l10n.open} \u00b7 ${milestone.closed_issues ?? 0} ${widget.l10n.closed}',
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                  },
-                ),
+          MilestonesLoaded(:final milestones) => _buildMilestonesList(milestones, theme),
           _ => EmptyState(icon: Icons.flag, title: widget.l10n.noMilestones),
         };
       },
+    );
+  }
+
+  Widget _buildMilestonesList(List<Milestone> milestones, ThemeData theme) {
+    return Stack(
+      children: [
+        if (milestones.isEmpty)
+          EmptyState(icon: Icons.flag, title: widget.l10n.noMilestones)
+        else
+          ListView.builder(
+            padding: EdgeInsets.only(
+              bottom: 80,
+              left: UIConstants.md,
+              right: UIConstants.md,
+              top: UIConstants.sm,
+            ),
+            itemCount: milestones.length,
+            itemBuilder: (context, index) {
+              final milestone = milestones[index];
+              final total = (milestone.open_issues ?? 0) + (milestone.closed_issues ?? 0);
+              final progress = total > 0 ? (milestone.closed_issues ?? 0) / total : 0.0;
+              return FadeInWrapper(
+                delay: Duration(milliseconds: index * 20),
+                child: PremiumListCard(
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => MilestoneDetailPage(
+                          owner: widget.owner,
+                          repo: widget.repo,
+                          milestone: milestone,
+                        ),
+                      ),
+                    );
+                  },
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              milestone.title ?? '',
+                              style: theme.textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          if (milestone.due_on != null)
+                            Text(
+                              _formatDate(milestone.due_on!),
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                              ),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: UIConstants.sm),
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
+                        child: LinearProgressIndicator(
+                          value: progress,
+                          minHeight: 6,
+                          backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            progress >= 1.0 ? Colors.green : theme.colorScheme.primary,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: UIConstants.xs),
+                      Row(
+                        children: [
+                          Text(
+                            '${(progress * 100).toStringAsFixed(0)}%',
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                            ),
+                          ),
+                          const Spacer(),
+                          Text(
+                            '${milestone.open_issues ?? 0} ${widget.l10n.open} \u00b7 ${milestone.closed_issues ?? 0} ${widget.l10n.closed}',
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        Positioned(
+          right: UIConstants.md,
+          bottom: UIConstants.md,
+          child: FloatingActionButton(
+            heroTag: 'create_milestone',
+            onPressed: _createMilestone,
+            child: const Icon(Icons.add),
+          ),
+        ),
+      ],
     );
   }
 

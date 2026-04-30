@@ -371,5 +371,17 @@
   "commitMessageHint": "Describe your changes (optional)",
   "noContent": "No content",
   "saved": "Saved",
-  "created": "Created"
+  "created": "Created",
+  "createMilestone": "Create Milestone",
+  "editMilestone": "Edit Milestone",
+  "deleteMilestone": "Delete Milestone",
+  "deleteMilestoneConfirm": "Are you sure you want to delete this milestone? This action cannot be undone.",
+  "milestoneDeleted": "Milestone deleted",
+  "milestoneTitle": "Title",
+  "milestoneDescription": "Description",
+  "milestoneDescriptionHint": "Describe this milestone",
+  "milestoneDueDate": "Due Date",
+  "milestoneState": "State",
+  "milestoneStateOpen": "Open",
+  "milestoneStateClosed": "Closed"
 }

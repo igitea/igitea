@@ -2254,6 +2254,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Created'**
   String get created;
+
+  /// No description provided for @createMilestone.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Milestone'**
+  String get createMilestone;
+
+  /// No description provided for @editMilestone.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Milestone'**
+  String get editMilestone;
+
+  /// No description provided for @deleteMilestone.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Milestone'**
+  String get deleteMilestone;
+
+  /// No description provided for @deleteMilestoneConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this milestone? This action cannot be undone.'**
+  String get deleteMilestoneConfirm;
+
+  /// No description provided for @milestoneDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Milestone deleted'**
+  String get milestoneDeleted;
+
+  /// No description provided for @milestoneTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get milestoneTitle;
+
+  /// No description provided for @milestoneDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get milestoneDescription;
+
+  /// No description provided for @milestoneDescriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe this milestone'**
+  String get milestoneDescriptionHint;
+
+  /// No description provided for @milestoneDueDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Due Date'**
+  String get milestoneDueDate;
+
+  /// No description provided for @milestoneState.
+  ///
+  /// In en, this message translates to:
+  /// **'State'**
+  String get milestoneState;
+
+  /// No description provided for @milestoneStateOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get milestoneStateOpen;
+
+  /// No description provided for @milestoneStateClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get milestoneStateClosed;
 }
 
 class _AppLocalizationsDelegate

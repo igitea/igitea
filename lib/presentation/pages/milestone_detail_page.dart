@@ -12,6 +12,7 @@ import '../../l10n/app_localizations.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/premium_card.dart';
 import '../widgets/user_avatar.dart';
+import 'edit_milestone_page.dart';
 import 'issue_detail_page.dart';
 
 class MilestoneDetailPage extends StatefulWidget {
@@ -62,6 +63,76 @@ class _MilestoneDetailPageState extends State<MilestoneDetailPage> {
     }
   }
 
+  Future<void> _editMilestone() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => EditMilestonePage(
+          owner: widget.owner,
+          repo: widget.repo,
+          milestone: _milestone,
+        ),
+      ),
+    );
+    if (result == true) {
+      await Injection.issueNotifier.listMilestones(
+        widget.owner,
+        widget.repo,
+      );
+      if (mounted) {
+        setState(() {
+          _milestone = widget.milestone;
+        });
+      }
+    }
+  }
+
+  Future<void> _deleteMilestone() async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.deleteMilestone),
+        content: Text(l10n.deleteMilestoneConfirm),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+            child: Text(l10n.delete),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    final result = await Injection.issueNotifier.deleteMilestone(
+      widget.owner,
+      widget.repo,
+      _milestone.id ?? 0,
+    );
+
+    if (mounted) {
+      switch (result) {
+        case Left(:final value):
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('${l10n.error}: ${value.message}')),
+          );
+        case Right():
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.milestoneDeleted)),
+          );
+          Navigator.of(context).pop(true);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -72,6 +143,16 @@ class _MilestoneDetailPageState extends State<MilestoneDetailPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(_milestone.title ?? l10n.untitled),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit),
+            onPressed: _editMilestone,
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete_outline),
+            onPressed: _deleteMilestone,
+          ),
+        ],
       ),
       body: RefreshIndicator(
         onRefresh: _loadIssues,

@@ -1463,7 +1463,7 @@ class GiteaApiService {
     required String pageName,
     required Map<String, dynamic> body,
   }) async {
-    final response = await _client.post(
+    final response = await _client.patch(
       '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/wiki/page/${Uri.encodeComponent(pageName)}',
       body: body,
     );
