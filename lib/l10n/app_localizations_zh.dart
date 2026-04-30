@@ -1023,6 +1023,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get forked => '已分叉';
 
   @override
+  String get forkRepoConfirm => '这将为您创建一个此仓库的分叉。';
+
+  @override
   String get editIssue => '编辑 Issue';
 
   @override

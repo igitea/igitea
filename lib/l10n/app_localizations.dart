@@ -2039,6 +2039,12 @@ abstract class AppLocalizations {
   /// **'Forked'**
   String get forked;
 
+  /// No description provided for @forkRepoConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'This will create a fork of this repository in your account.'**
+  String get forkRepoConfirm;
+
   /// No description provided for @editIssue.
   ///
   /// In en, this message translates to:

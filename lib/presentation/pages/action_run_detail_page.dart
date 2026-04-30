@@ -8,7 +8,7 @@ import '../../core/di/injection.dart';
 import '../../l10n/app_localizations.dart';
 import '../widgets/empty_state.dart';
 
-_toInt(dynamic value) => switch (value) { num n => n.toInt(), String s => int.tryParse(s) ?? 0, _ => 0 };
+int _toInt(dynamic value) => switch (value) { num n => n.toInt(), String s => int.tryParse(s) ?? 0, _ => 0 };
 
 class ActionRunDetailPage extends StatefulWidget {
   final String owner;
@@ -34,7 +34,6 @@ class _ActionRunDetailPageState extends State<ActionRunDetailPage> {
   Map<int, String> _logs = {};
   Set<int> _expandedJobs = {};
   bool _loadingJobs = false;
-  bool _loadingArtifacts = false;
   Timer? _pollTimer;
   bool _hasIncompleteJobs = true;
 
@@ -144,7 +143,6 @@ class _ActionRunDetailPageState extends State<ActionRunDetailPage> {
   }
 
   Future<void> _loadArtifacts() async {
-    setState(() => _loadingArtifacts = true);
     try {
       final result = await Injection.apiService.repoListActionArtifacts(
         owner: widget.owner,
@@ -153,11 +151,9 @@ class _ActionRunDetailPageState extends State<ActionRunDetailPage> {
       if (mounted) {
         final all = (result['artifacts'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
         final filtered = all.where((a) => _toInt(a['run_id']) == widget.runId).toList();
-        setState(() { _artifacts = filtered; _loadingArtifacts = false; });
+        setState(() { _artifacts = filtered; });
       }
-    } catch (_) {
-      if (mounted) setState(() => _loadingArtifacts = false);
-    }
+    } catch (_) {}
   }
 
   Future<void> _loadLogs(int jobId) async {

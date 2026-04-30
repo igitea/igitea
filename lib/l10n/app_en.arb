@@ -331,6 +331,7 @@
   "publishedAt": "Published At",
   "target": "Target",
   "forked": "Forked",
+  "forkRepoConfirm": "This will create a fork of this repository in your account.",
   "editIssue": "Edit Issue",
   "titleRequired": "Title is required",
   "selectMilestone": "Select milestone",

@@ -1026,6 +1026,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get forked => 'Forked';
 
   @override
+  String get forkRepoConfirm =>
+      'This will create a fork of this repository in your account.';
+
+  @override
   String get editIssue => 'Edit Issue';
 
   @override

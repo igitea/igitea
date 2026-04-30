@@ -215,15 +215,12 @@ class _FileBlamePageState extends State<FileBlamePage> {
   }
 
   Widget _buildBlameView(AppLocalizations l10n) {
-    final uniqueShas = <String>{};
     return ListView.builder(
       itemCount: _lines.length,
       itemBuilder: (context, index) {
         final lineNum = index + 1;
         final commit = _commitForLine(lineNum);
         final sha = commit?.sha ?? '';
-        final isFirstInRange = sha.isNotEmpty && !uniqueShas.contains(sha);
-        if (sha.isNotEmpty) uniqueShas.add(sha);
 
         return Container(
           decoration: BoxDecoration(

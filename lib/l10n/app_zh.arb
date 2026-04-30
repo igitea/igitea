@@ -204,6 +204,7 @@
   "publishedAt": "发布时间",
   "target": "目标",
   "forked": "已分叉",
+  "forkRepoConfirm": "这将为您创建一个此仓库的分叉。",
   "editIssue": "编辑 Issue",
   "titleRequired": "标题不能为空",
   "selectMilestone": "选择里程碑",

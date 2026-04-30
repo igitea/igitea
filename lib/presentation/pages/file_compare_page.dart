@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../core/animations/animated_wrapper.dart';
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../core/utils/diff_parser.dart';

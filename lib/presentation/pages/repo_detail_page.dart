@@ -237,6 +237,26 @@ class _RepoDetailPageState extends State<RepoDetailPage> {
   }
 
   Future<void> _showForkDialog(BuildContext context, AppLocalizations l10n) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.forks),
+        content: Text('${l10n.forkRepoConfirm} ${widget.owner}/${widget.repo}'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: Text(l10n.confirm),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !context.mounted) return;
+
     final result = await Injection.repoNotifier.createFork(widget.owner, widget.repo);
     if (!context.mounted) return;
     switch (result) {

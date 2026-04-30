@@ -10,7 +10,6 @@ import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/repo_notifier.dart';
 import '../widgets/user_avatar.dart';
-import 'pr_diff_viewer_page.dart';
 
 class CommitDetailPage extends StatefulWidget {
   final String owner;

@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../../core/animations/animated_wrapper.dart';
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../l10n/app_localizations.dart';
-import '../widgets/empty_state.dart';
 import 'action_run_detail_page.dart';
 
-_toInt(dynamic value) => switch (value) { num n => n.toInt(), String s => int.tryParse(s) ?? 0, _ => 0 };
+int _toInt(dynamic value) => switch (value) { num n => n.toInt(), String s => int.tryParse(s) ?? 0, _ => 0 };
 
 class ActionsListPage extends StatefulWidget {
   final String owner;
