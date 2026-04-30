@@ -56,6 +56,7 @@
 - Fix label flickering in Issue edit page: `IssueNotifier._state` overwritten by `listLabels`/`listMilestones`; cache data locally
 - Fix issue labels not saving: `EditIssueOption` lacks `labels` field; use separate `PUT /issues/{index}/labels` endpoint
 - Fix issue label data format: API expects label IDs (int), not names (String)
+- Fix commit detail changed files overflow on window resize: wrap diff lines in `SingleChildScrollView(horizontal)`
 
 ### Added — Webhook Management
 

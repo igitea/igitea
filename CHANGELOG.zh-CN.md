@@ -57,6 +57,7 @@
 - 修复 Issue 编辑页标签闪烁消失：`IssueNotifier._state` 被 `listLabels`/`listMilestones` 互相覆盖，改为本地缓存
 - 修复 Issue 标签保存不生效：Gitea API 标签需通过 `PUT /issues/{index}/labels` 独立端点管理，`EditIssueOption` 不支持 `labels` 字段
 - 修复 Issue 创建/编辑时标签数据格式：API 期望 label ID（int）而非 label 名称（String）
+- 修复 Commit 详情页 Changed files 窗口缩放时右侧溢出：diff 行用 `SingleChildScrollView(horizontal)` 包裹
 
 ### 新增 — Webhook 管理
 
