@@ -313,6 +313,17 @@ class GiteaApiService {
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
 
+  /// Get a commit's raw diff text.
+  Future<String> repoGetCommitDiff({
+    required String owner,
+    required String repo,
+    required String sha,
+  }) async {
+    return _client.getRaw(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/git/commits/${Uri.encodeComponent(sha)}.diff',
+    );
+  }
+
   /// Get blame info for a file.
   Future<Map<String, dynamic>> repoGetBlame({
     required String owner,
