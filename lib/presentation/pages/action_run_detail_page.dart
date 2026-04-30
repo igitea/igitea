@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../core/animations/animated_wrapper.dart';
@@ -33,31 +35,112 @@ class _ActionRunDetailPageState extends State<ActionRunDetailPage> {
   Set<int> _expandedJobs = {};
   bool _loadingJobs = false;
   bool _loadingArtifacts = false;
+  Timer? _pollTimer;
+  bool _hasIncompleteJobs = true;
 
   @override
   void initState() {
     super.initState();
     _loadJobs();
     _loadArtifacts();
+    _startPolling();
+  }
+
+  @override
+  void dispose() {
+    _pollTimer?.cancel();
+    super.dispose();
+  }
+
+  void _startPolling() {
+    _pollTimer?.cancel();
+    _pollTimer = Timer.periodic(const Duration(seconds: 5), (_) {
+      if (_hasIncompleteJobs) {
+        _refreshJobs();
+      }
+    });
+  }
+
+  bool _isComplete(Map<String, dynamic> job) {
+    final s = (job['status'] as String? ?? '').toLowerCase();
+    return s == 'completed' || s == 'success' || s == 'failure' ||
+           s == 'cancelled' || s == 'skipped' || s == 'canceling';
+  }
+
+  Future<void> _refreshJobs() async {
+    try {
+      final result = await Injection.apiService.repoListActionJobs(
+        owner: widget.owner, repo: widget.repo, run: widget.runId,
+      );
+      if (!mounted) return;
+      final newJobs = (result['jobs'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
+      final allComplete = newJobs.every(_isComplete);
+      final reloadedLogs = <int, String>{};
+
+      // Re-fetch logs for expanded jobs that are still running
+      for (final j in newJobs) {
+        final jId = _toInt(j['id']);
+        if (_expandedJobs.contains(jId)) {
+          try {
+            reloadedLogs[jId] = await Injection.apiService.repoGetActionJobLogs(
+              owner: widget.owner, repo: widget.repo, jobId: jId,
+            );
+          } catch (_) {
+            reloadedLogs[jId] = _logs[jId] ?? '';
+          }
+        }
+      }
+
+      if (mounted) {
+        setState(() {
+          _jobs = newJobs;
+          _hasIncompleteJobs = !allComplete;
+          if (reloadedLogs.isNotEmpty) _logs.addAll(reloadedLogs);
+        });
+      }
+
+      if (allComplete) _pollTimer?.cancel();
+    } catch (_) {}
   }
 
   Future<void> _loadJobs() async {
     setState(() => _loadingJobs = true);
     try {
       final result = await Injection.apiService.repoListActionJobs(
-        owner: widget.owner,
-        repo: widget.repo,
-        run: widget.runId,
+        owner: widget.owner, repo: widget.repo, run: widget.runId,
       );
       if (mounted) {
+        final jobs = (result['jobs'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
+        final incomplete = jobs.any((j) => !_isComplete(j));
+        // Auto-expand in-progress jobs
+        final expand = <int>{};
+        for (final j in jobs) {
+          final jId = _toInt(j['id']);
+          if (!_isComplete(j)) expand.add(jId);
+        }
         setState(() {
-          _jobs = (result['jobs'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
+          _jobs = jobs;
           _loadingJobs = false;
+          _hasIncompleteJobs = incomplete;
+          _expandedJobs.addAll(expand);
         });
+        // Auto-load logs for expanded jobs
+        for (final jId in expand) {
+          _refreshLog(jId);
+        }
       }
     } catch (_) {
       if (mounted) setState(() => _loadingJobs = false);
     }
+  }
+
+  Future<void> _refreshLog(int jobId) async {
+    try {
+      final logs = await Injection.apiService.repoGetActionJobLogs(
+        owner: widget.owner, repo: widget.repo, jobId: jobId,
+      );
+      if (mounted) setState(() => _logs[jobId] = logs);
+    } catch (_) {}
   }
 
   Future<void> _loadArtifacts() async {
@@ -80,28 +163,19 @@ class _ActionRunDetailPageState extends State<ActionRunDetailPage> {
   Future<void> _loadLogs(int jobId) async {
     if (_logs.containsKey(jobId)) {
       setState(() {
-        if (_expandedJobs.contains(jobId)) { _expandedJobs.remove(jobId); } else { _expandedJobs.add(jobId); }
+        if (_expandedJobs.contains(jobId)) {
+          _expandedJobs.remove(jobId);
+        } else {
+          _expandedJobs.add(jobId);
+          // Refresh if job may still be running
+          final job = _jobs.where((j) => _toInt(j['id']) == jobId).firstOrNull;
+          if (job != null && !_isComplete(job)) _refreshLog(jobId);
+        }
       });
       return;
     }
-    try {
-      final logs = await Injection.apiService.repoGetActionJobLogs(
-        owner: widget.owner,
-        repo: widget.repo,
-        jobId: jobId,
-      );
-      if (mounted) {
-        setState(() {
-          _logs[jobId] = logs;
-          _expandedJobs.add(jobId);
-        });
-      }
-    } catch (e) {
-      if (mounted) {
-        setState(() => _logs[jobId] = 'Error loading logs: $e');
-        _expandedJobs.add(jobId);
-      }
-    }
+    setState(() => _expandedJobs.add(jobId));
+    await _refreshLog(jobId);
   }
 
   String _runStatus(Map<String, dynamic> run) {
@@ -258,10 +332,12 @@ class _ActionRunDetailPageState extends State<ActionRunDetailPage> {
               color: theme.colorScheme.surfaceContainerHighest,
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(UIConstants.sm),
-                child: SelectableText(
-                  _logs[jobId] ?? l10n.loading,
-                  style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
-                ),
+                child: _logs.containsKey(jobId)
+                    ? SelectableText(
+                        _logs[jobId]!,
+                        style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
+                      )
+                    : const Center(child: CircularProgressIndicator()),
               ),
             ),
         ],

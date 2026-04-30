@@ -206,6 +206,7 @@ class _CommitDetailPageState extends State<CommitDetailPage> {
       margin: const EdgeInsets.only(bottom: UIConstants.sm),
       clipBehavior: Clip.antiAlias,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           InkWell(
             onTap: () => setState(() {
