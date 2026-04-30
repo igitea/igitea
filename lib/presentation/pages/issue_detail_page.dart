@@ -201,7 +201,7 @@ class _IssueContent extends StatelessWidget {
                 label: Text(l10n.edit),
                 avatar: const Icon(Icons.edit, size: 16),
                 onPressed: () async {
-                  final result = await Navigator.of(context).push(
+                  await Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (_) => EditIssuePage(
                         owner: owner,
@@ -211,10 +211,8 @@ class _IssueContent extends StatelessWidget {
                       ),
                     ),
                   );
-                  if (result == true && context.mounted) {
-                    Injection.issueNotifier.getIssue(owner, repo, index);
-                    Injection.issueNotifier.listComments(owner, repo, index);
-                  }
+                  Injection.issueNotifier.getIssue(owner, repo, index);
+                  Injection.issueNotifier.listComments(owner, repo, index);
                 },
               ),
             ],
