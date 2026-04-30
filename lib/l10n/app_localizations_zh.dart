@@ -572,7 +572,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get untitled => 'Untitled';
 
   @override
-  String get enterSearchQueryRepos => 'Enter a search query to find repositories';
+  String get enterSearchQueryRepos =>
+      'Enter a search query to find repositories';
 
   @override
   String get enterSearchQueryIssues => 'Enter a search query to find issues';
@@ -1093,7 +1094,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get deleteWikiPage => 'Delete Wiki Page';
 
   @override
-  String get deleteWikiPageConfirm => 'Are you sure you want to delete this wiki page? This action cannot be undone.';
+  String get deleteWikiPageConfirm =>
+      'Are you sure you want to delete this wiki page? This action cannot be undone.';
 
   @override
   String get wikiPageDeleted => 'Wiki page deleted';
@@ -1114,7 +1116,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get noWikiPages => 'No wiki pages';
 
   @override
-  String get noWikiPagesDescription => 'This repository doesn\'t have any wiki pages yet.';
+  String get noWikiPagesDescription =>
+      'This repository doesn\'t have any wiki pages yet.';
 
   @override
   String get createFirstWikiPage => 'Create First Page';
@@ -1141,7 +1144,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get deleteMilestone => 'Delete Milestone';
 
   @override
-  String get deleteMilestoneConfirm => 'Are you sure you want to delete this milestone? This action cannot be undone.';
+  String get deleteMilestoneConfirm =>
+      'Are you sure you want to delete this milestone? This action cannot be undone.';
 
   @override
   String get milestoneDeleted => 'Milestone deleted';
@@ -1192,7 +1196,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get deleteWebhook => 'Delete Webhook';
 
   @override
-  String get deleteWebhookConfirm => 'Are you sure you want to delete this webhook? This action cannot be undone.';
+  String get deleteWebhookConfirm =>
+      'Are you sure you want to delete this webhook? This action cannot be undone.';
 
   @override
   String get webhookDeleted => 'Webhook deleted';
@@ -1303,7 +1308,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get oauth2AuthorizationCode => 'Authorization Code';
 
   @override
-  String get oauth2AuthorizationCodeHint => 'Paste the code from the redirect URL';
+  String get oauth2AuthorizationCodeHint =>
+      'Paste the code from the redirect URL';
 
   @override
   String get oauth2TokenRefreshed => 'Token refreshed successfully';
@@ -1318,7 +1324,8 @@ class AppLocalizationsZh extends AppLocalizations {
   String get deleteLabel => 'Delete Label';
 
   @override
-  String get deleteLabelConfirm => 'Are you sure you want to delete this label?';
+  String get deleteLabelConfirm =>
+      'Are you sure you want to delete this label?';
 
   @override
   String get labelDeleted => 'Label deleted';
@@ -1344,7 +1351,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
 class AppLocalizationsZhTw extends AppLocalizationsZh {
-  AppLocalizationsZhTw(): super('zh_TW');
+  AppLocalizationsZhTw() : super('zh_TW');
 
   @override
   String get appTitle => 'iGitea';

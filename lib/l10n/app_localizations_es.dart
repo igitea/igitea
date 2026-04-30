@@ -144,7 +144,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get mergePullRequest => 'Fusionar solicitud de extracción';
 
   @override
-  String get mergeConfirmMessage => '¿Está seguro de que desea fusionar esta solicitud de extracción?';
+  String get mergeConfirmMessage =>
+      '¿Está seguro de que desea fusionar esta solicitud de extracción?';
 
   @override
   String issueNumber(Object issueNumber) {
@@ -471,7 +472,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get deleteRepo => 'Eliminar repositorio';
 
   @override
-  String get deleteRepoConfirm => '¿Está seguro de que desea eliminar este repositorio? Esta acción no se puede deshacer.';
+  String get deleteRepoConfirm =>
+      '¿Está seguro de que desea eliminar este repositorio? Esta acción no se puede deshacer.';
 
   @override
   String get generalSettings => 'Configuración general';
@@ -495,7 +497,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get unsavedChanges => 'Cambios sin guardar';
 
   @override
-  String get unsavedChangesMessage => 'Tiene cambios sin guardar. ¿Está seguro de que desea abandonar esta página?';
+  String get unsavedChangesMessage =>
+      'Tiene cambios sin guardar. ¿Está seguro de que desea abandonar esta página?';
 
   @override
   String get leave => 'Abandonar';
@@ -572,7 +575,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get untitled => 'Untitled';
 
   @override
-  String get enterSearchQueryRepos => 'Enter a search query to find repositories';
+  String get enterSearchQueryRepos =>
+      'Enter a search query to find repositories';
 
   @override
   String get enterSearchQueryIssues => 'Enter a search query to find issues';
@@ -1061,16 +1065,19 @@ class AppLocalizationsEs extends AppLocalizations {
   String get public => 'Public';
 
   @override
-  String get publicDescription => 'Anyone on the internet can see this repository';
+  String get publicDescription =>
+      'Anyone on the internet can see this repository';
 
   @override
-  String get privateDescription => 'You choose who can see and commit to this repository';
+  String get privateDescription =>
+      'You choose who can see and commit to this repository';
 
   @override
   String get initializeWithReadme => 'Initialize with README';
 
   @override
-  String get initializeWithReadmeDescription => 'Add a README file to help others understand your project';
+  String get initializeWithReadmeDescription =>
+      'Add a README file to help others understand your project';
 
   @override
   String repoCreated(Object repoName) {
@@ -1093,7 +1100,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get deleteWikiPage => 'Delete Wiki Page';
 
   @override
-  String get deleteWikiPageConfirm => 'Are you sure you want to delete this wiki page? This action cannot be undone.';
+  String get deleteWikiPageConfirm =>
+      'Are you sure you want to delete this wiki page? This action cannot be undone.';
 
   @override
   String get wikiPageDeleted => 'Wiki page deleted';
@@ -1114,7 +1122,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get noWikiPages => 'No wiki pages';
 
   @override
-  String get noWikiPagesDescription => 'This repository doesn\'t have any wiki pages yet.';
+  String get noWikiPagesDescription =>
+      'This repository doesn\'t have any wiki pages yet.';
 
   @override
   String get createFirstWikiPage => 'Create First Page';
@@ -1141,7 +1150,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get deleteMilestone => 'Delete Milestone';
 
   @override
-  String get deleteMilestoneConfirm => 'Are you sure you want to delete this milestone? This action cannot be undone.';
+  String get deleteMilestoneConfirm =>
+      'Are you sure you want to delete this milestone? This action cannot be undone.';
 
   @override
   String get milestoneDeleted => 'Milestone deleted';
@@ -1192,7 +1202,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get deleteWebhook => 'Delete Webhook';
 
   @override
-  String get deleteWebhookConfirm => 'Are you sure you want to delete this webhook? This action cannot be undone.';
+  String get deleteWebhookConfirm =>
+      'Are you sure you want to delete this webhook? This action cannot be undone.';
 
   @override
   String get webhookDeleted => 'Webhook deleted';
@@ -1303,7 +1314,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get oauth2AuthorizationCode => 'Authorization Code';
 
   @override
-  String get oauth2AuthorizationCodeHint => 'Paste the code from the redirect URL';
+  String get oauth2AuthorizationCodeHint =>
+      'Paste the code from the redirect URL';
 
   @override
   String get oauth2TokenRefreshed => 'Token refreshed successfully';
@@ -1318,7 +1330,8 @@ class AppLocalizationsEs extends AppLocalizations {
   String get deleteLabel => 'Delete Label';
 
   @override
-  String get deleteLabelConfirm => 'Are you sure you want to delete this label?';
+  String get deleteLabelConfirm =>
+      'Are you sure you want to delete this label?';
 
   @override
   String get labelDeleted => 'Label deleted';
