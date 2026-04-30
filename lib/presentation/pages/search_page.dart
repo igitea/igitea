@@ -3,6 +3,7 @@ import '../../core/animations/animated_wrapper.dart';
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
+import '../../domain/entities/issue_state.dart';
 import '../../l10n/app_localizations.dart';
 import '../../presentation/state/issue_notifier.dart';
 import '../../presentation/state/repo_notifier.dart';
@@ -295,7 +296,7 @@ class _SearchIssueCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
-    final isOpen = issue.state?.value == 'open';
+    final isOpen = issue.state?.isOpen == true;
 
     return PremiumListCard(
       onTap: () {

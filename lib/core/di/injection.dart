@@ -100,6 +100,7 @@ class Injection {
   static late ReplaceIssueLabelsUseCase replaceIssueLabelsUseCase;
   static late ListMilestonesUseCase listMilestonesUseCase;
   static late CreateMilestoneUseCase createMilestoneUseCase;
+  static late GetMilestoneUseCase getMilestoneUseCase;
   static late EditMilestoneUseCase editMilestoneUseCase;
   static late DeleteMilestoneUseCase deleteMilestoneUseCase;
   static late GetOrgUseCase getOrgUseCase;
@@ -142,6 +143,85 @@ class Injection {
   static late AdminNotifier adminNotifier;
 
   static bool _initialized = false;
+
+  /// Asserts that all use cases have been initialized.
+  /// Catches missing wiring in any of the 3 init paths.
+  static void _assertUseCasesInitialized() {
+    assert(getRepoUseCase != null);
+    assert(listBranchesUseCase != null);
+    assert(listCommitsUseCase != null);
+    assert(getCommitUseCase != null);
+    assert(listTagsUseCase != null);
+    assert(getTagUseCase != null);
+    assert(listReleasesUseCase != null);
+    assert(getRepoContentsUseCase != null);
+    assert(listPullRequestsUseCase != null);
+    assert(getPullRequestUseCase != null);
+    assert(starRepoUseCase != null);
+    assert(unstarRepoUseCase != null);
+    assert(checkStarredUseCase != null);
+    assert(mergePullRequestUseCase != null);
+    assert(createPullRequestUseCase != null);
+    assert(editRepoUseCase != null);
+    assert(deleteRepoUseCase != null);
+    assert(updateFileUseCase != null);
+    assert(createForkUseCase != null);
+    assert(createRepoUseCase != null);
+    assert(listWikiPagesUseCase != null);
+    assert(getWikiPageUseCase != null);
+    assert(createWikiPageUseCase != null);
+    assert(editWikiPageUseCase != null);
+    assert(deleteWikiPageUseCase != null);
+    assert(listHooksUseCase != null);
+    assert(createHookUseCase != null);
+    assert(deleteHookUseCase != null);
+    assert(listIssuesUseCase != null);
+    assert(getIssueUseCase != null);
+    assert(createIssueUseCase != null);
+    assert(editIssueUseCase != null);
+    assert(listCommentsUseCase != null);
+    assert(createCommentUseCase != null);
+    assert(searchIssuesUseCase != null);
+    assert(listLabelsUseCase != null);
+    assert(createLabelUseCase != null);
+    assert(editLabelUseCase != null);
+    assert(deleteLabelUseCase != null);
+    assert(replaceIssueLabelsUseCase != null);
+    assert(listMilestonesUseCase != null);
+    assert(createMilestoneUseCase != null);
+    assert(getMilestoneUseCase != null);
+    assert(editMilestoneUseCase != null);
+    assert(deleteMilestoneUseCase != null);
+    assert(getOrgUseCase != null);
+    assert(listCurrentUserOrgsUseCase != null);
+    assert(listOrgReposUseCase != null);
+    assert(listOrgTeamsUseCase != null);
+    assert(getTeamUseCase != null);
+    assert(listTeamMembersUseCase != null);
+    assert(listTeamReposUseCase != null);
+    assert(editOrgUseCase != null);
+    assert(createOrgUseCase != null);
+    assert(listNotificationsUseCase != null);
+    assert(listRepoNotificationsUseCase != null);
+    assert(markNotificationsReadUseCase != null);
+    assert(checkNewNotificationsUseCase != null);
+    assert(markThreadReadUseCase != null);
+    assert(listPackagesUseCase != null);
+    assert(getPackageUseCase != null);
+    assert(searchUsersUseCase != null);
+    assert(createUserUseCase != null);
+    assert(deleteUserUseCase != null);
+    assert(listCronTasksUseCase != null);
+    assert(editUserUseCase != null);
+    assert(runCronTaskUseCase != null);
+    assert(getGitignoreTemplatesUseCase != null);
+    assert(renderMarkdownUseCase != null);
+    assert(getNodeInfoUseCase != null);
+    assert(getGeneralAPISettingsUseCase != null);
+    assert(getGeneralUISettingsUseCase != null);
+    assert(getGeneralAttachmentSettingsUseCase != null);
+    assert(getGeneralRepoSettingsUseCase != null);
+  }
 
   static void _initRepositories() {
     userRepository = UserRepositoryImpl(apiService: apiService);
@@ -212,6 +292,7 @@ class Injection {
     createMilestoneUseCase = CreateMilestoneUseCase(
       repository: issueRepository,
     );
+    getMilestoneUseCase = GetMilestoneUseCase(repository: issueRepository);
     editMilestoneUseCase = EditMilestoneUseCase(repository: issueRepository);
     deleteMilestoneUseCase = DeleteMilestoneUseCase(repository: issueRepository);
     getOrgUseCase = GetOrgUseCase(repository: organizationRepository);
@@ -283,6 +364,7 @@ class Injection {
 
     _initRepositories();
     _initUseCases();
+    _assertUseCasesInitialized();
 
     if (_initialized) {
       authNotifier.updateUseCases(
@@ -469,6 +551,7 @@ class Injection {
 
     _initRepositories();
     _initUseCases();
+    _assertUseCasesInitialized();
 
     authNotifier.updateUseCases(
       loginUseCase: loginUseCase,

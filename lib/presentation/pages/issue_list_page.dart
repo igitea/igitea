@@ -3,6 +3,7 @@ import '../../core/animations/animated_wrapper.dart';
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
+import '../../domain/entities/issue_state.dart';
 import '../../l10n/app_localizations.dart';
 import '../../presentation/state/issue_notifier.dart';
 import '../widgets/empty_state.dart';
@@ -204,7 +205,7 @@ class _IssueCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isOpen = issue.state?.value == 'open';
+    final isOpen = issue.state?.isOpen == true;
     final stateIcon = isOpen ? Icons.error_outline : Icons.check_circle;
     final stateColor = isOpen ? Colors.green : Colors.purple;
 

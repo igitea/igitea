@@ -9,6 +9,7 @@ import '../../core/errors/failures.dart';
 import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../domain/usecases/issue_usecases.dart';
+import '../../domain/entities/issue_state.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/repo_notifier.dart';
 import '../state/issue_notifier.dart';
@@ -948,7 +949,7 @@ class _IssueItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isOpen = issue.state?.value == 'open';
+    final isOpen = issue.state?.isOpen == true;
     final stateIcon = isOpen ? Icons.error_outline : Icons.check_circle;
     final stateColor = isOpen ? Colors.green : Colors.purple;
 

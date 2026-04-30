@@ -8,6 +8,7 @@ import '../../core/errors/failures.dart';
 import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../domain/usecases/issue_usecases.dart';
+import '../../domain/entities/issue_state.dart';
 import '../../l10n/app_localizations.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/premium_card.dart';
@@ -177,7 +178,7 @@ class _MilestoneDetailPageState extends State<MilestoneDetailPage> {
     final theme = Theme.of(context);
     final total = (_milestone.open_issues ?? 0) + (_milestone.closed_issues ?? 0);
     final progress = total > 0 ? (_milestone.closed_issues ?? 0) / total : 0.0;
-    final isOpen = _milestone.state?.value == 'open';
+    final isOpen = _milestone.state?.isOpen == true;
 
     return Column(
       children: [
@@ -403,7 +404,7 @@ class _IssueItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final isOpen = issue.state?.value == 'open';
+    final isOpen = issue.state?.isOpen == true;
     final stateIcon = isOpen ? Icons.error_outline : Icons.check_circle;
     final stateColor = isOpen ? Colors.green : Colors.purple;
 

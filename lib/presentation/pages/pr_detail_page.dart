@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../core/animations/animated_wrapper.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
+import '../../domain/entities/issue_state.dart';
 import '../../l10n/app_localizations.dart';
 import '../../presentation/state/issue_notifier.dart';
 import '../../presentation/state/repo_notifier.dart';
@@ -215,7 +216,7 @@ class _PRContent extends StatelessWidget {
             ),
           const SizedBox(height: 16),
 
-          if (pr.state?.value == 'open' && pr.mergeable == true && pr.merged != true)
+          if (pr.state?.isOpen == true && pr.mergeable == true && pr.merged != true)
             Row(
               children: [
                 FilledButton(
@@ -245,7 +246,7 @@ class _PRContent extends StatelessWidget {
                 ),
               ],
             ),
-          if (pr.state?.value == 'open' && pr.mergeable == true && pr.merged != true)
+          if (pr.state?.isOpen == true && pr.mergeable == true && pr.merged != true)
             const SizedBox(height: 16),
           if (pr.head != null && pr.base_ != null)
             Container(
@@ -527,7 +528,7 @@ class _PRContent extends StatelessWidget {
       return (l10n.merged, Colors.purple);
     } else if (pr.draft == true) {
       return (l10n.draft, Colors.grey);
-    } else if (pr.state?.value == 'closed') {
+    } else if (pr.state?.isClosed == true) {
       return (l10n.closed, Colors.red);
     } else {
       return (l10n.open, Colors.green);
