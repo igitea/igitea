@@ -18,18 +18,18 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 - Material 3 Design System with premium UI polish
 - Consistent 4px spacing grid and typography hierarchy across all pages
 - 120+ data models auto-generated from OpenAPI spec
-- 35+ domain use cases with `Either<Failure, T>` pattern
+- 45+ domain use cases with `Either<Failure, T>` pattern
 
 ### Authentication
 - Username/password login (primary)
 - Access token login (secondary)
-- OAuth2 support (planned)
+- OAuth2 login: browser authorization → callback code → token exchange
 - Session persistence and auto-restore
 
 ### Repositories
 - List, search, and browse repositories
 - Collapsible header with star/fork actions
-- Section list navigation: Code, Issues, Milestones, Pull Requests, Releases, Commits, Branches, Tags (tap to open)
+- Section list navigation: Code, Issues, Milestones, Pull Requests, Releases, Commits, Branches, Tags, Wiki, Webhooks, Labels (tap to open)
 - File browser with breadcrumb navigation
 - File viewer with Markdown rendering, images, and syntax highlighting
 - Edit files with commit message dialog
@@ -39,7 +39,31 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 - List, search, filter issues and PRs
 - Detail pages with Markdown body, state badges, author avatars, labels
 - Comments with Markdown rendering
+- Create issues: title, body, label selection, milestone selection
+- Edit issues: title, body, state toggle, label selection, milestone selection
 - Close/reopen issues, merge PRs with confirmation
+
+### Milestones
+- List milestones with progress bars and open/closed counts
+- Milestone detail with linked issues, edit and delete actions
+- Create milestones: title, description, due date
+
+### Wiki
+- Wiki page list
+- Wiki detail with Markdown rendering (selectable text)
+- Create wiki pages: title, Markdown content, preview toggle, commit message
+- Edit wiki pages: same as create, pre-filled with existing content
+- Delete wiki pages with confirmation dialog
+
+### Labels
+- List labels with color indicators, name, and description
+- Create labels: name, description, color picker (preset palette)
+- Edit labels: same as create, with delete support
+
+### Webhooks
+- List webhooks with type, URL, and active status
+- Webhook detail: configuration, events list, delete action
+- Create webhooks: URL, secret, content type, event multi-select, active toggle
 
 ### Organizations & Teams
 - View organization info, repositories, and teams
@@ -157,6 +181,7 @@ All phases complete.
 | 10 | Issue/PR Detail & Search | ✅ Done |
 | 11 | Settings & Admin | ✅ Done |
 | 12 | Internationalization | ✅ Done |
+| 13 | Wiki, Milestone CRUD, Webhooks, Labels, OAuth2 | ✅ Done |
 
 ## License
 
