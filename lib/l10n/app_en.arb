@@ -443,5 +443,10 @@
   "labelDescription": "Description",
   "labelDescriptionHint": "Optional description",
   "labelColor": "Color",
-  "labelColorHint": "Hex color, e.g. #FF0000"
+  "labelColorHint": "Hex color, e.g. #FF0000",
+  "filesChanged": "Files Changed",
+  "noFilesChanged": "No files changed",
+  "viewDiff": "View Diff",
+  "unifiedView": "Unified view",
+  "splitView": "Split view"
 }

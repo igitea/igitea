@@ -1423,6 +1423,16 @@ class GiteaApiService {
     return jsonDecode(response.body) as List<dynamic>;
   }
 
+  Future<String> repoGetPullRequestDiff({
+    required String owner,
+    required String repo,
+    required int index,
+  }) async {
+    return _client.getRaw(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/pulls/${index.toString()}.diff',
+    );
+  }
+
   // Wiki
 
   Future<List<WikiPageMetaData>> repoGetWikiPages({

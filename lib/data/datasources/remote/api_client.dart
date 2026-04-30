@@ -52,6 +52,29 @@ class ApiClient {
     }
   }
 
+  /// GET returning raw text (no JSON parse). Used for diff/patch endpoints.
+  Future<String> getRaw(
+    String path, {
+    Map<String, String>? queryParameters,
+  }) async {
+    final uri = _buildUri(path, queryParameters);
+    try {
+      final response = await _client
+          .get(uri, headers: _headers)
+          .timeout(const Duration(seconds: defaultTimeoutSeconds));
+      _processResponse(response);
+      return response.body;
+    } on http.ClientException catch (e) {
+      throw NetworkException(
+        e.message.isNotEmpty ? e.message : 'Network error',
+      );
+    } on TimeoutException catch (_) {
+      throw const NetworkException('Request timed out');
+    } on FormatException catch (e) {
+      throw NetworkException(e.message);
+    }
+  }
+
   Future<http.Response> post(
     String path, {
     Map<String, dynamic>? body,
