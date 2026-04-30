@@ -63,14 +63,15 @@
 
 ### Webhook 管理
 - Webhook 列表：类型、URL、激活状态
-- Webhook 详情：配置信息、事件列表、删除
+- Webhook 详情：配置信息、事件列表、编辑、删除
 - 创建 Webhook：URL、Secret、Content-Type、事件多选、激活开关
 
 ### CI/CD Actions
 - 按 workflow 文件分组显示工作流运行
 - 状态筛选（success/failure/in_progress 等）+ 参与者筛选
 - 滚动到底部自动加载更多（无限分页）
-- 运行详情：Job 列表、可展开日志、Artifacts
+- Job 日志自动轮询刷新（每 5 秒）
+- 运行详情：Job 列表、可展开日志、构建产物下载
 
 ### 组织和团队
 - 查看组织信息、仓库列表、团队列表
@@ -104,6 +105,7 @@
 - 统一 diff 解析：文件级导航、@@ hunk 头部
 - 行级新增（绿）/ 删除（红）着色，行号栏
 - Unified / Split 视图切换
+- 代码审查：Comment / Approve / Request Changes
 
 ### 文件操作
 - 文件查看器：语法高亮、Markdown 渲染、编辑、下载

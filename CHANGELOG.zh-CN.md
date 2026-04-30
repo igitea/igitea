@@ -114,6 +114,20 @@
   - 无限滚动分页，滚动到底部自动加载更多
   - 退出页面后返回保持状态（`AutomaticKeepAliveClientMixin`）
   - `repoListActionWorkflows` 获取 workflow 列表
+  - Job 日志自动轮询刷新（每 5 秒）
+  - 构建产物下载：artifact 项增加下载按钮，保存到应用文档目录
+
+### 新增 — PR 代码审查
+
+- PR 详情页 AppBar 新增 Review 按钮
+- 审查对话框：支持 Comment / Approve / Request Changes 三种类型
+- 审查列表：状态徽章、作者、正文、时间戳
+
+### 新增 — Webhook 编辑
+
+- Webhook 详情页 AppBar 新增编辑按钮
+- 编辑对话框：更新 URL，调用 `repoEditHook` API
+- 新增 API 方法：`repoEditHook`
 
 ### 新增 — Commit 内联 Diff
 

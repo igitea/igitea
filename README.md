@@ -63,14 +63,15 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 
 ### Webhooks
 - List webhooks with type, URL, and active status
-- Webhook detail: configuration, events list, delete action
+- Webhook detail: configuration, events list, edit and delete actions
 - Create webhooks: URL, secret, content type, event multi-select, active toggle
 
 ### CI/CD Actions
 - Workflow runs grouped by workflow file
 - Status filter (success/failure/in_progress etc.) + actor filter
 - Infinite scroll pagination
-- Run detail: jobs list, expandable logs, artifacts
+- Job log auto-polling every 5s
+- Run detail: jobs list, expandable logs, artifact download
 
 ### Organizations & Teams
 - View organization info, repositories, and teams
@@ -104,6 +105,7 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 - Unified diff parsing with file-level navigation and @@ hunk headers
 - Line-level added (green) / removed (red) highlighting with line numbers
 - Unified / Split view toggle
+- Code review: Comment / Approve / Request Changes
 
 ### File Operations
 - File viewer: syntax highlighting, Markdown rendering, edit, download

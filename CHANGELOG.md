@@ -113,6 +113,20 @@
   - Infinite scroll pagination
   - State preserved on navigation (AutomaticKeepAliveClientMixin)
   - `repoListActionWorkflows` API for workflow list
+  - Job log auto-polling every 5s
+  - Artifact download with save to documents directory
+
+### Added — PR Code Review
+
+- Review button in PR detail AppBar
+- Review dialog: Comment / Approve / Request Changes
+- Review list with state badges, author, body, timestamp
+
+### Added — Webhook Edit
+
+- Edit button in WebhookDetailPage
+- Edit dialog: update URL via `repoEditHook` API
+- New API method: `repoEditHook`
 
 ### Added — Commit Inline Diff
 
