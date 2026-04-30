@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'core/di/injection.dart';
+import 'core/storage/auth_storage.dart';
 import 'domain/entities/auth_state.dart';
 import 'l10n/app_localizations.dart';
 import 'presentation/pages/login_page.dart';
@@ -26,6 +27,15 @@ class _IGiteaAppState extends State<IGiteaApp> {
   }
 
   Future<void> _tryRestoreSession() async {
+    final saved = await AuthStorage().loadCredentials();
+    if (saved != null) {
+      Injection.updateAuth(
+        baseUrl: saved.baseUrl,
+        token: saved.token,
+        username: saved.username,
+        password: saved.password,
+      );
+    }
     await Injection.authNotifier.restoreSession();
   }
 
