@@ -484,6 +484,7 @@ class RepoNotifier extends ChangeNotifier {
     String owner,
     String repo, {
     String? sha,
+    String? path,
     int? page,
     int? limit,
   }) async {
@@ -495,6 +496,7 @@ class RepoNotifier extends ChangeNotifier {
         owner: owner,
         repo: repo,
         sha: sha,
+        path: path,
         page: page,
         limit: limit,
       ),

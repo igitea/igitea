@@ -64,8 +64,9 @@ class FakeRepoRepository implements RepoRepository {
   @override
   Future<Either<Failure, List<Commit>>> listCommits(
     String owner,
-    String repoName, {
+    String repo, {
     String? sha,
+    String? path,
     int? page,
     int? limit,
   }) async {

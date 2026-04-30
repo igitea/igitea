@@ -110,6 +110,7 @@ class RepoRepositoryImpl implements RepoRepository {
     String owner,
     String repo, {
     String? sha,
+    String? path,
     int? page,
     int? limit,
   }) async {
@@ -118,6 +119,7 @@ class RepoRepositoryImpl implements RepoRepository {
         owner: owner,
         repo: repo,
         sha: sha,
+        path: path,
         page: page,
         limit: limit,
       ),

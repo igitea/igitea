@@ -17,6 +17,7 @@ import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../domain/usecases/repo_usecases.dart';
 import '../../l10n/app_localizations.dart';
+import 'file_history_page.dart';
 
 class RepoFilePage extends StatefulWidget {
   final String owner;
@@ -228,6 +229,24 @@ class _RepoFilePageState extends State<RepoFilePage> {
                 icon: const Icon(Icons.download),
                 tooltip: l10n.downloadFile,
                 onPressed: () => _downloadFile(context),
+              ),
+            if (hasContent)
+              IconButton(
+                icon: const Icon(Icons.history),
+                tooltip: l10n.commitHistory,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => FileHistoryPage(
+                        owner: widget.owner,
+                        repo: widget.repo,
+                        path: widget.path,
+                        ref: widget.ref,
+                      ),
+                    ),
+                  );
+                },
               ),
           ],
         ),

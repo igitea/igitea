@@ -61,6 +61,7 @@ class MockRepoRepository implements RepoRepository {
     String owner,
     String repo, {
     String? sha,
+    String? path,
     int? page,
     int? limit,
   }) => throw UnimplementedError();

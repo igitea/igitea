@@ -133,6 +133,7 @@ class ListCommitsParams {
   final String owner;
   final String repo;
   final String? sha;
+  final String? path;
   final int? page;
   final int? limit;
 
@@ -140,6 +141,7 @@ class ListCommitsParams {
     required this.owner,
     required this.repo,
     this.sha,
+    this.path,
     this.page,
     this.limit,
   });
@@ -156,6 +158,7 @@ class ListCommitsUseCase {
       params.owner,
       params.repo,
       sha: params.sha,
+      path: params.path,
       page: params.page,
       limit: params.limit,
     );
