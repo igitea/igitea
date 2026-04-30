@@ -109,6 +109,8 @@ class IssueNotifier extends ChangeNotifier {
   CommentsState get commentsState => _commentsState;
 
   String? lastSearchQuery;
+  String? _issuesListFilter;
+  String? get issuesListFilter => _issuesListFilter;
 
   IssueNotifier({
     required ListIssuesUseCase listIssuesUseCase,
@@ -407,6 +409,7 @@ class IssueNotifier extends ChangeNotifier {
     String? labels,
     String? milestones,
   }) async {
+    _issuesListFilter = state;
     _issuesListState = const IssuesListLoading();
     notifyListeners();
 

@@ -18,7 +18,6 @@ class IssueListPage extends StatefulWidget {
 }
 
 class _IssueListPageState extends State<IssueListPage> {
-  String? _selectedState;
   String _searchQuery = '';
   final _searchController = TextEditingController();
 
@@ -26,7 +25,10 @@ class _IssueListPageState extends State<IssueListPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadIssues();
+      final notifier = Injection.issueNotifier;
+      if (notifier.issuesListState is! IssuesListLoaded) {
+        notifier.searchIssues('', state: notifier.issuesListFilter);
+      }
     });
   }
 
@@ -36,19 +38,11 @@ class _IssueListPageState extends State<IssueListPage> {
     super.dispose();
   }
 
-  void _loadIssues() {
-    final state = _selectedState ?? 'open';
-    final notifier = Injection.issueNotifier;
-    if (notifier.issuesListState is! IssuesListLoaded) {
-      notifier.searchIssues('', state: state);
-    }
-  }
-
   void _forceReload() {
-    final state = _selectedState ?? 'open';
-    Injection.issueNotifier.searchIssues(
+    final notifier = Injection.issueNotifier;
+    notifier.searchIssues(
       _searchQuery,
-      state: state,
+      state: notifier.issuesListFilter,
     );
   }
 
@@ -92,10 +86,13 @@ class _IssueListPageState extends State<IssueListPage> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: UIConstants.md, vertical: UIConstants.sm),
               child: _FilterChips(
-                selectedState: _selectedState,
+                selectedState: Injection.issueNotifier.issuesListFilter,
                 onSelected: (state) {
-                  setState(() => _selectedState = state);
-                  _forceReload();
+                  setState(() {});
+                  Injection.issueNotifier.searchIssues(
+                    _searchQuery,
+                    state: state,
+                  );
                 },
                 l10n: l10n,
               ),
