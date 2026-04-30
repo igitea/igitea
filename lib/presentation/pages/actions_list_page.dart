@@ -7,6 +7,8 @@ import '../../l10n/app_localizations.dart';
 import '../widgets/empty_state.dart';
 import 'action_run_detail_page.dart';
 
+_toInt(dynamic value) => switch (value) { num n => n.toInt(), String s => int.tryParse(s) ?? 0, _ => 0 };
+
 class ActionsListPage extends StatefulWidget {
   final String owner;
   final String repo;
@@ -94,7 +96,7 @@ class _ActionsListPageState extends State<ActionsListPage> with AutomaticKeepAli
         // Group runs by workflow
         _workflowRuns = {};
         for (final r in allRuns) {
-          final wfId = (r['workflow_id'] as num?)?.toInt() ?? 0;
+          final wfId = _toInt(r['workflow_id']);
           _workflowRuns.putIfAbsent(wfId, () => []).add(r);
         }
 
@@ -198,7 +200,7 @@ class _ActionsListPageState extends State<ActionsListPage> with AutomaticKeepAli
               );
             }
             final wf = _workflows[index];
-            final wfId = (wf['id'] as num).toInt();
+            final wfId = _toInt(wf['id']);
             final runs = _workflowRuns[wfId] ?? [];
             if (runs.isEmpty) return const SizedBox.shrink();
             return _buildWorkflowGroup(wf, runs, l10n);
@@ -259,7 +261,7 @@ class _ActionsListPageState extends State<ActionsListPage> with AutomaticKeepAli
           MaterialPageRoute(
             builder: (_) => ActionRunDetailPage(
               owner: widget.owner, repo: widget.repo,
-              runId: (run['id'] as num).toInt(), runData: run,
+              runId: _toInt(run['id']), runData: run,
             ),
           ),
         ),

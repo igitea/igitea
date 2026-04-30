@@ -6,6 +6,8 @@ import '../../core/di/injection.dart';
 import '../../l10n/app_localizations.dart';
 import '../widgets/empty_state.dart';
 
+_toInt(dynamic value) => switch (value) { num n => n.toInt(), String s => int.tryParse(s) ?? 0, _ => 0 };
+
 class ActionRunDetailPage extends StatefulWidget {
   final String owner;
   final String repo;
@@ -67,7 +69,7 @@ class _ActionRunDetailPageState extends State<ActionRunDetailPage> {
       );
       if (mounted) {
         final all = (result['artifacts'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
-        final filtered = all.where((a) => (a['run_id'] as num?)?.toInt() == widget.runId).toList();
+        final filtered = all.where((a) => _toInt(a['run_id']) == widget.runId).toList();
         setState(() { _artifacts = filtered; _loadingArtifacts = false; });
       }
     } catch (_) {
@@ -204,7 +206,7 @@ class _ActionRunDetailPageState extends State<ActionRunDetailPage> {
 
   Widget _buildJobCard(Map<String, dynamic> job, AppLocalizations l10n) {
     final theme = Theme.of(context);
-    final jobId = (job['id'] as num).toInt();
+    final jobId = _toInt(job['id']);
     final status = (job['status'] as String? ?? 'unknown').toLowerCase();
     final conclusion = (job['conclusion'] as String? ?? '').toLowerCase();
     final displayStatus = conclusion.isNotEmpty && conclusion != 'null' ? conclusion : status;
