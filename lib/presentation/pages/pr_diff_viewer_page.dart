@@ -99,7 +99,7 @@ class _PrDiffViewerPageState extends State<PrDiffViewerPage> {
       );
     }
     if (_files.isEmpty) {
-      return const Center(child: Text('No changes'));
+      return Center(child: Text(l10n.noChanges));
     }
     return ListView.builder(
       padding: const EdgeInsets.all(UIConstants.md),

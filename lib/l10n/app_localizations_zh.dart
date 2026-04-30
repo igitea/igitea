@@ -1461,6 +1461,34 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get repoList => 'Repositories';
+
+  @override
+  String get noChanges => 'No changes';
+
+  @override
+  String get limited => 'Limited';
+
+  @override
+  String get unknownSection => 'Unknown section';
+
+  @override
+  String get deleteKey => 'Delete Key';
+
+  @override
+  String get deleteKeyConfirm =>
+      'Are you sure you want to delete this SSH key?';
+
+  @override
+  String get keyDeleted => 'Key deleted successfully';
+
+  @override
+  String get addSshKey => 'Add SSH Key';
+
+  @override
+  String get add => 'Add';
+
+  @override
+  String get keyAdded => 'Key added successfully';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -2924,4 +2952,32 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get repoList => 'Repositories';
+
+  @override
+  String get noChanges => 'No changes';
+
+  @override
+  String get limited => 'Limited';
+
+  @override
+  String get unknownSection => 'Unknown section';
+
+  @override
+  String get deleteKey => 'Delete Key';
+
+  @override
+  String get deleteKeyConfirm =>
+      'Are you sure you want to delete this SSH key?';
+
+  @override
+  String get keyDeleted => 'Key deleted successfully';
+
+  @override
+  String get addSshKey => 'Add SSH Key';
+
+  @override
+  String get add => 'Add';
+
+  @override
+  String get keyAdded => 'Key added successfully';
 }

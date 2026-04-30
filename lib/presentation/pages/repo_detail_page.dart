@@ -1455,7 +1455,7 @@ class _RepoSectionPage extends StatelessWidget {
           l10n: l10n,
         ),
       'wiki' => WikiListPage(owner: owner, repo: repo),
-      _ => const Center(child: Text('Unknown section')),
+      _ => Center(child: Text(l10n.unknownSection)),
     };
   }
 }

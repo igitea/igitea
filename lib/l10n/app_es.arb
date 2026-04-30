@@ -463,5 +463,14 @@
   "more": "More",
   "units": "Units",
   "permission": "Permission",
-  "repoList": "Repositories"
+  "repoList": "Repositories",
+  "noChanges": "No changes",
+  "limited": "Limited",
+  "unknownSection": "Unknown section",
+  "deleteKey": "Delete Key",
+  "deleteKeyConfirm": "Are you sure you want to delete this SSH key?",
+  "keyDeleted": "Key deleted successfully",
+  "addSshKey": "Add SSH Key",
+  "add": "Add",
+  "keyAdded": "Key added successfully"
 }

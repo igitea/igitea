@@ -52,8 +52,8 @@ class _SshKeysPageState extends State<SshKeysPage> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Delete Key'),
-        content: Text('Are you sure you want to delete this SSH key?'),
+        title: Text(l10n.deleteKey),
+        content: Text(l10n.deleteKeyConfirm),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -76,7 +76,7 @@ class _SshKeysPageState extends State<SshKeysPage> {
       await Injection.apiService.userCurrentDeleteKey(id: id);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Key deleted successfully')),
+          SnackBar(content: Text(l10n.keyDeleted)),
         );
         _loadKeys();
       }
@@ -141,7 +141,7 @@ class _SshKeysPageState extends State<SshKeysPage> {
                           FilledButton.icon(
                             onPressed: () => _showAddKeyDialog(),
                             icon: const Icon(Icons.add),
-                            label: Text('Add SSH Key'),
+                            label: Text(l10n.addSshKey),
                           ),
                         ],
                       ),
@@ -216,7 +216,7 @@ class _SshKeysPageState extends State<SshKeysPage> {
     final result = await showDialog<Map<String, String>>(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('Add SSH Key'),
+        title: Text(l10n.addSshKey),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -253,7 +253,7 @@ class _SshKeysPageState extends State<SshKeysPage> {
                 });
               }
             },
-            child: Text('Add'),
+            child: Text(l10n.add),
           ),
         ],
       ),
@@ -267,7 +267,7 @@ class _SshKeysPageState extends State<SshKeysPage> {
         });
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Key added successfully')),
+            SnackBar(content: Text(l10n.keyAdded)),
           );
           _loadKeys();
         }

@@ -2902,6 +2902,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Repositories'**
   String get repoList;
+
+  /// No description provided for @noChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'No changes'**
+  String get noChanges;
+
+  /// No description provided for @limited.
+  ///
+  /// In en, this message translates to:
+  /// **'Limited'**
+  String get limited;
+
+  /// No description provided for @unknownSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown section'**
+  String get unknownSection;
+
+  /// No description provided for @deleteKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Key'**
+  String get deleteKey;
+
+  /// No description provided for @deleteKeyConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this SSH key?'**
+  String get deleteKeyConfirm;
+
+  /// No description provided for @keyDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Key deleted successfully'**
+  String get keyDeleted;
+
+  /// No description provided for @addSshKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Add SSH Key'**
+  String get addSshKey;
+
+  /// No description provided for @add.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get add;
+
+  /// No description provided for @keyAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Key added successfully'**
+  String get keyAdded;
 }
 
 class _AppLocalizationsDelegate
