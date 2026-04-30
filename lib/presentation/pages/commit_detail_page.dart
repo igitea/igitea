@@ -247,19 +247,22 @@ class _CommitDetailPageState extends State<CommitDetailPage> {
                   DiffLineType.removed => Colors.red.withValues(alpha: 0.12),
                   _ => null,
                 };
-                return Container(
-                  color: bgColor,
-                  padding: const EdgeInsets.symmetric(horizontal: UIConstants.xs),
-                  child: Row(
-                    children: [
-                      Text(
-                        '${line.oldLineNum?.toString().padLeft(4) ?? '    '} ${line.newLineNum?.toString().padLeft(4) ?? '    '}',
-                        style: Theme.of(context).textTheme.labelSmall?.copyWith(fontFamily: 'monospace',
-                          color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.5)),
-                      ),
-                      const Text(' ', style: TextStyle(fontFamily: 'monospace')),
-                      Text(line.content, style: Theme.of(context).textTheme.bodySmall?.copyWith(fontFamily: 'monospace')),
-                    ],
+                return SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Container(
+                    color: bgColor,
+                    padding: const EdgeInsets.symmetric(horizontal: UIConstants.xs),
+                    child: Row(
+                      children: [
+                        Text(
+                          '${line.oldLineNum?.toString().padLeft(4) ?? '    '} ${line.newLineNum?.toString().padLeft(4) ?? '    '}',
+                          style: Theme.of(context).textTheme.labelSmall?.copyWith(fontFamily: 'monospace',
+                            color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.5)),
+                        ),
+                        const Text(' ', style: TextStyle(fontFamily: 'monospace')),
+                        Text(line.content, style: Theme.of(context).textTheme.bodySmall?.copyWith(fontFamily: 'monospace')),
+                      ],
+                    ),
                   ),
                 );
               }),
