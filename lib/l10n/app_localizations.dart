@@ -2728,6 +2728,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Compare'**
   String get compare;
+
+  /// No description provided for @actions.
+  ///
+  /// In en, this message translates to:
+  /// **'Actions'**
+  String get actions;
+
+  /// No description provided for @noActions.
+  ///
+  /// In en, this message translates to:
+  /// **'No workflow runs'**
+  String get noActions;
+
+  /// No description provided for @run.
+  ///
+  /// In en, this message translates to:
+  /// **'Run'**
+  String get run;
+
+  /// No description provided for @status.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get status;
+
+  /// No description provided for @jobs.
+  ///
+  /// In en, this message translates to:
+  /// **'Jobs'**
+  String get jobs;
+
+  /// No description provided for @noJobs.
+  ///
+  /// In en, this message translates to:
+  /// **'No jobs'**
+  String get noJobs;
+
+  /// No description provided for @artifacts.
+  ///
+  /// In en, this message translates to:
+  /// **'Artifacts'**
+  String get artifacts;
+
+  /// No description provided for @branch.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch'**
+  String get branch;
+
+  /// No description provided for @author.
+  ///
+  /// In en, this message translates to:
+  /// **'Author'**
+  String get author;
 }
 
 class _AppLocalizationsDelegate

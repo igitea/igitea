@@ -452,5 +452,14 @@
   "compareVersions": "Compare Versions",
   "baseRef": "Base (older)",
   "headRef": "Head (newer)",
-  "compare": "Compare"
+  "compare": "Compare",
+  "actions": "Actions",
+  "noActions": "No workflow runs",
+  "run": "Run",
+  "status": "Status",
+  "jobs": "Jobs",
+  "noJobs": "No jobs",
+  "artifacts": "Artifacts",
+  "branch": "Branch",
+  "author": "Author"
 }

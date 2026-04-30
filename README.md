@@ -66,6 +66,11 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 - Webhook detail: configuration, events list, delete action
 - Create webhooks: URL, secret, content type, event multi-select, active toggle
 
+### CI/CD Actions
+- Workflow run list with status (success/failure/in_progress), branch, trigger
+- Run detail with jobs list, expandable logs (monospace, selectable)
+- Artifacts list with name and size
+
 ### Organizations & Teams
 - View organization info, repositories, and teams
 - Click org avatars to navigate to detail page
@@ -197,7 +202,7 @@ All phases complete.
 | 10 | Issue/PR Detail & Search | ✅ Done |
 | 11 | Settings & Admin | ✅ Done |
 | 12 | Internationalization | ✅ Done |
-| 13 | Wiki, Milestone CRUD, Webhooks, Labels, OAuth2 | ✅ Done |
+| 13 | Wiki, Milestone CRUD, Webhooks, Labels, OAuth2, Actions | ✅ Done |
 
 ## License
 

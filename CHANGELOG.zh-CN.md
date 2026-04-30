@@ -105,6 +105,13 @@
 - 文件查看器 AppBar 新增 `⋯` 菜单（History / Compare / Blame）
 - `listCommits` 全线支持 `path` 参数过滤
 
+### 新增 — CI/CD Actions 集成
+
+- `ActionsListPage`：工作流运行列表，显示状态（success/failure/in_progress 等）、分支、标题
+- `ActionRunDetailPage`：运行详情，包含运行信息头部、Job 列表（可展开日志）、Artifacts 列表
+- 新增 5 个 Actions API 方法（runs、jobs、logs、artifacts）
+- 仓库区块列表新增 Actions 入口
+
 ### 新增 — Commit 内联 Diff
 
 - `commit_detail_page.dart`：changed files 可展开显示内联 diff

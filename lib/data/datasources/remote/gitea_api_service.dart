@@ -1470,6 +1470,76 @@ class GiteaApiService {
     );
   }
 
+  // Actions
+
+  Future<Map<String, dynamic>> repoListActionRuns({
+    required String owner,
+    required String repo,
+    String? branch,
+    String? status,
+    int? page,
+    int? limit,
+  }) async {
+    final query = <String, String>{};
+    if (branch != null) query['branch'] = branch;
+    if (status != null) query['status'] = status;
+    if (page != null) query['page'] = page.toString();
+    if (limit != null) query['limit'] = limit.toString();
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/actions/runs',
+      queryParameters: query,
+    );
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> repoGetActionRun({
+    required String owner,
+    required String repo,
+    required int run,
+  }) async {
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/actions/runs/$run',
+    );
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> repoListActionJobs({
+    required String owner,
+    required String repo,
+    required int run,
+  }) async {
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/actions/runs/$run/jobs',
+    );
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<String> repoGetActionJobLogs({
+    required String owner,
+    required String repo,
+    required int jobId,
+  }) async {
+    return _client.getRaw(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/actions/jobs/$jobId/logs',
+    );
+  }
+
+  Future<Map<String, dynamic>> repoListActionArtifacts({
+    required String owner,
+    required String repo,
+    int? page,
+    int? limit,
+  }) async {
+    final query = <String, String>{};
+    if (page != null) query['page'] = page.toString();
+    if (limit != null) query['limit'] = limit.toString();
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/actions/artifacts',
+      queryParameters: query,
+    );
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
   // Wiki
 
   Future<List<WikiPageMetaData>> repoGetWikiPages({

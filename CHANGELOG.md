@@ -104,6 +104,13 @@
 - File viewer AppBar `⋯` menu: History / Compare / Blame
 - `listCommits` supports `path` parameter for file-level filtering
 
+### Added — CI/CD Actions Integration
+
+- `ActionsListPage`: list workflow runs with status (success/failure/in_progress etc.), branch, title
+- `ActionRunDetailPage`: run details with info header, jobs list (expandable logs), artifacts list
+- 5 new Actions API methods (runs, jobs, logs, artifacts)
+- Add Actions entry to repo detail section list
+
 ### Added — Commit Inline Diff
 
 - `commit_detail_page.dart`: expandable inline diff for changed files

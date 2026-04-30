@@ -28,6 +28,7 @@ import 'wiki_list_page.dart';
 import 'create_milestone_page.dart';
 import 'webhook_list_page.dart';
 import 'label_list_page.dart';
+import 'actions_list_page.dart';
 
 const _languageColors = <String, Color>{
   'Dart': Color(0xFF00B4AB),
@@ -113,6 +114,7 @@ class _RepoDetailPageState extends State<RepoDetailPage> {
       _SectionItem(id: 'wiki', title: l10n.wiki, icon: Icons.book_outlined),
       _SectionItem(id: 'webhooks', title: l10n.webhooks, icon: Icons.webhook),
       _SectionItem(id: 'labels', title: l10n.labels, icon: Icons.label_outline),
+      _SectionItem(id: 'actions', title: l10n.actions, icon: Icons.play_circle_outline),
     ];
 
     return CustomScrollView(
@@ -204,6 +206,17 @@ class _RepoDetailPageState extends State<RepoDetailPage> {
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) => LabelListPage(
+            owner: widget.owner,
+            repo: widget.repo,
+          ),
+        ),
+      );
+      return;
+    }
+    if (sectionId == 'actions') {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => ActionsListPage(
             owner: widget.owner,
             repo: widget.repo,
           ),

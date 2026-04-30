@@ -66,6 +66,11 @@
 - Webhook 详情：配置信息、事件列表、删除
 - 创建 Webhook：URL、Secret、Content-Type、事件多选、激活开关
 
+### CI/CD Actions
+- 工作流运行列表：状态（success/failure/in_progress）、分支、触发者
+- 运行详情：Job 列表、可展开日志（等宽字体、可选文本）
+- Artifacts 列表：名称、大小
+
 ### 组织和团队
 - 查看组织信息、仓库列表、团队列表
 - 点击组织头像跳转到详情页
@@ -197,7 +202,7 @@ flutter test
 | 10 | Issue/PR 详情与搜索 | ✅ 完成 |
 | 11 | 设置页与管理功能 | ✅ 完成 |
 | 12 | 国际化 | ✅ 完成 |
-| 13 | Wiki、里程碑 CRUD、Webhook、标签管理、OAuth2 | ✅ 完成 |
+| 13 | Wiki、里程碑 CRUD、Webhook、标签管理、OAuth2、Actions | ✅ 完成 |
 
 ## 许可证
 

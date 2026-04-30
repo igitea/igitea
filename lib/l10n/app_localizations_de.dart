@@ -1380,4 +1380,31 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get compare => 'Compare';
+
+  @override
+  String get actions => 'Actions';
+
+  @override
+  String get noActions => 'No workflow runs';
+
+  @override
+  String get run => 'Run';
+
+  @override
+  String get status => 'Status';
+
+  @override
+  String get jobs => 'Jobs';
+
+  @override
+  String get noJobs => 'No jobs';
+
+  @override
+  String get artifacts => 'Artifacts';
+
+  @override
+  String get branch => 'Branch';
+
+  @override
+  String get author => 'Author';
 }
