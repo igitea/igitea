@@ -8,6 +8,7 @@ import '../../l10n/app_localizations.dart';
 import '../../presentation/state/issue_notifier.dart';
 import '../../presentation/state/repo_notifier.dart';
 import '../widgets/user_avatar.dart';
+import 'create_review_dialog.dart';
 
 class PRDetailPage extends StatefulWidget {
   final String owner;
@@ -27,6 +28,7 @@ class PRDetailPage extends StatefulWidget {
 
 class _PRDetailPageState extends State<PRDetailPage> {
   final _commentController = TextEditingController();
+  List<Map<String, dynamic>> _reviews = [];
 
   @override
   void initState() {
@@ -34,7 +36,17 @@ class _PRDetailPageState extends State<PRDetailPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Injection.repoNotifier.getPullRequest(widget.owner, widget.repo, widget.index);
       Injection.issueNotifier.listComments(widget.owner, widget.repo, widget.index);
+      _loadReviews();
     });
+  }
+
+  Future<void> _loadReviews() async {
+    try {
+      final result = await Injection.apiService.repoListPullReviews(
+        owner: widget.owner, repo: widget.repo, index: widget.index,
+      );
+      if (mounted) setState(() => _reviews = result.cast<Map<String, dynamic>>());
+    } catch (_) {}
   }
 
   @override
@@ -50,7 +62,25 @@ class _PRDetailPageState extends State<PRDetailPage> {
       appBar: AppBar(
         title: Text(l10n.pullRequestNumber(widget.index)),
         actions: [
-          if (Injection.repoNotifier.pullRequestDetailState is PullRequestDetailDataLoaded)
+          if (Injection.repoNotifier.pullRequestDetailState is PullRequestDetailDataLoaded) ...[
+            IconButton(
+              icon: const Icon(Icons.rate_review_outlined),
+              tooltip: AppLocalizations.of(context)!.reviewChanges,
+              onPressed: () async {
+                final result = await showDialog<bool>(
+                  context: context,
+                  builder: (_) => CreateReviewDialog(
+                    owner: widget.owner, repo: widget.repo, index: widget.index,
+                  ),
+                );
+                if (result == true) {
+                  final r = await Injection.apiService.repoListPullReviews(
+                    owner: widget.owner, repo: widget.repo, index: widget.index,
+                  );
+                  if (mounted) setState(() => _reviews = r.cast<Map<String, dynamic>>());
+                }
+              },
+            ),
             IconButton(
               icon: const Icon(Icons.open_in_new),
               onPressed: () {
@@ -63,6 +93,7 @@ class _PRDetailPageState extends State<PRDetailPage> {
                 }
               },
             ),
+          ],
         ],
       ),
       body: ListenableBuilder(
@@ -94,6 +125,7 @@ class _PRDetailPageState extends State<PRDetailPage> {
               repo: widget.repo,
               index: widget.index,
               commentController: _commentController,
+              reviews: _reviews,
             ),
             _ => const Center(child: CircularProgressIndicator()),
           };
@@ -109,6 +141,7 @@ class _PRContent extends StatelessWidget {
   final String repo;
   final int index;
   final TextEditingController commentController;
+  final List<Map<String, dynamic>> reviews;
 
   const _PRContent({
     required this.pr,
@@ -116,6 +149,7 @@ class _PRContent extends StatelessWidget {
     required this.repo,
     required this.index,
     required this.commentController,
+    required this.reviews,
   });
 
   @override
@@ -361,6 +395,9 @@ class _PRContent extends StatelessWidget {
           ),
 
           const SizedBox(height: 16),
+          _buildReviewSection(l10n, theme),
+
+          const SizedBox(height: 16),
 
           Row(
             children: [
@@ -380,6 +417,82 @@ class _PRContent extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildReviewSection(AppLocalizations l10n, ThemeData theme) {
+    if (reviews.isEmpty) return const SizedBox.shrink();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(Icons.rate_review_outlined, size: 16, color: theme.colorScheme.onSurfaceVariant),
+            const SizedBox(width: 4),
+            Text(l10n.reviews, style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            )),
+            const SizedBox(width: 4),
+            Text('(${reviews.length})', style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            )),
+          ],
+        ),
+        const SizedBox(height: 8),
+        ...reviews.map((r) => _buildReviewCard(r, l10n, theme)),
+      ],
+    );
+  }
+
+  Widget _buildReviewCard(Map<String, dynamic> review, AppLocalizations l10n, ThemeData theme) {
+    final state = review['state'] as String? ?? 'COMMENT';
+    final body = review['body'] as String? ?? '';
+    final user = review['user'] as Map<String, dynamic>?;
+    final submitted = review['submitted_at'] as String?;
+    final color = switch (state) {
+      'APPROVED' => Colors.green,
+      'REQUEST_CHANGES' => Colors.red,
+      _ => theme.colorScheme.primary,
+    };
+    final icon = switch (state) {
+      'APPROVED' => Icons.check_circle,
+      'REQUEST_CHANGES' => Icons.cancel,
+      _ => Icons.comment,
+    };
+
+    return Card(
+      margin: const EdgeInsets.only(bottom: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon, color: color, size: 20),
+                const SizedBox(width: 8),
+                if (user?['login'] != null)
+                  Text(user!['login'] as String, style: theme.textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600)),
+                const Spacer(),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                  decoration: BoxDecoration(color: color.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(4)),
+                  child: Text(state, style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.bold)),
+                ),
+              ],
+            ),
+            if (body.isNotEmpty) ...[
+              const SizedBox(height: 4),
+              Text(body, style: theme.textTheme.bodyMedium),
+            ],
+            if (submitted != null) ...[
+              const SizedBox(height: 4),
+              Text(_formatDate(DateTime.tryParse(submitted) ?? DateTime.now()),
+                style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+            ],
+          ],
+        ),
       ),
     );
   }

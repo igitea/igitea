@@ -1470,6 +1470,32 @@ class GiteaApiService {
     );
   }
 
+  // Pull Request Reviews
+
+  Future<List<dynamic>> repoListPullReviews({
+    required String owner,
+    required String repo,
+    required int index,
+  }) async {
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/pulls/${index.toString()}/reviews',
+    );
+    return jsonDecode(response.body) as List<dynamic>;
+  }
+
+  Future<Map<String, dynamic>> repoCreatePullReview({
+    required String owner,
+    required String repo,
+    required int index,
+    required Map<String, dynamic> body,
+  }) async {
+    final response = await _client.post(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/pulls/${index.toString()}/reviews',
+      body: body,
+    );
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
   // Actions
 
   Future<Map<String, dynamic>> repoListActionWorkflows({
