@@ -19,6 +19,7 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 - Consistent 4px spacing grid and typography hierarchy across all pages
 - 120+ data models auto-generated from OpenAPI spec
 - 45+ domain use cases with `Either<Failure, T>` pattern
+- 247 tests passing, `flutter analyze` clean
 
 ### Authentication
 - Username/password login (primary)
@@ -92,6 +93,21 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 ### Search
 - Global search for repositories and issues
 - Real-time search results
+
+### PR Diff Viewer
+- Unified diff parsing with file-level navigation and @@ hunk headers
+- Line-level added (green) / removed (red) highlighting with line numbers
+- Unified / Split view toggle
+
+### File Operations
+- File viewer: syntax highlighting, Markdown rendering, edit, download
+- File history: commit timeline, tap to view commit details
+- File compare: base/head ref input with diff rendering
+- Blame view: per-line commit SHA and author annotation
+
+### Commit Details
+- Commit info, author, SHA copy, stats (+/-)
+- Changed files with expandable inline diff (line-level coloring)
 
 ### Settings
 - Theme: Light / Dark / System

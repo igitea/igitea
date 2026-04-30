@@ -52,10 +52,69 @@
 ### Fixed
 
 - Fix missing Wiki entry in `RepoDetailPage`: add Wiki option to repository sections list (`id: 'wiki'`), and handle Wiki navigation to `WikiListPage` in `_RepoSectionPage`
+- Fix double back button in Wiki pages: bypass `_RepoSectionPage` wrapper for wiki navigation
+- Fix label flickering in Issue edit page: `IssueNotifier._state` overwritten by `listLabels`/`listMilestones`; cache data locally
+- Fix issue labels not saving: `EditIssueOption` lacks `labels` field; use separate `PUT /issues/{index}/labels` endpoint
+- Fix issue label data format: API expects label IDs (int), not names (String)
+
+### Added — Webhook Management
+
+- `WebhookListPage`: list webhooks with FAB create, pull-to-refresh, empty state
+- `WebhookDetailPage`: config (URL, Content-Type), events list, delete action
+- `CreateWebhookPage`: URL, secret, content type, event multi-select, active toggle
+- New UseCases: `ListHooksUseCase`, `CreateHookUseCase`, `DeleteHookUseCase`
+- Update `RepoNotifier` with hook methods
+
+### Added — Label Management
+
+- `LabelListPage`: list repo labels with color indicators
+- `CreateLabelPage`: name, description, preset color picker
+- `EditLabelPage`: edit with delete button and confirmation dialog
+- `IssueNotifier`: add `createLabel`, `editLabel`, `deleteLabel` methods
+- New UseCases: `EditLabelUseCase`, `DeleteLabelUseCase`
+- Add Labels entry to repo detail section list
+
+### Added — OAuth2 Login
+
+- New OAuth2 tab on login page (3rd tab)
+- Flow: fill Client ID/Secret → browser authorize → paste code → exchange token → auto-login
+- `AuthMethod.oauth2` + `refreshToken` support
+- `AuthStorage` refresh token persistence
+- Add `postRaw` API method for `/login/oauth/access_token` endpoint
+
+### Added — Issue Create/Edit Enhancements
+
+- `CreateIssuePage`: add label multi-select (FilterChip with color) + milestone dropdown
+- `EditIssuePage`: same label/milestone enhancements, FilterChip shows label colors
+- Create/edit requests include `labels` (ID list) and `milestone` fields
+
+### Added — PR Diff Viewer
+
+- `DiffParser`: unified diff parser (DiffFile → DiffHunk → DiffLine)
+- `PrDiffViewerPage`: file-level nav, @@ hunk headers, line-level add/delete coloring, line numbers
+- Unified/Split view mode toggle
+- `PrFilesPage`: add "View Diff" button + file tap navigates to diff viewer
+
+### Added — File History, Compare & Blame
+
+- `FileHistoryPage`: commit history for a file, navigates to CommitDetailPage
+- `FileComparePage`: base/head ref input → diff rendering
+- `FileBlamePage`: blame API (SHA + author avatar per line), falls back to simple line view
+- File viewer AppBar `⋯` menu: History / Compare / Blame
+- `listCommits` supports `path` parameter for file-level filtering
+
+### Added — Commit Inline Diff
+
+- `commit_detail_page.dart`: expandable inline diff for changed files
+- `repoGetCommitDiff` API → `GET /git/commits/{sha}.diff`
+- File header shows `+n -m` stats, tap to expand/collapse
 
 ### Changed
 
-- Refactor `RepoDetailPage`: replace horizontal `TabBar` with vertical section list (Code, Issues, Milestones, Pull Requests, Releases, Commits, Branches, Tags); tap to navigate to dedicated page
+- File viewer AppBar refactored: History button moved to `⋯` menu
+- `UIConstants` replaces all hardcoded spacing (16→`md`, 8→`sm`, 4→`xs`)
+- `home_page.dart`: remove unused `_TabData` class, extract `_buildNavigationRail`/`_buildNavigationBar`
+- `ListCommitsParams` add `path` parameter
 - Add `repositorySections` ARB key and `_RepoSectionPage` wrapper for section navigation
 
 ### Fixed

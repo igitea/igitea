@@ -53,10 +53,69 @@
 ### 修复
 
 - 修复 `RepoDetailPage` 中未显示 Wiki 入口的问题：在仓库区块列表中添加 Wiki 选项（`id: 'wiki'`），并在 `_RepoSectionPage` 中处理 Wiki 导航到 `WikiListPage`
+- 修复 Wiki 页面双层返回按钮：Wiki 绕过 `_RepoSectionPage` 直接导航
+- 修复 Issue 编辑页标签闪烁消失：`IssueNotifier._state` 被 `listLabels`/`listMilestones` 互相覆盖，改为本地缓存
+- 修复 Issue 标签保存不生效：Gitea API 标签需通过 `PUT /issues/{index}/labels` 独立端点管理，`EditIssueOption` 不支持 `labels` 字段
+- 修复 Issue 创建/编辑时标签数据格式：API 期望 label ID（int）而非 label 名称（String）
+
+### 新增 — Webhook 管理
+
+- `WebhookListPage`：仓库 Webhook 列表，FAB 新建，下拉刷新，空状态处理
+- `WebhookDetailPage`：查看配置（URL、Content-Type）、事件列表、状态，支持删除
+- `CreateWebhookPage`：创建表单（URL、Secret、Content-Type、事件多选、Active 开关）
+- 新增 UseCases：`ListHooksUseCase`、`CreateHookUseCase`、`DeleteHookUseCase`
+- 更新 `RepoNotifier`：新增 Hook 相关方法
+
+### 新增 — 标签管理
+
+- `LabelListPage`：仓库标签列表，带颜色圆点指示器
+- `CreateLabelPage`：创建标签（名称、描述、预设色板选择器）
+- `EditLabelPage`：编辑标签 + 删除按钮 + 确认对话框
+- `IssueNotifier`：新增 `createLabel`、`editLabel`、`deleteLabel` 方法
+- 新增 UseCases：`EditLabelUseCase`、`DeleteLabelUseCase`
+- 仓库区块列表新增 Labels 入口
+
+### 新增 — OAuth2 登录
+
+- 登录页新增 OAuth2 标签页（第三个标签）
+- 流程：填写 Client ID/Secret → 浏览器授权 → 粘贴 Code → 交换 Token → 自动登录
+- `AuthMethod.oauth2` + `refreshToken` 支持
+- `AuthStorage` 新增 refresh token 持久化
+- 新增 `postRaw` API 方法用于 `/login/oauth/access_token` 端点
+
+### 新增 — Issue 创建/编辑增强
+
+- `CreateIssuePage`：新增标签多选（FilterChip 带颜色指示）+ 里程碑下拉选择
+- `EditIssuePage`：标签/里程碑选择同样增强，FilterChip 显示标签颜色
+- 创建/编辑请求支持 `labels`（ID 列表）和 `milestone` 字段
+
+### 新增 — PR Diff 查看器
+
+- `DiffParser`：统一 diff 格式解析器（DiffFile → DiffHunk → DiffLine）
+- `PrDiffViewerPage`：文件级导航、@@ hunk 头部、行级新增（绿）/删除（红）着色、行号栏
+- Unified/Split 视图模式切换
+- `PrFilesPage` 新增"View Diff"按钮 + 文件项点击进入 diff 查看器
+
+### 新增 — 文件历史与对比
+
+- `FileHistoryPage`：文件提交历史列表，关联 CommitDetailPage
+- `FileComparePage`：Base/Head ref 输入 → diff 渲染
+- `FileBlamePage`：利用 blame API 逐行显示 commit SHA + 作者头像 + 行号 + 代码
+- 文件查看器 AppBar 新增 `⋯` 菜单（History / Compare / Blame）
+- `listCommits` 全线支持 `path` 参数过滤
+
+### 新增 — Commit 内联 Diff
+
+- `commit_detail_page.dart`：changed files 可展开显示内联 diff
+- 新增 `repoGetCommitDiff` API → `GET /git/commits/{sha}.diff`
+- 文件头部显示 `+n -m` 增减统计，点击展开/收起
 
 ### 变更
 
-- 重构 `RepoDetailPage`：将横向 `TabBar` 改为纵向区块列表（代码、Issue、里程碑、Pull Request、Release、提交、分支、标签），点击进入对应页面
+- 文件查看器 AppBar 重构：原 History 按钮移入 `⋯` 菜单
+- `UIConstants` 替换所有硬编码间距（16→`md`、8→`sm`、4→`xs`）
+- `home_page.dart`：移除无用 `_TabData` 类，抽离 `_buildNavigationRail`/`_buildNavigationBar`
+- `ListCommitsParams` 新增 `path` 参数
 - 新增 `repositorySections` ARB 键和 `_RepoSectionPage` 页面包装器
 
 ### 修复
