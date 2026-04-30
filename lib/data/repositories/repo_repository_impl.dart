@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import '../../core/errors/failures.dart';
 import '../../core/utils/either.dart';
 import '../../core/utils/repository_helper.dart';
@@ -424,7 +426,7 @@ class RepoRepositoryImpl implements RepoRepository {
         repo: repo,
         body: {
           'title': title,
-          'content': content,
+          'content_base64': base64Encode(utf8.encode(content)),
           if (message != null) 'message': message,
         },
       ),
@@ -446,7 +448,7 @@ class RepoRepositoryImpl implements RepoRepository {
         pageName: title,
         body: {
           'title': title,
-          'content': content,
+          'content_base64': base64Encode(utf8.encode(content)),
           if (message != null) 'message': message,
         },
       ),

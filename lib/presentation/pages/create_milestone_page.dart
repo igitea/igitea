@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../core/utils/either.dart';
 import '../../l10n/app_localizations.dart';
@@ -114,7 +115,7 @@ class _CreateMilestonePageState extends State<CreateMilestonePage> {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(UIConstants.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -125,7 +126,7 @@ class _CreateMilestonePageState extends State<CreateMilestonePage> {
                 border: const OutlineInputBorder(),
               ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: UIConstants.md),
             TextField(
               controller: _descriptionController,
               decoration: InputDecoration(
@@ -137,32 +138,41 @@ class _CreateMilestonePageState extends State<CreateMilestonePage> {
               maxLines: 5,
               keyboardType: TextInputType.multiline,
             ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: _pickDueDate,
-                    icon: const Icon(Icons.calendar_today),
-                    label: Text(
-                      _dueDate != null
-                          ? '${l10n.milestoneDueDate}: ${_dueDate!.toLocal().toString().split(' ')[0]}'
-                          : l10n.milestoneDueDate,
-                    ),
-                  ),
-                ),
-                if (_dueDate != null) ...[
-                  const SizedBox(width: 8),
-                  IconButton(
-                    icon: const Icon(Icons.clear),
-                    onPressed: () => setState(() => _dueDate = null),
-                  ),
-                ],
-              ],
-            ),
+            const SizedBox(height: UIConstants.md),
+            _buildDueDateRow(l10n),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildDueDateRow(AppLocalizations l10n) {
+    return Row(
+      children: [
+        Expanded(
+          child: OutlinedButton.icon(
+            onPressed: _pickDueDate,
+            icon: const Icon(Icons.calendar_today),
+            label: Text(
+              _dueDate != null
+                  ? _formatDate(_dueDate!)
+                  : l10n.milestoneDueDate,
+            ),
+          ),
+        ),
+        if (_dueDate != null) ...[
+          const SizedBox(width: UIConstants.sm),
+          IconButton(
+            icon: const Icon(Icons.clear),
+            onPressed: () => setState(() => _dueDate = null),
+            tooltip: l10n.clear,
+          ),
+        ],
+      ],
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
   }
 }

@@ -82,7 +82,6 @@ class _WikiListPageState extends State<WikiListPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.wiki)),
@@ -91,77 +90,93 @@ class _WikiListPageState extends State<WikiListPage> {
         icon: const Icon(Icons.add),
         label: Text(l10n.newWikiPage),
       ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : _error != null
-              ? Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text('${l10n.error}: $_error'),
-                      const SizedBox(height: UIConstants.md),
-                      FilledButton(
-                        onPressed: _loadPages,
-                        child: Text(l10n.retry),
-                      ),
-                    ],
+      body: _buildBody(l10n),
+    );
+  }
+
+  Widget _buildBody(AppLocalizations l10n) {
+    if (_loading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (_error != null) {
+      return _buildErrorState(l10n);
+    }
+    if (_pages.isEmpty) {
+      return EmptyState(
+        icon: Icons.book_outlined,
+        title: l10n.noWikiPages,
+        subtitle: l10n.noWikiPagesDescription,
+        action: FilledButton.icon(
+          onPressed: _createPage,
+          icon: const Icon(Icons.add),
+          label: Text(l10n.createFirstWikiPage),
+        ),
+      );
+    }
+    return _buildPageList(l10n);
+  }
+
+  Widget _buildErrorState(AppLocalizations l10n) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text('${l10n.error}: $_error'),
+          const SizedBox(height: UIConstants.md),
+          FilledButton(
+            onPressed: _loadPages,
+            child: Text(l10n.retry),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPageList(AppLocalizations l10n) {
+    final theme = Theme.of(context);
+    return RefreshIndicator(
+      onRefresh: _loadPages,
+      child: ListView.builder(
+        padding: const EdgeInsets.all(UIConstants.md),
+        itemCount: _pages.length,
+        itemBuilder: (context, index) {
+          final page = _pages[index];
+          return FadeInWrapper(
+            delay: Duration(milliseconds: index * 30),
+            child: Card(
+              margin: const EdgeInsets.only(bottom: UIConstants.md),
+              child: ListTile(
+                leading: Icon(Icons.article_outlined, color: theme.colorScheme.primary),
+                title: Text(
+                  page.title ?? l10n.untitled,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
                   ),
-                )
-              : _pages.isEmpty
-                  ? EmptyState(
-                      icon: Icons.book_outlined,
-                      title: l10n.noWikiPages,
-                      subtitle: l10n.noWikiPagesDescription,
-                      action: FilledButton.icon(
-                        onPressed: _createPage,
-                        icon: const Icon(Icons.add),
-                        label: Text(l10n.createFirstWikiPage),
-                      ),
-                    )
-                  : RefreshIndicator(
-                      onRefresh: _loadPages,
-                      child: ListView.builder(
-                        padding: const EdgeInsets.all(UIConstants.md),
-                        itemCount: _pages.length,
-                        itemBuilder: (context, index) {
-                          final page = _pages[index];
-                          return FadeInWrapper(
-                            delay: Duration(milliseconds: index * 30),
-                            child: Card(
-                              margin: const EdgeInsets.only(bottom: UIConstants.md),
-                              child: ListTile(
-                                leading: const Icon(Icons.article_outlined),
-                                title: Text(
-                                  page.title ?? l10n.untitled,
-                                  style: theme.textTheme.titleMedium?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                                subtitle: page.last_commit != null
-                                    ? Text(
-                                        '${l10n.lastCommit}: ${page.last_commit!.sha ?? ''}',
-                                        style: theme.textTheme.bodySmall,
-                                      )
-                                    : null,
-                                trailing: const Icon(Icons.chevron_right),
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => WikiDetailPage(
-                                        owner: widget.owner,
-                                        repo: widget.repo,
-                                        pageName: page.title ?? '',
-                                      ),
-                                    ),
-                                  ).then((_) => _loadPages());
-                                },
-                              ),
-                            ),
-                          );
-                        },
+                ),
+                subtitle: page.last_commit != null
+                    ? Text(
+                        '${l10n.lastCommit}: ${page.last_commit!.sha ?? ''}',
+                        style: theme.textTheme.bodySmall,
+                      )
+                    : null,
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => WikiDetailPage(
+                        owner: widget.owner,
+                        repo: widget.repo,
+                        pageName: page.title ?? '',
                       ),
                     ),
+                  ).then((_) => _loadPages());
+                },
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }
@@ -300,40 +315,54 @@ class _WikiDetailPageState extends State<WikiDetailPage> {
           if (!_loading && _error == null) ...[
             IconButton(
               icon: const Icon(Icons.edit),
+              tooltip: l10n.edit,
               onPressed: _editPage,
             ),
             IconButton(
               icon: const Icon(Icons.delete_outline),
+              tooltip: l10n.delete,
               onPressed: _deletePage,
             ),
           ],
         ],
       ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
-          : _error != null
-              ? Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text('${l10n.error}: $_error'),
-                      const SizedBox(height: UIConstants.md),
-                      FilledButton(
-                        onPressed: _loadPage,
-                        child: Text(l10n.retry),
-                      ),
-                    ],
-                  ),
-                )
-              : SingleChildScrollView(
-                  padding: const EdgeInsets.all(UIConstants.md),
-                  child: MarkdownBody(
-                    data: _page?.content_base64 != null
-                        ? utf8.decode(base64Decode(_page!.content_base64!))
-                        : l10n.noContent,
-                    selectable: true,
-                  ),
-                ),
+      body: _buildBody(l10n),
+    );
+  }
+
+  Widget _buildBody(AppLocalizations l10n) {
+    if (_loading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (_error != null) {
+      return _buildErrorState(l10n);
+    }
+    return FadeInWrapper(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(UIConstants.md),
+        child: MarkdownBody(
+          data: _page?.content_base64 != null
+              ? utf8.decode(base64Decode(_page!.content_base64!))
+              : l10n.noContent,
+          selectable: true,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorState(AppLocalizations l10n) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text('${l10n.error}: $_error'),
+          const SizedBox(height: UIConstants.md),
+          FilledButton(
+            onPressed: _loadPage,
+            child: Text(l10n.retry),
+          ),
+        ],
+      ),
     );
   }
 }

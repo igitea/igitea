@@ -136,9 +136,6 @@ class _MilestoneDetailPageState extends State<MilestoneDetailPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final total = (_milestone.open_issues ?? 0) + (_milestone.closed_issues ?? 0);
-    final progress = total > 0 ? (_milestone.closed_issues ?? 0) / total : 0.0;
 
     return Scaffold(
       appBar: AppBar(
@@ -146,158 +143,203 @@ class _MilestoneDetailPageState extends State<MilestoneDetailPage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.edit),
+            tooltip: l10n.edit,
             onPressed: _editMilestone,
           ),
           IconButton(
             icon: const Icon(Icons.delete_outline),
+            tooltip: l10n.delete,
             onPressed: _deleteMilestone,
           ),
         ],
       ),
       body: RefreshIndicator(
         onRefresh: _loadIssues,
-        child: ListView(
+        child: ListView.builder(
           padding: const EdgeInsets.all(UIConstants.md),
-          children: [
-            PremiumCard(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(UIConstants.sm),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
-                          shape: BoxShape.circle,
-                        ),
-                        child: Icon(
-                          Icons.flag,
-                          size: UIConstants.iconLg,
-                          color: theme.colorScheme.primary,
-                        ),
+          itemCount: 1 + _issues.length,
+          itemBuilder: (context, index) {
+            if (index == 0) {
+              return _buildMilestoneInfo(l10n);
+            }
+            return _buildIssueItem(
+              _issues[index - 1],
+              index - 1,
+              l10n,
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMilestoneInfo(AppLocalizations l10n) {
+    final theme = Theme.of(context);
+    final total = (_milestone.open_issues ?? 0) + (_milestone.closed_issues ?? 0);
+    final progress = total > 0 ? (_milestone.closed_issues ?? 0) / total : 0.0;
+    final isOpen = _milestone.state?.value == 'open';
+
+    return Column(
+      children: [
+        FadeInWrapper(
+          child: PremiumCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(UIConstants.sm),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
+                        shape: BoxShape.circle,
                       ),
-                      const SizedBox(width: UIConstants.md),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
+                      child: Icon(
+                        Icons.flag,
+                        size: UIConstants.iconLg,
+                        color: theme.colorScheme.primary,
+                      ),
+                    ),
+                    const SizedBox(width: UIConstants.md),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            _milestone.title ?? l10n.untitled,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          if (_milestone.due_on != null)
                             Text(
-                              _milestone.title ?? l10n.untitled,
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w600,
+                              '${l10n.dueDate}: ${_formatDate(_milestone.due_on!)}',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
                               ),
                             ),
-                            if (_milestone.due_on != null)
-                              Text(
-                                '${l10n.dueDate}: ${_formatDate(_milestone.due_on!)}',
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                          ],
-                        ),
+                        ],
                       ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                        decoration: BoxDecoration(
-                          color: _milestone.state?.value == 'open'
-                              ? Colors.green.withValues(alpha: 0.2)
-                              : Colors.purple.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
-                        ),
-                        child: Text(
-                          _milestone.state?.value == 'open' ? l10n.open : l10n.closed,
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: _milestone.state?.value == 'open' ? Colors.green : Colors.purple,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (_milestone.description != null && _milestone.description!.isNotEmpty) ...[
-                    const SizedBox(height: UIConstants.md),
-                    MarkdownBody(
-                      data: _milestone.description!,
-                      shrinkWrap: true,
                     ),
+                    _buildStateBadge(isOpen, l10n),
                   ],
+                ),
+                if (_milestone.description != null && _milestone.description!.isNotEmpty) ...[
                   const SizedBox(height: UIConstants.md),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _StatItem(
-                          value: '${_milestone.open_issues ?? 0}',
-                          label: l10n.open,
-                          color: Colors.green,
-                        ),
-                      ),
-                      Expanded(
-                        child: _StatItem(
-                          value: '${_milestone.closed_issues ?? 0}',
-                          label: l10n.closed,
-                          color: Colors.purple,
-                        ),
-                      ),
-                      Expanded(
-                        child: _StatItem(
-                          value: '$total',
-                          label: 'Total',
-                          color: theme.colorScheme.primary,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: UIConstants.sm),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
-                    child: LinearProgressIndicator(
-                      value: progress,
-                      minHeight: 8,
-                      backgroundColor: theme.colorScheme.surfaceContainerHighest,
-                      valueColor: AlwaysStoppedAnimation<Color>(
-                        progress >= 1.0 ? Colors.green : theme.colorScheme.primary,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: UIConstants.xs),
-                  Text(
-                    '${(progress * 100).toStringAsFixed(0)}% ${l10n.complete}',
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
+                  MarkdownBody(
+                    data: _milestone.description!,
+                    shrinkWrap: true,
                   ),
                 ],
-              ),
-            ),
-            const SizedBox(height: UIConstants.md),
-            Text(
-              l10n.issues,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            const SizedBox(height: UIConstants.sm),
-            if (_issuesLoading)
-              const Center(child: CircularProgressIndicator())
-            else if (_issues.isEmpty)
-              EmptyState(
-                icon: Icons.bug_report_outlined,
-                title: l10n.noIssues,
-              )
-            else
-              ..._issues.asMap().entries.map((entry) => FadeInWrapper(
-                delay: Duration(milliseconds: entry.key * 30),
-                child: _IssueItem(
-                  issue: entry.value,
-                  owner: widget.owner,
-                  repo: widget.repo,
-                  l10n: l10n,
+                const SizedBox(height: UIConstants.md),
+                _buildStatRow(l10n, total, progress),
+                const SizedBox(height: UIConstants.sm),
+                _buildProgressBar(theme, progress),
+                const SizedBox(height: UIConstants.xs),
+                Text(
+                  '${(progress * 100).toStringAsFixed(0)}% ${l10n.complete}',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
-              )),
-          ],
+              ],
+            ),
+          ),
         ),
+        const SizedBox(height: UIConstants.md),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            l10n.issues,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+        const SizedBox(height: UIConstants.sm),
+        if (_issuesLoading)
+          const Center(child: CircularProgressIndicator())
+        else if (_issues.isEmpty)
+          EmptyState(
+            icon: Icons.bug_report_outlined,
+            title: l10n.noIssues,
+          )
+        else
+          const SizedBox.shrink(),
+      ],
+    );
+  }
+
+  Widget _buildStateBadge(bool isOpen, AppLocalizations l10n) {
+    final theme = Theme.of(context);
+    final color = isOpen ? Colors.green : Colors.purple;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.2),
+        borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
+      ),
+      child: Text(
+        isOpen ? l10n.open : l10n.closed,
+        style: theme.textTheme.labelSmall?.copyWith(
+          color: color,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatRow(AppLocalizations l10n, int total, double progress) {
+    final theme = Theme.of(context);
+    return Row(
+      children: [
+        Expanded(
+          child: _StatItem(
+            value: '${_milestone.open_issues ?? 0}',
+            label: l10n.open,
+            color: Colors.green,
+          ),
+        ),
+        Expanded(
+          child: _StatItem(
+            value: '${_milestone.closed_issues ?? 0}',
+            label: l10n.closed,
+            color: Colors.purple,
+          ),
+        ),
+        Expanded(
+          child: _StatItem(
+            value: '$total',
+            label: l10n.total,
+            color: theme.colorScheme.primary,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildProgressBar(ThemeData theme, double progress) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
+      child: LinearProgressIndicator(
+        value: progress,
+        minHeight: 8,
+        backgroundColor: theme.colorScheme.surfaceContainerHighest,
+        valueColor: AlwaysStoppedAnimation<Color>(
+          progress >= 1.0 ? Colors.green : theme.colorScheme.primary,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildIssueItem(Issue issue, int index, AppLocalizations l10n) {
+    return FadeInWrapper(
+      delay: Duration(milliseconds: index * 30),
+      child: _IssueItem(
+        issue: issue,
+        owner: widget.owner,
+        repo: widget.repo,
+        l10n: l10n,
       ),
     );
   }
@@ -360,6 +402,7 @@ class _IssueItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final isOpen = issue.state?.value == 'open';
     final stateIcon = isOpen ? Icons.error_outline : Icons.check_circle;
     final stateColor = isOpen ? Colors.green : Colors.purple;
@@ -384,7 +427,7 @@ class _IssueItem extends StatelessWidget {
               children: [
                 Text(
                   issue.title ?? l10n.untitled,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w500,
                   ),
                   maxLines: 1,
@@ -397,15 +440,15 @@ class _IssueItem extends StatelessWidget {
                     const SizedBox(width: UIConstants.xs),
                     Text(
                       isOpen ? l10n.open : l10n.closed,
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      style: theme.textTheme.labelSmall?.copyWith(
                         color: stateColor,
                       ),
                     ),
                     const SizedBox(width: UIConstants.md),
                     Text(
                       '#${issue.number ?? 0}',
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ],

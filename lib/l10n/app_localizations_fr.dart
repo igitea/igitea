@@ -144,8 +144,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get mergePullRequest => 'Fusionner la pull request';
 
   @override
-  String get mergeConfirmMessage =>
-      'Êtes-vous sûr de vouloir fusionner cette pull request ?';
+  String get mergeConfirmMessage => 'Êtes-vous sûr de vouloir fusionner cette pull request ?';
 
   @override
   String issueNumber(Object issueNumber) {
@@ -472,8 +471,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get deleteRepo => 'Supprimer le dépôt';
 
   @override
-  String get deleteRepoConfirm =>
-      'Êtes-vous sûr de vouloir supprimer ce dépôt ? Cette action est irréversible.';
+  String get deleteRepoConfirm => 'Êtes-vous sûr de vouloir supprimer ce dépôt ? Cette action est irréversible.';
 
   @override
   String get generalSettings => 'Paramètres généraux';
@@ -497,8 +495,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get unsavedChanges => 'Modifications non enregistrées';
 
   @override
-  String get unsavedChangesMessage =>
-      'Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter ?';
+  String get unsavedChangesMessage => 'Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter ?';
 
   @override
   String get leave => 'Quitter';
@@ -575,8 +572,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get untitled => 'Untitled';
 
   @override
-  String get enterSearchQueryRepos =>
-      'Enter a search query to find repositories';
+  String get enterSearchQueryRepos => 'Enter a search query to find repositories';
 
   @override
   String get enterSearchQueryIssues => 'Enter a search query to find issues';
@@ -1065,19 +1061,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get public => 'Public';
 
   @override
-  String get publicDescription =>
-      'Anyone on the internet can see this repository';
+  String get publicDescription => 'Anyone on the internet can see this repository';
 
   @override
-  String get privateDescription =>
-      'You choose who can see and commit to this repository';
+  String get privateDescription => 'You choose who can see and commit to this repository';
 
   @override
   String get initializeWithReadme => 'Initialize with README';
 
   @override
-  String get initializeWithReadmeDescription =>
-      'Add a README file to help others understand your project';
+  String get initializeWithReadmeDescription => 'Add a README file to help others understand your project';
 
   @override
   String repoCreated(Object repoName) {
@@ -1100,8 +1093,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get deleteWikiPage => 'Delete Wiki Page';
 
   @override
-  String get deleteWikiPageConfirm =>
-      'Are you sure you want to delete this wiki page? This action cannot be undone.';
+  String get deleteWikiPageConfirm => 'Are you sure you want to delete this wiki page? This action cannot be undone.';
 
   @override
   String get wikiPageDeleted => 'Wiki page deleted';
@@ -1122,8 +1114,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noWikiPages => 'No wiki pages';
 
   @override
-  String get noWikiPagesDescription =>
-      'This repository doesn\'t have any wiki pages yet.';
+  String get noWikiPagesDescription => 'This repository doesn\'t have any wiki pages yet.';
 
   @override
   String get createFirstWikiPage => 'Create First Page';
@@ -1150,8 +1141,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get deleteMilestone => 'Delete Milestone';
 
   @override
-  String get deleteMilestoneConfirm =>
-      'Are you sure you want to delete this milestone? This action cannot be undone.';
+  String get deleteMilestoneConfirm => 'Are you sure you want to delete this milestone? This action cannot be undone.';
 
   @override
   String get milestoneDeleted => 'Milestone deleted';
@@ -1176,4 +1166,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get milestoneStateClosed => 'Closed';
+
+  @override
+  String get total => 'Total';
+
+  @override
+  String get clear => 'Clear';
 }

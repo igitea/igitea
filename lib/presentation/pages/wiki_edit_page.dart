@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
+import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../core/utils/either.dart';
 import '../../l10n/app_localizations.dart';
@@ -123,53 +124,59 @@ class _WikiEditPageState extends State<WikiEditPage> {
           ),
         ],
       ),
-      body: _showPreview
-          ? SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: MarkdownBody(
-                data: _contentController.text,
-                selectable: true,
-              ),
-            )
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  TextField(
-                    controller: _titleController,
-                    decoration: InputDecoration(
-                      labelText: l10n.wikiPageTitle,
-                      hintText: l10n.wikiPageTitleHint,
-                      border: const OutlineInputBorder(),
-                    ),
-                    enabled: widget.pageName == null,
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: _contentController,
-                    decoration: InputDecoration(
-                      labelText: l10n.wikiPageContent,
-                      hintText: l10n.wikiPageContentHint,
-                      border: const OutlineInputBorder(),
-                      alignLabelWithHint: true,
-                    ),
-                    maxLines: null,
-                    minLines: 10,
-                    keyboardType: TextInputType.multiline,
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: _messageController,
-                    decoration: InputDecoration(
-                      labelText: l10n.commitMessage,
-                      hintText: l10n.commitMessageHint,
-                      border: const OutlineInputBorder(),
-                    ),
-                  ),
-                ],
-              ),
+      body: _showPreview ? _buildPreview() : _buildForm(l10n),
+    );
+  }
+
+  Widget _buildPreview() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(UIConstants.md),
+      child: MarkdownBody(
+        data: _contentController.text,
+        selectable: true,
+      ),
+    );
+  }
+
+  Widget _buildForm(AppLocalizations l10n) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(UIConstants.md),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          TextField(
+            controller: _titleController,
+            decoration: InputDecoration(
+              labelText: l10n.wikiPageTitle,
+              hintText: l10n.wikiPageTitleHint,
+              border: const OutlineInputBorder(),
             ),
+            enabled: widget.pageName == null,
+          ),
+          const SizedBox(height: UIConstants.md),
+          TextField(
+            controller: _contentController,
+            decoration: InputDecoration(
+              labelText: l10n.wikiPageContent,
+              hintText: l10n.wikiPageContentHint,
+              border: const OutlineInputBorder(),
+              alignLabelWithHint: true,
+            ),
+            maxLines: null,
+            minLines: 10,
+            keyboardType: TextInputType.multiline,
+          ),
+          const SizedBox(height: UIConstants.md),
+          TextField(
+            controller: _messageController,
+            decoration: InputDecoration(
+              labelText: l10n.commitMessage,
+              hintText: l10n.commitMessageHint,
+              border: const OutlineInputBorder(),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

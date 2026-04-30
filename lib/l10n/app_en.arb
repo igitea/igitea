@@ -383,5 +383,7 @@
   "milestoneDueDate": "Due Date",
   "milestoneState": "State",
   "milestoneStateOpen": "Open",
-  "milestoneStateClosed": "Closed"
+  "milestoneStateClosed": "Closed",
+  "total": "Total",
+  "clear": "Clear"
 }
