@@ -1,1 +1,1 @@
-enum AuthMethod { token, basic }
+enum AuthMethod { token, basic, oauth2 }

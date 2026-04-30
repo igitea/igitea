@@ -8,6 +8,7 @@ class AuthStorage {
   static const _keyToken = 'auth_token';
   static const _keyUsername = 'auth_username';
   static const _keyPassword = 'auth_password';
+  static const _keyRefreshToken = 'auth_refresh_token';
 
   Future<void> saveCredentials({
     required String baseUrl,
@@ -15,6 +16,7 @@ class AuthStorage {
     String? token,
     String? username,
     String? password,
+    String? refreshToken,
   }) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_keyBaseUrl, baseUrl);
@@ -33,6 +35,11 @@ class AuthStorage {
       await prefs.setString(_keyPassword, password);
     } else {
       await prefs.remove(_keyPassword);
+    }
+    if (refreshToken != null) {
+      await prefs.setString(_keyRefreshToken, refreshToken);
+    } else {
+      await prefs.remove(_keyRefreshToken);
     }
   }
 
@@ -55,6 +62,7 @@ class AuthStorage {
       token: prefs.getString(_keyToken),
       username: prefs.getString(_keyUsername),
       password: prefs.getString(_keyPassword),
+      refreshToken: prefs.getString(_keyRefreshToken),
     );
   }
 
@@ -65,6 +73,7 @@ class AuthStorage {
     await prefs.remove(_keyToken);
     await prefs.remove(_keyUsername);
     await prefs.remove(_keyPassword);
+    await prefs.remove(_keyRefreshToken);
   }
 }
 
@@ -74,6 +83,7 @@ class SavedCredentials {
   final String? token;
   final String? username;
   final String? password;
+  final String? refreshToken;
 
   const SavedCredentials({
     required this.baseUrl,
@@ -81,5 +91,6 @@ class SavedCredentials {
     this.token,
     this.username,
     this.password,
+    this.refreshToken,
   });
 }

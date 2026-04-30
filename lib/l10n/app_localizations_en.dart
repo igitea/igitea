@@ -1271,4 +1271,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get webhookForkEvents => 'Fork';
+
+  @override
+  String get loginWithOAuth2 => 'Login with OAuth2';
+
+  @override
+  String get oauth2 => 'OAuth2';
+
+  @override
+  String get oauth2Description => 'Authorize via Gitea OAuth2 application';
+
+  @override
+  String get oauth2ClientId => 'Client ID';
+
+  @override
+  String get oauth2ClientSecret => 'Client Secret';
+
+  @override
+  String get oauth2RedirectUri => 'Redirect URI';
+
+  @override
+  String get oauth2RedirectUriHint => 'igitea://oauth/callback';
+
+  @override
+  String get oauth2Authorize => 'Open Authorization Page';
+
+  @override
+  String get oauth2ExchangeCode => 'Exchange Code for Token';
+
+  @override
+  String get oauth2AuthorizationCode => 'Authorization Code';
+
+  @override
+  String get oauth2AuthorizationCodeHint => 'Paste the code from the redirect URL';
+
+  @override
+  String get oauth2TokenRefreshed => 'Token refreshed successfully';
 }

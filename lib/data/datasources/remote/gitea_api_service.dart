@@ -1479,4 +1479,27 @@ class GiteaApiService {
       '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/wiki/page/${Uri.encodeComponent(pageName)}',
     );
   }
+
+  /// Exchange an OAuth2 authorization code for an access token.
+  /// Uses a direct POST without API version prefix.
+  Future<Map<String, dynamic>> oauth2ExchangeCode({
+    required String baseUrl,
+    required String clientId,
+    required String clientSecret,
+    required String code,
+    required String redirectUri,
+  }) async {
+    final response = await _client.postRaw(
+      baseUrl,
+      '/login/oauth/access_token',
+      body: {
+        'client_id': clientId,
+        'client_secret': clientSecret,
+        'code': code,
+        'redirect_uri': redirectUri,
+        'grant_type': 'authorization_code',
+      },
+    );
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
 }

@@ -78,6 +78,33 @@ class ApiClient {
     }
   }
 
+  /// POST without the API version prefix. Used for non-API endpoints.
+  Future<http.Response> postRaw(
+    String baseUrl,
+    String path, {
+    Map<String, dynamic>? body,
+  }) async {
+    final uri = Uri.parse(baseUrl).replace(path: path);
+    try {
+      final response = await _client
+          .post(
+            uri,
+            headers: {'Content-Type': 'application/json'},
+            body: body != null ? jsonEncode(body) : null,
+          )
+          .timeout(const Duration(seconds: defaultTimeoutSeconds));
+      return response;
+    } on http.ClientException catch (e) {
+      throw NetworkException(
+        e.message.isNotEmpty ? e.message : 'Network error',
+      );
+    } on TimeoutException catch (_) {
+      throw const NetworkException('Request timed out');
+    } on FormatException catch (e) {
+      throw NetworkException(e.message);
+    }
+  }
+
   Future<http.Response> put(
     String path, {
     Map<String, dynamic>? body,

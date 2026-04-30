@@ -418,5 +418,17 @@
   "webhookReleaseEvents": "Releases",
   "webhookWikiEvents": "Wiki",
   "webhookStarEvents": "Star",
-  "webhookForkEvents": "Fork"
+  "webhookForkEvents": "Fork",
+  "loginWithOAuth2": "Login with OAuth2",
+  "oauth2": "OAuth2",
+  "oauth2Description": "Authorize via Gitea OAuth2 application",
+  "oauth2ClientId": "Client ID",
+  "oauth2ClientSecret": "Client Secret",
+  "oauth2RedirectUri": "Redirect URI",
+  "oauth2RedirectUriHint": "igitea://oauth/callback",
+  "oauth2Authorize": "Open Authorization Page",
+  "oauth2ExchangeCode": "Exchange Code for Token",
+  "oauth2AuthorizationCode": "Authorization Code",
+  "oauth2AuthorizationCodeHint": "Paste the code from the redirect URL",
+  "oauth2TokenRefreshed": "Token refreshed successfully"
 }

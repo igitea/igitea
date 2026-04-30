@@ -11,6 +11,7 @@ class FakeAuthStorage implements AuthStorage {
     String? token,
     String? username,
     String? password,
+    String? refreshToken,
   }) async {
     _saved = SavedCredentials(
       baseUrl: baseUrl,
@@ -18,6 +19,7 @@ class FakeAuthStorage implements AuthStorage {
       token: token,
       username: username,
       password: password,
+      refreshToken: refreshToken,
     );
   }
 

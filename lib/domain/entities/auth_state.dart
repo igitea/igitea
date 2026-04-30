@@ -19,6 +19,7 @@ class AuthAuthenticated extends AuthState {
   final String? token;
   final String? username;
   final String? password;
+  final String? refreshToken;
   final User user;
 
   const AuthAuthenticated({
@@ -28,6 +29,7 @@ class AuthAuthenticated extends AuthState {
     this.token,
     this.username,
     this.password,
+    this.refreshToken,
   });
 }
 

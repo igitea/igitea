@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
-import '../../l10n/app_localizations.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../core/storage/auth_method_storage.dart';
 import '../../core/storage/auth_storage.dart';
 import '../../domain/entities/auth_state.dart';
+import '../../l10n/app_localizations.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -24,14 +26,22 @@ class _LoginPageState extends State<LoginPage>
   final _passwordController = TextEditingController();
   final _tokenController = TextEditingController();
 
+  final _oauthClientIdController = TextEditingController();
+  final _oauthClientSecretController = TextEditingController();
+  final _oauthRedirectUriController = TextEditingController(
+    text: 'igitea://oauth/callback',
+  );
+  final _oauthCodeController = TextEditingController();
+
   bool _obscurePassword = true;
   bool _obscureToken = true;
   bool _restoringCredentials = true;
+  bool _oauthCodeExchanging = false;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     _loadSavedCredentials();
   }
 
@@ -45,6 +55,8 @@ class _LoginPageState extends State<LoginPage>
           _usernameController.text = saved.username ?? '';
           _passwordController.text = saved.password ?? '';
           _tabController.index = 0;
+        } else if (saved.method == AuthMethod.oauth2) {
+          _tabController.index = 2;
         } else {
           _tokenController.text = saved.token ?? '';
           _tabController.index = 1;
@@ -63,6 +75,10 @@ class _LoginPageState extends State<LoginPage>
     _usernameController.dispose();
     _passwordController.dispose();
     _tokenController.dispose();
+    _oauthClientIdController.dispose();
+    _oauthClientSecretController.dispose();
+    _oauthRedirectUriController.dispose();
+    _oauthCodeController.dispose();
     super.dispose();
   }
 
@@ -106,6 +122,71 @@ class _LoginPageState extends State<LoginPage>
     await Injection.authNotifier.loginWithToken(baseUrl, token);
   }
 
+  Future<void> _openOAuth2Authorization() async {
+    final baseUrl = _baseUrlController.text.trim();
+    final clientId = _oauthClientIdController.text.trim();
+    final redirectUri = _oauthRedirectUriController.text.trim();
+
+    if (baseUrl.isEmpty || clientId.isEmpty || redirectUri.isEmpty) return;
+
+    await Injection.authNotifier.openOAuth2Authorization(
+      baseUrl: baseUrl,
+      clientId: clientId,
+      redirectUri: redirectUri,
+    );
+  }
+
+  Future<void> _exchangeOAuth2Code() async {
+    final l10n = AppLocalizations.of(context)!;
+    final baseUrl = _baseUrlController.text.trim();
+    final clientId = _oauthClientIdController.text.trim();
+    final clientSecret = _oauthClientSecretController.text.trim();
+    final code = _oauthCodeController.text.trim();
+    final redirectUri = _oauthRedirectUriController.text.trim();
+
+    if (baseUrl.isEmpty || clientId.isEmpty || code.isEmpty) return;
+
+    setState(() => _oauthCodeExchanging = true);
+
+    try {
+      final result = await Injection.authNotifier.exchangeOAuth2Code(
+        baseUrl: baseUrl,
+        clientId: clientId,
+        clientSecret: clientSecret,
+        code: code,
+        redirectUri: redirectUri,
+      );
+
+      final accessToken = result['access_token'] as String?;
+      final refreshToken = result['refresh_token'] as String?;
+
+      if (accessToken == null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('${l10n.error}: Failed to get access token')),
+          );
+        }
+        setState(() => _oauthCodeExchanging = false);
+        return;
+      }
+
+      Injection.initialize(baseUrl: baseUrl, token: accessToken);
+      await Injection.authNotifier.loginWithOAuth2(
+        baseUrl: baseUrl,
+        token: accessToken,
+        refreshToken: refreshToken,
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${l10n.error}: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _oauthCodeExchanging = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -115,7 +196,7 @@ class _LoginPageState extends State<LoginPage>
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(UIConstants.lg),
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 440),
               child: ListenableBuilder(
@@ -128,8 +209,8 @@ class _LoginPageState extends State<LoginPage>
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          CircularProgressIndicator(),
-                          SizedBox(height: 16),
+                          const CircularProgressIndicator(),
+                          const SizedBox(height: UIConstants.md),
                           Text(l10n.restoringSession),
                         ],
                       ),
@@ -149,7 +230,7 @@ class _LoginPageState extends State<LoginPage>
                         size: 64,
                         color: theme.colorScheme.primary,
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: UIConstants.md),
                       Text(
                         l10n.appTitle,
                         style: theme.textTheme.headlineLarge?.copyWith(
@@ -157,27 +238,27 @@ class _LoginPageState extends State<LoginPage>
                           color: theme.colorScheme.primary,
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: UIConstants.sm),
                       Text(
                         l10n.connectToGitea,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: UIConstants.xl),
                       if (errorMessage != null)
                         Card(
                           color: theme.colorScheme.errorContainer,
-                          margin: const EdgeInsets.only(bottom: 16),
+                          margin: const EdgeInsets.only(bottom: UIConstants.md),
                           child: Padding(
-                            padding: const EdgeInsets.all(12),
+                            padding: const EdgeInsets.all(UIConstants.sm),
                             child: Row(
                               children: [
                                 Icon(
                                   Icons.error_outline,
                                   color: theme.colorScheme.onErrorContainer,
                                 ),
-                                const SizedBox(width: 8),
+                                const SizedBox(width: UIConstants.sm),
                                 Expanded(
                                   child: Text(
                                     errorMessage,
@@ -195,16 +276,18 @@ class _LoginPageState extends State<LoginPage>
                         tabs: [
                           Tab(text: l10n.usernamePassword),
                           Tab(text: l10n.token),
+                          Tab(text: l10n.oauth2),
                         ],
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: UIConstants.md),
                       SizedBox(
-                        height: 340,
+                        height: 420,
                         child: TabBarView(
                           controller: _tabController,
                           children: [
                             _buildBasicAuthForm(theme, isLoading, l10n),
                             _buildTokenForm(theme, isLoading, l10n),
+                            _buildOAuth2Form(theme, isLoading, l10n),
                           ],
                         ),
                       ),
@@ -229,22 +312,22 @@ class _LoginPageState extends State<LoginPage>
             decoration: InputDecoration(
               labelText: l10n.serverUrl,
               hintText: 'https://gitea.example.com',
-              prefixIcon: Icon(Icons.dns_outlined),
-              border: OutlineInputBorder(),
+              prefixIcon: const Icon(Icons.dns_outlined),
+              border: const OutlineInputBorder(),
             ),
             keyboardType: TextInputType.url,
             textInputAction: TextInputAction.next,
             validator: (value) => _validateUrl(value, l10n),
             enabled: !isLoading,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: UIConstants.md),
           TextFormField(
             controller: _usernameController,
             decoration: InputDecoration(
               labelText: l10n.username,
               hintText: l10n.enterUsername,
-              prefixIcon: Icon(Icons.person_outlined),
-              border: OutlineInputBorder(),
+              prefixIcon: const Icon(Icons.person_outlined),
+              border: const OutlineInputBorder(),
             ),
             textInputAction: TextInputAction.next,
             validator: (value) {
@@ -255,7 +338,7 @@ class _LoginPageState extends State<LoginPage>
             },
             enabled: !isLoading,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: UIConstants.md),
           TextFormField(
             controller: _passwordController,
             decoration: InputDecoration(
@@ -285,7 +368,7 @@ class _LoginPageState extends State<LoginPage>
             },
             enabled: !isLoading,
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: UIConstants.lg),
           SizedBox(
             width: double.infinity,
             child: FilledButton(
@@ -314,15 +397,15 @@ class _LoginPageState extends State<LoginPage>
             decoration: InputDecoration(
               labelText: l10n.serverUrl,
               hintText: 'https://gitea.example.com',
-              prefixIcon: Icon(Icons.dns_outlined),
-              border: OutlineInputBorder(),
+              prefixIcon: const Icon(Icons.dns_outlined),
+              border: const OutlineInputBorder(),
             ),
             keyboardType: TextInputType.url,
             textInputAction: TextInputAction.next,
             validator: (value) => _validateUrl(value, l10n),
             enabled: !isLoading,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: UIConstants.md),
           TextFormField(
             controller: _tokenController,
             decoration: InputDecoration(
@@ -352,7 +435,7 @@ class _LoginPageState extends State<LoginPage>
             },
             enabled: !isLoading,
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: UIConstants.lg),
           SizedBox(
             width: double.infinity,
             child: FilledButton(
@@ -364,6 +447,94 @@ class _LoginPageState extends State<LoginPage>
                       child: CircularProgressIndicator(strokeWidth: 2),
                     )
                   : Text(l10n.signInWithToken),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildOAuth2Form(ThemeData theme, bool isLoading, AppLocalizations l10n) {
+    return SingleChildScrollView(
+      child: Column(
+        children: [
+          Text(l10n.oauth2Description,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: UIConstants.md),
+          TextFormField(
+            controller: _baseUrlController,
+            decoration: InputDecoration(
+              labelText: l10n.serverUrl,
+              hintText: 'https://gitea.example.com',
+              prefixIcon: const Icon(Icons.dns_outlined),
+              border: const OutlineInputBorder(),
+            ),
+            keyboardType: TextInputType.url,
+            enabled: !isLoading,
+          ),
+          const SizedBox(height: UIConstants.sm),
+          TextFormField(
+            controller: _oauthClientIdController,
+            decoration: InputDecoration(
+              labelText: l10n.oauth2ClientId,
+              border: const OutlineInputBorder(),
+            ),
+            enabled: !isLoading,
+          ),
+          const SizedBox(height: UIConstants.sm),
+          TextFormField(
+            controller: _oauthClientSecretController,
+            decoration: InputDecoration(
+              labelText: l10n.oauth2ClientSecret,
+              border: const OutlineInputBorder(),
+            ),
+            enabled: !isLoading,
+          ),
+          const SizedBox(height: UIConstants.sm),
+          TextFormField(
+            controller: _oauthRedirectUriController,
+            decoration: InputDecoration(
+              labelText: l10n.oauth2RedirectUri,
+              hintText: l10n.oauth2RedirectUriHint,
+              border: const OutlineInputBorder(),
+            ),
+            enabled: !isLoading,
+          ),
+          const SizedBox(height: UIConstants.md),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: isLoading ? null : _openOAuth2Authorization,
+              icon: const Icon(Icons.open_in_new),
+              label: Text(l10n.oauth2Authorize),
+            ),
+          ),
+          const SizedBox(height: UIConstants.md),
+          TextFormField(
+            controller: _oauthCodeController,
+            decoration: InputDecoration(
+              labelText: l10n.oauth2AuthorizationCode,
+              hintText: l10n.oauth2AuthorizationCodeHint,
+              border: const OutlineInputBorder(),
+            ),
+            enabled: !isLoading && !_oauthCodeExchanging,
+          ),
+          const SizedBox(height: UIConstants.md),
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton(
+              onPressed: isLoading || _oauthCodeExchanging ? null : _exchangeOAuth2Code,
+              child: _oauthCodeExchanging
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : Text(l10n.loginWithOAuth2),
             ),
           ),
         ],

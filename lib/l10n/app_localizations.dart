@@ -2533,6 +2533,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Fork'**
   String get webhookForkEvents;
+
+  /// No description provided for @loginWithOAuth2.
+  ///
+  /// In en, this message translates to:
+  /// **'Login with OAuth2'**
+  String get loginWithOAuth2;
+
+  /// No description provided for @oauth2.
+  ///
+  /// In en, this message translates to:
+  /// **'OAuth2'**
+  String get oauth2;
+
+  /// No description provided for @oauth2Description.
+  ///
+  /// In en, this message translates to:
+  /// **'Authorize via Gitea OAuth2 application'**
+  String get oauth2Description;
+
+  /// No description provided for @oauth2ClientId.
+  ///
+  /// In en, this message translates to:
+  /// **'Client ID'**
+  String get oauth2ClientId;
+
+  /// No description provided for @oauth2ClientSecret.
+  ///
+  /// In en, this message translates to:
+  /// **'Client Secret'**
+  String get oauth2ClientSecret;
+
+  /// No description provided for @oauth2RedirectUri.
+  ///
+  /// In en, this message translates to:
+  /// **'Redirect URI'**
+  String get oauth2RedirectUri;
+
+  /// No description provided for @oauth2RedirectUriHint.
+  ///
+  /// In en, this message translates to:
+  /// **'igitea://oauth/callback'**
+  String get oauth2RedirectUriHint;
+
+  /// No description provided for @oauth2Authorize.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Authorization Page'**
+  String get oauth2Authorize;
+
+  /// No description provided for @oauth2ExchangeCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Exchange Code for Token'**
+  String get oauth2ExchangeCode;
+
+  /// No description provided for @oauth2AuthorizationCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Authorization Code'**
+  String get oauth2AuthorizationCode;
+
+  /// No description provided for @oauth2AuthorizationCodeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste the code from the redirect URL'**
+  String get oauth2AuthorizationCodeHint;
+
+  /// No description provided for @oauth2TokenRefreshed.
+  ///
+  /// In en, this message translates to:
+  /// **'Token refreshed successfully'**
+  String get oauth2TokenRefreshed;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
