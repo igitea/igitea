@@ -301,6 +301,18 @@ class GiteaApiService {
     return Commit.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
   }
 
+  /// Compare two commits/branches.
+  Future<Map<String, dynamic>> repoCompareDiff({
+    required String owner,
+    required String repo,
+    required String basehead,
+  }) async {
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/compare/${Uri.encodeComponent(basehead)}',
+    );
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
   Future<List<Branch>> repoListBranches({
     required String owner,
     required String repo,

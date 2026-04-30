@@ -1355,4 +1355,16 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get splitView => 'Split view';
+
+  @override
+  String get compareVersions => 'Compare Versions';
+
+  @override
+  String get baseRef => 'Base (older)';
+
+  @override
+  String get headRef => 'Head (newer)';
+
+  @override
+  String get compare => 'Compare';
 }

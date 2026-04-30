@@ -448,5 +448,9 @@
   "noFilesChanged": "No files changed",
   "viewDiff": "View Diff",
   "unifiedView": "Unified view",
-  "splitView": "Split view"
+  "splitView": "Split view",
+  "compareVersions": "Compare Versions",
+  "baseRef": "Base (older)",
+  "headRef": "Head (newer)",
+  "compare": "Compare"
 }

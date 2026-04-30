@@ -18,6 +18,8 @@ import '../../data/models/generated/generated_models.dart';
 import '../../domain/usecases/repo_usecases.dart';
 import '../../l10n/app_localizations.dart';
 import 'file_history_page.dart';
+import 'file_compare_page.dart';
+import 'file_blame_page.dart';
 
 class RepoFilePage extends StatefulWidget {
   final String owner;
@@ -231,22 +233,77 @@ class _RepoFilePageState extends State<RepoFilePage> {
                 onPressed: () => _downloadFile(context),
               ),
             if (hasContent)
-              IconButton(
-                icon: const Icon(Icons.history),
-                tooltip: l10n.commitHistory,
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => FileHistoryPage(
-                        owner: widget.owner,
-                        repo: widget.repo,
-                        path: widget.path,
-                        ref: widget.ref,
-                      ),
-                    ),
-                  );
+              PopupMenuButton<String>(
+                icon: const Icon(Icons.more_vert),
+                tooltip: 'More',
+                onSelected: (value) {
+                  switch (value) {
+                    case 'history':
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => FileHistoryPage(
+                            owner: widget.owner,
+                            repo: widget.repo,
+                            path: widget.path,
+                            ref: widget.ref,
+                          ),
+                        ),
+                      );
+                    case 'compare':
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => FileComparePage(
+                            owner: widget.owner,
+                            repo: widget.repo,
+                            path: widget.path,
+                          ),
+                        ),
+                      );
+                    case 'blame':
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => FileBlamePage(
+                            owner: widget.owner,
+                            repo: widget.repo,
+                            path: widget.path,
+                            ref: widget.ref,
+                          ),
+                        ),
+                      );
+                  }
                 },
+                itemBuilder: (context) => [
+                  PopupMenuItem(
+                    value: 'history',
+                    child: ListTile(
+                      leading: const Icon(Icons.history),
+                      title: Text(l10n.commitHistory),
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'compare',
+                    child: ListTile(
+                      leading: const Icon(Icons.compare_arrows),
+                      title: Text(l10n.compareVersions),
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                  PopupMenuItem(
+                    value: 'blame',
+                    child: ListTile(
+                      leading: const Icon(Icons.face),
+                      title: const Text('Blame'),
+                      dense: true,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                  ),
+                ],
               ),
           ],
         ),

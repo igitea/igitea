@@ -2701,6 +2701,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Split view'**
   String get splitView;
+
+  /// No description provided for @compareVersions.
+  ///
+  /// In en, this message translates to:
+  /// **'Compare Versions'**
+  String get compareVersions;
+
+  /// No description provided for @baseRef.
+  ///
+  /// In en, this message translates to:
+  /// **'Base (older)'**
+  String get baseRef;
+
+  /// No description provided for @headRef.
+  ///
+  /// In en, this message translates to:
+  /// **'Head (newer)'**
+  String get headRef;
+
+  /// No description provided for @compare.
+  ///
+  /// In en, this message translates to:
+  /// **'Compare'**
+  String get compare;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
