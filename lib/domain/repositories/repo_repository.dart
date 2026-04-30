@@ -191,4 +191,42 @@ abstract class RepoRepository {
     int index, {
     MergePullRequestOption? body,
   });
+
+  /// List wiki pages in a repository.
+  Future<Either<Failure, List<WikiPageMetaData>>> listWikiPages(
+    String owner,
+    String repo,
+  );
+
+  /// Get a specific wiki page.
+  Future<Either<Failure, WikiPage>> getWikiPage(
+    String owner,
+    String repo,
+    String pageName,
+  );
+
+  /// Create a wiki page.
+  Future<Either<Failure, WikiPage>> createWikiPage(
+    String owner,
+    String repo,
+    String title,
+    String content, {
+    String? message,
+  });
+
+  /// Edit a wiki page.
+  Future<Either<Failure, WikiPage>> editWikiPage(
+    String owner,
+    String repo,
+    String title,
+    String content, {
+    String? message,
+  });
+
+  /// Delete a wiki page.
+  Future<Either<Failure, void>> deleteWikiPage(
+    String owner,
+    String repo,
+    String pageName,
+  );
 }

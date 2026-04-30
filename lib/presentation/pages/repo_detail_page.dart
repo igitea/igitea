@@ -24,6 +24,7 @@ import 'pr_detail_page.dart';
 import 'release_detail_page.dart';
 import 'repo_file_page.dart';
 import 'tag_detail_page.dart';
+import 'wiki_list_page.dart';
 
 const _languageColors = <String, Color>{
   'Dart': Color(0xFF00B4AB),
@@ -106,6 +107,7 @@ class _RepoDetailPageState extends State<RepoDetailPage> {
       _SectionItem(id: 'commits', title: l10n.commits, icon: Icons.commit),
       _SectionItem(id: 'branches', title: l10n.branches, icon: Icons.call_split),
       _SectionItem(id: 'tags', title: l10n.tags, icon: Icons.label),
+      _SectionItem(id: 'wiki', title: l10n.wiki, icon: Icons.book_outlined),
     ];
 
     return CustomScrollView(
@@ -1332,6 +1334,7 @@ class _RepoSectionPage extends StatelessWidget {
       'commits' => l10n.commits,
       'branches' => l10n.branches,
       'tags' => l10n.tags,
+      'wiki' => l10n.wiki,
       _ => '',
     };
   }
@@ -1378,6 +1381,7 @@ class _RepoSectionPage extends StatelessWidget {
           repo: repo,
           l10n: l10n,
         ),
+      'wiki' => WikiListPage(owner: owner, repo: repo),
       _ => const Center(child: Text('Unknown section')),
     };
   }

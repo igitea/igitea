@@ -258,6 +258,11 @@ class RepoNotifier extends ChangeNotifier {
   DeleteRepoUseCase _deleteRepoUseCase;
   UpdateFileUseCase _updateFileUseCase;
   CreateForkUseCase _createForkUseCase;
+  ListWikiPagesUseCase _listWikiPagesUseCase;
+  GetWikiPageUseCase _getWikiPageUseCase;
+  CreateWikiPageUseCase _createWikiPageUseCase;
+  EditWikiPageUseCase _editWikiPageUseCase;
+  DeleteWikiPageUseCase _deleteWikiPageUseCase;
 
   RepoState _state = const RepoInitial();
   RepoState get state => _state;
@@ -319,6 +324,11 @@ class RepoNotifier extends ChangeNotifier {
     required DeleteRepoUseCase deleteRepoUseCase,
     required UpdateFileUseCase updateFileUseCase,
     required CreateForkUseCase createForkUseCase,
+    required ListWikiPagesUseCase listWikiPagesUseCase,
+    required GetWikiPageUseCase getWikiPageUseCase,
+    required CreateWikiPageUseCase createWikiPageUseCase,
+    required EditWikiPageUseCase editWikiPageUseCase,
+    required DeleteWikiPageUseCase deleteWikiPageUseCase,
   }) : _getRepoUseCase = getRepoUseCase,
        _searchReposUseCase = searchReposUseCase,
        _listBranchesUseCase = listBranchesUseCase,
@@ -338,7 +348,12 @@ class RepoNotifier extends ChangeNotifier {
        _editRepoUseCase = editRepoUseCase,
        _deleteRepoUseCase = deleteRepoUseCase,
        _updateFileUseCase = updateFileUseCase,
-       _createForkUseCase = createForkUseCase;
+       _createForkUseCase = createForkUseCase,
+       _listWikiPagesUseCase = listWikiPagesUseCase,
+       _getWikiPageUseCase = getWikiPageUseCase,
+       _createWikiPageUseCase = createWikiPageUseCase,
+       _editWikiPageUseCase = editWikiPageUseCase,
+       _deleteWikiPageUseCase = deleteWikiPageUseCase;
 
   void updateUseCases({
     required GetRepoUseCase getRepoUseCase,
@@ -361,6 +376,11 @@ class RepoNotifier extends ChangeNotifier {
     required DeleteRepoUseCase deleteRepoUseCase,
     required UpdateFileUseCase updateFileUseCase,
     required CreateForkUseCase createForkUseCase,
+    required ListWikiPagesUseCase listWikiPagesUseCase,
+    required GetWikiPageUseCase getWikiPageUseCase,
+    required CreateWikiPageUseCase createWikiPageUseCase,
+    required EditWikiPageUseCase editWikiPageUseCase,
+    required DeleteWikiPageUseCase deleteWikiPageUseCase,
   }) {
     _getRepoUseCase = getRepoUseCase;
     _searchReposUseCase = searchReposUseCase;
@@ -382,6 +402,11 @@ class RepoNotifier extends ChangeNotifier {
     _deleteRepoUseCase = deleteRepoUseCase;
     _updateFileUseCase = updateFileUseCase;
     _createForkUseCase = createForkUseCase;
+    _listWikiPagesUseCase = listWikiPagesUseCase;
+    _getWikiPageUseCase = getWikiPageUseCase;
+    _createWikiPageUseCase = createWikiPageUseCase;
+    _editWikiPageUseCase = editWikiPageUseCase;
+    _deleteWikiPageUseCase = deleteWikiPageUseCase;
   }
 
   Future<void> getRepo(String owner, String repo) async {
@@ -742,6 +767,71 @@ class RepoNotifier extends ChangeNotifier {
         name: name,
         organization: organization,
       ),
+    );
+  }
+
+  Future<Either<Failure, List<WikiPageMetaData>>> listWikiPages(
+    String owner,
+    String repo,
+  ) async {
+    return await _listWikiPagesUseCase.call(
+      ListWikiPagesParams(owner: owner, repo: repo),
+    );
+  }
+
+  Future<Either<Failure, WikiPage>> getWikiPage(
+    String owner,
+    String repo,
+    String pageName,
+  ) async {
+    return await _getWikiPageUseCase.call(
+      GetWikiPageParams(owner: owner, repo: repo, pageName: pageName),
+    );
+  }
+
+  Future<Either<Failure, WikiPage>> createWikiPage(
+    String owner,
+    String repo,
+    String title,
+    String content, {
+    String? message,
+  }) async {
+    return await _createWikiPageUseCase.call(
+      CreateWikiPageParams(
+        owner: owner,
+        repo: repo,
+        title: title,
+        content: content,
+        message: message,
+      ),
+    );
+  }
+
+  Future<Either<Failure, WikiPage>> editWikiPage(
+    String owner,
+    String repo,
+    String title,
+    String content, {
+    String? message,
+  }) async {
+    return await _editWikiPageUseCase.call(
+      EditWikiPageParams(
+        owner: owner,
+        repo: repo,
+        title: title,
+        content: content,
+        message: message,
+      ),
+    );
+  }
+
+  Future<Either<Failure, void>> deleteWikiPage(
+    String owner,
+    String repo,
+    String pageName,
+  ) async {
+    return await _deleteWikiPageUseCase.call(
+      DeleteWikiPageParams(owner: owner, repo: repo, pageName: pageName),
     );
   }
 }

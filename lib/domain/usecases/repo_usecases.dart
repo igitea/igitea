@@ -564,3 +564,146 @@ class CreateRepoUseCase {
     });
   }
 }
+
+class GetWikiPageParams {
+  final String owner;
+  final String repo;
+  final String pageName;
+
+  const GetWikiPageParams({
+    required this.owner,
+    required this.repo,
+    required this.pageName,
+  });
+}
+
+class GetWikiPageUseCase {
+  final RepoRepository _repository;
+
+  GetWikiPageUseCase({required RepoRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, WikiPage>> call(GetWikiPageParams params) async {
+    return _repository.getWikiPage(
+      params.owner,
+      params.repo,
+      params.pageName,
+    );
+  }
+}
+
+class ListWikiPagesParams {
+  final String owner;
+  final String repo;
+
+  const ListWikiPagesParams({
+    required this.owner,
+    required this.repo,
+  });
+}
+
+class ListWikiPagesUseCase {
+  final RepoRepository _repository;
+
+  ListWikiPagesUseCase({required RepoRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, List<WikiPageMetaData>>> call(
+    ListWikiPagesParams params,
+  ) async {
+    return _repository.listWikiPages(params.owner, params.repo);
+  }
+}
+
+class CreateWikiPageParams {
+  final String owner;
+  final String repo;
+  final String title;
+  final String content;
+  final String? message;
+
+  const CreateWikiPageParams({
+    required this.owner,
+    required this.repo,
+    required this.title,
+    required this.content,
+    this.message,
+  });
+}
+
+class CreateWikiPageUseCase {
+  final RepoRepository _repository;
+
+  CreateWikiPageUseCase({required RepoRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, WikiPage>> call(CreateWikiPageParams params) async {
+    return _repository.createWikiPage(
+      params.owner,
+      params.repo,
+      params.title,
+      params.content,
+      message: params.message,
+    );
+  }
+}
+
+class EditWikiPageParams {
+  final String owner;
+  final String repo;
+  final String title;
+  final String content;
+  final String? message;
+
+  const EditWikiPageParams({
+    required this.owner,
+    required this.repo,
+    required this.title,
+    required this.content,
+    this.message,
+  });
+}
+
+class EditWikiPageUseCase {
+  final RepoRepository _repository;
+
+  EditWikiPageUseCase({required RepoRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, WikiPage>> call(EditWikiPageParams params) async {
+    return _repository.editWikiPage(
+      params.owner,
+      params.repo,
+      params.title,
+      params.content,
+      message: params.message,
+    );
+  }
+}
+
+class DeleteWikiPageParams {
+  final String owner;
+  final String repo;
+  final String pageName;
+
+  const DeleteWikiPageParams({
+    required this.owner,
+    required this.repo,
+    required this.pageName,
+  });
+}
+
+class DeleteWikiPageUseCase {
+  final RepoRepository _repository;
+
+  DeleteWikiPageUseCase({required RepoRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, void>> call(DeleteWikiPageParams params) async {
+    return _repository.deleteWikiPage(
+      params.owner,
+      params.repo,
+      params.pageName,
+    );
+  }
+}

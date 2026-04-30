@@ -78,6 +78,11 @@ class Injection {
   static late UpdateFileUseCase updateFileUseCase;
   static late CreateForkUseCase createForkUseCase;
   static late CreateRepoUseCase createRepoUseCase;
+  static late ListWikiPagesUseCase listWikiPagesUseCase;
+  static late GetWikiPageUseCase getWikiPageUseCase;
+  static late CreateWikiPageUseCase createWikiPageUseCase;
+  static late EditWikiPageUseCase editWikiPageUseCase;
+  static late DeleteWikiPageUseCase deleteWikiPageUseCase;
   static late ListIssuesUseCase listIssuesUseCase;
   static late GetIssueUseCase getIssueUseCase;
   static late CreateIssueUseCase createIssueUseCase;
@@ -175,6 +180,11 @@ class Injection {
     updateFileUseCase = UpdateFileUseCase(repository: repoRepository);
     createForkUseCase = CreateForkUseCase(repository: repoRepository);
     createRepoUseCase = CreateRepoUseCase(repository: repoRepository);
+    listWikiPagesUseCase = ListWikiPagesUseCase(repository: repoRepository);
+    getWikiPageUseCase = GetWikiPageUseCase(repository: repoRepository);
+    createWikiPageUseCase = CreateWikiPageUseCase(repository: repoRepository);
+    editWikiPageUseCase = EditWikiPageUseCase(repository: repoRepository);
+    deleteWikiPageUseCase = DeleteWikiPageUseCase(repository: repoRepository);
     listIssuesUseCase = ListIssuesUseCase(repository: issueRepository);
     getIssueUseCase = GetIssueUseCase(repository: issueRepository);
     createIssueUseCase = CreateIssueUseCase(repository: issueRepository);
@@ -290,6 +300,11 @@ class Injection {
         deleteRepoUseCase: deleteRepoUseCase,
         updateFileUseCase: updateFileUseCase,
         createForkUseCase: createForkUseCase,
+        listWikiPagesUseCase: listWikiPagesUseCase,
+        getWikiPageUseCase: getWikiPageUseCase,
+        createWikiPageUseCase: createWikiPageUseCase,
+        editWikiPageUseCase: editWikiPageUseCase,
+        deleteWikiPageUseCase: deleteWikiPageUseCase,
       );
       issueNotifier.updateUseCases(
         listIssuesUseCase: listIssuesUseCase,
@@ -357,6 +372,11 @@ class Injection {
         deleteRepoUseCase: deleteRepoUseCase,
         updateFileUseCase: updateFileUseCase,
         createForkUseCase: createForkUseCase,
+        listWikiPagesUseCase: listWikiPagesUseCase,
+        getWikiPageUseCase: getWikiPageUseCase,
+        createWikiPageUseCase: createWikiPageUseCase,
+        editWikiPageUseCase: editWikiPageUseCase,
+        deleteWikiPageUseCase: deleteWikiPageUseCase,
       );
       issueNotifier = IssueNotifier(
         listIssuesUseCase: listIssuesUseCase,
@@ -445,6 +465,11 @@ class Injection {
       deleteRepoUseCase: deleteRepoUseCase,
       updateFileUseCase: updateFileUseCase,
       createForkUseCase: createForkUseCase,
+      listWikiPagesUseCase: listWikiPagesUseCase,
+      getWikiPageUseCase: getWikiPageUseCase,
+      createWikiPageUseCase: createWikiPageUseCase,
+      editWikiPageUseCase: editWikiPageUseCase,
+      deleteWikiPageUseCase: deleteWikiPageUseCase,
     );
     issueNotifier.updateUseCases(
       listIssuesUseCase: listIssuesUseCase,

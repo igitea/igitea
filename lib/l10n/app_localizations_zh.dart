@@ -921,13 +921,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get preview => 'Preview';
 
   @override
-  String get commitMessage => 'Commit message';
+  String get commitMessage => 'Commit Message';
 
   @override
   String get commit => 'Commit';
 
   @override
-  String get commitMessageHint => 'Enter a commit message...';
+  String get commitMessageHint => 'Describe your changes (optional)';
 
   @override
   String get cannotGetFileSha => 'Cannot get file SHA. Please reload the file.';
@@ -1080,6 +1080,59 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get complete => '完成';
+
+  @override
+  String get wiki => 'Wiki';
+
+  @override
+  String get newWikiPage => 'New Wiki Page';
+
+  @override
+  String get editWikiPage => 'Edit Wiki Page';
+
+  @override
+  String get deleteWikiPage => 'Delete Wiki Page';
+
+  @override
+  String get deleteWikiPageConfirm =>
+      'Are you sure you want to delete this wiki page? This action cannot be undone.';
+
+  @override
+  String get wikiPageDeleted => 'Wiki page deleted';
+
+  @override
+  String get wikiPageTitle => 'Page Title';
+
+  @override
+  String get wikiPageTitleHint => 'e.g. Home';
+
+  @override
+  String get wikiPageContent => 'Content';
+
+  @override
+  String get wikiPageContentHint => 'Write in Markdown...';
+
+  @override
+  String get noWikiPages => 'No wiki pages';
+
+  @override
+  String get noWikiPagesDescription =>
+      'This repository doesn\'t have any wiki pages yet.';
+
+  @override
+  String get createFirstWikiPage => 'Create First Page';
+
+  @override
+  String get lastCommit => 'Last commit';
+
+  @override
+  String get noContent => 'No content';
+
+  @override
+  String get saved => 'Saved';
+
+  @override
+  String get created => 'Created';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).

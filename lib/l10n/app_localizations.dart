@@ -1838,7 +1838,7 @@ abstract class AppLocalizations {
   /// No description provided for @commitMessage.
   ///
   /// In en, this message translates to:
-  /// **'Commit message'**
+  /// **'Commit Message'**
   String get commitMessage;
 
   /// No description provided for @commit.
@@ -1850,7 +1850,7 @@ abstract class AppLocalizations {
   /// No description provided for @commitMessageHint.
   ///
   /// In en, this message translates to:
-  /// **'Enter a commit message...'**
+  /// **'Describe your changes (optional)'**
   String get commitMessageHint;
 
   /// No description provided for @cannotGetFileSha.
@@ -2152,6 +2152,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'complete'**
   String get complete;
+
+  /// No description provided for @wiki.
+  ///
+  /// In en, this message translates to:
+  /// **'Wiki'**
+  String get wiki;
+
+  /// No description provided for @newWikiPage.
+  ///
+  /// In en, this message translates to:
+  /// **'New Wiki Page'**
+  String get newWikiPage;
+
+  /// No description provided for @editWikiPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Wiki Page'**
+  String get editWikiPage;
+
+  /// No description provided for @deleteWikiPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Wiki Page'**
+  String get deleteWikiPage;
+
+  /// No description provided for @deleteWikiPageConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this wiki page? This action cannot be undone.'**
+  String get deleteWikiPageConfirm;
+
+  /// No description provided for @wikiPageDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Wiki page deleted'**
+  String get wikiPageDeleted;
+
+  /// No description provided for @wikiPageTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Page Title'**
+  String get wikiPageTitle;
+
+  /// No description provided for @wikiPageTitleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Home'**
+  String get wikiPageTitleHint;
+
+  /// No description provided for @wikiPageContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Content'**
+  String get wikiPageContent;
+
+  /// No description provided for @wikiPageContentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Write in Markdown...'**
+  String get wikiPageContentHint;
+
+  /// No description provided for @noWikiPages.
+  ///
+  /// In en, this message translates to:
+  /// **'No wiki pages'**
+  String get noWikiPages;
+
+  /// No description provided for @noWikiPagesDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'This repository doesn\'t have any wiki pages yet.'**
+  String get noWikiPagesDescription;
+
+  /// No description provided for @createFirstWikiPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Create First Page'**
+  String get createFirstWikiPage;
+
+  /// No description provided for @lastCommit.
+  ///
+  /// In en, this message translates to:
+  /// **'Last commit'**
+  String get lastCommit;
+
+  /// No description provided for @noContent.
+  ///
+  /// In en, this message translates to:
+  /// **'No content'**
+  String get noContent;
+
+  /// No description provided for @saved.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get saved;
+
+  /// No description provided for @created.
+  ///
+  /// In en, this message translates to:
+  /// **'Created'**
+  String get created;
 }
 
 class _AppLocalizationsDelegate

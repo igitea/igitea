@@ -1,4 +1,4 @@
-package com.example.igitea
+package com.charleypeng.igitea
 
 import io.flutter.embedding.android.FlutterActivity
 

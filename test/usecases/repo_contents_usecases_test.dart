@@ -220,6 +220,49 @@ class MockRepoRepository implements RepoRepository {
     CreateForkOption? body,
   }) =>
       throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, List<WikiPageMetaData>>> listWikiPages(
+    String owner,
+    String repo,
+  ) =>
+      throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, WikiPage>> getWikiPage(
+    String owner,
+    String repo,
+    String pageName,
+  ) =>
+      throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, WikiPage>> createWikiPage(
+    String owner,
+    String repo,
+    String title,
+    String content, {
+    String? message,
+  }) =>
+      throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, WikiPage>> editWikiPage(
+    String owner,
+    String repo,
+    String title,
+    String content, {
+    String? message,
+  }) =>
+      throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, void>> deleteWikiPage(
+    String owner,
+    String repo,
+    String pageName,
+  ) =>
+      throw UnimplementedError();
 }
 
 void main() {

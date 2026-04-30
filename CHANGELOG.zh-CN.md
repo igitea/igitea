@@ -2,6 +2,34 @@
 
 ## [Unreleased]
 
+### 新增 — Wiki 完整支持
+
+- `WikiEditPage`：创建和编辑 Wiki 页面
+  - 标题输入框（创建时必填，编辑时只读）
+  - Markdown 内容编辑器，支持实时预览切换
+  - 可选的提交消息输入
+  - 表单验证：标题不能为空
+  - AppBar 保存按钮带加载指示器
+- `WikiListPage` 重构：
+  - 添加浮动操作按钮（FAB）用于创建新页面
+  - 使用 `EmptyState` 组件替代内联空状态
+  - 支持国际化（l10n）
+  - 点击页面后返回自动刷新列表
+- `WikiDetailPage` 增强：
+  - AppBar 添加编辑和删除按钮
+  - 删除前显示确认对话框
+  - 支持 Markdown 内容选择
+  - 使用 `Either` 模式替代 try-catch
+- 新增 UseCases：`GetWikiPageUseCase`、`ListWikiPagesUseCase`、`CreateWikiPageUseCase`、`EditWikiPageUseCase`、`DeleteWikiPageUseCase`
+- 新增 Repository 方法：`getWikiPage`、`listWikiPages`、`createWikiPage`、`editWikiPage`、`deleteWikiPage`
+- 新增 ARB 键：`wiki`、`newWikiPage`、`editWikiPage`、`deleteWikiPage`、`deleteWikiPageConfirm`、`wikiPageDeleted`、`wikiPageTitle`、`wikiPageContent`、`noWikiPages`、`createFirstWikiPage`、`lastCommit`、`commitMessage`、`saved`、`created` 等
+- 更新 `Injection` 类：三个初始化路径均添加 Wiki use cases
+- 更新 `RepoNotifier`：添加 Wiki 相关字段和方法
+
+### 修复
+
+- 修复 `RepoDetailPage` 中未显示 Wiki 入口的问题：在仓库区块列表中添加 Wiki 选项（`id: 'wiki'`），并在 `_RepoSectionPage` 中处理 Wiki 导航到 `WikiListPage`
+
 ### 变更
 
 - 重构 `RepoDetailPage`：将横向 `TabBar` 改为纵向区块列表（代码、Issue、里程碑、Pull Request、Release、提交、分支、标签），点击进入对应页面
@@ -16,6 +44,7 @@
 - 修复 Dockerfile 和 Makefile 的文件扩展名检测
 - 退出编辑模式时重置编辑器文本（丢弃未保存的更改）
 - 修复文件查看器中 `RenderFlex` 溢出错误：在水平滚动视图中将 `Expanded` 替换为 `ConstrainedBox`
+- 修复 Android APK 启动崩溃：将 `applicationId` 和 `MainActivity` 包名与 namespace 对齐（`com.charleypeng.igitea`）
 
 ## [0.22.0] - 2026-04-26
 

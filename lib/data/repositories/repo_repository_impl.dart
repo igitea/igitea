@@ -384,4 +384,87 @@ class RepoRepositoryImpl implements RepoRepository {
       () => _apiService.repoCreateFork(owner: owner, repo: repo, body: body),
     );
   }
+
+  @override
+  Future<Either<Failure, List<WikiPageMetaData>>> listWikiPages(
+    String owner,
+    String repo,
+  ) async {
+    return execute(
+      () => _apiService.repoGetWikiPages(owner: owner, repo: repo),
+    );
+  }
+
+  @override
+  Future<Either<Failure, WikiPage>> getWikiPage(
+    String owner,
+    String repo,
+    String pageName,
+  ) async {
+    return execute(
+      () => _apiService.repoGetWikiPage(
+        owner: owner,
+        repo: repo,
+        pageName: pageName,
+      ),
+    );
+  }
+
+  @override
+  Future<Either<Failure, WikiPage>> createWikiPage(
+    String owner,
+    String repo,
+    String title,
+    String content, {
+    String? message,
+  }) async {
+    return execute(
+      () => _apiService.repoCreateWikiPage(
+        owner: owner,
+        repo: repo,
+        body: {
+          'title': title,
+          'content': content,
+          if (message != null) 'message': message,
+        },
+      ),
+    );
+  }
+
+  @override
+  Future<Either<Failure, WikiPage>> editWikiPage(
+    String owner,
+    String repo,
+    String title,
+    String content, {
+    String? message,
+  }) async {
+    return execute(
+      () => _apiService.repoEditWikiPage(
+        owner: owner,
+        repo: repo,
+        pageName: title,
+        body: {
+          'title': title,
+          'content': content,
+          if (message != null) 'message': message,
+        },
+      ),
+    );
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteWikiPage(
+    String owner,
+    String repo,
+    String pageName,
+  ) async {
+    return execute(
+      () => _apiService.repoDeleteWikiPage(
+        owner: owner,
+        repo: repo,
+        pageName: pageName,
+      ),
+    );
+  }
 }

@@ -259,6 +259,59 @@ class FakeRepoRepository implements RepoRepository {
     if (shouldFail) return Left(failure);
     return Right(Repository(id: 2, name: '${repo}-fork'));
   }
+
+  @override
+  Future<Either<Failure, List<WikiPageMetaData>>> listWikiPages(
+    String owner,
+    String repo,
+  ) async {
+    if (shouldFail) return Left(failure);
+    return Right(<WikiPageMetaData>[]);
+  }
+
+  @override
+  Future<Either<Failure, WikiPage>> getWikiPage(
+    String owner,
+    String repo,
+    String pageName,
+  ) async {
+    if (shouldFail) return Left(failure);
+    return Right(const WikiPage());
+  }
+
+  @override
+  Future<Either<Failure, WikiPage>> createWikiPage(
+    String owner,
+    String repo,
+    String title,
+    String content, {
+    String? message,
+  }) async {
+    if (shouldFail) return Left(failure);
+    return Right(const WikiPage());
+  }
+
+  @override
+  Future<Either<Failure, WikiPage>> editWikiPage(
+    String owner,
+    String repo,
+    String title,
+    String content, {
+    String? message,
+  }) async {
+    if (shouldFail) return Left(failure);
+    return Right(const WikiPage());
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteWikiPage(
+    String owner,
+    String repo,
+    String pageName,
+  ) async {
+    if (shouldFail) return Left(failure);
+    return Right(null);
+  }
 }
 
 void main() {
@@ -289,6 +342,11 @@ void main() {
         deleteRepoUseCase: DeleteRepoUseCase(repository: fakeRepo),
         updateFileUseCase: UpdateFileUseCase(repository: fakeRepo),
         createForkUseCase: CreateForkUseCase(repository: fakeRepo),
+        listWikiPagesUseCase: ListWikiPagesUseCase(repository: fakeRepo),
+        getWikiPageUseCase: GetWikiPageUseCase(repository: fakeRepo),
+        createWikiPageUseCase: CreateWikiPageUseCase(repository: fakeRepo),
+        editWikiPageUseCase: EditWikiPageUseCase(repository: fakeRepo),
+        deleteWikiPageUseCase: DeleteWikiPageUseCase(repository: fakeRepo),
       );
     });
 

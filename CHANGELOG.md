@@ -2,6 +2,34 @@
 
 ## [Unreleased]
 
+### Added — Full Wiki Support
+
+- `WikiEditPage`: create and edit wiki pages
+  - Title input (required when creating, read-only when editing)
+  - Markdown content editor with live preview toggle
+  - Optional commit message input
+  - Form validation: title cannot be empty
+  - AppBar save button with loading indicator
+- `WikiListPage` refactored:
+  - Add FloatingActionButton (FAB) for creating new pages
+  - Use `EmptyState` widget instead of inline empty state
+  - Full i18n support
+  - Auto-refresh list after returning from page detail
+- `WikiDetailPage` enhanced:
+  - AppBar edit and delete buttons
+  - Confirmation dialog before deletion
+  - Support for selectable Markdown content
+  - Use `Either` pattern instead of try-catch
+- New UseCases: `GetWikiPageUseCase`, `ListWikiPagesUseCase`, `CreateWikiPageUseCase`, `EditWikiPageUseCase`, `DeleteWikiPageUseCase`
+- New Repository methods: `getWikiPage`, `listWikiPages`, `createWikiPage`, `editWikiPage`, `deleteWikiPage`
+- New ARB keys: `wiki`, `newWikiPage`, `editWikiPage`, `deleteWikiPage`, `deleteWikiPageConfirm`, `wikiPageDeleted`, `wikiPageTitle`, `wikiPageContent`, `noWikiPages`, `createFirstWikiPage`, `lastCommit`, `commitMessage`, `saved`, `created`, etc.
+- Update `Injection` class: add Wiki use cases to all three initialization paths
+- Update `RepoNotifier`: add Wiki-related fields and methods
+
+### Fixed
+
+- Fix missing Wiki entry in `RepoDetailPage`: add Wiki option to repository sections list (`id: 'wiki'`), and handle Wiki navigation to `WikiListPage` in `_RepoSectionPage`
+
 ### Changed
 
 - Refactor `RepoDetailPage`: replace horizontal `TabBar` with vertical section list (Code, Issues, Milestones, Pull Requests, Releases, Commits, Branches, Tags); tap to navigate to dedicated page
@@ -16,6 +44,7 @@
 - Fix file extension detection for Dockerfile and Makefile
 - Reset editor text when exiting edit mode to discard unsaved changes
 - Fix `RenderFlex` overflow in file viewer by replacing `Expanded` with `ConstrainedBox` in horizontal scrollable
+- Fix Android APK crash on launch: align `applicationId` and `MainActivity` package with namespace (`com.charleypeng.igitea`)
 
 ## [0.22.0] - 2026-04-26
 
