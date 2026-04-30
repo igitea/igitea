@@ -2836,6 +2836,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Comment'**
   String get comment;
+
+  /// No description provided for @blame.
+  ///
+  /// In en, this message translates to:
+  /// **'Blame'**
+  String get blame;
+
+  /// No description provided for @diffView.
+  ///
+  /// In en, this message translates to:
+  /// **'Diff View'**
+  String get diffView;
+
+  /// No description provided for @pickColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick Color'**
+  String get pickColor;
+
+  /// No description provided for @sshKeys.
+  ///
+  /// In en, this message translates to:
+  /// **'SSH Keys'**
+  String get sshKeys;
+
+  /// No description provided for @allRepos.
+  ///
+  /// In en, this message translates to:
+  /// **'All Repos'**
+  String get allRepos;
+
+  /// No description provided for @configuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Configuration'**
+  String get configuration;
+
+  /// No description provided for @none.
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get none;
+
+  /// No description provided for @more.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get more;
+
+  /// No description provided for @units.
+  ///
+  /// In en, this message translates to:
+  /// **'Units'**
+  String get units;
+
+  /// No description provided for @permission.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission'**
+  String get permission;
+
+  /// No description provided for @repoList.
+  ///
+  /// In en, this message translates to:
+  /// **'Repositories'**
+  String get repoList;
 }
 
 class _AppLocalizationsDelegate

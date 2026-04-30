@@ -298,7 +298,7 @@ class _RepoFilePageState extends State<RepoFilePage> {
                     value: 'blame',
                     child: ListTile(
                       leading: const Icon(Icons.face),
-                      title: const Text('Blame'),
+                      title: Text(l10n.blame),
                       dense: true,
                       contentPadding: EdgeInsets.zero,
                     ),

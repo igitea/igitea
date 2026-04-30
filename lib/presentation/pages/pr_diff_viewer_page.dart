@@ -66,7 +66,7 @@ class _PrDiffViewerPageState extends State<PrDiffViewerPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Diff Viewer'),
+        title: Text(l10n.diffView),
         actions: [
           IconButton(
             icon: Icon(_splitView ? Icons.view_column : Icons.view_stream),

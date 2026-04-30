@@ -159,7 +159,7 @@ class _TeamHeader extends StatelessWidget {
                 ),
               if (team.includes_all_repositories == true)
                 Chip(
-                  label: const Text('All Repos'),
+                  label: Text(AppLocalizations.of(context)!.allRepos),
                   visualDensity: VisualDensity.compact,
                 ),
             ],

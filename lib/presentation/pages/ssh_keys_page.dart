@@ -96,7 +96,7 @@ class _SshKeysPageState extends State<SshKeysPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('SSH Keys'),
+        title: Text(l10n.sshKeys),
         actions: [
           IconButton(
             icon: const Icon(Icons.add),

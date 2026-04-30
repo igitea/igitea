@@ -5,6 +5,7 @@ import '../../core/di/injection.dart';
 import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
+import '../../l10n/app_localizations.dart';
 
 class EditLabelPage extends StatefulWidget {
   final String owner;
@@ -254,8 +255,9 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return AlertDialog(
-      title: const Text('Pick Color'),
+      title: Text(l10n.pickColor),
       content: Wrap(
         spacing: 8,
         runSpacing: 8,
@@ -280,7 +282,7 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: Text(l10n.cancel),
         ),
       ],
     );

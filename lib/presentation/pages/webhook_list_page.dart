@@ -333,8 +333,7 @@ class _WebhookDetailPageState extends State<WebhookDetailPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Configuration',
+            Text(l10n.configuration,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
               ),

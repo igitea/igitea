@@ -3,6 +3,7 @@ import '../../core/animations/animated_wrapper.dart';
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
+import '../../l10n/app_localizations.dart';
 import '../state/repo_notifier.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/premium_card.dart';
@@ -39,15 +40,16 @@ class _RepoListPageState extends State<RepoListPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Repositories')),
+      appBar: AppBar(title: Text(l10n.repoList)),
       body: Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(UIConstants.md),
             child: SearchBar(
               controller: _searchController,
-              hintText: 'Search repositories...',
+              hintText: l10n.enterSearchQueryRepos,
               leading: const Icon(Icons.search),
               onChanged: _onSearch,
             ),
@@ -65,11 +67,11 @@ class _RepoListPageState extends State<RepoListPage> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text('Error: $message'),
+                        Text('${l10n.error}: $message'),
                         const SizedBox(height: UIConstants.md),
                         FilledButton(
                           onPressed: () => Injection.repoNotifier.searchRepos(),
-                          child: const Text('Retry'),
+                          child: Text(l10n.retry),
                         ),
                       ],
                     ),

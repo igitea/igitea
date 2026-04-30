@@ -181,7 +181,7 @@ class _FileBlamePageState extends State<FileBlamePage> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Blame')),
+      appBar: AppBar(title: Text(l10n.blame)),
       body: _buildBody(l10n),
     );
   }

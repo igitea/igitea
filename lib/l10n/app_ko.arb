@@ -452,5 +452,16 @@
   "reviews": "Reviews",
   "approve": "Approve",
   "requestChanges": "Request Changes",
-  "comment": "Comment"
+  "comment": "Comment",
+  "blame": "Blame",
+  "diffView": "Diff View",
+  "pickColor": "Pick Color",
+  "sshKeys": "SSH Keys",
+  "allRepos": "All Repos",
+  "configuration": "Configuration",
+  "none": "None",
+  "more": "More",
+  "units": "Units",
+  "permission": "Permission",
+  "repoList": "Repositories"
 }

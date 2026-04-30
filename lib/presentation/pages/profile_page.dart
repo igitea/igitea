@@ -374,11 +374,7 @@ class _InfoCards extends StatelessWidget {
   }
 
   String _formatDate(DateTime date) {
-    final months = [
-      '', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
-    ];
-    return '${months[date.month]} ${date.day}, ${date.year}';
+    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
   }
 
   Future<void> _launchUrl(String url) async {

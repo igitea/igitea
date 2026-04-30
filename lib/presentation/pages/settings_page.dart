@@ -110,7 +110,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     ),
                     ListTile(
                       leading: const Icon(Icons.key_outlined),
-                      title: const Text('SSH Keys'),
+                      title: Text(l10n.sshKeys),
                       trailing: const Icon(Icons.chevron_right),
                       onTap: () {
                         Navigator.push(

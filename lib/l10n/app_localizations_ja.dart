@@ -1432,4 +1432,37 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get comment => 'Comment';
+
+  @override
+  String get blame => 'Blame';
+
+  @override
+  String get diffView => 'Diff View';
+
+  @override
+  String get pickColor => 'Pick Color';
+
+  @override
+  String get sshKeys => 'SSH Keys';
+
+  @override
+  String get allRepos => 'All Repos';
+
+  @override
+  String get configuration => 'Configuration';
+
+  @override
+  String get none => 'None';
+
+  @override
+  String get more => 'More';
+
+  @override
+  String get units => 'Units';
+
+  @override
+  String get permission => 'Permission';
+
+  @override
+  String get repoList => 'Repositories';
 }
