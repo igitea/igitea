@@ -506,6 +506,19 @@ class GiteaApiService {
     );
   }
 
+  Future<Hook> repoEditHook({
+    required String owner,
+    required String repo,
+    required int id,
+    Map<String, dynamic>? body,
+  }) async {
+    final response = await _client.patch(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/hooks/${id.toString()}',
+      body: body,
+    );
+    return Hook.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+  }
+
   Future<List<ContentsResponse>> repoGetContents({
     required String owner,
     required String repo,
