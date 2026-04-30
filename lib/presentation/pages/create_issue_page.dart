@@ -20,7 +20,7 @@ class _CreateIssuePageState extends State<CreateIssuePage> {
   final _titleController = TextEditingController();
   final _bodyController = TextEditingController();
   bool _isLoading = false;
-  Set<String> _selectedLabels = {};
+  Set<int> _selectedLabels = {};
   int? _selectedMilestoneId;
   List<Label> _labels = [];
   List<Milestone> _milestones = [];
@@ -137,7 +137,7 @@ class _CreateIssuePageState extends State<CreateIssuePage> {
           spacing: UIConstants.sm,
           runSpacing: UIConstants.sm,
           children: _labels.map((label) {
-            final isSelected = _selectedLabels.contains(label.name);
+            final isSelected = _selectedLabels.contains(label.id);
             final labelColor = _parseColor(label.color);
             return FilterChip(
               label: Text(label.name ?? ''),
@@ -145,11 +145,13 @@ class _CreateIssuePageState extends State<CreateIssuePage> {
               selectedColor: labelColor?.withValues(alpha: 0.3),
               checkmarkColor: labelColor,
               onSelected: (selected) {
+                final id = label.id;
+                if (id == null) return;
                 setState(() {
                   if (selected) {
-                    _selectedLabels.add(label.name!);
+                    _selectedLabels.add(id);
                   } else {
-                    _selectedLabels.remove(label.name);
+                    _selectedLabels.remove(id);
                   }
                 });
               },
@@ -205,7 +207,7 @@ class _CreateIssuePageState extends State<CreateIssuePage> {
       if (_selectedLabels.isNotEmpty)
         'labels': _selectedLabels.toList()
       else
-        'labels': [],
+        'labels': <int>[],
       if (_selectedMilestoneId != null)
         'milestone': _selectedMilestoneId,
     };

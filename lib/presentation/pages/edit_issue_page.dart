@@ -29,7 +29,7 @@ class _EditIssuePageState extends State<EditIssuePage> {
   late final TextEditingController _titleController;
   late final TextEditingController _bodyController;
   late String _state;
-  late Set<String> _selectedLabels;
+  late Set<int> _selectedLabels;
   int? _selectedMilestoneId;
   bool _isSaving = false;
   bool _showPreview = false;
@@ -45,8 +45,8 @@ class _EditIssuePageState extends State<EditIssuePage> {
     _bodyController = TextEditingController(text: widget.issue.body ?? '');
     _state = widget.issue.state?.value ?? 'open';
     _selectedLabels = widget.issue.labels
-            ?.map((l) => l.name ?? '')
-            .where((n) => n.isNotEmpty)
+            ?.map((l) => l.id)
+            .whereType<int>()
             .toSet() ??
         {};
     _selectedMilestoneId = widget.issue.milestone?.id;
@@ -116,7 +116,7 @@ class _EditIssuePageState extends State<EditIssuePage> {
       if (_selectedLabels.isNotEmpty)
         'labels': _selectedLabels.toList()
       else
-        'labels': [],
+        'labels': <int>[],
       if (_selectedMilestoneId != null)
         'milestone': _selectedMilestoneId,
     };
@@ -208,7 +208,7 @@ class _EditIssuePageState extends State<EditIssuePage> {
           spacing: UIConstants.sm,
           runSpacing: UIConstants.sm,
           children: _labels.map((label) {
-            final isSelected = _selectedLabels.contains(label.name);
+            final isSelected = _selectedLabels.contains(label.id);
             final labelColor = _parseColor(label.color);
             return FilterChip(
               label: Text(label.name ?? ''),
@@ -216,11 +216,13 @@ class _EditIssuePageState extends State<EditIssuePage> {
               selectedColor: labelColor?.withValues(alpha: 0.3),
               checkmarkColor: labelColor,
               onSelected: (selected) {
+                final id = label.id;
+                if (id == null) return;
                 setState(() {
                   if (selected) {
-                    _selectedLabels.add(label.name!);
+                    _selectedLabels.add(id);
                   } else {
-                    _selectedLabels.remove(label.name);
+                    _selectedLabels.remove(id);
                   }
                 });
               },
