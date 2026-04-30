@@ -144,7 +144,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get mergePullRequest => 'Pull Request zusammenführen';
 
   @override
-  String get mergeConfirmMessage => 'Sind Sie sicher, dass Sie diesen Pull Request zusammenführen möchten?';
+  String get mergeConfirmMessage =>
+      'Sind Sie sicher, dass Sie diesen Pull Request zusammenführen möchten?';
 
   @override
   String issueNumber(Object issueNumber) {
@@ -471,7 +472,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get deleteRepo => 'Repository löschen';
 
   @override
-  String get deleteRepoConfirm => 'Sind Sie sicher, dass Sie dieses Repository löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.';
+  String get deleteRepoConfirm =>
+      'Sind Sie sicher, dass Sie dieses Repository löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.';
 
   @override
   String get generalSettings => 'Allgemeine Einstellungen';
@@ -495,7 +497,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get unsavedChanges => 'Ungespeicherte Änderungen';
 
   @override
-  String get unsavedChangesMessage => 'Sie haben ungespeicherte Änderungen. Sind Sie sicher, dass Sie die Seite verlassen möchten?';
+  String get unsavedChangesMessage =>
+      'Sie haben ungespeicherte Änderungen. Sind Sie sicher, dass Sie die Seite verlassen möchten?';
 
   @override
   String get leave => 'Verlassen';
@@ -572,7 +575,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get untitled => 'Untitled';
 
   @override
-  String get enterSearchQueryRepos => 'Enter a search query to find repositories';
+  String get enterSearchQueryRepos =>
+      'Enter a search query to find repositories';
 
   @override
   String get enterSearchQueryIssues => 'Enter a search query to find issues';
@@ -1061,16 +1065,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get public => 'Public';
 
   @override
-  String get publicDescription => 'Anyone on the internet can see this repository';
+  String get publicDescription =>
+      'Anyone on the internet can see this repository';
 
   @override
-  String get privateDescription => 'You choose who can see and commit to this repository';
+  String get privateDescription =>
+      'You choose who can see and commit to this repository';
 
   @override
   String get initializeWithReadme => 'Initialize with README';
 
   @override
-  String get initializeWithReadmeDescription => 'Add a README file to help others understand your project';
+  String get initializeWithReadmeDescription =>
+      'Add a README file to help others understand your project';
 
   @override
   String repoCreated(Object repoName) {
@@ -1093,7 +1100,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get deleteWikiPage => 'Delete Wiki Page';
 
   @override
-  String get deleteWikiPageConfirm => 'Are you sure you want to delete this wiki page? This action cannot be undone.';
+  String get deleteWikiPageConfirm =>
+      'Are you sure you want to delete this wiki page? This action cannot be undone.';
 
   @override
   String get wikiPageDeleted => 'Wiki page deleted';
@@ -1114,7 +1122,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get noWikiPages => 'No wiki pages';
 
   @override
-  String get noWikiPagesDescription => 'This repository doesn\'t have any wiki pages yet.';
+  String get noWikiPagesDescription =>
+      'This repository doesn\'t have any wiki pages yet.';
 
   @override
   String get createFirstWikiPage => 'Create First Page';
@@ -1141,7 +1150,8 @@ class AppLocalizationsDe extends AppLocalizations {
   String get deleteMilestone => 'Delete Milestone';
 
   @override
-  String get deleteMilestoneConfirm => 'Are you sure you want to delete this milestone? This action cannot be undone.';
+  String get deleteMilestoneConfirm =>
+      'Are you sure you want to delete this milestone? This action cannot be undone.';
 
   @override
   String get milestoneDeleted => 'Milestone deleted';
