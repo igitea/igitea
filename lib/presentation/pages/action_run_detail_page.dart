@@ -1,6 +1,9 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../../core/animations/animated_wrapper.dart';
 import '../../core/constants/ui_constants.dart';
@@ -262,9 +265,17 @@ class _ActionRunDetailPageState extends State<ActionRunDetailPage> {
               child: ListTile(
                 leading: const Icon(Icons.archive_outlined),
                 title: Text(a['name'] as String? ?? ''),
-                trailing: Text(
-                  _formatSize((a['size'] as num?)?.toInt() ?? 0),
-                  style: theme.textTheme.bodySmall,
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(_formatSize((a['size'] as num?)?.toInt() ?? 0),
+                      style: theme.textTheme.bodySmall),
+                    IconButton(
+                      icon: const Icon(Icons.download, size: UIConstants.iconMd),
+                      tooltip: 'Download',
+                      onPressed: () => _downloadArtifact(a),
+                    ),
+                  ],
                 ),
               ),
             )),
@@ -394,6 +405,32 @@ class _ActionRunDetailPageState extends State<ActionRunDetailPage> {
     if (diff.inHours > 0) return '${diff.inHours}h ${diff.inMinutes % 60}m';
     if (diff.inMinutes > 0) return '${diff.inMinutes}m ${diff.inSeconds % 60}s';
     return '${diff.inSeconds}s';
+  }
+
+  Future<void> _downloadArtifact(Map<String, dynamic> artifact) async {
+    final l10n = AppLocalizations.of(context)!;
+    final name = artifact['name'] as String? ?? 'artifact.zip';
+    try {
+      final bytes = await Injection.apiService.repoDownloadArtifact(
+        owner: widget.owner, repo: widget.repo,
+        artifactId: _toInt(artifact['id']),
+      );
+      // Use path_provider to save to downloads
+      final dir = await getApplicationDocumentsDirectory();
+      final file = File('${dir.path}/$name.zip');
+      await file.writeAsBytes(bytes);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('$l10n.saved: ${file.path}')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${l10n.error}: $e')),
+        );
+      }
+    }
   }
 
   String _formatSize(int bytes) {

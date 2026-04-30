@@ -52,6 +52,29 @@ class ApiClient {
     }
   }
 
+  /// GET returning raw bytes. Used for binary downloads.
+  Future<List<int>> getBytes(
+    String path, {
+    Map<String, String>? queryParameters,
+  }) async {
+    final uri = _buildUri(path, queryParameters);
+    try {
+      final response = await _client
+          .get(uri, headers: _headers)
+          .timeout(const Duration(seconds: defaultTimeoutSeconds * 3));
+      _processResponse(response);
+      return response.bodyBytes.toList();
+    } on http.ClientException catch (e) {
+      throw NetworkException(
+        e.message.isNotEmpty ? e.message : 'Network error',
+      );
+    } on TimeoutException catch (_) {
+      throw const NetworkException('Request timed out');
+    } on FormatException catch (e) {
+      throw NetworkException(e.message);
+    }
+  }
+
   /// GET returning raw text (no JSON parse). Used for diff/patch endpoints.
   Future<String> getRaw(
     String path, {
