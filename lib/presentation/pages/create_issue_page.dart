@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
+import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
+import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
-import '../../presentation/state/issue_notifier.dart';
+import '../state/issue_notifier.dart';
 
 class CreateIssuePage extends StatefulWidget {
   final String owner;
@@ -18,6 +20,17 @@ class _CreateIssuePageState extends State<CreateIssuePage> {
   final _titleController = TextEditingController();
   final _bodyController = TextEditingController();
   bool _isLoading = false;
+  Set<String> _selectedLabels = {};
+  int? _selectedMilestoneId;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Injection.issueNotifier.listLabels(widget.owner, widget.repo);
+      Injection.issueNotifier.listMilestones(widget.owner, widget.repo);
+    });
+  }
 
   @override
   void dispose() {
@@ -49,35 +62,115 @@ class _CreateIssuePageState extends State<CreateIssuePage> {
             ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            TextField(
-              controller: _titleController,
-              decoration: InputDecoration(
-                labelText: l10n.title,
-                border: const OutlineInputBorder(),
-              ),
-              textInputAction: TextInputAction.next,
-            ),
-            const SizedBox(height: 16),
-            Expanded(
-              child: TextField(
-                controller: _bodyController,
-                decoration: InputDecoration(
-                  labelText: l10n.body,
-                  border: const OutlineInputBorder(),
-                  alignLabelWithHint: true,
+      body: ListenableBuilder(
+        listenable: Injection.issueNotifier,
+        builder: (context, _) {
+          final state = Injection.issueNotifier.state;
+          final labels = state is LabelsLoaded ? state.labels : <Label>[];
+          final milestones =
+              state is MilestonesLoaded ? state.milestones : <Milestone>[];
+
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(UIConstants.md),
+            child: Column(
+              children: [
+                TextField(
+                  controller: _titleController,
+                  decoration: InputDecoration(
+                    labelText: l10n.title,
+                    border: const OutlineInputBorder(),
+                  ),
+                  textInputAction: TextInputAction.next,
                 ),
-                maxLines: null,
-                expands: true,
-                textAlignVertical: TextAlignVertical.top,
-              ),
+                const SizedBox(height: UIConstants.md),
+                if (labels.isNotEmpty) ...[
+                  _buildLabelSection(l10n, labels),
+                  const SizedBox(height: UIConstants.md),
+                ],
+                if (milestones.isNotEmpty) ...[
+                  _buildMilestoneSection(l10n, milestones),
+                  const SizedBox(height: UIConstants.md),
+                ],
+                TextField(
+                  controller: _bodyController,
+                  decoration: InputDecoration(
+                    labelText: l10n.body,
+                    border: const OutlineInputBorder(),
+                    alignLabelWithHint: true,
+                  ),
+                  maxLines: 10,
+                  minLines: 5,
+                  textAlignVertical: TextAlignVertical.top,
+                ),
+              ],
             ),
-          ],
-        ),
+          );
+        },
       ),
+    );
+  }
+
+  Widget _buildLabelSection(AppLocalizations l10n, List<Label> labels) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(l10n.labels, style: theme.textTheme.titleSmall),
+        const SizedBox(height: UIConstants.sm),
+        Wrap(
+          spacing: UIConstants.sm,
+          runSpacing: UIConstants.sm,
+          children: labels.map((label) {
+            final isSelected = _selectedLabels.contains(label.name);
+            final labelColor = _parseColor(label.color);
+            return FilterChip(
+              label: Text(label.name ?? ''),
+              selected: isSelected,
+              selectedColor: labelColor?.withValues(alpha: 0.3),
+              checkmarkColor: labelColor,
+              onSelected: (selected) {
+                setState(() {
+                  if (selected) {
+                    _selectedLabels.add(label.name!);
+                  } else {
+                    _selectedLabels.remove(label.name);
+                  }
+                });
+              },
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMilestoneSection(AppLocalizations l10n, List<Milestone> milestones) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(l10n.milestone, style: Theme.of(context).textTheme.titleSmall),
+        const SizedBox(height: UIConstants.sm),
+        DropdownButtonFormField<int?>(
+          value: _selectedMilestoneId,
+          decoration: InputDecoration(
+            labelText: l10n.selectMilestone,
+            border: const OutlineInputBorder(),
+          ),
+          items: [
+            const DropdownMenuItem(
+              value: null,
+              child: Text('None'),
+            ),
+            ...milestones.map((m) => DropdownMenuItem(
+              value: m.id,
+              child: Text(m.title ?? ''),
+            )),
+          ],
+          onChanged: (value) {
+            setState(() => _selectedMilestoneId = value);
+          },
+        ),
+      ],
     );
   }
 
@@ -93,13 +186,21 @@ class _CreateIssuePageState extends State<CreateIssuePage> {
 
     setState(() => _isLoading = true);
 
+    final body = <String, dynamic>{
+      'title': title,
+      'body': _bodyController.text.trim(),
+      if (_selectedLabels.isNotEmpty)
+        'labels': _selectedLabels.toList()
+      else
+        'labels': [],
+      if (_selectedMilestoneId != null)
+        'milestone': _selectedMilestoneId,
+    };
+
     await Injection.issueNotifier.createIssue(
       widget.owner,
       widget.repo,
-      {
-        'title': title,
-        'body': _bodyController.text.trim(),
-      },
+      body,
     );
 
     if (mounted) {
@@ -113,6 +214,15 @@ class _CreateIssuePageState extends State<CreateIssuePage> {
           SnackBar(content: Text('${l10n.error}: ${state.message}')),
         );
       }
+    }
+  }
+
+  Color? _parseColor(String? hex) {
+    if (hex == null) return null;
+    try {
+      return Color(int.parse('FF${hex.replaceFirst('#', '')}', radix: 16));
+    } catch (_) {
+      return null;
     }
   }
 }

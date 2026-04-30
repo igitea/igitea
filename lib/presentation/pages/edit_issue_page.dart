@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
+import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
@@ -136,7 +137,7 @@ class _EditIssuePageState extends State<EditIssuePage> {
               state is MilestonesLoaded ? state.milestones : <Milestone>[];
 
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(UIConstants.md),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -148,99 +149,130 @@ class _EditIssuePageState extends State<EditIssuePage> {
                   ),
                   maxLines: 1,
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: UIConstants.md),
                 _buildStateSelector(l10n),
-                const SizedBox(height: 16),
+                const SizedBox(height: UIConstants.md),
                 if (labels.isNotEmpty) ...[
-                  Text(l10n.labels, style: Theme.of(context).textTheme.titleSmall),
-                  const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: labels.map((label) {
-                      final isSelected = _selectedLabels.contains(label.name);
-                      return FilterChip(
-                        label: Text(label.name ?? ''),
-                        selected: isSelected,
-                        onSelected: (selected) {
-                          setState(() {
-                            if (selected) {
-                              _selectedLabels.add(label.name!);
-                            } else {
-                              _selectedLabels.remove(label.name);
-                            }
-                          });
-                        },
-                      );
-                    }).toList(),
-                  ),
-                  const SizedBox(height: 16),
+                  _buildLabelSection(l10n, labels),
+                  const SizedBox(height: UIConstants.md),
                 ],
                 if (milestones.isNotEmpty) ...[
-                  Text(l10n.milestone, style: Theme.of(context).textTheme.titleSmall),
-                  const SizedBox(height: 8),
-                  DropdownButtonFormField<int?>(
-                    value: _selectedMilestoneId,
-                    decoration: InputDecoration(
-                      labelText: l10n.selectMilestone,
-                      border: const OutlineInputBorder(),
-                    ),
-                    items: [
-                      const DropdownMenuItem(
-                        value: null,
-                        child: Text('None'),
-                      ),
-                      ...milestones.map((m) => DropdownMenuItem(
-                        value: m.id,
-                        child: Text(m.title ?? ''),
-                      )),
-                    ],
-                    onChanged: (value) {
-                      setState(() => _selectedMilestoneId = value);
-                    },
-                  ),
-                  const SizedBox(height: 16),
+                  _buildMilestoneSection(l10n, milestones),
+                  const SizedBox(height: UIConstants.md),
                 ],
-                Row(
-                  children: [
-                    Text(l10n.description, style: Theme.of(context).textTheme.titleSmall),
-                    const Spacer(),
-                    TextButton(
-                      onPressed: () => setState(() => _showPreview = !_showPreview),
-                      child: Text(_showPreview ? l10n.edit : l10n.preview),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                if (_showPreview)
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Theme.of(context).colorScheme.outline),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: MarkdownBody(
-                      data: _bodyController.text.isEmpty
-                          ? l10n.noDescriptionProvided
-                          : _bodyController.text,
-                    ),
-                  )
-                else
-                  TextField(
-                    controller: _bodyController,
-                    decoration: InputDecoration(
-                      hintText: l10n.addComment,
-                      border: const OutlineInputBorder(),
-                    ),
-                    maxLines: 10,
-                    minLines: 5,
-                  ),
+                _buildBodySection(l10n),
               ],
             ),
           );
         },
       ),
+    );
+  }
+
+  Widget _buildLabelSection(AppLocalizations l10n, List<Label> labels) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(l10n.labels, style: theme.textTheme.titleSmall),
+        const SizedBox(height: UIConstants.sm),
+        Wrap(
+          spacing: UIConstants.sm,
+          runSpacing: UIConstants.sm,
+          children: labels.map((label) {
+            final isSelected = _selectedLabels.contains(label.name);
+            final labelColor = _parseColor(label.color);
+            return FilterChip(
+              label: Text(label.name ?? ''),
+              selected: isSelected,
+              selectedColor: labelColor?.withValues(alpha: 0.3),
+              checkmarkColor: labelColor,
+              onSelected: (selected) {
+                setState(() {
+                  if (selected) {
+                    _selectedLabels.add(label.name!);
+                  } else {
+                    _selectedLabels.remove(label.name);
+                  }
+                });
+              },
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildMilestoneSection(AppLocalizations l10n, List<Milestone> milestones) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(l10n.milestone, style: Theme.of(context).textTheme.titleSmall),
+        const SizedBox(height: UIConstants.sm),
+        DropdownButtonFormField<int?>(
+          value: _selectedMilestoneId,
+          decoration: InputDecoration(
+            labelText: l10n.selectMilestone,
+            border: const OutlineInputBorder(),
+          ),
+          items: [
+            const DropdownMenuItem(
+              value: null,
+              child: Text('None'),
+            ),
+            ...milestones.map((m) => DropdownMenuItem(
+              value: m.id,
+              child: Text(m.title ?? ''),
+            )),
+          ],
+          onChanged: (value) {
+            setState(() => _selectedMilestoneId = value);
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBodySection(AppLocalizations l10n) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(l10n.description, style: Theme.of(context).textTheme.titleSmall),
+            const Spacer(),
+            TextButton(
+              onPressed: () => setState(() => _showPreview = !_showPreview),
+              child: Text(_showPreview ? l10n.edit : l10n.preview),
+            ),
+          ],
+        ),
+        const SizedBox(height: UIConstants.sm),
+        if (_showPreview)
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(UIConstants.sm),
+            decoration: BoxDecoration(
+              border: Border.all(color: Theme.of(context).colorScheme.outline),
+              borderRadius: BorderRadius.circular(UIConstants.chipRadius),
+            ),
+            child: MarkdownBody(
+              data: _bodyController.text.isEmpty
+                  ? l10n.noDescriptionProvided
+                  : _bodyController.text,
+            ),
+          )
+        else
+          TextField(
+            controller: _bodyController,
+            decoration: InputDecoration(
+              hintText: l10n.addComment,
+              border: const OutlineInputBorder(),
+            ),
+            maxLines: 10,
+            minLines: 5,
+          ),
+      ],
     );
   }
 
@@ -263,5 +295,14 @@ class _EditIssuePageState extends State<EditIssuePage> {
         setState(() => _state = selected.first);
       },
     );
+  }
+
+  Color? _parseColor(String? hex) {
+    if (hex == null) return null;
+    try {
+      return Color(int.parse('FF${hex.replaceFirst('#', '')}', radix: 16));
+    } catch (_) {
+      return null;
+    }
   }
 }
