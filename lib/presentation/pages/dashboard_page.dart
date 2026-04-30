@@ -473,10 +473,20 @@ class _ActivityFeedState extends State<_ActivityFeed> {
     switch (opType) {
       case 'create_repo':
         return '$user ${l10n.createdRepo} $repo';
+      case 'commit_repo':
+        return '$user ${l10n.commitRepo} $repo';
+      case 'rename_repo':
+        return '$user ${l10n.renameRepo} $repo';
+      case 'star_repo':
+        return '$user ${l10n.starRepo} $repo';
+      case 'watch_repo':
+        return '$user ${l10n.watchRepo} $repo';
       case 'push_tag':
         return '$user ${l10n.pushedTag} ${activity.ref_name ?? ''} ${l10n.to} $repo';
       case 'delete_tag':
         return '$user ${l10n.deletedTag} ${activity.ref_name ?? ''} ${l10n.from} $repo';
+      case 'delete_branch':
+        return '$user ${l10n.deleteBranch} ${activity.ref_name ?? ''} ${l10n.from} $repo';
       case 'create_issue':
         return '$user ${l10n.createdIssue} #${activity.content ?? ''} ${l10n.inRepo} $repo';
       case 'close_issue':
@@ -489,9 +499,11 @@ class _ActivityFeedState extends State<_ActivityFeed> {
         return '$user ${l10n.mergedPR} #${activity.content ?? ''} ${l10n.inRepo} $repo';
       case 'close_pull_request':
         return '$user ${l10n.closedPR} #${activity.content ?? ''} ${l10n.inRepo} $repo';
+      case 'reopen_pull_request':
+        return '$user ${l10n.reopenPR} #${activity.content ?? ''} ${l10n.inRepo} $repo';
       case 'comment_issue':
         return '$user ${l10n.commentedOnIssue} #${activity.content ?? ''} ${l10n.inRepo} $repo';
-      case 'comment_pull_request':
+      case 'comment_pull':
         return '$user ${l10n.commentedOnPR} #${activity.content ?? ''} ${l10n.inRepo} $repo';
       case 'fork_repo':
         return '$user ${l10n.forkedRepo} $repo';
@@ -501,6 +513,24 @@ class _ActivityFeedState extends State<_ActivityFeed> {
         return '$user ${l10n.deletedRepo} $repo';
       case 'wiki_page':
         return '$user ${l10n.updatedWiki} ${l10n.inRepo} $repo';
+      case 'publish_release':
+        return '$user ${l10n.publishRelease} ${l10n.inRepo} $repo';
+      case 'approve_pull_request':
+        return '$user ${l10n.approvePR} #${activity.content ?? ''} ${l10n.inRepo} $repo';
+      case 'reject_pull_request':
+        return '$user ${l10n.rejectPR} #${activity.content ?? ''} ${l10n.inRepo} $repo';
+      case 'pull_review_dismissed':
+        return '$user ${l10n.pullReviewDismissed} ${l10n.inRepo} $repo';
+      case 'pull_request_ready_for_review':
+        return '$user ${l10n.pullRequestReady} ${l10n.inRepo} $repo';
+      case 'auto_merge_pull_request':
+        return '$user ${l10n.autoMergePR} #${activity.content ?? ''} ${l10n.inRepo} $repo';
+      case 'mirror_sync_push':
+        return '$user ${l10n.mirrorSyncPush} $repo';
+      case 'mirror_sync_create':
+        return '$user ${l10n.mirrorSyncCreate} $repo';
+      case 'mirror_sync_delete':
+        return '$user ${l10n.mirrorSyncDelete} $repo';
       default:
         return '$user ${l10n.performedAction} $opType ${l10n.inRepo} $repo';
     }

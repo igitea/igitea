@@ -1757,6 +1757,96 @@ abstract class AppLocalizations {
   /// **'performed action'**
   String get performedAction;
 
+  /// No description provided for @commitRepo.
+  ///
+  /// In en, this message translates to:
+  /// **'committed to'**
+  String get commitRepo;
+
+  /// No description provided for @renameRepo.
+  ///
+  /// In en, this message translates to:
+  /// **'renamed repository'**
+  String get renameRepo;
+
+  /// No description provided for @starRepo.
+  ///
+  /// In en, this message translates to:
+  /// **'starred repository'**
+  String get starRepo;
+
+  /// No description provided for @watchRepo.
+  ///
+  /// In en, this message translates to:
+  /// **'started watching repository'**
+  String get watchRepo;
+
+  /// No description provided for @reopenPR.
+  ///
+  /// In en, this message translates to:
+  /// **'reopened pull request'**
+  String get reopenPR;
+
+  /// No description provided for @approvePR.
+  ///
+  /// In en, this message translates to:
+  /// **'approved pull request'**
+  String get approvePR;
+
+  /// No description provided for @rejectPR.
+  ///
+  /// In en, this message translates to:
+  /// **'rejected pull request'**
+  String get rejectPR;
+
+  /// No description provided for @publishRelease.
+  ///
+  /// In en, this message translates to:
+  /// **'published release'**
+  String get publishRelease;
+
+  /// No description provided for @deleteBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'deleted branch'**
+  String get deleteBranch;
+
+  /// No description provided for @autoMergePR.
+  ///
+  /// In en, this message translates to:
+  /// **'auto-merged pull request'**
+  String get autoMergePR;
+
+  /// No description provided for @pullReviewDismissed.
+  ///
+  /// In en, this message translates to:
+  /// **'dismissed pull request review'**
+  String get pullReviewDismissed;
+
+  /// No description provided for @pullRequestReady.
+  ///
+  /// In en, this message translates to:
+  /// **'marked pull request as ready for review'**
+  String get pullRequestReady;
+
+  /// No description provided for @mirrorSyncPush.
+  ///
+  /// In en, this message translates to:
+  /// **'synced push to mirror'**
+  String get mirrorSyncPush;
+
+  /// No description provided for @mirrorSyncCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'synced create to mirror'**
+  String get mirrorSyncCreate;
+
+  /// No description provided for @mirrorSyncDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'synced delete to mirror'**
+  String get mirrorSyncDelete;
+
   /// No description provided for @inRepo.
   ///
   /// In en, this message translates to:

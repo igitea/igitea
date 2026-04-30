@@ -472,5 +472,20 @@
   "keyDeleted": "Key deleted successfully",
   "addSshKey": "Add SSH Key",
   "add": "Add",
-  "keyAdded": "Key added successfully"
+  "keyAdded": "Key added successfully",
+  "commitRepo": "committed to",
+  "renameRepo": "renamed repository",
+  "starRepo": "starred repository",
+  "watchRepo": "started watching repository",
+  "reopenPR": "reopened pull request",
+  "approvePR": "approved pull request",
+  "rejectPR": "rejected pull request",
+  "publishRelease": "published release",
+  "deleteBranch": "deleted branch",
+  "autoMergePR": "auto-merged pull request",
+  "pullReviewDismissed": "dismissed pull request review",
+  "pullRequestReady": "marked pull request as ready for review",
+  "mirrorSyncPush": "synced push to mirror",
+  "mirrorSyncCreate": "synced create to mirror",
+  "mirrorSyncDelete": "synced delete to mirror"
 }

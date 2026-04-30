@@ -885,6 +885,51 @@ class AppLocalizationsEn extends AppLocalizations {
   String get performedAction => 'performed action';
 
   @override
+  String get commitRepo => 'committed to';
+
+  @override
+  String get renameRepo => 'renamed repository';
+
+  @override
+  String get starRepo => 'starred repository';
+
+  @override
+  String get watchRepo => 'started watching repository';
+
+  @override
+  String get reopenPR => 'reopened pull request';
+
+  @override
+  String get approvePR => 'approved pull request';
+
+  @override
+  String get rejectPR => 'rejected pull request';
+
+  @override
+  String get publishRelease => 'published release';
+
+  @override
+  String get deleteBranch => 'deleted branch';
+
+  @override
+  String get autoMergePR => 'auto-merged pull request';
+
+  @override
+  String get pullReviewDismissed => 'dismissed pull request review';
+
+  @override
+  String get pullRequestReady => 'marked pull request as ready for review';
+
+  @override
+  String get mirrorSyncPush => 'synced push to mirror';
+
+  @override
+  String get mirrorSyncCreate => 'synced create to mirror';
+
+  @override
+  String get mirrorSyncDelete => 'synced delete to mirror';
+
+  @override
   String get inRepo => 'in';
 
   @override
