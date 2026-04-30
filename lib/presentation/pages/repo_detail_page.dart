@@ -173,6 +173,17 @@ class _RepoDetailPageState extends State<RepoDetailPage> {
   }
 
   void _navigateToSection(BuildContext context, String sectionId, String? defaultBranch, AppLocalizations l10n) {
+    if (sectionId == 'wiki') {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => WikiListPage(
+            owner: widget.owner,
+            repo: widget.repo,
+          ),
+        ),
+      );
+      return;
+    }
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => _RepoSectionPage(
