@@ -574,8 +574,9 @@ class GiteaApiService {
     if (topic != null) query['topic'] = topic.toString();
     if (includeDesc != null) query['includeDesc'] = includeDesc.toString();
     if (uid != null) query['uid'] = uid.toString();
-    if (priority_owner_id != null)
+    if (priority_owner_id != null) {
       query['priority_owner_id'] = priority_owner_id.toString();
+    }
     if (team_id != null) query['team_id'] = team_id.toString();
     if (starredBy != null) query['starredBy'] = starredBy.toString();
     if (private != null) query['private'] = private.toString();
@@ -1076,8 +1077,9 @@ class GiteaApiService {
     String? to_status,
   }) async {
     final query = <String, String>{};
-    if (last_read_at != null)
+    if (last_read_at != null) {
       query['last_read_at'] = last_read_at.toIso8601String();
+    }
     if (all != null) query['all'] = all;
     if (status_types != null) query['status-types'] = status_types.join(',');
     if (to_status != null) query['to-status'] = to_status;

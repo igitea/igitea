@@ -91,7 +91,6 @@ class IssueNotifier extends ChangeNotifier {
   SearchIssuesUseCase _searchIssuesUseCase;
   ListLabelsUseCase _listLabelsUseCase;
   ListMilestonesUseCase _listMilestonesUseCase;
-  GetMilestoneUseCase _getMilestoneUseCase;
   CreateMilestoneUseCase _createMilestoneUseCase;
   EditMilestoneUseCase _editMilestoneUseCase;
   DeleteMilestoneUseCase _deleteMilestoneUseCase;
@@ -123,7 +122,6 @@ class IssueNotifier extends ChangeNotifier {
     required SearchIssuesUseCase searchIssuesUseCase,
     required ListLabelsUseCase listLabelsUseCase,
     required ListMilestonesUseCase listMilestonesUseCase,
-    required GetMilestoneUseCase getMilestoneUseCase,
     required CreateMilestoneUseCase createMilestoneUseCase,
     required EditMilestoneUseCase editMilestoneUseCase,
     required DeleteMilestoneUseCase deleteMilestoneUseCase,
@@ -140,7 +138,6 @@ class IssueNotifier extends ChangeNotifier {
        _searchIssuesUseCase = searchIssuesUseCase,
        _listLabelsUseCase = listLabelsUseCase,
        _listMilestonesUseCase = listMilestonesUseCase,
-       _getMilestoneUseCase = getMilestoneUseCase,
        _createMilestoneUseCase = createMilestoneUseCase,
        _editMilestoneUseCase = editMilestoneUseCase,
        _deleteMilestoneUseCase = deleteMilestoneUseCase,
@@ -159,7 +156,6 @@ class IssueNotifier extends ChangeNotifier {
     required SearchIssuesUseCase searchIssuesUseCase,
     required ListLabelsUseCase listLabelsUseCase,
     required ListMilestonesUseCase listMilestonesUseCase,
-    required GetMilestoneUseCase getMilestoneUseCase,
     required CreateMilestoneUseCase createMilestoneUseCase,
     required EditMilestoneUseCase editMilestoneUseCase,
     required DeleteMilestoneUseCase deleteMilestoneUseCase,
@@ -176,9 +172,8 @@ class IssueNotifier extends ChangeNotifier {
     _createCommentUseCase = createCommentUseCase;
     _searchIssuesUseCase = searchIssuesUseCase;
     _listLabelsUseCase = listLabelsUseCase;
-    _listMilestonesUseCase = listMilestonesUseCase;
-    _getMilestoneUseCase = getMilestoneUseCase;
-    _createMilestoneUseCase = createMilestoneUseCase;
+_listMilestonesUseCase = listMilestonesUseCase;
+     _createMilestoneUseCase = createMilestoneUseCase;
     _editMilestoneUseCase = editMilestoneUseCase;
     _deleteMilestoneUseCase = deleteMilestoneUseCase;
     _editLabelUseCase = editLabelUseCase;

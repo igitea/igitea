@@ -6,7 +6,7 @@ import '../../core/errors/failures.dart';
 import '../../core/storage/auth_storage.dart';
 import '../../core/storage/auth_method_storage.dart';
 import '../../core/utils/either.dart';
-import '../../data/datasources/remote/gitea_api_service.dart';
+
 import '../../data/models/generated/generated_models.dart';
 import '../../domain/entities/auth_state.dart';
 import '../../domain/usecases/auth_usecases.dart';

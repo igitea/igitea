@@ -186,7 +186,6 @@ class ReleaseDetailPage extends StatelessWidget {
   }
 
   Widget _buildAssetTile(BuildContext context, Attachment asset, AppLocalizations l10n) {
-    final theme = Theme.of(context);
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: ListTile(

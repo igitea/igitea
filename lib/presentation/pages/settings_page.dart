@@ -6,9 +6,8 @@ import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../domain/entities/auth_state.dart';
 import '../../l10n/app_localizations.dart';
-import '../state/theme_notifier.dart';
+
 import 'ssh_keys_page.dart';
-import 'user_management_page.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -24,7 +23,6 @@ class _SettingsPageState extends State<SettingsPage> {
   GeneralRepoSettings? _repoSettings;
   List<Cron>? _cronTasks;
   bool _settingsLoading = false;
-  String? _settingsError;
 
   @override
   void initState() {
@@ -41,7 +39,6 @@ class _SettingsPageState extends State<SettingsPage> {
 
     setState(() {
       _settingsLoading = true;
-      _settingsError = null;
     });
 
     final results = await Future.wait([
@@ -54,16 +51,6 @@ class _SettingsPageState extends State<SettingsPage> {
 
     if (!mounted) return;
 
-    bool hasError = false;
-    String errorMsg = '';
-
-    for (final result in results) {
-      if (result is Left<Failure, dynamic>) {
-        hasError = true;
-        errorMsg = (result as Left<Failure, dynamic>).value.message;
-      }
-    }
-
     setState(() {
       _apiSettings = (results[0] as Right<Failure, GeneralAPISettings>).value;
       _uiSettings = (results[1] as Right<Failure, GeneralUISettings>).value;
@@ -71,9 +58,6 @@ class _SettingsPageState extends State<SettingsPage> {
       _repoSettings = (results[3] as Right<Failure, GeneralRepoSettings>).value;
       _cronTasks = (results[4] as Right<Failure, List<Cron>>).value;
       _settingsLoading = false;
-      if (hasError) {
-        _settingsError = errorMsg;
-      }
     });
   }
 
@@ -501,7 +485,6 @@ class CronTasksPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(title: Text(l10n.cronTasks)),

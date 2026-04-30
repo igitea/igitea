@@ -255,7 +255,7 @@ class _EditIssuePageState extends State<EditIssuePage> {
         Text(l10n.milestone, style: Theme.of(context).textTheme.titleSmall),
         const SizedBox(height: UIConstants.sm),
         DropdownButtonFormField<int?>(
-          value: _selectedMilestoneId,
+          initialValue: _selectedMilestoneId,
           decoration: InputDecoration(
             labelText: l10n.selectMilestone,
             border: const OutlineInputBorder(),

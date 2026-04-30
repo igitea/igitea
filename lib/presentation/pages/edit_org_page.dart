@@ -159,7 +159,7 @@ class _EditOrgPageState extends State<EditOrgPage> {
           ),
           const SizedBox(height: 16),
           DropdownButtonFormField<String>(
-            value: _visibility,
+            initialValue: _visibility,
             decoration: InputDecoration(
               labelText: l10n.visibility,
               border: const OutlineInputBorder(),

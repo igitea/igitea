@@ -460,26 +460,26 @@ class _IssueContent extends StatelessWidget {
               title: Text(l10n.milestone),
               content: SizedBox(
                 width: double.maxFinite,
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: allMilestones.length + 1,
-                  itemBuilder: (ctx, index) {
-                    if (index == 0) {
+                child: RadioGroup<int?>(
+                  groupValue: selectedMilestoneId,
+                  onChanged: (v) => setState(() => selectedMilestoneId = v),
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: allMilestones.length + 1,
+                    itemBuilder: (ctx, index) {
+                      if (index == 0) {
+                        return RadioListTile<int?>(
+                          title: Text(l10n.noMilestones),
+                          value: null,
+                        );
+                      }
+                      final milestone = allMilestones[index - 1];
                       return RadioListTile<int?>(
-                        title: Text(l10n.noMilestones),
-                        value: null,
-                        groupValue: selectedMilestoneId,
-                        onChanged: (v) => setState(() => selectedMilestoneId = v),
+                        title: Text(milestone.title ?? ''),
+                        value: milestone.id,
                       );
-                    }
-                    final milestone = allMilestones[index - 1];
-                    return RadioListTile<int?>(
-                      title: Text(milestone.title ?? ''),
-                      value: milestone.id,
-                      groupValue: selectedMilestoneId,
-                      onChanged: (v) => setState(() => selectedMilestoneId = v),
-                    );
-                  },
+                    },
+                  ),
                 ),
               ),
               actions: [

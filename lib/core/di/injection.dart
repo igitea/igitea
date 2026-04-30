@@ -100,7 +100,6 @@ class Injection {
   static late ReplaceIssueLabelsUseCase replaceIssueLabelsUseCase;
   static late ListMilestonesUseCase listMilestonesUseCase;
   static late CreateMilestoneUseCase createMilestoneUseCase;
-  static late GetMilestoneUseCase getMilestoneUseCase;
   static late EditMilestoneUseCase editMilestoneUseCase;
   static late DeleteMilestoneUseCase deleteMilestoneUseCase;
   static late GetOrgUseCase getOrgUseCase;
@@ -213,7 +212,6 @@ class Injection {
     createMilestoneUseCase = CreateMilestoneUseCase(
       repository: issueRepository,
     );
-    getMilestoneUseCase = GetMilestoneUseCase(repository: issueRepository);
     editMilestoneUseCase = EditMilestoneUseCase(repository: issueRepository);
     deleteMilestoneUseCase = DeleteMilestoneUseCase(repository: issueRepository);
     getOrgUseCase = GetOrgUseCase(repository: organizationRepository);
@@ -337,7 +335,6 @@ class Injection {
         searchIssuesUseCase: searchIssuesUseCase,
         listLabelsUseCase: listLabelsUseCase,
         listMilestonesUseCase: listMilestonesUseCase,
-        getMilestoneUseCase: getMilestoneUseCase,
         createMilestoneUseCase: createMilestoneUseCase,
         editMilestoneUseCase: editMilestoneUseCase,
         deleteMilestoneUseCase: deleteMilestoneUseCase,
@@ -420,7 +417,6 @@ class Injection {
         searchIssuesUseCase: searchIssuesUseCase,
         listLabelsUseCase: listLabelsUseCase,
         listMilestonesUseCase: listMilestonesUseCase,
-        getMilestoneUseCase: getMilestoneUseCase,
         createMilestoneUseCase: createMilestoneUseCase,
         editMilestoneUseCase: editMilestoneUseCase,
         deleteMilestoneUseCase: deleteMilestoneUseCase,
@@ -524,7 +520,6 @@ class Injection {
       searchIssuesUseCase: searchIssuesUseCase,
       listLabelsUseCase: listLabelsUseCase,
       listMilestonesUseCase: listMilestonesUseCase,
-      getMilestoneUseCase: getMilestoneUseCase,
       createMilestoneUseCase: createMilestoneUseCase,
       editMilestoneUseCase: editMilestoneUseCase,
       deleteMilestoneUseCase: deleteMilestoneUseCase,

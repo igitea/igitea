@@ -146,7 +146,7 @@ class _CreateWebhookPageState extends State<CreateWebhookPage> {
             ),
             const SizedBox(height: UIConstants.md),
             DropdownButtonFormField<String>(
-              value: _contentType,
+              initialValue: _contentType,
               decoration: InputDecoration(
                 labelText: l10n.webhookContentType,
                 border: const OutlineInputBorder(),

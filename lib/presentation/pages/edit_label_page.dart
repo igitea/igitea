@@ -55,7 +55,7 @@ class _EditLabelPageState extends State<EditLabelPage> {
       builder: (context) => _ColorPickerDialog(initial: _parseColor(_colorController.text)),
     );
     if (color != null) {
-      final hex = '#${color.value.toRadixString(16).substring(2).toUpperCase()}';
+      final hex = '#${color.toARGB32().toRadixString(16).substring(2).toUpperCase()}';
       setState(() => _colorController.text = hex);
     }
   }
@@ -269,7 +269,7 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
               decoration: BoxDecoration(
                 color: color,
                 shape: BoxShape.circle,
-                border: _selected.value == color.value
+                border: _selected.toARGB32() == color.toARGB32()
                     ? Border.all(color: Colors.white, width: 3)
                     : null,
               ),

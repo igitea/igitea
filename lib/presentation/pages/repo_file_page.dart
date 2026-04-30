@@ -154,8 +154,11 @@ class _RepoFilePageState extends State<RepoFilePage> {
     return widget.name.split('.').last;
   }
 
-  Future<bool> _onWillPop() async {
-    if (!_hasChanges) return true;
+  Future<void> _onWillPop() async {
+    if (!_hasChanges) {
+      Navigator.of(context).pop();
+      return;
+    }
 
     final l10n = AppLocalizations.of(context)!;
     final result = await showDialog<bool>(
@@ -182,7 +185,9 @@ class _RepoFilePageState extends State<RepoFilePage> {
         ],
       ),
     );
-    return result ?? false;
+    if (result == true && mounted) {
+      Navigator.of(context).pop();
+    }
   }
 
   @override
@@ -190,8 +195,12 @@ class _RepoFilePageState extends State<RepoFilePage> {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final hasContent = _decodedContent != null;
-    return WillPopScope(
-      onWillPop: _onWillPop,
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        _onWillPop();
+      },
       child: Scaffold(
         appBar: AppBar(
           title: Text(widget.name),
@@ -265,6 +274,7 @@ class _RepoFilePageState extends State<RepoFilePage> {
 
     final message = await _showCommitMessageDialog();
     if (message == null || message.isEmpty) return;
+    if (!mounted) return;
 
     showDialog(
       context: context,

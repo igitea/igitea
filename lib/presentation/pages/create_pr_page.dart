@@ -89,7 +89,7 @@ class _CreatePRPageState extends State<CreatePRPage> {
                     children: [
                       Expanded(
                         child: DropdownButtonFormField<String>(
-                          value: _headBranch,
+                          initialValue: _headBranch,
                           decoration: InputDecoration(labelText: l10n.headBranch),
                           items: _branches.map((b) => DropdownMenuItem(
                             value: b.name,
@@ -104,7 +104,7 @@ class _CreatePRPageState extends State<CreatePRPage> {
                       ),
                       Expanded(
                         child: DropdownButtonFormField<String>(
-                          value: _baseBranch,
+                          initialValue: _baseBranch,
                           decoration: InputDecoration(labelText: l10n.baseBranch),
                           items: _branches.map((b) => DropdownMenuItem(
                             value: b.name,
