@@ -1407,4 +1407,10 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get author => 'Author';
+
+  @override
+  String get filterByActor => 'Filter by actor';
+
+  @override
+  String get filterByStatus => 'Filter by status';
 }

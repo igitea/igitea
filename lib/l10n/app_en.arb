@@ -461,5 +461,7 @@
   "noJobs": "No jobs",
   "artifacts": "Artifacts",
   "branch": "Branch",
-  "author": "Author"
+  "author": "Author",
+  "filterByActor": "Filter by actor",
+  "filterByStatus": "Filter by status"
 }

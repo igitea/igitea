@@ -2782,6 +2782,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Author'**
   String get author;
+
+  /// No description provided for @filterByActor.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by actor'**
+  String get filterByActor;
+
+  /// No description provided for @filterByStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by status'**
+  String get filterByStatus;
 }
 
 class _AppLocalizationsDelegate

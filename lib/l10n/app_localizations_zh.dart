@@ -1401,6 +1401,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get author => 'Author';
+
+  @override
+  String get filterByActor => 'Filter by actor';
+
+  @override
+  String get filterByStatus => 'Filter by status';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
