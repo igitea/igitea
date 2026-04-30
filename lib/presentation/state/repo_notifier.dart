@@ -263,6 +263,9 @@ class RepoNotifier extends ChangeNotifier {
   CreateWikiPageUseCase _createWikiPageUseCase;
   EditWikiPageUseCase _editWikiPageUseCase;
   DeleteWikiPageUseCase _deleteWikiPageUseCase;
+  ListHooksUseCase _listHooksUseCase;
+  CreateHookUseCase _createHookUseCase;
+  DeleteHookUseCase _deleteHookUseCase;
 
   RepoState _state = const RepoInitial();
   RepoState get state => _state;
@@ -329,6 +332,9 @@ class RepoNotifier extends ChangeNotifier {
     required CreateWikiPageUseCase createWikiPageUseCase,
     required EditWikiPageUseCase editWikiPageUseCase,
     required DeleteWikiPageUseCase deleteWikiPageUseCase,
+    required ListHooksUseCase listHooksUseCase,
+    required CreateHookUseCase createHookUseCase,
+    required DeleteHookUseCase deleteHookUseCase,
   }) : _getRepoUseCase = getRepoUseCase,
        _searchReposUseCase = searchReposUseCase,
        _listBranchesUseCase = listBranchesUseCase,
@@ -353,7 +359,10 @@ class RepoNotifier extends ChangeNotifier {
        _getWikiPageUseCase = getWikiPageUseCase,
        _createWikiPageUseCase = createWikiPageUseCase,
        _editWikiPageUseCase = editWikiPageUseCase,
-       _deleteWikiPageUseCase = deleteWikiPageUseCase;
+       _deleteWikiPageUseCase = deleteWikiPageUseCase,
+       _listHooksUseCase = listHooksUseCase,
+       _createHookUseCase = createHookUseCase,
+       _deleteHookUseCase = deleteHookUseCase;
 
   void updateUseCases({
     required GetRepoUseCase getRepoUseCase,
@@ -381,6 +390,9 @@ class RepoNotifier extends ChangeNotifier {
     required CreateWikiPageUseCase createWikiPageUseCase,
     required EditWikiPageUseCase editWikiPageUseCase,
     required DeleteWikiPageUseCase deleteWikiPageUseCase,
+    required ListHooksUseCase listHooksUseCase,
+    required CreateHookUseCase createHookUseCase,
+    required DeleteHookUseCase deleteHookUseCase,
   }) {
     _getRepoUseCase = getRepoUseCase;
     _searchReposUseCase = searchReposUseCase;
@@ -407,6 +419,9 @@ class RepoNotifier extends ChangeNotifier {
     _createWikiPageUseCase = createWikiPageUseCase;
     _editWikiPageUseCase = editWikiPageUseCase;
     _deleteWikiPageUseCase = deleteWikiPageUseCase;
+    _listHooksUseCase = listHooksUseCase;
+    _createHookUseCase = createHookUseCase;
+    _deleteHookUseCase = deleteHookUseCase;
   }
 
   Future<void> getRepo(String owner, String repo) async {
@@ -832,6 +847,37 @@ class RepoNotifier extends ChangeNotifier {
   ) async {
     return await _deleteWikiPageUseCase.call(
       DeleteWikiPageParams(owner: owner, repo: repo, pageName: pageName),
+    );
+  }
+
+  Future<Either<Failure, List<Hook>>> listHooks(
+    String owner,
+    String repo, {
+    int? page,
+    int? limit,
+  }) async {
+    return await _listHooksUseCase.call(
+      ListHooksParams(owner: owner, repo: repo, page: page, limit: limit),
+    );
+  }
+
+  Future<Either<Failure, Hook>> createHook(
+    String owner,
+    String repo,
+    Map<String, dynamic> body,
+  ) async {
+    return await _createHookUseCase.call(
+      CreateHookParams(owner: owner, repo: repo, body: body),
+    );
+  }
+
+  Future<Either<Failure, void>> deleteHook(
+    String owner,
+    String repo,
+    int id,
+  ) async {
+    return await _deleteHookUseCase.call(
+      DeleteHookParams(owner: owner, repo: repo, id: id),
     );
   }
 }

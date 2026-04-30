@@ -347,6 +347,9 @@ void main() {
         createWikiPageUseCase: CreateWikiPageUseCase(repository: fakeRepo),
         editWikiPageUseCase: EditWikiPageUseCase(repository: fakeRepo),
         deleteWikiPageUseCase: DeleteWikiPageUseCase(repository: fakeRepo),
+        listHooksUseCase: ListHooksUseCase(repository: fakeRepo),
+        createHookUseCase: CreateHookUseCase(repository: fakeRepo),
+        deleteHookUseCase: DeleteHookUseCase(repository: fakeRepo),
       );
     });
 

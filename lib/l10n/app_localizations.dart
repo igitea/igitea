@@ -69,8 +69,7 @@ import 'app_localizations_zh.dart';
 /// be consistent with the languages listed in the AppLocalizations.supportedLocales
 /// property.
 abstract class AppLocalizations {
-  AppLocalizations(String locale)
-    : localeName = intl.Intl.canonicalizedLocale(locale.toString());
+  AppLocalizations(String locale) : localeName = intl.Intl.canonicalizedLocale(locale.toString());
 
   final String localeName;
 
@@ -78,8 +77,7 @@ abstract class AppLocalizations {
     return Localizations.of<AppLocalizations>(context, AppLocalizations);
   }
 
-  static const LocalizationsDelegate<AppLocalizations> delegate =
-      _AppLocalizationsDelegate();
+  static const LocalizationsDelegate<AppLocalizations> delegate = _AppLocalizationsDelegate();
 
   /// A list of this localizations delegate along with the default localizations
   /// delegates.
@@ -91,13 +89,12 @@ abstract class AppLocalizations {
   /// Additional delegates can be added by appending to this list in
   /// MaterialApp. This list does not have to be used at all if a custom list
   /// of delegates is preferred or required.
-  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates =
-      <LocalizationsDelegate<dynamic>>[
-        delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-      ];
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = <LocalizationsDelegate<dynamic>>[
+    delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+  ];
 
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[
@@ -110,7 +107,7 @@ abstract class AppLocalizations {
     Locale('pt'),
     Locale('ru'),
     Locale('zh'),
-    Locale('zh', 'TW'),
+    Locale('zh', 'TW')
   ];
 
   /// No description provided for @appTitle.
@@ -2338,10 +2335,207 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Clear'**
   String get clear;
+
+  /// No description provided for @webhooks.
+  ///
+  /// In en, this message translates to:
+  /// **'Webhooks'**
+  String get webhooks;
+
+  /// No description provided for @webhook.
+  ///
+  /// In en, this message translates to:
+  /// **'Webhook'**
+  String get webhook;
+
+  /// No description provided for @noWebhooks.
+  ///
+  /// In en, this message translates to:
+  /// **'No webhooks'**
+  String get noWebhooks;
+
+  /// No description provided for @createWebhook.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Webhook'**
+  String get createWebhook;
+
+  /// No description provided for @editWebhook.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Webhook'**
+  String get editWebhook;
+
+  /// No description provided for @deleteWebhook.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Webhook'**
+  String get deleteWebhook;
+
+  /// No description provided for @deleteWebhookConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this webhook? This action cannot be undone.'**
+  String get deleteWebhookConfirm;
+
+  /// No description provided for @webhookDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Webhook deleted'**
+  String get webhookDeleted;
+
+  /// No description provided for @webhookUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Payload URL'**
+  String get webhookUrl;
+
+  /// No description provided for @webhookUrlHint.
+  ///
+  /// In en, this message translates to:
+  /// **'https://example.com/webhook'**
+  String get webhookUrlHint;
+
+  /// No description provided for @webhookSecret.
+  ///
+  /// In en, this message translates to:
+  /// **'Secret'**
+  String get webhookSecret;
+
+  /// No description provided for @webhookSecretHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional secret token'**
+  String get webhookSecretHint;
+
+  /// No description provided for @webhookContentType.
+  ///
+  /// In en, this message translates to:
+  /// **'Content Type'**
+  String get webhookContentType;
+
+  /// No description provided for @webhookContentTypeJson.
+  ///
+  /// In en, this message translates to:
+  /// **'application/json'**
+  String get webhookContentTypeJson;
+
+  /// No description provided for @webhookContentTypeForm.
+  ///
+  /// In en, this message translates to:
+  /// **'application/x-www-form-urlencoded'**
+  String get webhookContentTypeForm;
+
+  /// No description provided for @webhookEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Events'**
+  String get webhookEvents;
+
+  /// No description provided for @webhookEventsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select events to trigger this webhook'**
+  String get webhookEventsHint;
+
+  /// No description provided for @webhookActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get webhookActive;
+
+  /// No description provided for @webhookInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive'**
+  String get webhookInactive;
+
+  /// No description provided for @webhookType.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get webhookType;
+
+  /// No description provided for @webhookCreatedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Created'**
+  String get webhookCreatedAt;
+
+  /// No description provided for @webhookUpdatedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated'**
+  String get webhookUpdatedAt;
+
+  /// No description provided for @webhookLastDelivery.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Delivery'**
+  String get webhookLastDelivery;
+
+  /// No description provided for @webhookSelectAllEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Select All'**
+  String get webhookSelectAllEvents;
+
+  /// No description provided for @webhookPushEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Push'**
+  String get webhookPushEvents;
+
+  /// No description provided for @webhookPullRequestEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Pull Requests'**
+  String get webhookPullRequestEvents;
+
+  /// No description provided for @webhookIssuesEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Issues'**
+  String get webhookIssuesEvents;
+
+  /// No description provided for @webhookCreateEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get webhookCreateEvents;
+
+  /// No description provided for @webhookDeleteEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get webhookDeleteEvents;
+
+  /// No description provided for @webhookReleaseEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Releases'**
+  String get webhookReleaseEvents;
+
+  /// No description provided for @webhookWikiEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Wiki'**
+  String get webhookWikiEvents;
+
+  /// No description provided for @webhookStarEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Star'**
+  String get webhookStarEvents;
+
+  /// No description provided for @webhookForkEvents.
+  ///
+  /// In en, this message translates to:
+  /// **'Fork'**
+  String get webhookForkEvents;
 }
 
-class _AppLocalizationsDelegate
-    extends LocalizationsDelegate<AppLocalizations> {
+class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
   const _AppLocalizationsDelegate();
 
   @override
@@ -2350,61 +2544,41 @@ class _AppLocalizationsDelegate
   }
 
   @override
-  bool isSupported(Locale locale) => <String>[
-    'de',
-    'en',
-    'es',
-    'fr',
-    'ja',
-    'ko',
-    'pt',
-    'ru',
-    'zh',
-  ].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>['de', 'en', 'es', 'fr', 'ja', 'ko', 'pt', 'ru', 'zh'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
 }
 
 AppLocalizations lookupAppLocalizations(Locale locale) {
+
   // Lookup logic when language+country codes are specified.
   switch (locale.languageCode) {
-    case 'zh':
-      {
-        switch (locale.countryCode) {
-          case 'TW':
-            return AppLocalizationsZhTw();
-        }
-        break;
-      }
+    case 'zh': {
+  switch (locale.countryCode) {
+    case 'TW': return AppLocalizationsZhTw();
+   }
+  break;
+   }
   }
 
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
-    case 'de':
-      return AppLocalizationsDe();
-    case 'en':
-      return AppLocalizationsEn();
-    case 'es':
-      return AppLocalizationsEs();
-    case 'fr':
-      return AppLocalizationsFr();
-    case 'ja':
-      return AppLocalizationsJa();
-    case 'ko':
-      return AppLocalizationsKo();
-    case 'pt':
-      return AppLocalizationsPt();
-    case 'ru':
-      return AppLocalizationsRu();
-    case 'zh':
-      return AppLocalizationsZh();
+    case 'de': return AppLocalizationsDe();
+    case 'en': return AppLocalizationsEn();
+    case 'es': return AppLocalizationsEs();
+    case 'fr': return AppLocalizationsFr();
+    case 'ja': return AppLocalizationsJa();
+    case 'ko': return AppLocalizationsKo();
+    case 'pt': return AppLocalizationsPt();
+    case 'ru': return AppLocalizationsRu();
+    case 'zh': return AppLocalizationsZh();
   }
 
   throw FlutterError(
     'AppLocalizations.delegate failed to load unsupported locale "$locale". This is likely '
     'an issue with the localizations generation tool. Please file an issue '
     'on GitHub with a reproducible sample app and the gen-l10n configuration '
-    'that was used.',
+    'that was used.'
   );
 }

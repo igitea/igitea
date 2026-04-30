@@ -144,8 +144,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get mergePullRequest => 'Fusionner la pull request';
 
   @override
-  String get mergeConfirmMessage =>
-      'Êtes-vous sûr de vouloir fusionner cette pull request ?';
+  String get mergeConfirmMessage => 'Êtes-vous sûr de vouloir fusionner cette pull request ?';
 
   @override
   String issueNumber(Object issueNumber) {
@@ -472,8 +471,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get deleteRepo => 'Supprimer le dépôt';
 
   @override
-  String get deleteRepoConfirm =>
-      'Êtes-vous sûr de vouloir supprimer ce dépôt ? Cette action est irréversible.';
+  String get deleteRepoConfirm => 'Êtes-vous sûr de vouloir supprimer ce dépôt ? Cette action est irréversible.';
 
   @override
   String get generalSettings => 'Paramètres généraux';
@@ -497,8 +495,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get unsavedChanges => 'Modifications non enregistrées';
 
   @override
-  String get unsavedChangesMessage =>
-      'Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter ?';
+  String get unsavedChangesMessage => 'Vous avez des modifications non enregistrées. Êtes-vous sûr de vouloir quitter ?';
 
   @override
   String get leave => 'Quitter';
@@ -575,8 +572,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get untitled => 'Untitled';
 
   @override
-  String get enterSearchQueryRepos =>
-      'Enter a search query to find repositories';
+  String get enterSearchQueryRepos => 'Enter a search query to find repositories';
 
   @override
   String get enterSearchQueryIssues => 'Enter a search query to find issues';
@@ -1065,19 +1061,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get public => 'Public';
 
   @override
-  String get publicDescription =>
-      'Anyone on the internet can see this repository';
+  String get publicDescription => 'Anyone on the internet can see this repository';
 
   @override
-  String get privateDescription =>
-      'You choose who can see and commit to this repository';
+  String get privateDescription => 'You choose who can see and commit to this repository';
 
   @override
   String get initializeWithReadme => 'Initialize with README';
 
   @override
-  String get initializeWithReadmeDescription =>
-      'Add a README file to help others understand your project';
+  String get initializeWithReadmeDescription => 'Add a README file to help others understand your project';
 
   @override
   String repoCreated(Object repoName) {
@@ -1100,8 +1093,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get deleteWikiPage => 'Delete Wiki Page';
 
   @override
-  String get deleteWikiPageConfirm =>
-      'Are you sure you want to delete this wiki page? This action cannot be undone.';
+  String get deleteWikiPageConfirm => 'Are you sure you want to delete this wiki page? This action cannot be undone.';
 
   @override
   String get wikiPageDeleted => 'Wiki page deleted';
@@ -1122,8 +1114,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noWikiPages => 'No wiki pages';
 
   @override
-  String get noWikiPagesDescription =>
-      'This repository doesn\'t have any wiki pages yet.';
+  String get noWikiPagesDescription => 'This repository doesn\'t have any wiki pages yet.';
 
   @override
   String get createFirstWikiPage => 'Create First Page';
@@ -1150,8 +1141,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get deleteMilestone => 'Delete Milestone';
 
   @override
-  String get deleteMilestoneConfirm =>
-      'Are you sure you want to delete this milestone? This action cannot be undone.';
+  String get deleteMilestoneConfirm => 'Are you sure you want to delete this milestone? This action cannot be undone.';
 
   @override
   String get milestoneDeleted => 'Milestone deleted';
@@ -1182,4 +1172,103 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get clear => 'Clear';
+
+  @override
+  String get webhooks => 'Webhooks';
+
+  @override
+  String get webhook => 'Webhook';
+
+  @override
+  String get noWebhooks => 'No webhooks';
+
+  @override
+  String get createWebhook => 'Create Webhook';
+
+  @override
+  String get editWebhook => 'Edit Webhook';
+
+  @override
+  String get deleteWebhook => 'Delete Webhook';
+
+  @override
+  String get deleteWebhookConfirm => 'Are you sure you want to delete this webhook? This action cannot be undone.';
+
+  @override
+  String get webhookDeleted => 'Webhook deleted';
+
+  @override
+  String get webhookUrl => 'Payload URL';
+
+  @override
+  String get webhookUrlHint => 'https://example.com/webhook';
+
+  @override
+  String get webhookSecret => 'Secret';
+
+  @override
+  String get webhookSecretHint => 'Optional secret token';
+
+  @override
+  String get webhookContentType => 'Content Type';
+
+  @override
+  String get webhookContentTypeJson => 'application/json';
+
+  @override
+  String get webhookContentTypeForm => 'application/x-www-form-urlencoded';
+
+  @override
+  String get webhookEvents => 'Events';
+
+  @override
+  String get webhookEventsHint => 'Select events to trigger this webhook';
+
+  @override
+  String get webhookActive => 'Active';
+
+  @override
+  String get webhookInactive => 'Inactive';
+
+  @override
+  String get webhookType => 'Type';
+
+  @override
+  String get webhookCreatedAt => 'Created';
+
+  @override
+  String get webhookUpdatedAt => 'Updated';
+
+  @override
+  String get webhookLastDelivery => 'Last Delivery';
+
+  @override
+  String get webhookSelectAllEvents => 'Select All';
+
+  @override
+  String get webhookPushEvents => 'Push';
+
+  @override
+  String get webhookPullRequestEvents => 'Pull Requests';
+
+  @override
+  String get webhookIssuesEvents => 'Issues';
+
+  @override
+  String get webhookCreateEvents => 'Create';
+
+  @override
+  String get webhookDeleteEvents => 'Delete';
+
+  @override
+  String get webhookReleaseEvents => 'Releases';
+
+  @override
+  String get webhookWikiEvents => 'Wiki';
+
+  @override
+  String get webhookStarEvents => 'Star';
+
+  @override
+  String get webhookForkEvents => 'Fork';
 }

@@ -707,3 +707,79 @@ class DeleteWikiPageUseCase {
     );
   }
 }
+
+class ListHooksParams {
+  final String owner;
+  final String repo;
+  final int? page;
+  final int? limit;
+
+  const ListHooksParams({
+    required this.owner,
+    required this.repo,
+    this.page,
+    this.limit,
+  });
+}
+
+class ListHooksUseCase {
+  final RepoRepository _repository;
+
+  ListHooksUseCase({required RepoRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, List<Hook>>> call(ListHooksParams params) async {
+    return _repository.listHooks(
+      params.owner,
+      params.repo,
+      page: params.page,
+      limit: params.limit,
+    );
+  }
+}
+
+class CreateHookParams {
+  final String owner;
+  final String repo;
+  final Map<String, dynamic> body;
+
+  const CreateHookParams({
+    required this.owner,
+    required this.repo,
+    required this.body,
+  });
+}
+
+class CreateHookUseCase {
+  final RepoRepository _repository;
+
+  CreateHookUseCase({required RepoRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, Hook>> call(CreateHookParams params) async {
+    return _repository.createHook(params.owner, params.repo, params.body);
+  }
+}
+
+class DeleteHookParams {
+  final String owner;
+  final String repo;
+  final int id;
+
+  const DeleteHookParams({
+    required this.owner,
+    required this.repo,
+    required this.id,
+  });
+}
+
+class DeleteHookUseCase {
+  final RepoRepository _repository;
+
+  DeleteHookUseCase({required RepoRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, void>> call(DeleteHookParams params) async {
+    return _repository.deleteHook(params.owner, params.repo, params.id);
+  }
+}

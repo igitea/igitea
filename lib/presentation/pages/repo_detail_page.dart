@@ -26,6 +26,7 @@ import 'repo_file_page.dart';
 import 'tag_detail_page.dart';
 import 'wiki_list_page.dart';
 import 'create_milestone_page.dart';
+import 'webhook_list_page.dart';
 
 const _languageColors = <String, Color>{
   'Dart': Color(0xFF00B4AB),
@@ -109,6 +110,7 @@ class _RepoDetailPageState extends State<RepoDetailPage> {
       _SectionItem(id: 'branches', title: l10n.branches, icon: Icons.call_split),
       _SectionItem(id: 'tags', title: l10n.tags, icon: Icons.label),
       _SectionItem(id: 'wiki', title: l10n.wiki, icon: Icons.book_outlined),
+      _SectionItem(id: 'webhooks', title: l10n.webhooks, icon: Icons.webhook),
     ];
 
     return CustomScrollView(
@@ -178,6 +180,17 @@ class _RepoDetailPageState extends State<RepoDetailPage> {
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) => WikiListPage(
+            owner: widget.owner,
+            repo: widget.repo,
+          ),
+        ),
+      );
+      return;
+    }
+    if (sectionId == 'webhooks') {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => WebhookListPage(
             owner: widget.owner,
             repo: widget.repo,
           ),
@@ -1347,6 +1360,7 @@ class _RepoSectionPage extends StatelessWidget {
       'branches' => l10n.branches,
       'tags' => l10n.tags,
       'wiki' => l10n.wiki,
+      'webhooks' => l10n.webhooks,
       _ => '',
     };
   }
