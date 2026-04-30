@@ -33,6 +33,10 @@ class _EditIssuePageState extends State<EditIssuePage> {
   int? _selectedMilestoneId;
   bool _isSaving = false;
   bool _showPreview = false;
+  List<Label> _labels = [];
+  List<Milestone> _milestones = [];
+  bool _labelsLoading = true;
+  bool _milestonesLoading = true;
 
   @override
   void initState() {
@@ -48,9 +52,43 @@ class _EditIssuePageState extends State<EditIssuePage> {
     _selectedMilestoneId = widget.issue.milestone?.id;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Injection.issueNotifier.listLabels(widget.owner, widget.repo);
-      Injection.issueNotifier.listMilestones(widget.owner, widget.repo);
+      _loadLabels();
+      _loadMilestones();
     });
+  }
+
+  Future<void> _loadLabels() async {
+    final result = await _getLabels();
+    if (mounted) {
+      setState(() {
+        _labels = result;
+        _labelsLoading = false;
+      });
+    }
+  }
+
+  Future<void> _loadMilestones() async {
+    final result = await _getMilestones();
+    if (mounted) {
+      setState(() {
+        _milestones = result;
+        _milestonesLoading = false;
+      });
+    }
+  }
+
+  Future<List<Label>> _getLabels() async {
+    await Injection.issueNotifier.listLabels(widget.owner, widget.repo);
+    final s = Injection.issueNotifier.state;
+    if (s is LabelsLoaded) return s.labels;
+    return widget.issue.labels ?? [];
+  }
+
+  Future<List<Milestone>> _getMilestones() async {
+    await Injection.issueNotifier.listMilestones(widget.owner, widget.repo);
+    final s = Injection.issueNotifier.state;
+    if (s is MilestonesLoaded) return s.milestones;
+    return [];
   }
 
   @override
@@ -92,10 +130,10 @@ class _EditIssuePageState extends State<EditIssuePage> {
 
     if (mounted) {
       setState(() => _isSaving = false);
-      final state = Injection.issueNotifier.state;
-      if (state is IssueError) {
+      final s = Injection.issueNotifier.state;
+      if (s is IssueError) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.error}: ${state.message}')),
+          SnackBar(content: Text('${l10n.error}: ${s.message}')),
         );
       } else {
         Navigator.of(context).pop(true);
@@ -128,48 +166,38 @@ class _EditIssuePageState extends State<EditIssuePage> {
             ),
         ],
       ),
-      body: ListenableBuilder(
-        listenable: Injection.issueNotifier,
-        builder: (context, _) {
-          final state = Injection.issueNotifier.state;
-          final labels = state is LabelsLoaded ? state.labels : <Label>[];
-          final milestones =
-              state is MilestonesLoaded ? state.milestones : <Milestone>[];
-
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(UIConstants.md),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TextField(
-                  controller: _titleController,
-                  decoration: InputDecoration(
-                    labelText: l10n.title,
-                    border: const OutlineInputBorder(),
-                  ),
-                  maxLines: 1,
-                ),
-                const SizedBox(height: UIConstants.md),
-                _buildStateSelector(l10n),
-                const SizedBox(height: UIConstants.md),
-                if (labels.isNotEmpty) ...[
-                  _buildLabelSection(l10n, labels),
-                  const SizedBox(height: UIConstants.md),
-                ],
-                if (milestones.isNotEmpty) ...[
-                  _buildMilestoneSection(l10n, milestones),
-                  const SizedBox(height: UIConstants.md),
-                ],
-                _buildBodySection(l10n),
-              ],
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(UIConstants.md),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextField(
+              controller: _titleController,
+              decoration: InputDecoration(
+                labelText: l10n.title,
+                border: const OutlineInputBorder(),
+              ),
+              maxLines: 1,
             ),
-          );
-        },
+            const SizedBox(height: UIConstants.md),
+            _buildStateSelector(l10n),
+            const SizedBox(height: UIConstants.md),
+            if (!_labelsLoading && _labels.isNotEmpty) ...[
+              _buildLabelSection(l10n),
+              const SizedBox(height: UIConstants.md),
+            ],
+            if (!_milestonesLoading && _milestones.isNotEmpty) ...[
+              _buildMilestoneSection(l10n),
+              const SizedBox(height: UIConstants.md),
+            ],
+            _buildBodySection(l10n),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildLabelSection(AppLocalizations l10n, List<Label> labels) {
+  Widget _buildLabelSection(AppLocalizations l10n) {
     final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -179,7 +207,7 @@ class _EditIssuePageState extends State<EditIssuePage> {
         Wrap(
           spacing: UIConstants.sm,
           runSpacing: UIConstants.sm,
-          children: labels.map((label) {
+          children: _labels.map((label) {
             final isSelected = _selectedLabels.contains(label.name);
             final labelColor = _parseColor(label.color);
             return FilterChip(
@@ -203,7 +231,7 @@ class _EditIssuePageState extends State<EditIssuePage> {
     );
   }
 
-  Widget _buildMilestoneSection(AppLocalizations l10n, List<Milestone> milestones) {
+  Widget _buildMilestoneSection(AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -220,7 +248,7 @@ class _EditIssuePageState extends State<EditIssuePage> {
               value: null,
               child: Text('None'),
             ),
-            ...milestones.map((m) => DropdownMenuItem(
+            ..._milestones.map((m) => DropdownMenuItem(
               value: m.id,
               child: Text(m.title ?? ''),
             )),

@@ -22,14 +22,40 @@ class _CreateIssuePageState extends State<CreateIssuePage> {
   bool _isLoading = false;
   Set<String> _selectedLabels = {};
   int? _selectedMilestoneId;
+  List<Label> _labels = [];
+  List<Milestone> _milestones = [];
+  bool _labelsLoading = true;
+  bool _milestonesLoading = true;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Injection.issueNotifier.listLabels(widget.owner, widget.repo);
-      Injection.issueNotifier.listMilestones(widget.owner, widget.repo);
+      _loadLabels();
+      _loadMilestones();
     });
+  }
+
+  Future<void> _loadLabels() async {
+    await Injection.issueNotifier.listLabels(widget.owner, widget.repo);
+    final s = Injection.issueNotifier.state;
+    if (mounted) {
+      setState(() {
+        _labels = s is LabelsLoaded ? s.labels : [];
+        _labelsLoading = false;
+      });
+    }
+  }
+
+  Future<void> _loadMilestones() async {
+    await Injection.issueNotifier.listMilestones(widget.owner, widget.repo);
+    final s = Injection.issueNotifier.state;
+    if (mounted) {
+      setState(() {
+        _milestones = s is MilestonesLoaded ? s.milestones : [];
+        _milestonesLoading = false;
+      });
+    }
   }
 
   @override
@@ -62,55 +88,45 @@ class _CreateIssuePageState extends State<CreateIssuePage> {
             ),
         ],
       ),
-      body: ListenableBuilder(
-        listenable: Injection.issueNotifier,
-        builder: (context, _) {
-          final state = Injection.issueNotifier.state;
-          final labels = state is LabelsLoaded ? state.labels : <Label>[];
-          final milestones =
-              state is MilestonesLoaded ? state.milestones : <Milestone>[];
-
-          return SingleChildScrollView(
-            padding: const EdgeInsets.all(UIConstants.md),
-            child: Column(
-              children: [
-                TextField(
-                  controller: _titleController,
-                  decoration: InputDecoration(
-                    labelText: l10n.title,
-                    border: const OutlineInputBorder(),
-                  ),
-                  textInputAction: TextInputAction.next,
-                ),
-                const SizedBox(height: UIConstants.md),
-                if (labels.isNotEmpty) ...[
-                  _buildLabelSection(l10n, labels),
-                  const SizedBox(height: UIConstants.md),
-                ],
-                if (milestones.isNotEmpty) ...[
-                  _buildMilestoneSection(l10n, milestones),
-                  const SizedBox(height: UIConstants.md),
-                ],
-                TextField(
-                  controller: _bodyController,
-                  decoration: InputDecoration(
-                    labelText: l10n.body,
-                    border: const OutlineInputBorder(),
-                    alignLabelWithHint: true,
-                  ),
-                  maxLines: 10,
-                  minLines: 5,
-                  textAlignVertical: TextAlignVertical.top,
-                ),
-              ],
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(UIConstants.md),
+        child: Column(
+          children: [
+            TextField(
+              controller: _titleController,
+              decoration: InputDecoration(
+                labelText: l10n.title,
+                border: const OutlineInputBorder(),
+              ),
+              textInputAction: TextInputAction.next,
             ),
-          );
-        },
+            const SizedBox(height: UIConstants.md),
+            if (!_labelsLoading && _labels.isNotEmpty) ...[
+              _buildLabelSection(l10n),
+              const SizedBox(height: UIConstants.md),
+            ],
+            if (!_milestonesLoading && _milestones.isNotEmpty) ...[
+              _buildMilestoneSection(l10n),
+              const SizedBox(height: UIConstants.md),
+            ],
+            TextField(
+              controller: _bodyController,
+              decoration: InputDecoration(
+                labelText: l10n.body,
+                border: const OutlineInputBorder(),
+                alignLabelWithHint: true,
+              ),
+              maxLines: 10,
+              minLines: 5,
+              textAlignVertical: TextAlignVertical.top,
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _buildLabelSection(AppLocalizations l10n, List<Label> labels) {
+  Widget _buildLabelSection(AppLocalizations l10n) {
     final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -120,7 +136,7 @@ class _CreateIssuePageState extends State<CreateIssuePage> {
         Wrap(
           spacing: UIConstants.sm,
           runSpacing: UIConstants.sm,
-          children: labels.map((label) {
+          children: _labels.map((label) {
             final isSelected = _selectedLabels.contains(label.name);
             final labelColor = _parseColor(label.color);
             return FilterChip(
@@ -144,7 +160,7 @@ class _CreateIssuePageState extends State<CreateIssuePage> {
     );
   }
 
-  Widget _buildMilestoneSection(AppLocalizations l10n, List<Milestone> milestones) {
+  Widget _buildMilestoneSection(AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -157,11 +173,8 @@ class _CreateIssuePageState extends State<CreateIssuePage> {
             border: const OutlineInputBorder(),
           ),
           items: [
-            const DropdownMenuItem(
-              value: null,
-              child: Text('None'),
-            ),
-            ...milestones.map((m) => DropdownMenuItem(
+            const DropdownMenuItem(value: null, child: Text('None')),
+            ..._milestones.map((m) => DropdownMenuItem(
               value: m.id,
               child: Text(m.title ?? ''),
             )),
@@ -205,13 +218,12 @@ class _CreateIssuePageState extends State<CreateIssuePage> {
 
     if (mounted) {
       setState(() => _isLoading = false);
-
-      final state = Injection.issueNotifier.state;
-      if (state is IssueDetailLoaded) {
-        Navigator.of(context).pop(state.issue);
-      } else if (state is IssueError) {
+      final s = Injection.issueNotifier.state;
+      if (s is IssueDetailLoaded) {
+        Navigator.of(context).pop(s.issue);
+      } else if (s is IssueError) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.error}: ${state.message}')),
+          SnackBar(content: Text('${l10n.error}: ${s.message}')),
         );
       }
     }
