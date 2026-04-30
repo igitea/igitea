@@ -67,9 +67,10 @@
 - 创建 Webhook：URL、Secret、Content-Type、事件多选、激活开关
 
 ### CI/CD Actions
-- 工作流运行列表：状态（success/failure/in_progress）、分支、触发者
-- 运行详情：Job 列表、可展开日志（等宽字体、可选文本）
-- Artifacts 列表：名称、大小
+- 按 workflow 文件分组显示工作流运行
+- 状态筛选（success/failure/in_progress 等）+ 参与者筛选
+- 滚动到底部自动加载更多（无限分页）
+- 运行详情：Job 列表、可展开日志、Artifacts
 
 ### 组织和团队
 - 查看组织信息、仓库列表、团队列表

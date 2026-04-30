@@ -106,10 +106,13 @@
 
 ### Added — CI/CD Actions Integration
 
-- `ActionsListPage`: list workflow runs with status (success/failure/in_progress etc.), branch, title
-- `ActionRunDetailPage`: run details with info header, jobs list (expandable logs), artifacts list
-- 5 new Actions API methods (runs, jobs, logs, artifacts)
-- Add Actions entry to repo detail section list
+- `ActionsListPage` enhanced:
+  - Group runs by workflow file
+  - Status filter chips (All / success / failure / in_progress / queued / cancelled / skipped)
+  - Actor filter chips
+  - Infinite scroll pagination
+  - State preserved on navigation (AutomaticKeepAliveClientMixin)
+  - `repoListActionWorkflows` API for workflow list
 
 ### Added — Commit Inline Diff
 

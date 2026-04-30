@@ -107,10 +107,13 @@
 
 ### 新增 — CI/CD Actions 集成
 
-- `ActionsListPage`：工作流运行列表，显示状态（success/failure/in_progress 等）、分支、标题
-- `ActionRunDetailPage`：运行详情，包含运行信息头部、Job 列表（可展开日志）、Artifacts 列表
-- 新增 5 个 Actions API 方法（runs、jobs、logs、artifacts）
-- 仓库区块列表新增 Actions 入口
+- `ActionsListPage` 增强：
+  - 按 workflow 文件分组显示运行列表
+  - 状态筛选器（All / success / failure / in_progress / queued / cancelled / skipped）
+  - 参与者（actor）筛选器
+  - 无限滚动分页，滚动到底部自动加载更多
+  - 退出页面后返回保持状态（`AutomaticKeepAliveClientMixin`）
+  - `repoListActionWorkflows` 获取 workflow 列表
 
 ### 新增 — Commit 内联 Diff
 

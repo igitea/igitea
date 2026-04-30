@@ -1472,15 +1472,33 @@ class GiteaApiService {
 
   // Actions
 
+  Future<Map<String, dynamic>> repoListActionWorkflows({
+    required String owner,
+    required String repo,
+    int? page,
+    int? limit,
+  }) async {
+    final query = <String, String>{};
+    if (page != null) query['page'] = page.toString();
+    if (limit != null) query['limit'] = limit.toString();
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/actions/workflows',
+      queryParameters: query,
+    );
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
   Future<Map<String, dynamic>> repoListActionRuns({
     required String owner,
     required String repo,
+    String? actor,
     String? branch,
     String? status,
     int? page,
     int? limit,
   }) async {
     final query = <String, String>{};
+    if (actor != null) query['actor'] = actor;
     if (branch != null) query['branch'] = branch;
     if (status != null) query['status'] = status;
     if (page != null) query['page'] = page.toString();
