@@ -105,6 +105,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get repositories => 'Dépôts';
 
   @override
+  String get repositorySections => 'Repository Sections';
+
+  @override
   String get issues => 'Tickets';
 
   @override

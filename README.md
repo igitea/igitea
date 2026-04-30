@@ -29,7 +29,7 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 ### Repositories
 - List, search, and browse repositories
 - Collapsible header with star/fork actions
-- 7 tabs: Code, Issues, Pull Requests, Releases, Commits, Branches, Tags
+- Section list navigation: Code, Issues, Milestones, Pull Requests, Releases, Commits, Branches, Tags (tap to open)
 - File browser with breadcrumb navigation
 - File viewer with Markdown rendering, images, and syntax highlighting
 - Edit files with commit message dialog

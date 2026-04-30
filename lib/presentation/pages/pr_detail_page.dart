@@ -50,11 +50,11 @@ class _PRDetailPageState extends State<PRDetailPage> {
       appBar: AppBar(
         title: Text(l10n.pullRequestNumber(widget.index)),
         actions: [
-          if (Injection.repoNotifier.state is PullRequestDetailLoaded)
+          if (Injection.repoNotifier.pullRequestDetailState is PullRequestDetailDataLoaded)
             IconButton(
               icon: const Icon(Icons.open_in_new),
               onPressed: () {
-                final state = Injection.repoNotifier.state as PullRequestDetailLoaded;
+                final state = Injection.repoNotifier.pullRequestDetailState as PullRequestDetailDataLoaded;
                 if (state.pullRequest.html_url != null) {
                   launchUrl(
                     Uri.parse(state.pullRequest.html_url!),
@@ -68,10 +68,10 @@ class _PRDetailPageState extends State<PRDetailPage> {
       body: ListenableBuilder(
         listenable: Listenable.merge([Injection.repoNotifier, Injection.issueNotifier]),
         builder: (context, _) {
-          final state = Injection.repoNotifier.state;
+          final state = Injection.repoNotifier.pullRequestDetailState;
           return switch (state) {
-            RepoLoading() => const Center(child: CircularProgressIndicator()),
-            RepoError(:final message) => Center(
+            PullRequestDetailLoading() => const Center(child: CircularProgressIndicator()),
+            PullRequestDetailError(:final message) => Center(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -88,7 +88,7 @@ class _PRDetailPageState extends State<PRDetailPage> {
                 ],
               ),
             ),
-            PullRequestDetailLoaded(:final pullRequest) => _PRContent(
+            PullRequestDetailDataLoaded(:final pullRequest) => _PRContent(
               pr: pullRequest,
               owner: widget.owner,
               repo: widget.repo,

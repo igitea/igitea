@@ -44,11 +44,11 @@ class _CommitDetailPageState extends State<CommitDetailPage> {
       body: ListenableBuilder(
         listenable: Injection.repoNotifier,
         builder: (context, _) {
-          final state = Injection.repoNotifier.state;
+          final state = Injection.repoNotifier.commitDetailState;
           return switch (state) {
-            RepoLoading() => const Center(child: CircularProgressIndicator()),
-            RepoError(:final message) => _buildError(message, l10n),
-            CommitDetailLoaded(:final commit) => _buildContent(commit, l10n),
+            CommitDetailLoading() => const Center(child: CircularProgressIndicator()),
+            CommitDetailError(:final message) => _buildError(message, l10n),
+            CommitDetailDataLoaded(:final commit) => _buildContent(commit, l10n),
             _ => const Center(child: CircularProgressIndicator()),
           };
         },

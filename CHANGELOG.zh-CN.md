@@ -2,8 +2,15 @@
 
 ## [Unreleased]
 
+### 变更
+
+- 重构 `RepoDetailPage`：将横向 `TabBar` 改为纵向区块列表（代码、Issue、里程碑、Pull Request、Release、提交、分支、标签），点击进入对应页面
+- 新增 `repositorySections` ARB 键和 `_RepoSectionPage` 页面包装器
+
 ### 修复
 
+- 修复共享状态 bug：从 Commit/PR 详情返回后 `RepoDetailPage` 一直 loading，将 `CommitDetailState`、`PullRequestDetailState`、`TagDetailState` 从 `RepoState` 中分离
+- 修复 `TeamDetailPage` → 仓库标签页无限 loading：将 `teamMembersState` 和 `teamReposState` 从 `teamDetailState` 中分离
 - 修复文件查看器 `RangeError` 崩溃：为语法高亮添加 try-catch、修复嵌套 setState、移除不支持的 'zig' 语言（`repo_file_page.dart`）
 - 修复末尾换行符产生幽灵行号的问题
 - 修复 Dockerfile 和 Makefile 的文件扩展名检测

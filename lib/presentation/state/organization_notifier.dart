@@ -82,6 +82,12 @@ class OrgNotifier extends ChangeNotifier {
   OrgState _teamDetailState = const OrgInitial();
   OrgState get teamDetailState => _teamDetailState;
 
+  OrgState _teamMembersState = const OrgInitial();
+  OrgState get teamMembersState => _teamMembersState;
+
+  OrgState _teamReposState = const OrgInitial();
+  OrgState get teamReposState => _teamReposState;
+
   OrgNotifier({
     required GetOrgUseCase getOrgUseCase,
     required ListCurrentUserOrgsUseCase listCurrentUserOrgsUseCase,
@@ -207,7 +213,7 @@ class OrgNotifier extends ChangeNotifier {
   }
 
   Future<void> listTeamMembers(int id, {int? page, int? limit}) async {
-    _teamDetailState = const OrgLoading();
+    _teamMembersState = const OrgLoading();
     notifyListeners();
 
     final result = await _listTeamMembersUseCase.call(
@@ -215,16 +221,16 @@ class OrgNotifier extends ChangeNotifier {
     );
     switch (result) {
       case Left<Failure, List<User>>(:final value):
-        _teamDetailState = OrgError(value.message);
+        _teamMembersState = OrgError(value.message);
         notifyListeners();
       case Right<Failure, List<User>>(:final value):
-        _teamDetailState = OrgTeamMembersLoaded(value);
+        _teamMembersState = OrgTeamMembersLoaded(value);
         notifyListeners();
     }
   }
 
   Future<void> listTeamRepos(int id, {int? page, int? limit}) async {
-    _teamDetailState = const OrgLoading();
+    _teamReposState = const OrgLoading();
     notifyListeners();
 
     final result = await _listTeamReposUseCase.call(
@@ -232,10 +238,10 @@ class OrgNotifier extends ChangeNotifier {
     );
     switch (result) {
       case Left<Failure, List<Repository>>(:final value):
-        _teamDetailState = OrgError(value.message);
+        _teamReposState = OrgError(value.message);
         notifyListeners();
       case Right<Failure, List<Repository>>(:final value):
-        _teamDetailState = OrgTeamReposLoaded(value);
+        _teamReposState = OrgTeamReposLoaded(value);
         notifyListeners();
     }
   }

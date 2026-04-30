@@ -305,6 +305,12 @@ abstract class AppLocalizations {
   /// **'Repositories'**
   String get repositories;
 
+  /// No description provided for @repositorySections.
+  ///
+  /// In en, this message translates to:
+  /// **'Repository Sections'**
+  String get repositorySections;
+
   /// No description provided for @issues.
   ///
   /// In en, this message translates to:

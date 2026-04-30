@@ -63,24 +63,14 @@ class RepoDetailPage extends StatefulWidget {
   State<RepoDetailPage> createState() => _RepoDetailPageState();
 }
 
-class _RepoDetailPageState extends State<RepoDetailPage>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
-
+class _RepoDetailPageState extends State<RepoDetailPage> {
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 8, vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Injection.repoNotifier.getRepo(widget.owner, widget.repo);
       Injection.repoNotifier.checkStarred(widget.owner, widget.repo);
     });
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
   }
 
   @override
@@ -107,95 +97,88 @@ class _RepoDetailPageState extends State<RepoDetailPage>
   }
 
   Widget _buildContent(BuildContext context, Repository repo, AppLocalizations l10n) {
-    return NestedScrollView(
-      headerSliverBuilder: (context, innerBoxIsScrolled) {
-        return [
-          SliverAppBar(
-            title: Text('${widget.owner}/${widget.repo}'),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.fork_right),
-                onPressed: () => _showForkDialog(context, l10n),
-              ),
-              ListenableBuilder(
-                listenable: Injection.repoNotifier,
-                builder: (context, _) {
-                  final isStarred = Injection.repoNotifier.isStarred;
-                  final starLoading = Injection.repoNotifier.starLoading;
-                  return IconButton(
-                    icon: Icon(
-                      isStarred ? Icons.star : Icons.star_outline,
-                      color: isStarred ? Colors.amber : null,
-                    ),
-                    onPressed: starLoading
-                        ? null
-                        : () => Injection.repoNotifier.toggleStar(widget.owner, widget.repo),
-                  );
-                },
-              ),
-            ],
-            pinned: true,
-            floating: true,
-            forceElevated: innerBoxIsScrolled,
+    final sections = [
+      _SectionItem(id: 'code', title: l10n.code, icon: Icons.code),
+      _SectionItem(id: 'issues', title: l10n.issues, icon: Icons.bug_report_outlined),
+      _SectionItem(id: 'milestones', title: l10n.milestones, icon: Icons.flag),
+      _SectionItem(id: 'pullRequests', title: l10n.pullRequests, icon: Icons.merge_type),
+      _SectionItem(id: 'releases', title: l10n.releases, icon: Icons.new_releases_outlined),
+      _SectionItem(id: 'commits', title: l10n.commits, icon: Icons.commit),
+      _SectionItem(id: 'branches', title: l10n.branches, icon: Icons.call_split),
+      _SectionItem(id: 'tags', title: l10n.tags, icon: Icons.label),
+    ];
+
+    return CustomScrollView(
+      slivers: [
+        SliverAppBar(
+          title: Text('${widget.owner}/${widget.repo}'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.fork_right),
+              onPressed: () => _showForkDialog(context, l10n),
+            ),
+            ListenableBuilder(
+              listenable: Injection.repoNotifier,
+              builder: (context, _) {
+                final isStarred = Injection.repoNotifier.isStarred;
+                final starLoading = Injection.repoNotifier.starLoading;
+                return IconButton(
+                  icon: Icon(
+                    isStarred ? Icons.star : Icons.star_outline,
+                    color: isStarred ? Colors.amber : null,
+                  ),
+                  onPressed: starLoading
+                      ? null
+                      : () => Injection.repoNotifier.toggleStar(widget.owner, widget.repo),
+                );
+              },
+            ),
+          ],
+          pinned: true,
+          floating: true,
+        ),
+        SliverToBoxAdapter(
+          child: FadeInWrapper(
+            duration: AppAnimations.slow,
+            child: _RepoHeader(repo: repo, l10n: l10n),
           ),
-          SliverToBoxAdapter(
-            child: FadeInWrapper(
-              duration: AppAnimations.slow,
-              child: _RepoHeader(repo: repo, l10n: l10n),
+        ),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: UIConstants.pagePadding.copyWith(top: UIConstants.md, bottom: UIConstants.sm),
+            child: Text(
+              l10n.repositorySections,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
             ),
           ),
-          SliverPersistentHeader(
-            delegate: _SliverTabBarDelegate(
-              TabBar(
-                controller: _tabController,
-                isScrollable: true,
-                tabAlignment: TabAlignment.start,
-                padding: const EdgeInsets.symmetric(horizontal: UIConstants.sm),
-                labelPadding: const EdgeInsets.symmetric(horizontal: UIConstants.md, vertical: UIConstants.sm),
-                indicator: BoxDecoration(
-                  color: Theme.of(context).colorScheme.primaryContainer,
-                  borderRadius: BorderRadius.circular(UIConstants.cardRadius),
-                ),
-                indicatorSize: TabBarIndicatorSize.tab,
-                dividerColor: Colors.transparent,
-                labelColor: Theme.of(context).colorScheme.onPrimaryContainer,
-                unselectedLabelColor: Theme.of(context).colorScheme.onSurfaceVariant,
-                splashFactory: NoSplash.splashFactory,
-                overlayColor: WidgetStateProperty.all(Colors.transparent),
-                tabs: [
-                  Tab(icon: const Icon(Icons.code, size: UIConstants.iconMd), text: l10n.code),
-                  Tab(icon: const Icon(Icons.bug_report_outlined, size: UIConstants.iconMd), text: l10n.issues),
-                  Tab(icon: const Icon(Icons.flag, size: UIConstants.iconMd), text: l10n.milestones),
-                  Tab(icon: const Icon(Icons.merge_type, size: UIConstants.iconMd), text: l10n.pullRequests),
-                  Tab(icon: const Icon(Icons.new_releases_outlined, size: UIConstants.iconMd), text: l10n.releases),
-                  Tab(icon: const Icon(Icons.commit, size: UIConstants.iconMd), text: l10n.commits),
-                  Tab(icon: const Icon(Icons.call_split, size: UIConstants.iconMd), text: l10n.branches),
-                  Tab(icon: const Icon(Icons.label, size: UIConstants.iconMd), text: l10n.tags),
-                ],
-              ),
-            ),
-            pinned: true,
-          ),
-        ];
-      },
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _CodeTab(
-              owner: widget.owner,
-              repo: widget.repo,
-              defaultBranch: repo.default_branch),
-          _IssuesTab(owner: widget.owner, repo: widget.repo, l10n: l10n),
-          _MilestonesTab(owner: widget.owner, repo: widget.repo, l10n: l10n),
-          _PullRequestsTab(owner: widget.owner, repo: widget.repo, l10n: l10n),
-          _ReleasesTab(owner: widget.owner, repo: widget.repo, l10n: l10n),
-          _CommitsTab(owner: widget.owner, repo: widget.repo, l10n: l10n),
-          _BranchesTab(
-              owner: widget.owner,
-              repo: widget.repo,
-              defaultBranch: repo.default_branch),
-          _TagsTab(owner: widget.owner, repo: widget.repo, l10n: l10n),
-        ],
+        ),
+        SliverList.separated(
+          itemCount: sections.length,
+          separatorBuilder: (context, index) => const Divider(height: 1, indent: 56),
+          itemBuilder: (context, index) {
+            final section = sections[index];
+            return _SectionListTile(
+              section: section,
+              onTap: () => _navigateToSection(context, section.id, repo.default_branch, l10n),
+            );
+          },
+        ),
+        const SliverToBoxAdapter(child: SizedBox(height: UIConstants.lg)),
+      ],
+    );
+  }
+
+  void _navigateToSection(BuildContext context, String sectionId, String? defaultBranch, AppLocalizations l10n) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => _RepoSectionPage(
+          owner: widget.owner,
+          repo: widget.repo,
+          sectionId: sectionId,
+          defaultBranch: defaultBranch,
+        ),
       ),
     );
   }
@@ -1268,28 +1251,135 @@ class _ReleaseItem extends StatelessWidget {
   }
 }
 
-class _SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
-  final TabBar tabBar;
+class _SectionItem {
+  final String id;
+  final String title;
+  final IconData icon;
 
-  _SliverTabBarDelegate(this.tabBar);
+  const _SectionItem({
+    required this.id,
+    required this.title,
+    required this.icon,
+  });
+}
+
+class _SectionListTile extends StatelessWidget {
+  final _SectionItem section;
+  final VoidCallback onTap;
+
+  const _SectionListTile({
+    required this.section,
+    required this.onTap,
+  });
 
   @override
-  double get minExtent => tabBar.preferredSize.height;
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return ListTile(
+      leading: Icon(
+        section.icon,
+        size: UIConstants.iconMd,
+        color: theme.colorScheme.primary,
+      ),
+      title: Text(
+        section.title,
+        style: theme.textTheme.bodyLarge?.copyWith(
+          fontWeight: FontWeight.w500,
+        ),
+      ),
+      trailing: Icon(
+        Icons.chevron_right,
+        color: theme.colorScheme.onSurfaceVariant,
+      ),
+      onTap: onTap,
+    );
+  }
+}
+
+class _RepoSectionPage extends StatelessWidget {
+  final String owner;
+  final String repo;
+  final String sectionId;
+  final String? defaultBranch;
+
+  const _RepoSectionPage({
+    required this.owner,
+    required this.repo,
+    required this.sectionId,
+    this.defaultBranch,
+  });
 
   @override
-  double get maxExtent => tabBar.preferredSize.height;
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final title = _getTitle(l10n);
 
-  @override
-  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return Container(
-      color: Theme.of(context).colorScheme.surface,
-      child: tabBar,
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title),
+      ),
+      body: _buildSection(l10n),
     );
   }
 
-  @override
-  bool shouldRebuild(covariant _SliverTabBarDelegate oldDelegate) {
-    return false;
+  String _getTitle(AppLocalizations l10n) {
+    return switch (sectionId) {
+      'code' => l10n.code,
+      'issues' => l10n.issues,
+      'milestones' => l10n.milestones,
+      'pullRequests' => l10n.pullRequests,
+      'releases' => l10n.releases,
+      'commits' => l10n.commits,
+      'branches' => l10n.branches,
+      'tags' => l10n.tags,
+      _ => '',
+    };
+  }
+
+  Widget _buildSection(AppLocalizations l10n) {
+    return switch (sectionId) {
+      'code' => _CodeTab(
+          owner: owner,
+          repo: repo,
+          defaultBranch: defaultBranch,
+        ),
+      'issues' => _IssuesTab(
+          owner: owner,
+          repo: repo,
+          l10n: l10n,
+        ),
+      'milestones' => _MilestonesTab(
+          owner: owner,
+          repo: repo,
+          l10n: l10n,
+        ),
+      'pullRequests' => _PullRequestsTab(
+          owner: owner,
+          repo: repo,
+          l10n: l10n,
+        ),
+      'releases' => _ReleasesTab(
+          owner: owner,
+          repo: repo,
+          l10n: l10n,
+        ),
+      'commits' => _CommitsTab(
+          owner: owner,
+          repo: repo,
+          l10n: l10n,
+        ),
+      'branches' => _BranchesTab(
+          owner: owner,
+          repo: repo,
+          defaultBranch: defaultBranch,
+        ),
+      'tags' => _TagsTab(
+          owner: owner,
+          repo: repo,
+          l10n: l10n,
+        ),
+      _ => const Center(child: Text('Unknown section')),
+    };
   }
 }
 

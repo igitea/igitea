@@ -105,6 +105,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get repositories => 'Репозитории';
 
   @override
+  String get repositorySections => 'Repository Sections';
+
+  @override
   String get issues => 'Задачи';
 
   @override

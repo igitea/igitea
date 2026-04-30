@@ -169,10 +169,10 @@ class _CreatePRPageState extends State<CreatePRPage> {
     if (mounted) {
       setState(() => _isLoading = false);
 
-      final state = Injection.repoNotifier.state;
-      if (state is PullRequestDetailLoaded) {
+      final state = Injection.repoNotifier.pullRequestDetailState;
+      if (state is PullRequestDetailDataLoaded) {
         Navigator.of(context).pop(state.pullRequest);
-      } else if (state is RepoError) {
+      } else if (state is PullRequestDetailError) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('${l10n.error}: ${state.message}')),
         );

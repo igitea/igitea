@@ -105,6 +105,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get repositories => '仓库';
 
   @override
+  String get repositorySections => 'Repository Sections';
+
+  @override
   String get issues => '问题';
 
   @override

@@ -302,7 +302,7 @@ class _MembersTabState extends State<_MembersTab>
     return ListenableBuilder(
       listenable: Injection.organizationNotifier,
       builder: (context, _) {
-        final state = Injection.organizationNotifier.teamDetailState;
+        final state = Injection.organizationNotifier.teamMembersState;
         if (state is OrgTeamMembersLoaded) {
           final members = state.members;
           if (members.isEmpty) {
@@ -373,7 +373,7 @@ class _ReposTabState extends State<_ReposTab>
     return ListenableBuilder(
       listenable: Injection.organizationNotifier,
       builder: (context, _) {
-        final state = Injection.organizationNotifier.teamDetailState;
+        final state = Injection.organizationNotifier.teamReposState;
         if (state is OrgTeamReposLoaded) {
           final repos = state.repos;
           if (repos.isEmpty) {

@@ -27,14 +27,70 @@ class RepoListLoaded extends RepoState {
   const RepoListLoaded(this.repos);
 }
 
-class CommitDetailLoaded extends RepoState {
-  final Commit commit;
-  const CommitDetailLoaded(this.commit);
+sealed class CommitDetailState {
+  const CommitDetailState();
 }
 
-class TagDetailLoaded extends RepoState {
+class CommitDetailInitial extends CommitDetailState {
+  const CommitDetailInitial();
+}
+
+class CommitDetailLoading extends CommitDetailState {
+  const CommitDetailLoading();
+}
+
+class CommitDetailError extends CommitDetailState {
+  final String message;
+  const CommitDetailError(this.message);
+}
+
+class CommitDetailDataLoaded extends CommitDetailState {
+  final Commit commit;
+  const CommitDetailDataLoaded(this.commit);
+}
+
+sealed class TagDetailState {
+  const TagDetailState();
+}
+
+class TagDetailInitial extends TagDetailState {
+  const TagDetailInitial();
+}
+
+class TagDetailLoading extends TagDetailState {
+  const TagDetailLoading();
+}
+
+class TagDetailError extends TagDetailState {
+  final String message;
+  const TagDetailError(this.message);
+}
+
+class TagDetailDataLoaded extends TagDetailState {
   final Tag tag;
-  const TagDetailLoaded(this.tag);
+  const TagDetailDataLoaded(this.tag);
+}
+
+sealed class PullRequestDetailState {
+  const PullRequestDetailState();
+}
+
+class PullRequestDetailInitial extends PullRequestDetailState {
+  const PullRequestDetailInitial();
+}
+
+class PullRequestDetailLoading extends PullRequestDetailState {
+  const PullRequestDetailLoading();
+}
+
+class PullRequestDetailError extends PullRequestDetailState {
+  final String message;
+  const PullRequestDetailError(this.message);
+}
+
+class PullRequestDetailDataLoaded extends PullRequestDetailState {
+  final PullRequest pullRequest;
+  const PullRequestDetailDataLoaded(this.pullRequest);
 }
 
 class SearchResultsLoaded extends RepoState {
@@ -91,11 +147,6 @@ class PullRequestsLoaded extends PullRequestsState {
 class PullRequestsError extends PullRequestsState {
   final String message;
   const PullRequestsError(this.message);
-}
-
-class PullRequestDetailLoaded extends RepoState {
-  final PullRequest pullRequest;
-  const PullRequestDetailLoaded(this.pullRequest);
 }
 
 sealed class ReleasesState {
@@ -232,6 +283,15 @@ class RepoNotifier extends ChangeNotifier {
 
   TagsState _tagsState = const TagsInitial();
   TagsState get tagsState => _tagsState;
+
+  CommitDetailState _commitDetailState = const CommitDetailInitial();
+  CommitDetailState get commitDetailState => _commitDetailState;
+
+  TagDetailState _tagDetailState = const TagDetailInitial();
+  TagDetailState get tagDetailState => _tagDetailState;
+
+  PullRequestDetailState _pullRequestDetailState = const PullRequestDetailInitial();
+  PullRequestDetailState get pullRequestDetailState => _pullRequestDetailState;
 
   bool _isStarred = false;
   bool get isStarred => _isStarred;
@@ -432,7 +492,7 @@ class RepoNotifier extends ChangeNotifier {
   }
 
   Future<void> getCommit(String owner, String repo, String sha) async {
-    _state = const RepoLoading();
+    _commitDetailState = const CommitDetailLoading();
     notifyListeners();
 
     final result = await _getCommitUseCase.call(
@@ -440,16 +500,16 @@ class RepoNotifier extends ChangeNotifier {
     );
     switch (result) {
       case Left<Failure, Commit>(:final value):
-        _state = RepoError(value.message);
+        _commitDetailState = CommitDetailError(value.message);
         notifyListeners();
       case Right<Failure, Commit>(:final value):
-        _state = CommitDetailLoaded(value);
+        _commitDetailState = CommitDetailDataLoaded(value);
         notifyListeners();
     }
   }
 
   Future<void> getTag(String owner, String repo, String tag) async {
-    _state = const RepoLoading();
+    _tagDetailState = const TagDetailLoading();
     notifyListeners();
 
     final result = await _getTagUseCase.call(
@@ -457,10 +517,10 @@ class RepoNotifier extends ChangeNotifier {
     );
     switch (result) {
       case Left<Failure, Tag>(:final value):
-        _state = RepoError(value.message);
+        _tagDetailState = TagDetailError(value.message);
         notifyListeners();
       case Right<Failure, Tag>(:final value):
-        _state = TagDetailLoaded(value);
+        _tagDetailState = TagDetailDataLoaded(value);
         notifyListeners();
     }
   }
@@ -498,17 +558,17 @@ class RepoNotifier extends ChangeNotifier {
   }
 
   Future<void> getPullRequest(String owner, String repo, int index) async {
-    _state = const RepoLoading();
+    _pullRequestDetailState = const PullRequestDetailLoading();
     notifyListeners();
     final result = await _getPullRequestUseCase.call(
       GetPullRequestParams(owner: owner, repo: repo, index: index),
     );
     switch (result) {
       case Left<Failure, PullRequest>(:final value):
-        _state = RepoError(value.message);
+        _pullRequestDetailState = PullRequestDetailError(value.message);
         notifyListeners();
       case Right<Failure, PullRequest>(:final value):
-        _state = PullRequestDetailLoaded(value);
+        _pullRequestDetailState = PullRequestDetailDataLoaded(value);
         notifyListeners();
     }
   }
@@ -576,7 +636,7 @@ class RepoNotifier extends ChangeNotifier {
   }
 
   Future<void> mergePullRequest(String owner, String repo, int index) async {
-    _state = const RepoLoading();
+    _pullRequestDetailState = const PullRequestDetailLoading();
     notifyListeners();
 
     final result = await _mergePullRequestUseCase.call(
@@ -584,7 +644,7 @@ class RepoNotifier extends ChangeNotifier {
     );
     switch (result) {
       case Left<Failure, void>(:final value):
-        _state = RepoError(value.message);
+        _pullRequestDetailState = PullRequestDetailError(value.message);
         notifyListeners();
       case Right<Failure, void>():
         await getPullRequest(owner, repo, index);
@@ -596,7 +656,7 @@ class RepoNotifier extends ChangeNotifier {
     String repo,
     Map<String, dynamic> body,
   ) async {
-    _state = const RepoLoading();
+    _pullRequestDetailState = const PullRequestDetailLoading();
     notifyListeners();
 
     final result = await _createPullRequestUseCase.call(
@@ -604,10 +664,10 @@ class RepoNotifier extends ChangeNotifier {
     );
     switch (result) {
       case Left<Failure, PullRequest>(:final value):
-        _state = RepoError(value.message);
+        _pullRequestDetailState = PullRequestDetailError(value.message);
         notifyListeners();
       case Right<Failure, PullRequest>(:final value):
-        _state = PullRequestDetailLoaded(value);
+        _pullRequestDetailState = PullRequestDetailDataLoaded(value);
         notifyListeners();
     }
   }

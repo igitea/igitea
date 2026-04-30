@@ -105,6 +105,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get repositories => 'リポジトリ';
 
   @override
+  String get repositorySections => 'Repository Sections';
+
+  @override
   String get issues => 'イシュー';
 
   @override

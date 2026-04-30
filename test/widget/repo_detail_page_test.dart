@@ -26,7 +26,7 @@ void main() {
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
   });
 
-  testWidgets('renders tab bar with 5 tabs', (tester) async {
+  testWidgets('renders section list with 8 items', (tester) async {
     await tester.pumpWidget(
       buildTestableWidget(const RepoDetailPage(owner: 'testowner', repo: 'testrepo')),
     );
@@ -37,12 +37,17 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.byType(Tab), findsNWidgets(8));
+    expect(find.text('Repository Sections'), findsOneWidget);
     expect(find.text('Code'), findsAtLeast(1));
     expect(find.text('Issues'), findsAtLeast(1));
     expect(find.text('Milestones'), findsAtLeast(1));
     expect(find.text('Pull Requests'), findsAtLeast(1));
     expect(find.text('Releases'), findsAtLeast(1));
+
+    // Scroll to reveal remaining items
+    await tester.scrollUntilVisible(find.text('Tags'), 100);
+    await tester.pump();
+
     expect(find.text('Commits'), findsAtLeast(1));
     expect(find.text('Branches'), findsAtLeast(1));
     expect(find.text('Tags'), findsAtLeast(1));

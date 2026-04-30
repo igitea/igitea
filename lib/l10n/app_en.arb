@@ -31,6 +31,7 @@
   "searchIssues": "Search issues",
   "noResults": "No results found",
   "repositories": "Repositories",
+  "repositorySections": "Repository Sections",
   "issues": "Issues",
   "pullRequests": "Pull Requests",
   "releases": "Releases",

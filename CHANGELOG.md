@@ -2,8 +2,15 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Refactor `RepoDetailPage`: replace horizontal `TabBar` with vertical section list (Code, Issues, Milestones, Pull Requests, Releases, Commits, Branches, Tags); tap to navigate to dedicated page
+- Add `repositorySections` ARB key and `_RepoSectionPage` wrapper for section navigation
+
 ### Fixed
 
+- Fix shared-state bug where returning from Commit/PR detail left `RepoDetailPage` stuck in loading: separate `CommitDetailState`, `PullRequestDetailState`, `TagDetailState` from `RepoState`
+- Fix infinite loading in `TeamDetailPage` → Repositories tab: separate `teamMembersState` and `teamReposState` from `teamDetailState`
 - Fix `RangeError` crash in file viewer: wrap syntax highlighting in try-catch, fix nested setState, remove unsupported 'zig' language (`repo_file_page.dart`)
 - Fix trailing newline creating phantom line number
 - Fix file extension detection for Dockerfile and Makefile

@@ -105,6 +105,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get repositories => '리포지토리';
 
   @override
+  String get repositorySections => 'Repository Sections';
+
+  @override
   String get issues => '이슈';
 
   @override
