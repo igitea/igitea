@@ -967,6 +967,7 @@ class _IssueItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final isOpen = issue.state?.isOpen == true;
     final stateIcon = isOpen ? Icons.error_outline : Icons.check_circle;
     final stateColor = isOpen ? Colors.green : Colors.purple;
@@ -994,7 +995,7 @@ class _IssueItem extends StatelessWidget {
                     Expanded(
                       child: Text(
                         issue.title ?? l10n.untitled,
-                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        style: theme.textTheme.titleSmall?.copyWith(
                           fontWeight: FontWeight.w600,
                         ),
                         maxLines: 1,
@@ -1004,8 +1005,8 @@ class _IssueItem extends StatelessWidget {
                     const SizedBox(width: UIConstants.sm),
                     Text(
                       '#${issue.number ?? 0}',
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                       ),
                     ),
                   ],
@@ -1017,10 +1018,32 @@ class _IssueItem extends StatelessWidget {
                     const SizedBox(width: UIConstants.xs),
                     Text(
                       isOpen ? l10n.open : l10n.closed,
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      style: theme.textTheme.labelSmall?.copyWith(
                         color: stateColor,
                       ),
                     ),
+                    if (issue.user?.login != null) ...[
+                      Text(
+                        ' · ${issue.user!.login!}',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                    if (issue.created_at != null)
+                      Text(
+                        ' · ${_relativeTime(issue.created_at!)}',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    if ((issue.comments ?? 0) > 0)
+                      Text(
+                        ' · ${l10n.commentsCountParams(issue.comments!)}',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
                   ],
                 ),
               ],
@@ -1029,6 +1052,17 @@ class _IssueItem extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _relativeTime(DateTime date) {
+    final now = DateTime.now();
+    final diff = now.difference(date);
+    if (diff.inDays > 365) return l10n.ago('${diff.inDays ~/ 365}y');
+    if (diff.inDays > 30) return l10n.ago('${diff.inDays ~/ 30}mo');
+    if (diff.inDays > 0) return l10n.ago('${diff.inDays}d');
+    if (diff.inHours > 0) return l10n.ago('${diff.inHours}h');
+    if (diff.inMinutes > 0) return l10n.ago('${diff.inMinutes}m');
+    return l10n.justNow;
   }
 }
 
