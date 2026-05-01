@@ -100,6 +100,7 @@ Entries go under `## [Unreleased]` during development. When cutting a release:
 1. Replace `## [Unreleased]` with `## [x.y.z] - YYYY-MM-DD` (e.g. `## [0.13.0] - 2026-05-01`)
 2. Add a new `## [Unreleased]` heading above it for future work
 3. Read version from `pubspec.yaml` (`version:` line) to keep consistent
+4. **Also update `"igiteaVersion"` in `lib/l10n/app_en.arb`** to match the new version (e.g. `"iGitea v0.23.0"`)
 
 ## Key Files
 
