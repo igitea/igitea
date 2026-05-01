@@ -899,14 +899,18 @@ class _IssuesTab extends StatefulWidget {
 }
 
 class _IssuesTabState extends State<_IssuesTab> {
+  String _selectedFilter = 'open';
+
+  void _loadIssues() {
+    Injection.issueNotifier.listIssues(
+      ListIssuesParams(owner: widget.owner, repo: widget.repo, state: _selectedFilter),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Injection.issueNotifier.listIssues(
-        ListIssuesParams(owner: widget.owner, repo: widget.repo),
-      );
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadIssues());
   }
 
   @override
@@ -915,43 +919,107 @@ class _IssuesTabState extends State<_IssuesTab> {
       listenable: Injection.issueNotifier,
       builder: (context, _) {
         final issuesState = Injection.issueNotifier.issuesListState;
-        return switch (issuesState) {
-          IssuesListLoading() => const Center(child: CircularProgressIndicator()),
-          IssuesListError(:final message) => Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text('${widget.l10n.error}: $message'),
-                  const SizedBox(height: UIConstants.md),
-                  FilledButton(
-                    onPressed: () => Injection.issueNotifier.listIssues(
-                      ListIssuesParams(owner: widget.owner, repo: widget.repo),
-                    ),
-                    child: Text(widget.l10n.retry),
-                  ),
-                ],
-              ),
-            ),
-          IssuesListLoaded(:final issues) => issues.isEmpty
-              ? EmptyState(icon: Icons.bug_report_outlined, title: widget.l10n.noIssues)
-              : ListView.builder(
-                  padding: UIConstants.pagePadding + const EdgeInsets.symmetric(vertical: UIConstants.sm),
-                  itemCount: issues.length,
-                  itemBuilder: (context, index) {
-                    final issue = issues[index];
-                    return FadeInWrapper(
-                      delay: Duration(milliseconds: index * 20),
-                      child: _IssueItem(
-                        issue: issue,
-                        owner: widget.owner,
-                        repo: widget.repo,
-                        l10n: widget.l10n,
+        return Stack(
+          children: [
+            Column(
+              children: [
+                Padding(
+                  padding: UIConstants.pagePadding + const EdgeInsets.only(top: UIConstants.sm),
+                  child: Row(
+                    children: [
+                      FilterChip(
+                        label: Text(widget.l10n.open),
+                        selected: _selectedFilter == 'open',
+                        onSelected: (_) => setState(() {
+                          _selectedFilter = 'open';
+                          _loadIssues();
+                        }),
                       ),
-                    );
+                      const SizedBox(width: UIConstants.sm),
+                      FilterChip(
+                        label: Text(widget.l10n.closed),
+                        selected: _selectedFilter == 'closed',
+                        onSelected: (_) => setState(() {
+                          _selectedFilter = 'closed';
+                          _loadIssues();
+                        }),
+                      ),
+                      const SizedBox(width: UIConstants.sm),
+                      FilterChip(
+                        label: Text(widget.l10n.all),
+                        selected: _selectedFilter == 'all',
+                        onSelected: (_) => setState(() {
+                          _selectedFilter = 'all';
+                          _loadIssues();
+                        }),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: switch (issuesState) {
+                    IssuesListLoading() => const Center(child: CircularProgressIndicator()),
+                    IssuesListError(:final message) => Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text('${widget.l10n.error}: $message'),
+                            const SizedBox(height: UIConstants.md),
+                            FilledButton(
+                              onPressed: _loadIssues,
+                              child: Text(widget.l10n.retry),
+                            ),
+                          ],
+                        ),
+                      ),
+                    IssuesListLoaded(:final issues) => issues.isEmpty
+                        ? EmptyState(icon: Icons.bug_report_outlined, title: widget.l10n.noIssues)
+                        : RefreshIndicator(
+                            onRefresh: () async {
+                              _loadIssues();
+                            },
+                            child: ListView.builder(
+                              padding: UIConstants.pagePadding + const EdgeInsets.symmetric(vertical: UIConstants.sm),
+                              itemCount: issues.length,
+                              itemBuilder: (context, index) {
+                                final issue = issues[index];
+                                return FadeInWrapper(
+                                  delay: Duration(milliseconds: index * 20),
+                                  child: _IssueItem(
+                                    issue: issue,
+                                    owner: widget.owner,
+                                    repo: widget.repo,
+                                    l10n: widget.l10n,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                    _ => EmptyState(icon: Icons.bug_report_outlined, title: widget.l10n.noIssues),
                   },
                 ),
-          _ => EmptyState(icon: Icons.bug_report_outlined, title: widget.l10n.noIssues),
-        };
+              ],
+            ),
+            Positioned(
+              right: UIConstants.md,
+              bottom: UIConstants.md,
+              child: FloatingActionButton(
+                onPressed: () async {
+                  final result = await Navigator.of(context).push<Issue>(
+                    MaterialPageRoute(
+                      builder: (_) => CreateIssuePage(owner: widget.owner, repo: widget.repo),
+                    ),
+                  );
+                  if (result != null && context.mounted) {
+                    _selectedFilter = 'open';
+                    _loadIssues();
+                  }
+                },
+                child: const Icon(Icons.add),
+              ),
+            ),
+          ],
+        );
       },
     );
   }
@@ -1445,23 +1513,6 @@ class _RepoSectionPage extends StatelessWidget {
         title: Text(title),
       ),
       body: _buildSection(l10n),
-      floatingActionButton: sectionId == 'issues'
-          ? FloatingActionButton(
-              onPressed: () async {
-                final result = await Navigator.of(context).push<Issue>(
-                  MaterialPageRoute(
-                    builder: (_) => CreateIssuePage(owner: owner, repo: repo),
-                  ),
-                );
-                if (result != null && context.mounted) {
-                  Injection.issueNotifier.listIssues(
-                    ListIssuesParams(owner: owner, repo: repo),
-                  );
-                }
-              },
-              child: const Icon(Icons.add),
-            )
-          : null,
     );
   }
 
