@@ -10,6 +10,8 @@
 - Added Chinese translations for all new keys
 - Used existing `l10n.ago()` for relative date formatting across 10+ files
 
+## [0.23.0] - 2026-05-01
+
 ### Added — Milestone CRUD
 
 - `CreateMilestonePage`: create milestone page
@@ -178,8 +180,6 @@
 - Reset editor text when exiting edit mode to discard unsaved changes
 - Fix `RenderFlex` overflow in file viewer by replacing `Expanded` with `ConstrainedBox` in horizontal scrollable
 - Fix Android APK crash on launch: align `applicationId` and `MainActivity` package with namespace (`com.charleypeng.igitea`)
-
-## [0.23.0] - 2026-05-01
 
 ## [0.22.0] - 2026-04-26
 
