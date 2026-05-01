@@ -1246,7 +1246,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get webhookDeleted => 'Webhook 已删除';
 
   @override
-  String get webhookUrl => 'Payload URL';
+  String get webhookUrl => '回调地址';
 
   @override
   String get webhookUrlHint => 'https://example.com/webhook';
@@ -1330,13 +1330,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get oauth2Description => '通过 Gitea OAuth2 应用授权';
 
   @override
-  String get oauth2ClientId => 'Client ID';
+  String get oauth2ClientId => '客户端 ID';
 
   @override
-  String get oauth2ClientSecret => 'Client Secret';
+  String get oauth2ClientSecret => '客户端密钥';
 
   @override
-  String get oauth2RedirectUri => 'Redirect URI';
+  String get oauth2RedirectUri => '回调地址';
 
   @override
   String get oauth2RedirectUriHint => 'igitea://oauth/callback';
@@ -2865,7 +2865,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get webhookDeleted => 'Webhook 已刪除';
 
   @override
-  String get webhookUrl => 'Payload URL';
+  String get webhookUrl => '回调地址';
 
   @override
   String get webhookUrlHint => 'https://example.com/webhook';
@@ -2949,13 +2949,13 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get oauth2Description => '通过 Gitea OAuth2 应用授权';
 
   @override
-  String get oauth2ClientId => 'Client ID';
+  String get oauth2ClientId => '客户端 ID';
 
   @override
-  String get oauth2ClientSecret => 'Client Secret';
+  String get oauth2ClientSecret => '客户端金鑰';
 
   @override
-  String get oauth2RedirectUri => 'Redirect URI';
+  String get oauth2RedirectUri => '回调地址';
 
   @override
   String get oauth2RedirectUriHint => 'igitea://oauth/callback';

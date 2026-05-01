@@ -333,6 +333,16 @@ translations = {
   'author': '作者',
   'commit': '提交',
   'sha': 'SHA',
+  'oauth2ClientId': '客户端 ID',
+  'oauth2ClientSecret': '客户端密钥',
+  'oauth2RedirectUri': '回调地址',
+  'oauth2RedirectUriHint': 'igitea://oauth/callback',
+  'webhookUrl': '回调地址',
+  'webhookUrlHint': 'https://example.com/webhook',
+  'webhookContentTypeJson': 'application/json',
+  'webhookContentTypeForm': 'application/x-www-form-urlencoded',
+  'webhookWikiEvents': 'Wiki',
+  'webhookForkEvents': 'Fork',
 }
 
 count = 0
