@@ -125,12 +125,12 @@ jobs:
           Categories=Development;
           EOF
           
-          cp assets/icon.png artifacts/AppDir/igitea.png || touch artifacts/AppDir/igitea.png
+          cp assets/icon/android/mipmap-xxxhdpi/ic_launcher.png artifacts/AppDir/igitea.png
           
           ln -s usr/bin/igitea artifacts/AppDir/AppRun
           wget -q https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O /tmp/appimagetool
           chmod +x /tmp/appimagetool
-          ARCH=x86_64 /tmp/appimagetool artifacts/AppDir artifacts/igitea-${{ github.ref_name }}-linux-x86_64.AppImage
+          APPIMAGE_EXTRACT_AND_RUN=1 ARCH=x86_64 /tmp/appimagetool artifacts/AppDir artifacts/igitea-${{ github.ref_name }}-linux-x86_64.AppImage
 
       - uses: actions/upload-artifact@v4
         with:
