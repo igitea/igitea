@@ -1534,6 +1534,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get keyAdded => 'Key added successfully';
+
+  @override
+  String get deleteCommentConfirm =>
+      'Are you sure you want to delete this comment?';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -3070,4 +3074,8 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get keyAdded => 'Key added successfully';
+
+  @override
+  String get deleteCommentConfirm =>
+      'Are you sure you want to delete this comment?';
 }

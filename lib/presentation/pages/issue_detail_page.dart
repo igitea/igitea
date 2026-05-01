@@ -389,6 +389,9 @@ class _IssueContent extends StatelessWidget {
           child: _CommentItem(
             comment: entry.value,
             isCurrentUser: currentUserId != null && entry.value.user?.id == currentUserId,
+            owner: owner,
+            repo: repo,
+            index: index,
           ),
         )),
       ],
@@ -511,16 +514,109 @@ class _IssueContent extends StatelessWidget {
 
 }
 
-class _CommentItem extends StatelessWidget {
+class _CommentItem extends StatefulWidget {
   final Comment comment;
   final bool isCurrentUser;
+  final String owner;
+  final String repo;
+  final int index;
 
-  const _CommentItem({required this.comment, required this.isCurrentUser});
+  const _CommentItem({
+    required this.comment,
+    required this.isCurrentUser,
+    required this.owner,
+    required this.repo,
+    required this.index,
+  });
+
+  @override
+  State<_CommentItem> createState() => _CommentItemState();
+}
+
+class _CommentItemState extends State<_CommentItem> {
+  late TextEditingController _editController;
+  bool _editing = false;
+  bool _saving = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _editController = TextEditingController(text: widget.comment.body ?? '');
+  }
+
+  @override
+  void dispose() {
+    _editController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _saveEdit() async {
+    final l10n = AppLocalizations.of(context)!;
+    final text = _editController.text.trim();
+    if (text.isEmpty) return;
+
+    setState(() => _saving = true);
+    try {
+      await Injection.apiService.issueEditComment(
+        owner: widget.owner,
+        repo: widget.repo,
+        id: widget.comment.id ?? 0,
+        body: {'body': text},
+      );
+      if (mounted) {
+        setState(() { _editing = false; _saving = false; });
+        Injection.issueNotifier.listComments(widget.owner, widget.repo, widget.index);
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _saving = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${l10n.error}: $e')),
+        );
+      }
+    }
+  }
+
+  Future<void> _delete() async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.deleteComment),
+        content: Text(l10n.deleteCommentConfirm),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
+            child: Text(l10n.delete),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    try {
+      await Injection.apiService.issueDeleteComment(
+        owner: widget.owner, repo: widget.repo, id: widget.comment.id ?? 0,
+      );
+      if (mounted) {
+        Injection.issueNotifier.listComments(widget.owner, widget.repo, widget.index);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${l10n.error}: $e')),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final bubbleColor = isCurrentUser
+    final isMe = widget.isCurrentUser;
+    final bubbleColor = isMe
         ? theme.colorScheme.primaryContainer
         : theme.colorScheme.surfaceContainerHighest;
 
@@ -528,11 +624,11 @@ class _CommentItem extends StatelessWidget {
       padding: const EdgeInsets.only(bottom: 12),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: isCurrentUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
-          if (!isCurrentUser) ...[
-            if (comment.user != null)
-              UserAvatar(user: comment.user!, radius: 16)
+          if (!isMe) ...[
+            if (widget.comment.user != null)
+              UserAvatar(user: widget.comment.user!, radius: 16)
             else
               CircleAvatar(radius: 16, child: Icon(Icons.person, size: 16)),
             const SizedBox(width: 8),
@@ -548,24 +644,78 @@ class _CommentItem extends StatelessWidget {
                 borderRadius: BorderRadius.only(
                   topLeft: const Radius.circular(16),
                   topRight: const Radius.circular(16),
-                  bottomLeft: Radius.circular(isCurrentUser ? 16 : 4),
-                  bottomRight: Radius.circular(isCurrentUser ? 4 : 16),
+                  bottomLeft: Radius.circular(isMe ? 16 : 4),
+                  bottomRight: Radius.circular(isMe ? 4 : 16),
                 ),
               ),
               child: Column(
-                crossAxisAlignment: isCurrentUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                 children: [
-                  if (!isCurrentUser && comment.user?.login != null)
-                    Text(
-                      comment.user!.login!,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: theme.colorScheme.primary,
-                      ),
-                    ),
-                  if (comment.body != null && comment.body!.isNotEmpty)
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (!isMe && widget.comment.user?.login != null)
+                        Text(
+                          widget.comment.user!.login!,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: theme.colorScheme.primary,
+                          ),
+                        ),
+                      const Spacer(),
+                      if (isMe && !_editing)
+                        PopupMenuButton<String>(
+                          padding: EdgeInsets.zero,
+                          icon: const Icon(Icons.more_horiz, size: 16),
+                          onSelected: (v) {
+                            if (v == 'edit') setState(() => _editing = true);
+                            if (v == 'delete') _delete();
+                          },
+                          itemBuilder: (_) => [
+                            const PopupMenuItem(value: 'edit', child: Text('Edit')),
+                            const PopupMenuItem(value: 'delete', child: Text('Delete')),
+                          ],
+                        ),
+                    ],
+                  ),
+                  if (_editing)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        TextField(
+                          controller: _editController,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            isDense: true,
+                          ),
+                          maxLines: 5,
+                          minLines: 2,
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            TextButton(
+                              onPressed: () => setState(() {
+                                _editing = false;
+                                _editController.text = widget.comment.body ?? '';
+                              }),
+                              child: const Text('Cancel'),
+                            ),
+                            const SizedBox(width: 4),
+                            FilledButton(
+                              onPressed: _saving ? null : _saveEdit,
+                              child: _saving
+                                  ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                                  : const Text('Save'),
+                            ),
+                          ],
+                        ),
+                      ],
+                    )
+                  else if (widget.comment.body != null && widget.comment.body!.isNotEmpty)
                     MarkdownBody(
-                      data: comment.body!,
+                      data: widget.comment.body!,
                       selectable: true,
                       styleSheet: MarkdownStyleSheet.fromTheme(theme).copyWith(
                         p: theme.textTheme.bodyMedium,
@@ -578,7 +728,7 @@ class _CommentItem extends StatelessWidget {
                     ),
                   const SizedBox(height: 4),
                   Text(
-                    _formatDate(comment.created_at),
+                    _formatDate(widget.comment.created_at),
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                       fontSize: 10,
@@ -588,10 +738,10 @@ class _CommentItem extends StatelessWidget {
               ),
             ),
           ),
-          if (isCurrentUser) ...[
+                      if (isMe) ...[
             const SizedBox(width: 8),
-            if (comment.user != null)
-              UserAvatar(user: comment.user!, radius: 16)
+            if (widget.comment.user != null)
+              UserAvatar(user: widget.comment.user!, radius: 16)
             else
               CircleAvatar(radius: 16, child: Icon(Icons.person, size: 16)),
           ],

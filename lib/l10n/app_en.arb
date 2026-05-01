@@ -138,7 +138,7 @@
   "openIssue": "Open issue",
   "closeIssue": "Close issue",
   "reopenIssue": "Reopen issue",
-  "deleteComment": "Delete comment",
+  "deleteComment": "Delete Comment",
   "editComment": "Edit comment",
   "deleteRepo": "Delete repository",
   "deleteRepoConfirm": "Are you sure you want to delete this repository? This action cannot be undone.",
@@ -487,5 +487,6 @@
   "keyDeleted": "Key deleted successfully",
   "addSshKey": "Add SSH Key",
   "add": "Add",
-  "keyAdded": "Key added successfully"
+  "keyAdded": "Key added successfully",
+  "deleteCommentConfirm": "Are you sure you want to delete this comment?"
 }

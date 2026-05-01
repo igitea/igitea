@@ -950,7 +950,7 @@ abstract class AppLocalizations {
   /// No description provided for @deleteComment.
   ///
   /// In en, this message translates to:
-  /// **'Delete comment'**
+  /// **'Delete Comment'**
   String get deleteComment;
 
   /// No description provided for @editComment.
@@ -3046,6 +3046,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Key added successfully'**
   String get keyAdded;
+
+  /// No description provided for @deleteCommentConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this comment?'**
+  String get deleteCommentConfirm;
 }
 
 class _AppLocalizationsDelegate

@@ -463,7 +463,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reopenIssue => 'Reopen issue';
 
   @override
-  String get deleteComment => 'Delete comment';
+  String get deleteComment => 'Delete Comment';
 
   @override
   String get editComment => 'Edit comment';
@@ -1541,4 +1541,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get keyAdded => 'Key added successfully';
+
+  @override
+  String get deleteCommentConfirm =>
+      'Are you sure you want to delete this comment?';
 }

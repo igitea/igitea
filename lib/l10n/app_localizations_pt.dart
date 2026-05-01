@@ -1541,4 +1541,8 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get keyAdded => 'Key added successfully';
+
+  @override
+  String get deleteCommentConfirm =>
+      'Are you sure you want to delete this comment?';
 }
