@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+### Changed — i18n: Replace hardcoded English strings across all pages
+
+- 20+ pages updated: repo detail, settings, dashboard, repo list, organizations, teams, issues, SSH keys, login, commit/PR detail, actions, file compare/history, repo file
+- Replaced hardcoded strings for stat labels, clone URLs, PR states, relative dates, form validation, empty states with l10n calls
+- Added 20 new ARB keys for previously untranslated strings
+- Added Chinese translations for all new keys
+- Used existing `l10n.ago()` for relative date formatting across 10+ files
+
 ### Added — Milestone CRUD
 
 - `CreateMilestonePage`: create milestone page
