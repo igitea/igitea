@@ -75,7 +75,7 @@ class _EditMilestonePageState extends State<EditMilestonePage> {
       if (_descriptionController.text.trim().isNotEmpty)
         'description': _descriptionController.text.trim(),
       if (_dueDate != null)
-        'due_on': _dueDate!.toIso8601String(),
+        'due_on': _formatDueDate(_dueDate!),
     };
 
     final result = await Injection.issueNotifier.editMilestone(
@@ -177,6 +177,15 @@ class _EditMilestonePageState extends State<EditMilestonePage> {
         ],
       ],
     );
+  }
+
+  String _formatDueDate(DateTime d) {
+    final offset = d.timeZoneOffset;
+    final sign = offset.isNegative ? '-' : '+';
+    final h = offset.inHours.abs().toString().padLeft(2, '0');
+    final m = (offset.inMinutes.abs() % 60).toString().padLeft(2, '0');
+    return '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}T'
+           '${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}:${d.second.toString().padLeft(2, '0')}$sign$h:$m';
   }
 
   String _formatDate(DateTime date) {

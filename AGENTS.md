@@ -109,3 +109,9 @@ Entries go under `## [Unreleased]` during development. When cutting a release:
 - `lib/presentation/state/theme_notifier.dart` — ThemeNotifier with locale
 - `lib/l10n/app_en.arb` — i18n template
 - `lib/app.dart` — IGiteaApp with localizationsDelegates
+
+## Release
+
+Push a `v*` tag (e.g. `v0.23.2`) to trigger `.github/workflows/release.yml`:
+- Builds Android (APK + AAB), iOS (IPA), macOS (DMG), Linux (AppImage), Windows (ZIP)
+- Creates a GitHub Release with all artifacts attached
