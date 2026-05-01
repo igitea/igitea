@@ -118,28 +118,46 @@
 
 ### Added — PR Code Review
 
-- Review button in PR detail AppBar
-- Review dialog: Comment / Approve / Request Changes
+- Review button in PR detail AppBar (Comment / Approve / Request Changes)
 - Review list with state badges, author, body, timestamp
+- Review request dialog: add reviewers by username
 
 ### Added — Webhook Edit
 
-- Edit button in WebhookDetailPage
-- Edit dialog: update URL via `repoEditHook` API
-- New API method: `repoEditHook`
+- Edit button in WebhookDetailPage, dialog to update URL
 
-### Added — Commit Inline Diff
+### Added — Comment Edit/Delete
 
-- `commit_detail_page.dart`: expandable inline diff for changed files
-- `repoGetCommitDiff` API → `GET /git/commits/{sha}.diff`
-- File header shows `+n -m` stats, tap to expand/collapse
+- `⋯` menu on own comments: edit (inline TextField) / delete (confirmation dialog)
+- Uses `issueEditComment` / `issueDeleteComment` APIs
+
+### Added — Issue Subscription & Due Date
+
+- Subscribe button on issue detail page
+- Due date picker on issue edit page with set/clear
+
+### Added — Repository Topics
+
+- Display repo topics as Chip badges in repo header
+
+### Added — Branch Protection
+
+- Protect default branch button in repo settings page
+
+### Added — Activity Feed Translation
+
+- All 26 op_type values now have translation keys
+- Fixed `comment_pull_request` → `comment_pull` mismatch
+- New events: commit_repo, rename_repo, star_repo, watch_repo, approve/reject PR, etc.
 
 ### Changed
 
-- File viewer AppBar refactored: History button moved to `⋯` menu
+- File viewer AppBar: History button moved to `⋯` menu
 - `UIConstants` replaces all hardcoded spacing (16→`md`, 8→`sm`, 4→`xs`)
-- `home_page.dart`: remove unused `_TabData` class, extract `_buildNavigationRail`/`_buildNavigationBar`
+- `home_page.dart`: remove unused `_TabData` class, extract rail/bar builders
 - `ListCommitsParams` add `path` parameter
+- `state?.value == 'open'` → `state?.isOpen` enum extension
+- Injection: add `_assertUseCasesInitialized()` to all 3 init paths
 - Add `repositorySections` ARB key and `_RepoSectionPage` wrapper for section navigation
 
 ### Fixed

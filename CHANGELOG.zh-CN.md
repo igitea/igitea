@@ -119,21 +119,37 @@
 
 ### 新增 — PR 代码审查
 
-- PR 详情页 AppBar 新增 Review 按钮
-- 审查对话框：支持 Comment / Approve / Request Changes 三种类型
+- PR 详情页 AppBar 新增 Review 按钮（Comment / Approve / Request Changes）
 - 审查列表：状态徽章、作者、正文、时间戳
+- 新增 `repoCreatePullReviewRequests`：PR 审查请求对话框，支持添加审查者
 
 ### 新增 — Webhook 编辑
 
-- Webhook 详情页 AppBar 新增编辑按钮
-- 编辑对话框：更新 URL，调用 `repoEditHook` API
-- 新增 API 方法：`repoEditHook`
+- Webhook 详情页 AppBar 新增编辑按钮，对话框更新 URL
 
-### 新增 — Commit 内联 Diff
+### 新增 — Issue/PR 评论编辑与删除
 
-- `commit_detail_page.dart`：changed files 可展开显示内联 diff
-- 新增 `repoGetCommitDiff` API → `GET /git/commits/{sha}.diff`
-- 文件头部显示 `+n -m` 增减统计，点击展开/收起
+- 评论气泡右上角 `⋯` 菜单：编辑（内联 TextField + Save/Cancel）/ 删除（确认对话框）
+- 依赖 `issueEditComment` / `issueDeleteComment` API
+
+### 新增 — Issue 订阅与截止日期
+
+- Issue 详情页新增订阅按钮（ActionChip）
+- Issue 编辑页新增截止日期选择器（日期选择 + 清除）
+
+### 新增 — 仓库主题标签
+
+- 仓库头部显示 topics 标签（Chip 列表）
+
+### 新增 — 分支保护
+
+- 仓库设置页新增"分支保护"按钮，一键保护默认分支
+
+### 新增 — 活跃度翻译完善
+
+- 补齐所有 26 种 `op_type` 的翻译键
+- 修复 `comment_pull_request` → `comment_pull` 不匹配 bug
+- 新增事件：commit_repo、rename_repo、star_repo、watch_repo、approve PR、reject PR 等
 
 ### 变更
 
@@ -141,6 +157,8 @@
 - `UIConstants` 替换所有硬编码间距（16→`md`、8→`sm`、4→`xs`）
 - `home_page.dart`：移除无用 `_TabData` 类，抽离 `_buildNavigationRail`/`_buildNavigationBar`
 - `ListCommitsParams` 新增 `path` 参数
+- `state?.value == 'open'` 字符串比较 → `state?.isOpen` 枚举扩展
+- Injection 三条路径新增 `_assertUseCasesInitialized()` 安全断言
 - 新增 `repositorySections` ARB 键和 `_RepoSectionPage` 页面包装器
 
 ### 修复
