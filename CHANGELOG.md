@@ -2,6 +2,20 @@
 
 ## [Unreleased]
 
+### Added
+- Create issue FAB on repo issues tab
+- Opener, relative time, and comment count to issue list items
+
+### Fixed
+- Milestone edit: fix `due_on` date format (add timezone offset) to prevent server parse error
+- macOS DMG: use correct app name `igitea.app` instead of `Runner.app`
+- macOS: add ad-hoc codesigning to reduce Gatekeeper friction
+- Linux AppImage: use existing Android launcher icon instead of missing `assets/icon.png`
+- Linux AppImage: set `APPIMAGE_EXTRACT_AND_RUN=1` for FUSE-less CI environments
+- Issue comment list: remove minimum bubble width so short comments don't look too wide
+- Issue comment list: move menu button to overlay to reduce bubble height
+- Release workflow: migrate from archived `subosito/flutter-action` to `flutter-actions/setup-flutter@v4`
+
 ## [0.23.2] - 2026-05-01
 
 ### Added — GitHub Release Workflow

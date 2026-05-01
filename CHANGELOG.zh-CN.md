@@ -2,6 +2,20 @@
 
 ## [Unreleased]
 
+### 新增
+- 仓库 Issue 列表页面添加「创建 Issue」浮动按钮
+- Issue 列表项显示开启人、相对时间、评论数
+
+### 修复
+- 里程碑编辑：修正 `due_on` 日期格式（添加时区偏移），解决服务器解析错误
+- macOS DMG：修正应用名称为 `igitea.app`（原为不存在的 `Runner.app`）
+- macOS：添加 ad-hoc 签名，减少 Gatekeeper 弹窗
+- Linux AppImage：使用已有的 Android launcher 图标替代缺失的 `assets/icon.png`
+- Linux AppImage：设置 `APPIMAGE_EXTRACT_AND_RUN=1` 适配无 FUSE 的 CI 环境
+- Issue 评论气泡：移除最小宽度限制，短评论不再过宽
+- Issue 评论气泡：菜单按钮改为覆盖层，减少气泡高度
+- 发布工作流：从已归档的 `subosito/flutter-action` 迁移至 `flutter-actions/setup-flutter@v4`
+
 ## [0.23.2] - 2026-05-01
 
 ### 新增 — GitHub Release Workflow
