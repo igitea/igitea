@@ -652,7 +652,6 @@ class _CommentItemState extends State<_CommentItem> {
         : theme.colorScheme.surfaceContainerHighest;
     final screenWidth = MediaQuery.of(context).size.width;
     final maxBubbleWidth = screenWidth > 600 ? 480.0 : screenWidth * 0.75;
-    const minBubbleWidth = 200.0;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -690,40 +689,101 @@ class _CommentItemState extends State<_CommentItem> {
                       });
                     }
                   : null,
-              child: Container(
-                constraints: BoxConstraints(
-                  maxWidth: maxBubbleWidth,
-                  minWidth: minBubbleWidth,
-                ),
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                decoration: BoxDecoration(
-                  color: bubbleColor,
-                  borderRadius: BorderRadius.only(
-                    topLeft: const Radius.circular(18),
-                    topRight: const Radius.circular(18),
-                    bottomLeft: Radius.circular(isMe ? 18 : 4),
-                    bottomRight: Radius.circular(isMe ? 4 : 18),
-                  ),
-                ),
-                child: Column(
-                  crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (!isMe && widget.comment.user?.login != null)
-                        Text(
-                          widget.comment.user!.login!,
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: theme.colorScheme.primary,
-                          ),
+              child: IntrinsicWidth(
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Container(
+                      constraints: BoxConstraints(
+                        maxWidth: maxBubbleWidth,
+                      ),
+                      padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+                      decoration: BoxDecoration(
+                        color: bubbleColor,
+                        borderRadius: BorderRadius.only(
+                          topLeft: const Radius.circular(18),
+                          topRight: const Radius.circular(18),
+                          bottomLeft: Radius.circular(isMe ? 18 : 4),
+                          bottomRight: Radius.circular(isMe ? 4 : 18),
                         ),
-                      const Spacer(),
-                      if (isMe && !_editing)
-                        PopupMenuButton<String>(
+                      ),
+                      child: Column(
+                        crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                        children: [
+                          if (!isMe && widget.comment.user?.login != null)
+                            Text(
+                              widget.comment.user!.login!,
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: theme.colorScheme.primary,
+                              ),
+                            ),
+                          if (_editing)
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                TextField(
+                                  controller: _editController,
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    isDense: true,
+                                  ),
+                                  maxLines: 5,
+                                  minLines: 2,
+                                ),
+                                const SizedBox(height: 4),
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    TextButton(
+                                      onPressed: () => setState(() {
+                                        _editing = false;
+                                        _editController.text = widget.comment.body ?? '';
+                                      }),
+                                      child: Text(l10n.cancel),
+                                    ),
+                                    const SizedBox(width: 4),
+                                    FilledButton(
+                                      onPressed: _saving ? null : _saveEdit,
+                                      child: _saving
+                                          ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                                          : Text(l10n.save),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            )
+                          else if (widget.comment.body != null && widget.comment.body!.isNotEmpty)
+                            MarkdownBody(
+                              data: widget.comment.body!,
+                              selectable: true,
+                              styleSheet: MarkdownStyleSheet.fromTheme(theme).copyWith(
+                                p: theme.textTheme.bodyMedium,
+                              ),
+                              onTapLink: (text, href, title) {
+                                if (href != null) {
+                                  launchUrl(Uri.parse(href), mode: LaunchMode.externalApplication);
+                                }
+                              },
+                            ),
+                          const SizedBox(height: 4),
+                          Text(
+                            _formatDate(widget.comment.created_at, AppLocalizations.of(context)!),
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                              fontSize: 10,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (isMe && !_editing)
+                      Positioned(
+                        top: 4,
+                        right: 4,
+                        child: PopupMenuButton<String>(
                           padding: EdgeInsets.zero,
-                          icon: const Icon(Icons.more_horiz, size: 16),
+                          icon: Icon(Icons.more_horiz, size: 14, color: theme.colorScheme.onSurfaceVariant),
                           onSelected: (v) {
                             if (v == 'edit') setState(() => _editing = true);
                             if (v == 'delete') _delete();
@@ -733,69 +793,12 @@ class _CommentItemState extends State<_CommentItem> {
                             PopupMenuItem(value: 'delete', child: Text(l10n.delete)),
                           ],
                         ),
-                    ],
-                  ),
-                  if (_editing)
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        TextField(
-                          controller: _editController,
-                          decoration: const InputDecoration(
-                            border: OutlineInputBorder(),
-                            isDense: true,
-                          ),
-                          maxLines: 5,
-                          minLines: 2,
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            TextButton(
-                              onPressed: () => setState(() {
-                                _editing = false;
-                                _editController.text = widget.comment.body ?? '';
-                              }),
-                              child: Text(l10n.cancel),
-                            ),
-                            const SizedBox(width: 4),
-                            FilledButton(
-                              onPressed: _saving ? null : _saveEdit,
-                              child: _saving
-                                  ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                                  : Text(l10n.save),
-                            ),
-                          ],
-                        ),
-                      ],
-                    )
-                  else if (widget.comment.body != null && widget.comment.body!.isNotEmpty)
-                    MarkdownBody(
-                      data: widget.comment.body!,
-                      selectable: true,
-                      styleSheet: MarkdownStyleSheet.fromTheme(theme).copyWith(
-                        p: theme.textTheme.bodyMedium,
                       ),
-                      onTapLink: (text, href, title) {
-                        if (href != null) {
-                          launchUrl(Uri.parse(href), mode: LaunchMode.externalApplication);
-                        }
-                      },
-                    ),
-                  const SizedBox(height: 4),
-                  Text(
-                    _formatDate(widget.comment.created_at, AppLocalizations.of(context)!),
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                      fontSize: 10,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
-        ),
           if (isMe) ...[
             const SizedBox(width: 8),
             if (widget.comment.user != null)
