@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.23.2] - 2026-05-01
+
 ### Added — GitHub Release Workflow
 
 - `.github/workflows/release.yml`: push `v*` tag triggers automated builds for Android (APK+AAB), iOS (IPA), macOS (DMG), Linux (AppImage), Windows (ZIP)
