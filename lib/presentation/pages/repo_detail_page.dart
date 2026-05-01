@@ -1413,12 +1413,17 @@ class _RepoSectionPage extends StatelessWidget {
       body: _buildSection(l10n),
       floatingActionButton: sectionId == 'issues'
           ? FloatingActionButton(
-              onPressed: () {
-                Navigator.of(context).push(
+              onPressed: () async {
+                final result = await Navigator.of(context).push<Issue>(
                   MaterialPageRoute(
                     builder: (_) => CreateIssuePage(owner: owner, repo: repo),
                   ),
                 );
+                if (result != null && context.mounted) {
+                  Injection.issueNotifier.listIssues(
+                    ListIssuesParams(owner: owner, repo: repo),
+                  );
+                }
               },
               child: const Icon(Icons.add),
             )
