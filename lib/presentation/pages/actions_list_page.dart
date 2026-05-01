@@ -144,7 +144,7 @@ class _ActionsListPageState extends State<ActionsListPage> with AutomaticKeepAli
             tooltip: l10n.filterByStatus,
             onSelected: (s) => _applyFilter(s == 'all' ? null : s, _actorFilter),
             itemBuilder: (_) => [
-              const PopupMenuItem(value: 'all', child: Text('All')),
+              PopupMenuItem(value: 'all', child: Text(l10n.all)),
               for (final s in ['success', 'failure', 'in_progress', 'queued', 'cancelled', 'skipped'])
                 PopupMenuItem(value: s, child: Text(s)),
             ],
@@ -265,6 +265,7 @@ class _ActionsListPageState extends State<ActionsListPage> with AutomaticKeepAli
 
   Widget _buildOrphanGroup(List<Map<String, dynamic>> runs) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -274,7 +275,7 @@ class _ActionsListPageState extends State<ActionsListPage> with AutomaticKeepAli
             children: [
               Icon(Icons.help_outline, size: UIConstants.iconMd, color: theme.colorScheme.onSurfaceVariant),
               const SizedBox(width: UIConstants.sm),
-              Text('Other', style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
+              Text(l10n.other, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: UIConstants.sm, vertical: 1),
                 decoration: BoxDecoration(color: theme.colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(UIConstants.badgeRadius)),

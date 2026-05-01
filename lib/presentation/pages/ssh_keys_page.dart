@@ -132,7 +132,7 @@ class _SshKeysPageState extends State<SshKeysPage> {
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            'No SSH keys found',
+                            l10n.noSshKeysFound,
                             style: theme.textTheme.titleMedium?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
                             ),
@@ -191,7 +191,7 @@ class _SshKeysPageState extends State<SshKeysPage> {
                                     if (key.created_at != null) ...[
                                       const SizedBox(height: UIConstants.sm),
                                       Text(
-                                        '${'Created'}: ${_formatDate(key.created_at!)}',
+                                        '${l10n.created}: ${_formatDate(key.created_at!, l10n)}',
                                         style: theme.textTheme.bodySmall?.copyWith(
                                           color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                                         ),
@@ -223,16 +223,16 @@ class _SshKeysPageState extends State<SshKeysPage> {
             TextField(
               controller: titleController,
               decoration: InputDecoration(
-                labelText: 'Title',
-                hintText: 'My Laptop',
+                labelText: l10n.title,
+                hintText: l10n.myLaptopHint,
               ),
             ),
             const SizedBox(height: UIConstants.md),
             TextField(
               controller: keyController,
               decoration: InputDecoration(
-                labelText: 'Public Key',
-                hintText: 'Paste your SSH public key here',
+                labelText: l10n.publicKey,
+                hintText: l10n.sshPublicKeyHint,
               ),
               maxLines: 5,
             ),
@@ -281,12 +281,12 @@ class _SshKeysPageState extends State<SshKeysPage> {
     }
   }
 
-  String _formatDate(DateTime date) {
+  String _formatDate(DateTime date, AppLocalizations l10n) {
     final now = DateTime.now();
     final diff = now.difference(date);
-    if (diff.inDays > 365) return '${diff.inDays ~/ 365}y ago';
-    if (diff.inDays > 30) return '${diff.inDays ~/ 30}mo ago';
-    if (diff.inDays > 0) return '${diff.inDays}d ago';
-    return 'just now';
+    if (diff.inDays > 365) return l10n.ago('${diff.inDays ~/ 365}y');
+    if (diff.inDays > 30) return l10n.ago('${diff.inDays ~/ 30}mo');
+    if (diff.inDays > 0) return l10n.ago('${diff.inDays}d');
+    return l10n.justNow;
   }
 }

@@ -162,7 +162,7 @@ class _LoginPageState extends State<LoginPage>
       if (accessToken == null) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${l10n.error}: Failed to get access token')),
+            SnackBar(content: Text('${l10n.error}: ${l10n.failedToGetAccessToken}')),
           );
         }
         setState(() => _oauthCodeExchanging = false);

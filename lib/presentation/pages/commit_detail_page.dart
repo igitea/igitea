@@ -121,7 +121,7 @@ class _CommitDetailPageState extends State<CommitDetailPage> {
                     ),
                     if (commit.created != null)
                       Text(
-                        _formatDate(commit.created!),
+                        _formatDate(commit.created!, l10n),
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
@@ -339,15 +339,15 @@ class _CommitDetailPageState extends State<CommitDetailPage> {
     'renamed' => Colors.blue, _ => Colors.grey,
   };
 
-  String _formatDate(DateTime date) {
+  String _formatDate(DateTime date, AppLocalizations l10n) {
     final now = DateTime.now();
     final diff = now.difference(date);
-    if (diff.inDays > 365) return '${diff.inDays ~/ 365}y ago';
-    if (diff.inDays > 30) return '${diff.inDays ~/ 30}mo ago';
-    if (diff.inDays > 0) return '${diff.inDays}d ago';
-    if (diff.inHours > 0) return '${diff.inHours}h ago';
-    if (diff.inMinutes > 0) return '${diff.inMinutes}m ago';
-    return 'just now';
+    if (diff.inDays > 365) return l10n.ago('${diff.inDays ~/ 365}y');
+    if (diff.inDays > 30) return l10n.ago('${diff.inDays ~/ 30}mo');
+    if (diff.inDays > 0) return l10n.ago('${diff.inDays}d');
+    if (diff.inHours > 0) return l10n.ago('${diff.inHours}h');
+    if (diff.inMinutes > 0) return l10n.ago('${diff.inMinutes}m');
+    return l10n.justNow;
   }
 
   Future<void> _copyToClipboard(String text) async {

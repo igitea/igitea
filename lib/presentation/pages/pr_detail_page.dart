@@ -207,7 +207,7 @@ class _PRContent extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  l10n.openedParams(_formatDate(pr.created_at)),
+                   l10n.openedParams(_formatDate(pr.created_at, l10n)),
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -412,7 +412,7 @@ class _PRContent extends StatelessWidget {
               Icon(Icons.update, size: 16, color: theme.colorScheme.onSurfaceVariant),
               const SizedBox(width: 4),
               Text(
-                l10n.updatedParams(_formatDate(pr.updated_at)),
+                l10n.updatedParams(_formatDate(pr.updated_at, l10n)),
                 style: theme.textTheme.bodySmall,
               ),
             ],
@@ -447,7 +447,7 @@ class _PRContent extends StatelessWidget {
   }
 
   Widget _buildReviewCard(Map<String, dynamic> review, AppLocalizations l10n, ThemeData theme) {
-    final state = review['state'] as String? ?? 'COMMENT';
+    final state = review['state'] as String? ?? l10n.comment;
     final body = review['body'] as String? ?? '';
     final user = review['user'] as Map<String, dynamic>?;
     final submitted = review['submitted_at'] as String?;
@@ -489,7 +489,7 @@ class _PRContent extends StatelessWidget {
             ],
             if (submitted != null) ...[
               const SizedBox(height: 4),
-              Text(_formatDate(DateTime.tryParse(submitted) ?? DateTime.now()),
+              Text(_formatDate(DateTime.tryParse(submitted) ?? DateTime.now(), l10n),
                 style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
             ],
           ],
@@ -560,16 +560,16 @@ class _PRContent extends StatelessWidget {
     );
   }
 
-  String _formatDate(DateTime? date) {
-    if (date == null) return 'unknown';
+  String _formatDate(DateTime? date, AppLocalizations l10n) {
+    if (date == null) return l10n.unknown;
     final now = DateTime.now();
     final diff = now.difference(date);
-    if (diff.inDays > 365) return '${diff.inDays ~/ 365}y ago';
-    if (diff.inDays > 30) return '${diff.inDays ~/ 30}mo ago';
-    if (diff.inDays > 0) return '${diff.inDays}d ago';
-    if (diff.inHours > 0) return '${diff.inHours}h ago';
-    if (diff.inMinutes > 0) return '${diff.inMinutes}m ago';
-    return 'just now';
+    if (diff.inDays > 365) return l10n.ago('${diff.inDays ~/ 365}y');
+    if (diff.inDays > 30) return l10n.ago('${diff.inDays ~/ 30}mo');
+    if (diff.inDays > 0) return l10n.ago('${diff.inDays}d');
+    if (diff.inHours > 0) return l10n.ago('${diff.inHours}h');
+    if (diff.inMinutes > 0) return l10n.ago('${diff.inMinutes}m');
+    return l10n.justNow;
   }
 
   Color? _parseColor(String? colorStr) {
@@ -590,6 +590,7 @@ class _CommentItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: Padding(
@@ -609,7 +610,7 @@ class _CommentItem extends StatelessWidget {
                 ],
                 const Spacer(),
                 Text(
-                  _formatDate(comment.created_at),
+                  _formatDate(comment.created_at, l10n),
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -633,15 +634,15 @@ class _CommentItem extends StatelessWidget {
     );
   }
 
-  String _formatDate(DateTime? date) {
+  String _formatDate(DateTime? date, AppLocalizations l10n) {
     if (date == null) return '';
     final now = DateTime.now();
     final diff = now.difference(date);
-    if (diff.inDays > 365) return '${diff.inDays ~/ 365}y ago';
-    if (diff.inDays > 30) return '${diff.inDays ~/ 30}mo ago';
-    if (diff.inDays > 0) return '${diff.inDays}d ago';
-    if (diff.inHours > 0) return '${diff.inHours}h ago';
-    if (diff.inMinutes > 0) return '${diff.inMinutes}m ago';
-    return 'just now';
+    if (diff.inDays > 365) return l10n.ago('${diff.inDays ~/ 365}y');
+    if (diff.inDays > 30) return l10n.ago('${diff.inDays ~/ 30}mo');
+    if (diff.inDays > 0) return l10n.ago('${diff.inDays}d');
+    if (diff.inHours > 0) return l10n.ago('${diff.inHours}h');
+    if (diff.inMinutes > 0) return l10n.ago('${diff.inMinutes}m');
+    return l10n.justNow;
   }
 }

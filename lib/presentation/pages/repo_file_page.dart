@@ -119,7 +119,7 @@ class _RepoFilePageState extends State<RepoFilePage> {
         } else {
           setState(() {
             _loading = false;
-            _error = 'File not found';
+            _error = AppLocalizations.of(context)!.fileNotFound;
           });
         }
     }
@@ -235,7 +235,7 @@ class _RepoFilePageState extends State<RepoFilePage> {
             if (hasContent)
               PopupMenuButton<String>(
                 icon: const Icon(Icons.more_vert),
-                tooltip: 'More',
+                tooltip: l10n.more,
                 onSelected: (value) {
                   switch (value) {
                     case 'history':
@@ -391,7 +391,7 @@ class _RepoFilePageState extends State<RepoFilePage> {
 
   Future<String?> _showCommitMessageDialog() async {
     final l10n = AppLocalizations.of(context)!;
-    final controller = TextEditingController(text: 'Update ${widget.name}');
+    final controller = TextEditingController(text: l10n.commitUpdateFile(widget.name));
     final result = await showDialog<String>(
       context: context,
       builder: (context) => AlertDialog(

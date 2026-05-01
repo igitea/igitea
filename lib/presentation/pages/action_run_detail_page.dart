@@ -272,7 +272,7 @@ class _ActionRunDetailPageState extends State<ActionRunDetailPage> {
                       style: theme.textTheme.bodySmall),
                     IconButton(
                       icon: const Icon(Icons.download, size: UIConstants.iconMd),
-                      tooltip: 'Download',
+                      tooltip: l10n.download,
                       onPressed: () => _downloadArtifact(a),
                     ),
                   ],

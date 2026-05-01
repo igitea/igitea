@@ -68,7 +68,7 @@ class _FileComparePageState extends State<FileComparePage> {
           });
         } else {
           setState(() {
-            _error = 'No changes found for this file';
+            _error = AppLocalizations.of(context)!.noChangesFoundForFile;
             _loading = false;
           });
         }
