@@ -117,10 +117,11 @@ class _RepoSettingsPageState extends State<RepoSettingsPage> {
             title: Text(l10n.branchProtection),
             subtitle: Text(l10n.protectBranch),
             onTap: () async {
+              final repoOwner = widget.repo.owner?.login ?? widget.repo.full_name?.split('/').first ?? '';
               try {
                 await Injection.apiService.repoCreateBranchProtection(
-                  owner: widget.owner,
-                  repo: widget.repo,
+                  owner: repoOwner,
+                  repo: widget.repo.name ?? '',
                   body: {'branch_name': widget.repo.default_branch!},
                 );
                 if (context.mounted) {
