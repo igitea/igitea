@@ -408,6 +408,22 @@ class _RepoHeader extends StatelessWidget {
                   ),
               ],
             ),
+            if (repo.topics != null && repo.topics!.isNotEmpty) ...[
+              const SizedBox(height: UIConstants.sm),
+              Text(l10n.topics, style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              )),
+              const SizedBox(height: UIConstants.xs),
+              Wrap(
+                spacing: UIConstants.xs,
+                runSpacing: UIConstants.xs,
+                children: repo.topics!.map((t) => Chip(
+                  label: Text(t, style: const TextStyle(fontSize: 11)),
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  visualDensity: VisualDensity.compact,
+                )).toList(),
+              ),
+            ],
             if (repo.clone_url != null || repo.ssh_url != null) ...[
               const SizedBox(height: UIConstants.sm),
               _CloneUrls(repo: repo, l10n: l10n),
