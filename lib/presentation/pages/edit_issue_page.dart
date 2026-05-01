@@ -52,6 +52,7 @@ class _EditIssuePageState extends State<EditIssuePage> {
             .toSet() ??
         {};
     _selectedMilestoneId = widget.issue.milestone?.id;
+    _dueDate = widget.issue.due_date;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _loadLabels();
@@ -201,6 +202,8 @@ class _EditIssuePageState extends State<EditIssuePage> {
             if (!_labelsLoading && _labels.isNotEmpty) ...[
               _buildLabelSection(l10n),
               const SizedBox(height: UIConstants.md),
+              _buildDueDateSection(l10n),
+              const SizedBox(height: UIConstants.md),
             ],
             if (!_milestonesLoading && _milestones.isNotEmpty) ...[
               _buildMilestoneSection(l10n),
@@ -210,6 +213,44 @@ class _EditIssuePageState extends State<EditIssuePage> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildDueDateSection(AppLocalizations l10n) {
+    return Row(
+      children: [
+        OutlinedButton.icon(
+          onPressed: () async {
+            final date = await showDatePicker(
+              context: context,
+              initialDate: _dueDate ?? DateTime.now(),
+              firstDate: DateTime(2000),
+              lastDate: DateTime.now().add(const Duration(days: 365 * 5)),
+            );
+            if (date != null) {
+              final body = {'due_date': date.toIso8601String()};
+              await Injection.apiService.issueEditDeadline(
+                owner: widget.owner, repo: widget.repo, index: widget.index, body: body,
+              );
+              setState(() => _dueDate = date);
+            }
+          },
+          icon: const Icon(Icons.calendar_today, size: 18),
+          label: Text(_dueDate != null ? '${l10n.setDueDate}: ${_dueDate!.toLocal().toString().split(' ')[0]}' : l10n.setDueDate),
+        ),
+        if (_dueDate != null) ...[
+          const SizedBox(width: UIConstants.sm),
+          IconButton(
+            icon: const Icon(Icons.clear),
+            onPressed: () async {
+              await Injection.apiService.issueEditDeadline(
+                owner: widget.owner, repo: widget.repo, index: widget.index, body: {'due_date': null},
+              );
+              setState(() => _dueDate = null);
+            },
+          ),
+        ],
+      ],
     );
   }
 
