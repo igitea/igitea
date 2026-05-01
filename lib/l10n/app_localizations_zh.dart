@@ -507,46 +507,46 @@ class AppLocalizationsZh extends AppLocalizations {
   String get restoringSession => 'Restoring session...';
 
   @override
-  String get pleaseEnterServerUrl => 'Please enter a server URL';
+  String get pleaseEnterServerUrl => '请输入服务器地址';
 
   @override
-  String get pleaseEnterValidUrl => 'Please enter a valid URL';
+  String get pleaseEnterValidUrl => '请输入有效的 URL';
 
   @override
-  String get connectToGitea => 'Connect to your Gitea instance';
+  String get connectToGitea => '连接到你的 Gitea 实例';
 
   @override
-  String get usernamePassword => 'Username & Password';
+  String get usernamePassword => '用户名和密码';
 
   @override
-  String get serverUrl => 'Server URL';
+  String get serverUrl => '服务器地址';
 
   @override
-  String get enterUsername => 'Enter your username';
+  String get enterUsername => '输入用户名';
 
   @override
-  String get pleaseEnterUsername => 'Please enter your username';
+  String get pleaseEnterUsername => '请输入用户名';
 
   @override
-  String get enterPassword => 'Enter your password';
+  String get enterPassword => '输入密码';
 
   @override
-  String get pleaseEnterPassword => 'Please enter your password';
+  String get pleaseEnterPassword => '请输入密码';
 
   @override
-  String get pasteAccessToken => 'Paste your personal access token';
+  String get pasteAccessToken => '粘贴你的访问令牌';
 
   @override
-  String get pleaseEnterAccessToken => 'Please enter an access token';
+  String get pleaseEnterAccessToken => '请输入访问令牌';
 
   @override
-  String get signInWithToken => 'Sign In with Token';
+  String get signInWithToken => '使用 Token 登录';
 
   @override
-  String get welcomeToIgitea => 'Welcome to iGitea';
+  String get welcomeToIgitea => '欢迎使用 iGitea';
 
   @override
-  String get signInToGetStarted => 'Sign in to get started';
+  String get signInToGetStarted => '登录以开始使用';
 
   @override
   String get quickActions => '快捷操作';
@@ -665,10 +665,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get timeTrackingDisabled => 'Time Tracking Disabled';
 
   @override
-  String get yes => 'Yes';
+  String get yes => '是';
 
   @override
-  String get no => 'No';
+  String get no => '否';
 
   @override
   String get schedule => 'Schedule';
@@ -691,7 +691,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get unknown => 'Unknown';
+  String get unknown => '未知';
 
   @override
   String openedParams(Object time) {
@@ -699,13 +699,13 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get noDescriptionProvided => 'No description provided.';
+  String get noDescriptionProvided => '未提供描述';
 
   @override
   String get failedToLoadComments => 'Failed to load comments';
 
   @override
-  String get writeComment => 'Write a comment...';
+  String get writeComment => '写评论';
 
   @override
   String commentsCountParams(Object count) {
@@ -747,7 +747,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get emptyDirectory => 'Empty directory';
 
   @override
-  String get noIssues => 'No issues';
+  String get noIssues => '暂无 Issue';
 
   @override
   String get noPullRequests => 'No pull requests';
@@ -762,7 +762,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get preRelease => 'Pre-release';
 
   @override
-  String get archived => 'Archived';
+  String get archived => '已归档';
 
   @override
   String get defaultBranch => '默认分支';
@@ -783,7 +783,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get failedToOpenDownloadUrl => 'Failed to open download URL';
 
   @override
-  String get noNotifications => 'No notifications';
+  String get noNotifications => '暂无通知';
 
   @override
   String get noTitle => 'No title';
@@ -881,49 +881,49 @@ class AppLocalizationsZh extends AppLocalizations {
   String get performedAction => '执行了操作';
 
   @override
-  String get commitRepo => 'committed to';
+  String get commitRepo => '提交了代码到';
 
   @override
-  String get renameRepo => 'renamed repository';
+  String get renameRepo => '重命名了仓库';
 
   @override
-  String get starRepo => 'starred repository';
+  String get starRepo => '收藏了仓库';
 
   @override
-  String get watchRepo => 'started watching repository';
+  String get watchRepo => '关注了仓库';
 
   @override
-  String get reopenPR => 'reopened pull request';
+  String get reopenPR => '重新打开了 PR';
 
   @override
-  String get approvePR => 'approved pull request';
+  String get approvePR => '批准了 PR';
 
   @override
-  String get rejectPR => 'rejected pull request';
+  String get rejectPR => '驳回了 PR';
 
   @override
-  String get publishRelease => 'published release';
+  String get publishRelease => '发布了版本';
 
   @override
-  String get deleteBranch => 'deleted branch';
+  String get deleteBranch => '删除了分支';
 
   @override
-  String get autoMergePR => 'auto-merged pull request';
+  String get autoMergePR => '自动合并了 PR';
 
   @override
-  String get pullReviewDismissed => 'dismissed pull request review';
+  String get pullReviewDismissed => '驳回了审查';
 
   @override
-  String get pullRequestReady => 'marked pull request as ready for review';
+  String get pullRequestReady => '标记 PR 为就绪';
 
   @override
-  String get mirrorSyncPush => 'synced push to mirror';
+  String get mirrorSyncPush => '同步推送了镜像';
 
   @override
-  String get mirrorSyncCreate => 'synced create to mirror';
+  String get mirrorSyncCreate => '同步创建了镜像';
 
   @override
-  String get mirrorSyncDelete => 'synced delete to mirror';
+  String get mirrorSyncDelete => '同步删除了镜像';
 
   @override
   String get inRepo => '在';
@@ -998,10 +998,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get changedFiles => 'Changed Files';
 
   @override
-  String get tags => 'Tags';
+  String get tags => '标签';
 
   @override
-  String get noCommits => 'No commits';
+  String get noCommits => '暂无提交';
 
   @override
   String get noTags => 'No tags';
@@ -1037,7 +1037,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get downloadZipball => 'Download Zipball';
 
   @override
-  String get url => 'URL';
+  String get url => '链接';
 
   @override
   String get info => '信息';
@@ -1160,7 +1160,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get wikiPageContentHint => 'Write in Markdown...';
 
   @override
-  String get noWikiPages => 'No wiki pages';
+  String get noWikiPages => '暂无 Wiki 页面';
 
   @override
   String get noWikiPagesDescription =>
@@ -1173,7 +1173,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get lastCommit => 'Last commit';
 
   @override
-  String get noContent => 'No content';
+  String get noContent => '无内容';
 
   @override
   String get saved => 'Saved';
@@ -1231,7 +1231,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get webhook => 'Webhook';
 
   @override
-  String get noWebhooks => 'No webhooks';
+  String get noWebhooks => '暂无 Webhook';
 
   @override
   String get createWebhook => 'Create Webhook';
@@ -1402,31 +1402,31 @@ class AppLocalizationsZh extends AppLocalizations {
   String get noFilesChanged => 'No files changed';
 
   @override
-  String get viewDiff => 'View Diff';
+  String get viewDiff => '查看 Diff';
 
   @override
-  String get unifiedView => 'Unified view';
+  String get unifiedView => '统一视图';
 
   @override
-  String get splitView => 'Split view';
+  String get splitView => '分屏视图';
 
   @override
-  String get compareVersions => 'Compare Versions';
+  String get compareVersions => '版本对比';
 
   @override
-  String get baseRef => 'Base (older)';
+  String get baseRef => '基点（旧版）';
 
   @override
-  String get headRef => 'Head (newer)';
+  String get headRef => '对比点（新版）';
 
   @override
-  String get compare => 'Compare';
+  String get compare => '对比';
 
   @override
   String get actions => 'Actions';
 
   @override
-  String get noActions => 'No workflow runs';
+  String get noActions => '暂无工作流';
 
   @override
   String get run => 'Run';
@@ -1438,10 +1438,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get jobs => 'Jobs';
 
   @override
-  String get noJobs => 'No jobs';
+  String get noJobs => '暂无 Job';
 
   @override
-  String get artifacts => 'Artifacts';
+  String get artifacts => '构建产物';
 
   @override
   String get branch => 'Branch';
@@ -1456,7 +1456,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get filterByStatus => 'Filter by status';
 
   @override
-  String get reviewChanges => 'Review Changes';
+  String get reviewChanges => '审查变更';
 
   @override
   String get reviewBody => 'Review comment';
@@ -1465,37 +1465,37 @@ class AppLocalizationsZh extends AppLocalizations {
   String get reviews => 'Reviews';
 
   @override
-  String get approve => 'Approve';
+  String get approve => '批准';
 
   @override
-  String get requestChanges => 'Request Changes';
+  String get requestChanges => '请求变更';
 
   @override
-  String get comment => 'Comment';
+  String get comment => '评论';
 
   @override
   String get blame => 'Blame';
 
   @override
-  String get diffView => 'Diff View';
+  String get diffView => 'Diff 查看';
 
   @override
   String get pickColor => 'Pick Color';
 
   @override
-  String get sshKeys => 'SSH Keys';
+  String get sshKeys => 'SSH 密钥';
 
   @override
   String get allRepos => 'All Repos';
 
   @override
-  String get configuration => 'Configuration';
+  String get configuration => '配置';
 
   @override
-  String get none => 'None';
+  String get none => '无';
 
   @override
-  String get more => 'More';
+  String get more => '更多';
 
   @override
   String get units => 'Units';
@@ -1504,69 +1504,67 @@ class AppLocalizationsZh extends AppLocalizations {
   String get permission => 'Permission';
 
   @override
-  String get repoList => 'Repositories';
+  String get repoList => '仓库列表';
 
   @override
-  String get noChanges => 'No changes';
+  String get noChanges => '无变更';
 
   @override
-  String get limited => 'Limited';
+  String get limited => '受限';
 
   @override
   String get unknownSection => 'Unknown section';
 
   @override
-  String get deleteKey => 'Delete Key';
+  String get deleteKey => '删除密钥';
 
   @override
-  String get deleteKeyConfirm =>
-      'Are you sure you want to delete this SSH key?';
+  String get deleteKeyConfirm => '确定要删除此 SSH 密钥吗？';
 
   @override
-  String get keyDeleted => 'Key deleted successfully';
+  String get keyDeleted => '密钥已删除';
 
   @override
-  String get addSshKey => 'Add SSH Key';
+  String get addSshKey => '添加 SSH 密钥';
 
   @override
-  String get add => 'Add';
+  String get add => '添加';
 
   @override
-  String get keyAdded => 'Key added successfully';
+  String get keyAdded => '密钥已添加';
 
   @override
-  String get deleteCommentConfirm =>
-      'Are you sure you want to delete this comment?';
+  String get deleteCommentConfirm => '确定要删除此评论吗？';
 
   @override
-  String get requestReviewers => 'Request Reviewers';
+  String get requestReviewers => '请求审查';
 
   @override
   String get addReviewerHint => 'Enter reviewer username';
 
   @override
-  String get subscribe => 'Subscribe';
+  String get subscribe => '订阅';
 
   @override
-  String get unsubscribe => 'Unsubscribe';
+  String get unsubscribe => '取消订阅';
 
   @override
-  String get setDueDate => 'Set Due Date';
+  String get setDueDate => '设置截止日期';
 
   @override
-  String get removeDueDate => 'Remove Due Date';
+  String get removeDueDate => '移除截止日期';
 
   @override
-  String get topics => 'Topics';
+  String get topics => '主题标签';
 
   @override
-  String get noTopics => 'No topics';
+  String get noTopics => '暂无主题标签';
 
   @override
-  String get branchProtection => 'Branch Protection';
+  String get branchProtection => '分支保护';
 
   @override
-  String get protectBranch => 'Protect Branch';
+  String get protectBranch => '保护分支';
 
   @override
   String get https => 'HTTPS';
@@ -2134,46 +2132,46 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get restoringSession => 'Restoring session...';
 
   @override
-  String get pleaseEnterServerUrl => 'Please enter a server URL';
+  String get pleaseEnterServerUrl => '请输入服务器地址';
 
   @override
-  String get pleaseEnterValidUrl => 'Please enter a valid URL';
+  String get pleaseEnterValidUrl => '请输入有效的 URL';
 
   @override
-  String get connectToGitea => 'Connect to your Gitea instance';
+  String get connectToGitea => '连接到你的 Gitea 实例';
 
   @override
-  String get usernamePassword => 'Username & Password';
+  String get usernamePassword => '用户名和密码';
 
   @override
-  String get serverUrl => 'Server URL';
+  String get serverUrl => '服务器地址';
 
   @override
-  String get enterUsername => 'Enter your username';
+  String get enterUsername => '输入用户名';
 
   @override
-  String get pleaseEnterUsername => 'Please enter your username';
+  String get pleaseEnterUsername => '请输入用户名';
 
   @override
-  String get enterPassword => 'Enter your password';
+  String get enterPassword => '输入密码';
 
   @override
-  String get pleaseEnterPassword => 'Please enter your password';
+  String get pleaseEnterPassword => '请输入密码';
 
   @override
-  String get pasteAccessToken => 'Paste your personal access token';
+  String get pasteAccessToken => '粘贴你的访问令牌';
 
   @override
-  String get pleaseEnterAccessToken => 'Please enter an access token';
+  String get pleaseEnterAccessToken => '请输入访问令牌';
 
   @override
-  String get signInWithToken => 'Sign In with Token';
+  String get signInWithToken => '使用 Token 登录';
 
   @override
-  String get welcomeToIgitea => 'Welcome to iGitea';
+  String get welcomeToIgitea => '欢迎使用 iGitea';
 
   @override
-  String get signInToGetStarted => 'Sign in to get started';
+  String get signInToGetStarted => '登录以开始使用';
 
   @override
   String get quickActions => '快捷操作';
@@ -2193,7 +2191,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get user => 'User';
 
   @override
-  String get private => 'Private';
+  String get private => '私有';
 
   @override
   String get untitled => 'Untitled';
@@ -2292,10 +2290,10 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get timeTrackingDisabled => 'Time Tracking Disabled';
 
   @override
-  String get yes => 'Yes';
+  String get yes => '是';
 
   @override
-  String get no => 'No';
+  String get no => '否';
 
   @override
   String get schedule => 'Schedule';
@@ -2318,7 +2316,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   }
 
   @override
-  String get unknown => 'Unknown';
+  String get unknown => '未知';
 
   @override
   String openedParams(Object time) {
@@ -2326,13 +2324,13 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   }
 
   @override
-  String get noDescriptionProvided => 'No description provided.';
+  String get noDescriptionProvided => '未提供描述';
 
   @override
   String get failedToLoadComments => 'Failed to load comments';
 
   @override
-  String get writeComment => 'Write a comment...';
+  String get writeComment => '写評論';
 
   @override
   String commentsCountParams(Object count) {
@@ -2374,7 +2372,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get emptyDirectory => 'Empty directory';
 
   @override
-  String get noIssues => 'No issues';
+  String get noIssues => '暂无 Issue';
 
   @override
   String get noPullRequests => 'No pull requests';
@@ -2389,10 +2387,10 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get preRelease => 'Pre-release';
 
   @override
-  String get archived => 'Archived';
+  String get archived => '已归档';
 
   @override
-  String get defaultBranch => 'Default branch';
+  String get defaultBranch => '默认分支';
 
   @override
   String get copyCode => 'Copy code';
@@ -2410,7 +2408,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get failedToOpenDownloadUrl => 'Failed to open download URL';
 
   @override
-  String get noNotifications => 'No notifications';
+  String get noNotifications => '暂无通知';
 
   @override
   String get noTitle => 'No title';
@@ -2457,100 +2455,100 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get pleaseEnterTitle => 'Please enter a title';
 
   @override
-  String get noActivity => 'No recent activity';
+  String get noActivity => '暂无活动';
 
   @override
-  String get createdRepo => 'created repository';
+  String get createdRepo => '建立了倉庫';
 
   @override
-  String get pushedTag => 'pushed tag';
+  String get pushedTag => '推送了標籤';
 
   @override
-  String get deletedTag => 'deleted tag';
+  String get deletedTag => '刪除了標籤';
 
   @override
-  String get createdIssue => 'created issue';
+  String get createdIssue => '建立了 Issue';
 
   @override
-  String get closedIssue => 'closed issue';
+  String get closedIssue => '關閉了 Issue';
 
   @override
-  String get reopenedIssue => 'reopened issue';
+  String get reopenedIssue => '重新打开了 Issue';
 
   @override
-  String get createdPR => 'created pull request';
+  String get createdPR => '建立了 PR';
 
   @override
-  String get mergedPR => 'merged pull request';
+  String get mergedPR => '合併了 PR';
 
   @override
-  String get closedPR => 'closed pull request';
+  String get closedPR => '關閉了 PR';
 
   @override
-  String get commentedOnIssue => 'commented on issue';
+  String get commentedOnIssue => '評論了 Issue';
 
   @override
-  String get commentedOnPR => 'commented on pull request';
+  String get commentedOnPR => '評論了 PR';
 
   @override
-  String get forkedRepo => 'forked repository';
+  String get forkedRepo => 'Fork 了倉庫';
 
   @override
-  String get transferredRepo => 'transferred repository';
+  String get transferredRepo => '转移了倉庫';
 
   @override
-  String get deletedRepo => 'deleted repository';
+  String get deletedRepo => '刪除了倉庫';
 
   @override
-  String get updatedWiki => 'updated wiki';
+  String get updatedWiki => '更新了 Wiki';
 
   @override
-  String get performedAction => 'performed action';
+  String get performedAction => '执行了操作';
 
   @override
-  String get commitRepo => 'committed to';
+  String get commitRepo => '提交了代码到';
 
   @override
-  String get renameRepo => 'renamed repository';
+  String get renameRepo => '重新命名了倉庫';
 
   @override
-  String get starRepo => 'starred repository';
+  String get starRepo => '收藏了倉庫';
 
   @override
-  String get watchRepo => 'started watching repository';
+  String get watchRepo => '关注了倉庫';
 
   @override
-  String get reopenPR => 'reopened pull request';
+  String get reopenPR => '重新打开了 PR';
 
   @override
-  String get approvePR => 'approved pull request';
+  String get approvePR => '批准了 PR';
 
   @override
-  String get rejectPR => 'rejected pull request';
+  String get rejectPR => '驳回了 PR';
 
   @override
-  String get publishRelease => 'published release';
+  String get publishRelease => '发布了版本';
 
   @override
-  String get deleteBranch => 'deleted branch';
+  String get deleteBranch => '刪除了分支';
 
   @override
-  String get autoMergePR => 'auto-merged pull request';
+  String get autoMergePR => '自动合併了 PR';
 
   @override
-  String get pullReviewDismissed => 'dismissed pull request review';
+  String get pullReviewDismissed => '驳回了审查';
 
   @override
-  String get pullRequestReady => 'marked pull request as ready for review';
+  String get pullRequestReady => '标记 PR 为就绪';
 
   @override
-  String get mirrorSyncPush => 'synced push to mirror';
+  String get mirrorSyncPush => '同步推送了镜像';
 
   @override
-  String get mirrorSyncCreate => 'synced create to mirror';
+  String get mirrorSyncCreate => '同步建立了镜像';
 
   @override
-  String get mirrorSyncDelete => 'synced delete to mirror';
+  String get mirrorSyncDelete => '同步刪除了镜像';
 
   @override
   String get inRepo => 'in';
@@ -2562,16 +2560,16 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get from => 'from';
 
   @override
-  String get headBranch => 'Head branch';
+  String get headBranch => '源分支';
 
   @override
-  String get baseBranch => 'Base branch';
+  String get baseBranch => '目标分支';
 
   @override
-  String get pleaseFillAllFields => 'Please fill all required fields';
+  String get pleaseFillAllFields => '请填写所有必填项';
 
   @override
-  String get settingsSaved => 'Settings saved';
+  String get settingsSaved => '設定已保存';
 
   @override
   String get privateRepo => 'Private repository';
@@ -2625,10 +2623,10 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get changedFiles => 'Changed Files';
 
   @override
-  String get tags => 'Tags';
+  String get tags => '標籤';
 
   @override
-  String get noCommits => 'No commits';
+  String get noCommits => '暂无提交';
 
   @override
   String get noTags => 'No tags';
@@ -2664,7 +2662,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get downloadZipball => 'Download Zipball';
 
   @override
-  String get url => 'URL';
+  String get url => '链接';
 
   @override
   String get info => 'Info';
@@ -2673,7 +2671,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get teams => 'Teams';
 
   @override
-  String get noTeams => 'No teams';
+  String get noTeams => '暂无团队';
 
   @override
   String get location => 'Location';
@@ -2691,7 +2689,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get target => 'Target';
 
   @override
-  String get forked => 'Forked';
+  String get forked => '已分叉';
 
   @override
   String get forkRepoConfirm =>
@@ -2710,7 +2708,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get members => 'Members';
 
   @override
-  String get noMembers => 'No members';
+  String get noMembers => '暂无成员';
 
   @override
   String get editOrganization => 'Edit Organization';
@@ -2734,7 +2732,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get descriptionHint => '倉庫的簡短描述';
 
   @override
-  String get public => 'Public';
+  String get public => '公开';
 
   @override
   String get publicDescription => '任何人都可以看到此倉庫';
@@ -2789,7 +2787,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get wikiPageContentHint => 'Write in Markdown...';
 
   @override
-  String get noWikiPages => 'No wiki pages';
+  String get noWikiPages => '暂无 Wiki 页面';
 
   @override
   String get noWikiPagesDescription =>
@@ -2802,7 +2800,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get lastCommit => 'Last commit';
 
   @override
-  String get noContent => 'No content';
+  String get noContent => '无内容';
 
   @override
   String get saved => 'Saved';
@@ -2860,7 +2858,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get webhook => 'Webhook';
 
   @override
-  String get noWebhooks => 'No webhooks';
+  String get noWebhooks => '暂无 Webhook';
 
   @override
   String get createWebhook => 'Create Webhook';
@@ -3031,31 +3029,31 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get noFilesChanged => 'No files changed';
 
   @override
-  String get viewDiff => 'View Diff';
+  String get viewDiff => '查看 Diff';
 
   @override
-  String get unifiedView => 'Unified view';
+  String get unifiedView => '统一视图';
 
   @override
-  String get splitView => 'Split view';
+  String get splitView => '分屏视图';
 
   @override
-  String get compareVersions => 'Compare Versions';
+  String get compareVersions => '版本对比';
 
   @override
-  String get baseRef => 'Base (older)';
+  String get baseRef => '基点（旧版）';
 
   @override
-  String get headRef => 'Head (newer)';
+  String get headRef => '对比点（新版）';
 
   @override
-  String get compare => 'Compare';
+  String get compare => '对比';
 
   @override
   String get actions => 'Actions';
 
   @override
-  String get noActions => 'No workflow runs';
+  String get noActions => '暂无工作流';
 
   @override
   String get run => 'Run';
@@ -3067,10 +3065,10 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get jobs => 'Jobs';
 
   @override
-  String get noJobs => 'No jobs';
+  String get noJobs => '暂无 Job';
 
   @override
-  String get artifacts => 'Artifacts';
+  String get artifacts => '构建产物';
 
   @override
   String get branch => 'Branch';
@@ -3085,7 +3083,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get filterByStatus => 'Filter by status';
 
   @override
-  String get reviewChanges => 'Review Changes';
+  String get reviewChanges => '审查变更';
 
   @override
   String get reviewBody => 'Review comment';
@@ -3094,37 +3092,37 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get reviews => 'Reviews';
 
   @override
-  String get approve => 'Approve';
+  String get approve => '批准';
 
   @override
-  String get requestChanges => 'Request Changes';
+  String get requestChanges => '请求变更';
 
   @override
-  String get comment => 'Comment';
+  String get comment => '評論';
 
   @override
   String get blame => 'Blame';
 
   @override
-  String get diffView => 'Diff View';
+  String get diffView => 'Diff 查看';
 
   @override
   String get pickColor => 'Pick Color';
 
   @override
-  String get sshKeys => 'SSH Keys';
+  String get sshKeys => 'SSH 金鑰';
 
   @override
   String get allRepos => 'All Repos';
 
   @override
-  String get configuration => 'Configuration';
+  String get configuration => '配置';
 
   @override
-  String get none => 'None';
+  String get none => '无';
 
   @override
-  String get more => 'More';
+  String get more => '更多';
 
   @override
   String get units => 'Units';
@@ -3133,69 +3131,67 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get permission => 'Permission';
 
   @override
-  String get repoList => 'Repositories';
+  String get repoList => '倉庫列表';
 
   @override
-  String get noChanges => 'No changes';
+  String get noChanges => '无变更';
 
   @override
-  String get limited => 'Limited';
+  String get limited => '受限';
 
   @override
   String get unknownSection => 'Unknown section';
 
   @override
-  String get deleteKey => 'Delete Key';
+  String get deleteKey => '刪除金鑰';
 
   @override
-  String get deleteKeyConfirm =>
-      'Are you sure you want to delete this SSH key?';
+  String get deleteKeyConfirm => '确定要刪除此 SSH 金鑰吗？';
 
   @override
-  String get keyDeleted => 'Key deleted successfully';
+  String get keyDeleted => '金鑰已刪除';
 
   @override
-  String get addSshKey => 'Add SSH Key';
+  String get addSshKey => '新增 SSH 金鑰';
 
   @override
-  String get add => 'Add';
+  String get add => '新增';
 
   @override
-  String get keyAdded => 'Key added successfully';
+  String get keyAdded => '金鑰已新增';
 
   @override
-  String get deleteCommentConfirm =>
-      'Are you sure you want to delete this comment?';
+  String get deleteCommentConfirm => '确定要刪除此評論吗？';
 
   @override
-  String get requestReviewers => 'Request Reviewers';
+  String get requestReviewers => '请求审查';
 
   @override
   String get addReviewerHint => 'Enter reviewer username';
 
   @override
-  String get subscribe => 'Subscribe';
+  String get subscribe => '订阅';
 
   @override
-  String get unsubscribe => 'Unsubscribe';
+  String get unsubscribe => '取消订阅';
 
   @override
-  String get setDueDate => 'Set Due Date';
+  String get setDueDate => '設定截止日期';
 
   @override
-  String get removeDueDate => 'Remove Due Date';
+  String get removeDueDate => '移除截止日期';
 
   @override
-  String get topics => 'Topics';
+  String get topics => '主题標籤';
 
   @override
-  String get noTopics => 'No topics';
+  String get noTopics => '暂无主题標籤';
 
   @override
-  String get branchProtection => 'Branch Protection';
+  String get branchProtection => '分支保护';
 
   @override
-  String get protectBranch => 'Protect Branch';
+  String get protectBranch => '保护分支';
 
   @override
   String get https => 'HTTPS';
