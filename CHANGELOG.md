@@ -6,6 +6,9 @@
 - Create issue FAB on repo issues tab
 - Opener, relative time, and comment count to issue list items
 - Open/Closed/All filter chips on repo issues tab with pull-to-refresh
+- Create PR FAB on repo pull requests tab
+- Open/Closed/All filter chips on repo PR tab with pull-to-refresh
+- Opener, relative time, and comment count to PR list items
 
 ### Fixed
 - Milestone edit: fix `due_on` date format (add timezone offset) to prevent server parse error

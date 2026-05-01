@@ -28,6 +28,7 @@ import 'tag_detail_page.dart';
 import 'wiki_list_page.dart';
 import 'create_issue_page.dart';
 import 'create_milestone_page.dart';
+import 'create_pr_page.dart';
 import 'webhook_list_page.dart';
 import 'label_list_page.dart';
 import 'actions_list_page.dart';
@@ -1151,12 +1152,16 @@ class _PullRequestsTab extends StatefulWidget {
 }
 
 class _PullRequestsTabState extends State<_PullRequestsTab> {
+  String _selectedFilter = 'open';
+
+  void _loadPullRequests() {
+    Injection.repoNotifier.listPullRequests(widget.owner, widget.repo, state: _selectedFilter);
+  }
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Injection.repoNotifier.listPullRequests(widget.owner, widget.repo);
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadPullRequests());
   }
 
   @override
@@ -1165,42 +1170,106 @@ class _PullRequestsTabState extends State<_PullRequestsTab> {
       listenable: Injection.repoNotifier,
       builder: (context, _) {
         final state = Injection.repoNotifier.pullRequestsState;
-        return switch (state) {
-          PullRequestsLoading() => const Center(child: CircularProgressIndicator()),
-          PullRequestsError(:final message) => Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text('${widget.l10n.error}: $message'),
-                  const SizedBox(height: UIConstants.md),
-                  FilledButton(
-                    onPressed: () => Injection.repoNotifier.listPullRequests(
-                        widget.owner, widget.repo),
-                    child: Text(widget.l10n.retry),
-                  ),
-                ],
-              ),
-            ),
-          PullRequestsLoaded(:final pullRequests) => pullRequests.isEmpty
-              ? EmptyState(icon: Icons.merge_type, title: widget.l10n.noPullRequests)
-              : ListView.builder(
-                  padding: UIConstants.pagePadding + const EdgeInsets.symmetric(vertical: UIConstants.sm),
-                  itemCount: pullRequests.length,
-                  itemBuilder: (context, index) {
-                    final pr = pullRequests[index];
-                    return FadeInWrapper(
-                      delay: Duration(milliseconds: index * 20),
-                      child: _PRItem(
-                        pr: pr,
-                        owner: widget.owner,
-                        repo: widget.repo,
-                        l10n: widget.l10n,
+        return Stack(
+          children: [
+            Column(
+              children: [
+                Padding(
+                  padding: UIConstants.pagePadding + const EdgeInsets.only(top: UIConstants.sm),
+                  child: Row(
+                    children: [
+                      FilterChip(
+                        label: Text(widget.l10n.open),
+                        selected: _selectedFilter == 'open',
+                        onSelected: (_) => setState(() {
+                          _selectedFilter = 'open';
+                          _loadPullRequests();
+                        }),
                       ),
-                    );
+                      const SizedBox(width: UIConstants.sm),
+                      FilterChip(
+                        label: Text(widget.l10n.closed),
+                        selected: _selectedFilter == 'closed',
+                        onSelected: (_) => setState(() {
+                          _selectedFilter = 'closed';
+                          _loadPullRequests();
+                        }),
+                      ),
+                      const SizedBox(width: UIConstants.sm),
+                      FilterChip(
+                        label: Text(widget.l10n.all),
+                        selected: _selectedFilter == 'all',
+                        onSelected: (_) => setState(() {
+                          _selectedFilter = 'all';
+                          _loadPullRequests();
+                        }),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: switch (state) {
+                    PullRequestsLoading() => const Center(child: CircularProgressIndicator()),
+                    PullRequestsError(:final message) => Center(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text('${widget.l10n.error}: $message'),
+                            const SizedBox(height: UIConstants.md),
+                            FilledButton(
+                              onPressed: _loadPullRequests,
+                              child: Text(widget.l10n.retry),
+                            ),
+                          ],
+                        ),
+                      ),
+                    PullRequestsLoaded(:final pullRequests) => pullRequests.isEmpty
+                        ? EmptyState(icon: Icons.merge_type, title: widget.l10n.noPullRequests)
+                        : RefreshIndicator(
+                            onRefresh: () async => _loadPullRequests(),
+                            child: ListView.builder(
+                              padding: UIConstants.pagePadding + const EdgeInsets.symmetric(vertical: UIConstants.sm),
+                              itemCount: pullRequests.length,
+                              itemBuilder: (context, index) {
+                                final pr = pullRequests[index];
+                                return FadeInWrapper(
+                                  delay: Duration(milliseconds: index * 20),
+                                  child: _PRItem(
+                                    pr: pr,
+                                    owner: widget.owner,
+                                    repo: widget.repo,
+                                    l10n: widget.l10n,
+                                    onRefresh: _loadPullRequests,
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                    _ => EmptyState(icon: Icons.merge_type, title: widget.l10n.noPullRequests),
                   },
                 ),
-          _ => EmptyState(icon: Icons.merge_type, title: widget.l10n.noPullRequests),
-        };
+              ],
+            ),
+            Positioned(
+              right: UIConstants.md,
+              bottom: UIConstants.md,
+              child: FloatingActionButton(
+                onPressed: () async {
+                  final result = await Navigator.of(context).push<PullRequest>(
+                    MaterialPageRoute(
+                      builder: (_) => CreatePRPage(owner: widget.owner, repo: widget.repo),
+                    ),
+                  );
+                  if (result != null && context.mounted) {
+                    _selectedFilter = 'open';
+                    _loadPullRequests();
+                  }
+                },
+                child: const Icon(Icons.add),
+              ),
+            ),
+          ],
+        );
       },
     );
   }
@@ -1211,11 +1280,13 @@ class _PRItem extends StatelessWidget {
   final String owner;
   final String repo;
   final AppLocalizations l10n;
+  final VoidCallback? onRefresh;
 
-  const _PRItem({required this.pr, required this.owner, required this.repo, required this.l10n});
+  const _PRItem({required this.pr, required this.owner, required this.repo, required this.l10n, this.onRefresh});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     IconData stateIcon;
     Color stateColor;
     if (pr.merged == true) {
@@ -1230,13 +1301,16 @@ class _PRItem extends StatelessWidget {
     }
 
     return PremiumListCard(
-      onTap: () => Navigator.of(context).push(MaterialPageRoute(
-        builder: (_) => PRDetailPage(
-          owner: owner,
-          repo: repo,
-          index: pr.number ?? 0,
-        ),
-      )),
+      onTap: () async {
+        await Navigator.of(context).push(MaterialPageRoute(
+          builder: (_) => PRDetailPage(
+            owner: owner,
+            repo: repo,
+            index: pr.number ?? 0,
+          ),
+        ));
+        onRefresh?.call();
+      },
       child: Row(
         children: [
           pr.user != null
@@ -1275,10 +1349,31 @@ class _PRItem extends StatelessWidget {
                     const SizedBox(width: UIConstants.xs),
                     Text(
                       pr.merged == true ? l10n.merged : pr.draft == true ? l10n.draft : l10n.open,
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      style: theme.textTheme.labelSmall?.copyWith(
                         color: stateColor,
                       ),
                     ),
+                    if (pr.user?.login != null)
+                      Text(
+                        ' · ${pr.user!.login!}',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    if (pr.created_at != null)
+                      Text(
+                        ' · ${_relativeTime(pr.created_at!)}',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    if ((pr.comments ?? 0) > 0)
+                      Text(
+                        ' · ${l10n.commentsCountParams(pr.comments!)}',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
                   ],
                 ),
               ],
@@ -1287,6 +1382,17 @@ class _PRItem extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _relativeTime(DateTime date) {
+    final now = DateTime.now();
+    final diff = now.difference(date);
+    if (diff.inDays > 365) return l10n.ago('${diff.inDays ~/ 365}y');
+    if (diff.inDays > 30) return l10n.ago('${diff.inDays ~/ 30}mo');
+    if (diff.inDays > 0) return l10n.ago('${diff.inDays}d');
+    if (diff.inHours > 0) return l10n.ago('${diff.inHours}h');
+    if (diff.inMinutes > 0) return l10n.ago('${diff.inMinutes}m');
+    return l10n.justNow;
   }
 }
 
