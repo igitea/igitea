@@ -1633,5 +1633,5 @@ class AppLocalizationsJa extends AppLocalizations {
   String get justNow => 'just now';
 
   @override
-  String get igiteaVersion => 'iGitea v0.12.0';
+  String get igiteaVersion => 'iGitea v0.23.0';
 }

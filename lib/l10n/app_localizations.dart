@@ -3230,7 +3230,7 @@ abstract class AppLocalizations {
   /// No description provided for @igiteaVersion.
   ///
   /// In en, this message translates to:
-  /// **'iGitea v0.12.0'**
+  /// **'iGitea v0.23.0'**
   String get igiteaVersion;
 }
 
