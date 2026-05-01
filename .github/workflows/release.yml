@@ -84,8 +84,17 @@ jobs:
           path: artifacts/
 
   build-linux:
-    name: Linux AppImage
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        arch:
+          - name: x64
+            runner: ubuntu-latest
+            appimage_tool: https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage
+          - name: arm64
+            runner: ubuntu-24.04-arm
+            appimage_tool: https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-aarch64.AppImage
+    name: Linux (${{ matrix.arch.name }})
+    runs-on: ${{ matrix.arch.runner }}
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v4
@@ -102,7 +111,7 @@ jobs:
         run: |
           sudo apt-get install -y file
           mkdir -p artifacts/AppDir/usr/bin
-          cp -r build/linux/x64/release/bundle/* artifacts/AppDir/usr/bin/
+          cp -r build/linux/*/release/bundle/* artifacts/AppDir/usr/bin/
           cat > artifacts/AppDir/igitea.desktop << 'EOF'
           [Desktop Entry]
           Name=iGitea
@@ -112,18 +121,25 @@ jobs:
           Terminal=false
           EOF
           ln -s usr/bin/igitea artifacts/AppDir/AppRun
-          wget -q https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O /tmp/appimagetool
+          wget -q ${{ matrix.arch.appimage_tool }} -O /tmp/appimagetool
           chmod +x /tmp/appimagetool
-          /tmp/appimagetool artifacts/AppDir artifacts/igitea-${{ github.ref_name }}-x86_64.AppImage
+          /tmp/appimagetool artifacts/AppDir artifacts/igitea-${{ github.ref_name }}-linux-${{ matrix.arch.name }}.AppImage
 
       - uses: actions/upload-artifact@v4
         with:
-          name: linux
+          name: linux-${{ matrix.arch.name }}
           path: artifacts/
 
   build-windows:
-    name: Windows EXE
-    runs-on: windows-latest
+    strategy:
+      matrix:
+        arch:
+          - name: x64
+            runner: windows-latest
+          - name: arm64
+            runner: windows-11-arm
+    name: Windows (${{ matrix.arch.name }})
+    runs-on: ${{ matrix.arch.runner }}
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v4
@@ -133,13 +149,16 @@ jobs:
       - run: flutter build windows --release
 
       - name: Package ZIP
+        shell: pwsh
         run: |
-          mkdir artifacts
-          Compress-Archive -Path build\windows\x64\runner\Release\* -DestinationPath artifacts\igitea-${{ github.ref_name }}-x64.zip
+          New-Item -ItemType Directory -Path artifacts -Force
+          $buildDir = Get-ChildItem -Path "build\windows" -Directory | Select-Object -First 1 -ExpandProperty Name
+          if (-not $buildDir) { throw "No Windows build output found" }
+          Compress-Archive -Path "build\windows\$buildDir\runner\Release\*" -DestinationPath "artifacts\igitea-${{ github.ref_name }}-windows-${{ matrix.arch.name }}.zip"
 
       - uses: actions/upload-artifact@v4
         with:
-          name: windows
+          name: windows-${{ matrix.arch.name }}
           path: artifacts/
 
   create-release:
@@ -170,6 +189,8 @@ jobs:
             artifacts/android/*
             artifacts/ios/*
             artifacts/macos/*
-            artifacts/linux/*
-            artifacts/windows/*
+            artifacts/linux-x64/*
+            artifacts/linux-arm64/*
+            artifacts/windows-x64/*
+            artifacts/windows-arm64/*
           generate_release_notes: false
