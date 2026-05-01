@@ -86,7 +86,7 @@ jobs:
             --icon-size 100 \
             --app-drop-link 450 150 \
             artifacts/igitea-${{ github.ref_name }}.dmg \
-            build/macos/Build/Products/Release/Runner.app
+            build/macos/Build/Products/Release/igitea.app
 
       - uses: actions/upload-artifact@v4
         with:
