@@ -5,6 +5,7 @@
 ### Added
 - Create issue FAB on repo issues tab
 - Opener, relative time, and comment count to issue list items
+- Open/Closed/All filter chips on repo issues tab with pull-to-refresh
 
 ### Fixed
 - Milestone edit: fix `due_on` date format (add timezone offset) to prevent server parse error
