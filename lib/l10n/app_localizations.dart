@@ -3112,6 +3112,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Protect Branch'**
   String get protectBranch;
+
+  /// No description provided for @https.
+  ///
+  /// In en, this message translates to:
+  /// **'HTTPS'**
+  String get https;
+
+  /// No description provided for @ssh.
+  ///
+  /// In en, this message translates to:
+  /// **'SSH'**
+  String get ssh;
+
+  /// No description provided for @teamAdminAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Team Admin Access'**
+  String get teamAdminAccess;
+
+  /// No description provided for @details.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get details;
+
+  /// No description provided for @id.
+  ///
+  /// In en, this message translates to:
+  /// **'ID'**
+  String get id;
+
+  /// No description provided for @searchRepositoriesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search for repositories'**
+  String get searchRepositoriesHint;
+
+  /// No description provided for @publicKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Public Key'**
+  String get publicKey;
+
+  /// No description provided for @failedToGetAccessToken.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to get access token'**
+  String get failedToGetAccessToken;
+
+  /// No description provided for @fileNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'File not found'**
+  String get fileNotFound;
+
+  /// No description provided for @noSshKeysFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No SSH keys found'**
+  String get noSshKeysFound;
+
+  /// No description provided for @other.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get other;
+
+  /// No description provided for @usernameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Username is required'**
+  String get usernameRequired;
+
+  /// No description provided for @myLaptopHint.
+  ///
+  /// In en, this message translates to:
+  /// **'My Laptop'**
+  String get myLaptopHint;
+
+  /// No description provided for @sshPublicKeyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Paste your SSH public key here'**
+  String get sshPublicKeyHint;
+
+  /// No description provided for @noChangesFoundForFile.
+  ///
+  /// In en, this message translates to:
+  /// **'No changes found for this file'**
+  String get noChangesFoundForFile;
+
+  /// No description provided for @commitUpdateFile.
+  ///
+  /// In en, this message translates to:
+  /// **'Update {fileName}'**
+  String commitUpdateFile(Object fileName);
+
+  /// No description provided for @api.
+  ///
+  /// In en, this message translates to:
+  /// **'API'**
+  String get api;
+
+  /// No description provided for @ui.
+  ///
+  /// In en, this message translates to:
+  /// **'UI'**
+  String get ui;
+
+  /// No description provided for @justNow.
+  ///
+  /// In en, this message translates to:
+  /// **'just now'**
+  String get justNow;
+
+  /// No description provided for @igiteaVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'iGitea v0.12.0'**
+  String get igiteaVersion;
 }
 
 class _AppLocalizationsDelegate

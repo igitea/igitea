@@ -1572,4 +1572,66 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get protectBranch => 'Protect Branch';
+
+  @override
+  String get https => 'HTTPS';
+
+  @override
+  String get ssh => 'SSH';
+
+  @override
+  String get teamAdminAccess => 'Team Admin Access';
+
+  @override
+  String get details => 'Details';
+
+  @override
+  String get id => 'ID';
+
+  @override
+  String get searchRepositoriesHint => 'Search for repositories';
+
+  @override
+  String get publicKey => 'Public Key';
+
+  @override
+  String get failedToGetAccessToken => 'Failed to get access token';
+
+  @override
+  String get fileNotFound => 'File not found';
+
+  @override
+  String get noSshKeysFound => 'No SSH keys found';
+
+  @override
+  String get other => 'Other';
+
+  @override
+  String get usernameRequired => 'Username is required';
+
+  @override
+  String get myLaptopHint => 'My Laptop';
+
+  @override
+  String get sshPublicKeyHint => 'Paste your SSH public key here';
+
+  @override
+  String get noChangesFoundForFile => 'No changes found for this file';
+
+  @override
+  String commitUpdateFile(Object fileName) {
+    return 'Update $fileName';
+  }
+
+  @override
+  String get api => 'API';
+
+  @override
+  String get ui => 'UI';
+
+  @override
+  String get justNow => 'just now';
+
+  @override
+  String get igiteaVersion => 'iGitea v0.12.0';
 }

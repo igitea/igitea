@@ -168,7 +168,7 @@ class _SettingsPageState extends State<SettingsPage> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Text(
-              'iGitea v0.12.0',
+              l10n.igiteaVersion,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                 color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
@@ -408,7 +408,7 @@ class ServerSettingsPage extends StatelessWidget {
           if (apiSettings != null) ...[
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: Text('API', style: theme.textTheme.titleMedium?.copyWith(
+              child: Text(l10n.api, style: theme.textTheme.titleMedium?.copyWith(
                 color: theme.colorScheme.primary,
                 fontWeight: FontWeight.bold,
               )),
@@ -420,7 +420,7 @@ class ServerSettingsPage extends StatelessWidget {
           if (uiSettings != null) ...[
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: Text('UI', style: theme.textTheme.titleMedium?.copyWith(
+              child: Text(l10n.ui, style: theme.textTheme.titleMedium?.copyWith(
                 color: theme.colorScheme.primary,
                 fontWeight: FontWeight.bold,
               )),

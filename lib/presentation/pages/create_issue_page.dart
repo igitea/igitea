@@ -175,7 +175,7 @@ class _CreateIssuePageState extends State<CreateIssuePage> {
             border: const OutlineInputBorder(),
           ),
           items: [
-            const DropdownMenuItem(value: null, child: Text('None')),
+            DropdownMenuItem(value: null, child: Text(l10n.none)),
             ..._milestones.map((m) => DropdownMenuItem(
               value: m.id,
               child: Text(m.title ?? ''),

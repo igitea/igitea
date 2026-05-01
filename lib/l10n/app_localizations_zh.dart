@@ -1568,6 +1568,68 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get protectBranch => 'Protect Branch';
+
+  @override
+  String get https => 'HTTPS';
+
+  @override
+  String get ssh => 'SSH';
+
+  @override
+  String get teamAdminAccess => '团队管理员访问权限';
+
+  @override
+  String get details => '详情';
+
+  @override
+  String get id => 'ID';
+
+  @override
+  String get searchRepositoriesHint => '搜索仓库';
+
+  @override
+  String get publicKey => '公钥';
+
+  @override
+  String get failedToGetAccessToken => '获取访问令牌失败';
+
+  @override
+  String get fileNotFound => '文件未找到';
+
+  @override
+  String get noSshKeysFound => '暂无 SSH 密钥';
+
+  @override
+  String get other => '其他';
+
+  @override
+  String get usernameRequired => '用户名不能为空';
+
+  @override
+  String get myLaptopHint => '我的笔记本';
+
+  @override
+  String get sshPublicKeyHint => '粘贴你的 SSH 公钥';
+
+  @override
+  String get noChangesFoundForFile => '未找到此文件的变更';
+
+  @override
+  String commitUpdateFile(Object fileName) {
+    return '更新 $fileName';
+  }
+
+  @override
+  String get api => 'API';
+
+  @override
+  String get ui => 'UI';
+
+  @override
+  String get justNow => '刚刚';
+
+  @override
+  String get igiteaVersion => 'iGitea v0.12.0';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).

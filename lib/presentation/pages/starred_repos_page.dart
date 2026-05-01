@@ -86,6 +86,7 @@ class _RepoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     return Card(
       margin: const EdgeInsets.only(bottom: 8),
       child: InkWell(
@@ -133,7 +134,7 @@ class _RepoCard extends StatelessWidget {
                               borderRadius: BorderRadius.circular(4),
                             ),
                             child: Text(
-                              'Private',
+                              l10n.private,
                               style: theme.textTheme.labelSmall?.copyWith(
                                 color: theme.colorScheme.onErrorContainer,
                               ),

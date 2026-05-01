@@ -391,7 +391,7 @@ class _RepoHeader extends StatelessWidget {
               ),
             ],
             const SizedBox(height: UIConstants.md),
-            _StatsGrid(repo: repo),
+            _StatsGrid(repo: repo, l10n: l10n),
             const SizedBox(height: UIConstants.sm),
             Wrap(
               spacing: UIConstants.sm,
@@ -437,8 +437,9 @@ class _RepoHeader extends StatelessWidget {
 
 class _StatsGrid extends StatelessWidget {
   final Repository repo;
+  final AppLocalizations l10n;
 
-  const _StatsGrid({required this.repo});
+  const _StatsGrid({required this.repo, required this.l10n});
 
   @override
   Widget build(BuildContext context) {
@@ -448,7 +449,7 @@ class _StatsGrid extends StatelessWidget {
           child: _StatCard(
             icon: Icons.star_outline,
             value: '${repo.stars_count ?? 0}',
-            label: 'Stars',
+            label: l10n.stars,
           ),
         ),
         const SizedBox(width: UIConstants.sm),
@@ -456,7 +457,7 @@ class _StatsGrid extends StatelessWidget {
           child: _StatCard(
             icon: Icons.fork_right,
             value: '${repo.forks_count ?? 0}',
-            label: 'Forks',
+            label: l10n.forks,
           ),
         ),
         const SizedBox(width: UIConstants.sm),
@@ -464,7 +465,7 @@ class _StatsGrid extends StatelessWidget {
           child: _StatCard(
             icon: Icons.visibility_outlined,
             value: '${repo.watchers_count ?? 0}',
-            label: 'Watchers',
+            label: l10n.watchers,
           ),
         ),
         const SizedBox(width: UIConstants.sm),
@@ -472,7 +473,7 @@ class _StatsGrid extends StatelessWidget {
           child: _StatCard(
             icon: Icons.bug_report_outlined,
             value: '${repo.open_issues_count ?? 0}',
-            label: 'Issues',
+            label: l10n.issues,
           ),
         ),
       ],
@@ -594,9 +595,9 @@ class _CloneUrls extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (repo.clone_url != null)
-          _UrlRow(label: 'HTTPS', url: repo.clone_url!, theme: theme, l10n: l10n),
+          _UrlRow(label: l10n.https, url: repo.clone_url!, theme: theme, l10n: l10n),
         if (repo.ssh_url != null)
-          _UrlRow(label: 'SSH', url: repo.ssh_url!, theme: theme, l10n: l10n),
+          _UrlRow(label: l10n.ssh, url: repo.ssh_url!, theme: theme, l10n: l10n),
       ],
     );
   }
@@ -642,7 +643,7 @@ class _UrlRow extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.copy, size: UIConstants.iconSm),
             visualDensity: VisualDensity.compact,
-            tooltip: 'Copy URL',
+            tooltip: l10n.copyUrl,
             onPressed: () {
               Clipboard.setData(ClipboardData(text: url));
               ScaffoldMessenger.of(context).showSnackBar(
@@ -1165,7 +1166,7 @@ class _PRItem extends StatelessWidget {
                     Icon(stateIcon, size: UIConstants.iconSm, color: stateColor),
                     const SizedBox(width: UIConstants.xs),
                     Text(
-                      pr.merged == true ? 'Merged' : pr.draft == true ? 'Draft' : 'Open',
+                      pr.merged == true ? l10n.merged : pr.draft == true ? l10n.draft : l10n.open,
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
                         color: stateColor,
                       ),
@@ -1333,11 +1334,11 @@ class _ReleaseItem extends StatelessWidget {
   String _formatDate(DateTime date) {
     final now = DateTime.now();
     final diff = now.difference(date);
-    if (diff.inDays > 365) return '${diff.inDays ~/ 365}y ago';
-    if (diff.inDays > 30) return '${diff.inDays ~/ 30}mo ago';
-    if (diff.inDays > 0) return '${diff.inDays}d ago';
-    if (diff.inHours > 0) return '${diff.inHours}h ago';
-    return 'just now';
+    if (diff.inDays > 365) return l10n.ago('${diff.inDays ~/ 365}y');
+    if (diff.inDays > 30) return l10n.ago('${diff.inDays ~/ 30}mo');
+    if (diff.inDays > 0) return l10n.ago('${diff.inDays}d');
+    if (diff.inHours > 0) return l10n.ago('${diff.inHours}h');
+    return l10n.justNow;
   }
 }
 
@@ -1644,12 +1645,12 @@ class _CommitItem extends StatelessWidget {
   String _formatDate(DateTime date) {
     final now = DateTime.now();
     final diff = now.difference(date);
-    if (diff.inDays > 365) return '${diff.inDays ~/ 365}y ago';
-    if (diff.inDays > 30) return '${diff.inDays ~/ 30}mo ago';
-    if (diff.inDays > 0) return '${diff.inDays}d ago';
-    if (diff.inHours > 0) return '${diff.inHours}h ago';
-    if (diff.inMinutes > 0) return '${diff.inMinutes}m ago';
-    return 'just now';
+    if (diff.inDays > 365) return l10n.ago('${diff.inDays ~/ 365}y');
+    if (diff.inDays > 30) return l10n.ago('${diff.inDays ~/ 30}mo');
+    if (diff.inDays > 0) return l10n.ago('${diff.inDays}d');
+    if (diff.inHours > 0) return l10n.ago('${diff.inHours}h');
+    if (diff.inMinutes > 0) return l10n.ago('${diff.inMinutes}m');
+    return l10n.justNow;
   }
 }
 
@@ -1933,11 +1934,11 @@ class _MilestonesTabState extends State<_MilestonesTab> {
   String _formatDate(DateTime date) {
     final now = DateTime.now();
     final diff = now.difference(date);
-    if (diff.inDays > 365) return '${diff.inDays ~/ 365}y ago';
-    if (diff.inDays > 30) return '${diff.inDays ~/ 30}mo ago';
-    if (diff.inDays > 0) return '${diff.inDays}d ago';
-    if (diff.inHours > 0) return '${diff.inHours}h ago';
-    return 'just now';
+    if (diff.inDays > 365) return widget.l10n.ago('${diff.inDays ~/ 365}y');
+    if (diff.inDays > 30) return widget.l10n.ago('${diff.inDays ~/ 30}mo');
+    if (diff.inDays > 0) return widget.l10n.ago('${diff.inDays}d');
+    if (diff.inHours > 0) return widget.l10n.ago('${diff.inHours}h');
+    return widget.l10n.justNow;
   }
 }
 

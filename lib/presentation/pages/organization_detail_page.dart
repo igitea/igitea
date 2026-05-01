@@ -187,7 +187,7 @@ class _InfoTab extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Details',
+                l10n.details,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
@@ -241,8 +241,8 @@ class _InfoTab extends StatelessWidget {
                 _buildInfoRow(
                   context,
                   icon: Icons.admin_panel_settings_outlined,
-                  label: 'Team Admin Access',
-                  value: org.repo_admin_change_team_access! ? 'Yes' : 'No',
+                  label: l10n.teamAdminAccess,
+                  value: org.repo_admin_change_team_access! ? l10n.yes : l10n.no,
                 ),
               ],
             ],
@@ -301,6 +301,7 @@ class _OrgStatsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     return PremiumCard(
       child: Row(
@@ -308,7 +309,7 @@ class _OrgStatsCard extends StatelessWidget {
           Expanded(
             child: _StatItem(
               icon: Icons.folder_outlined,
-              label: 'ID',
+              label: l10n.id,
               value: '#${org.id ?? 0}',
             ),
           ),
@@ -320,7 +321,7 @@ class _OrgStatsCard extends StatelessWidget {
           Expanded(
             child: _StatItem(
               icon: Icons.alternate_email,
-              label: 'Username',
+              label: l10n.username,
               value: org.username ?? '-',
             ),
           ),
@@ -659,7 +660,7 @@ class _TeamsTabState extends State<_TeamsTab>
                                   if (team.includes_all_repositories == true)
                                     _TeamBadge(
                                       icon: Icons.folder_copy,
-                                      label: 'All Repos',
+                                      label: l10n.allRepos,
                                     ),
                                 ],
                               ),

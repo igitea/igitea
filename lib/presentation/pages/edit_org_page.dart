@@ -164,10 +164,10 @@ class _EditOrgPageState extends State<EditOrgPage> {
               labelText: l10n.visibility,
               border: const OutlineInputBorder(),
             ),
-            items: const [
-              DropdownMenuItem(value: 'public', child: Text('Public')),
-              DropdownMenuItem(value: 'limited', child: Text('Limited')),
-              DropdownMenuItem(value: 'private', child: Text('Private')),
+            items: [
+              DropdownMenuItem(value: 'public', child: Text(l10n.public)),
+              DropdownMenuItem(value: 'limited', child: Text(l10n.limited)),
+              DropdownMenuItem(value: 'private', child: Text(l10n.private)),
             ],
             onChanged: (value) {
               setState(() {

@@ -116,7 +116,7 @@ class _CreateOrgPageState extends State<CreateOrgPage> {
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
-                  return 'Username is required';
+                  return l10n.usernameRequired;
                 }
                 return null;
               },
@@ -170,10 +170,10 @@ class _CreateOrgPageState extends State<CreateOrgPage> {
                 labelText: l10n.visibility,
                 border: const OutlineInputBorder(),
               ),
-              items: const [
-                DropdownMenuItem(value: 'public', child: Text('Public')),
-                DropdownMenuItem(value: 'limited', child: Text('Limited')),
-                DropdownMenuItem(value: 'private', child: Text('Private')),
+              items: [
+                DropdownMenuItem(value: 'public', child: Text(l10n.public)),
+                DropdownMenuItem(value: 'limited', child: Text(l10n.limited)),
+                DropdownMenuItem(value: 'private', child: Text(l10n.private)),
               ],
               onChanged: (value) {
                 setState(() {

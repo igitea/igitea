@@ -177,13 +177,14 @@ class _InfoTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
         if (team.description != null && team.description!.isNotEmpty) ...[
           Text(
-            'Description',
+            l10n.description,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.bold,
             ),
@@ -194,7 +195,7 @@ class _InfoTab extends StatelessWidget {
         ],
         if (team.units != null && team.units!.isNotEmpty) ...[
           Text(
-            'Units',
+            l10n.units,
             style: theme.textTheme.titleSmall?.copyWith(
               fontWeight: FontWeight.bold,
             ),
@@ -214,13 +215,13 @@ class _InfoTab extends StatelessWidget {
         ],
         _InfoRow(
           icon: Icons.security,
-          label: 'Permission',
+          label: l10n.permission,
           value: team.permission ?? '-',
         ),
         _InfoRow(
           icon: Icons.folder_copy,
-          label: 'All Repositories',
-          value: team.includes_all_repositories == true ? 'Yes' : 'No',
+          label: l10n.allRepos,
+          value: team.includes_all_repositories == true ? l10n.yes : l10n.no,
         ),
         if (team.can_create_org_repo == true)
           _InfoRow(

@@ -81,11 +81,11 @@ class _RepoListPageState extends State<RepoListPage> {
                   ),
                   RepoInitial() => EmptyState(
                     icon: Icons.search,
-                    title: 'Search for repositories',
+                    title: l10n.searchRepositoriesHint,
                   ),
                   _ => EmptyState(
                     icon: Icons.search,
-                    title: 'Search for repositories',
+                    title: l10n.searchRepositoriesHint,
                   ),
                 };
               },
@@ -104,8 +104,9 @@ class _RepoList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     if (repos.isEmpty) {
-      return EmptyState(icon: Icons.folder_open, title: 'No repositories found.');
+      return EmptyState(icon: Icons.folder_open, title: l10n.noRepositoriesFound);
     }
     return RefreshIndicator(
       onRefresh: () => Injection.repoNotifier.searchRepos(),
@@ -132,6 +133,7 @@ class _RepoCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     return PremiumListCard(
       onTap: () {
         Navigator.of(context).push(MaterialPageRoute(
@@ -174,7 +176,7 @@ class _RepoCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
                         ),
                         child: Text(
-                          'Private',
+                          l10n.private,
                           style: theme.textTheme.labelSmall?.copyWith(
                             color: theme.colorScheme.onErrorContainer,
                           ),

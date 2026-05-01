@@ -174,7 +174,7 @@ class _IssueContent extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  l10n.openedParams(_formatDate(issue.created_at)),
+                  l10n.openedParams(_formatDate(issue.created_at, l10n)),
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -376,7 +376,7 @@ class _IssueContent extends StatelessWidget {
               Icon(Icons.update, size: 16, color: theme.colorScheme.onSurfaceVariant),
               const SizedBox(width: 4),
               Text(
-                l10n.updatedParams(_formatDate(issue.updated_at)),
+                l10n.updatedParams(_formatDate(issue.updated_at, l10n)),
                 style: theme.textTheme.bodySmall,
               ),
             ],
@@ -445,16 +445,16 @@ class _IssueContent extends StatelessWidget {
     );
   }
 
-  String _formatDate(DateTime? date) {
-    if (date == null) return 'unknown';
+  String _formatDate(DateTime? date, AppLocalizations l10n) {
+    if (date == null) return l10n.unknown;
     final now = DateTime.now();
     final diff = now.difference(date);
-    if (diff.inDays > 365) return '${diff.inDays ~/ 365}y ago';
-    if (diff.inDays > 30) return '${diff.inDays ~/ 30}mo ago';
-    if (diff.inDays > 0) return '${diff.inDays}d ago';
-    if (diff.inHours > 0) return '${diff.inHours}h ago';
-    if (diff.inMinutes > 0) return '${diff.inMinutes}m ago';
-    return 'just now';
+    if (diff.inDays > 365) return l10n.ago('${diff.inDays ~/ 365}y');
+    if (diff.inDays > 30) return l10n.ago('${diff.inDays ~/ 30}mo');
+    if (diff.inDays > 0) return l10n.ago('${diff.inDays}d');
+    if (diff.inHours > 0) return l10n.ago('${diff.inHours}h');
+    if (diff.inMinutes > 0) return l10n.ago('${diff.inMinutes}m');
+    return l10n.justNow;
   }
 
   Color? _parseColor(String? colorStr) {
@@ -636,6 +636,7 @@ class _CommentItemState extends State<_CommentItem> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final isMe = widget.isCurrentUser;
     final bubbleColor = isMe
@@ -656,8 +657,29 @@ class _CommentItemState extends State<_CommentItem> {
             const SizedBox(width: 8),
           ],
           Flexible(
-            child: Container(
-              constraints: BoxConstraints(
+            child: GestureDetector(
+              onLongPress: isMe && !_editing
+                  ? () {
+                      final renderBox = context.findRenderObject() as RenderBox;
+                      final offset = renderBox.localToGlobal(Offset.zero);
+                      showMenu<String>(
+                        context: context,
+                        position: RelativeRect.fromLTRB(
+                          offset.dx, offset.dy - 40,
+                          offset.dx + renderBox.size.width, offset.dy,
+                        ),
+                        items: [
+                          PopupMenuItem(value: 'edit', child: Text(l10n.edit)),
+                          PopupMenuItem(value: 'delete', child: Text(l10n.delete)),
+                        ],
+                      ).then((v) {
+                        if (v == 'edit') setState(() => _editing = true);
+                        if (v == 'delete') _delete();
+                      });
+                    }
+                  : null,
+              child: Container(
+                constraints: BoxConstraints(
                 maxWidth: MediaQuery.of(context).size.width * 0.7,
               ),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -694,8 +716,8 @@ class _CommentItemState extends State<_CommentItem> {
                             if (v == 'delete') _delete();
                           },
                           itemBuilder: (_) => [
-                            const PopupMenuItem(value: 'edit', child: Text('Edit')),
-                            const PopupMenuItem(value: 'delete', child: Text('Delete')),
+                            PopupMenuItem(value: 'edit', child: Text(l10n.edit)),
+                            PopupMenuItem(value: 'delete', child: Text(l10n.delete)),
                           ],
                         ),
                     ],
@@ -722,14 +744,14 @@ class _CommentItemState extends State<_CommentItem> {
                                 _editing = false;
                                 _editController.text = widget.comment.body ?? '';
                               }),
-                              child: const Text('Cancel'),
+                              child: Text(l10n.cancel),
                             ),
                             const SizedBox(width: 4),
                             FilledButton(
                               onPressed: _saving ? null : _saveEdit,
                               child: _saving
                                   ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                                  : const Text('Save'),
+                                  : Text(l10n.save),
                             ),
                           ],
                         ),
@@ -750,7 +772,7 @@ class _CommentItemState extends State<_CommentItem> {
                     ),
                   const SizedBox(height: 4),
                   Text(
-                    _formatDate(widget.comment.created_at),
+                    _formatDate(widget.comment.created_at, AppLocalizations.of(context)!),
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                       fontSize: 10,
@@ -760,7 +782,8 @@ class _CommentItemState extends State<_CommentItem> {
               ),
             ),
           ),
-                      if (isMe) ...[
+        ),
+          if (isMe) ...[
             const SizedBox(width: 8),
             if (widget.comment.user != null)
               UserAvatar(user: widget.comment.user!, radius: 16)
@@ -772,15 +795,15 @@ class _CommentItemState extends State<_CommentItem> {
     );
   }
 
-  String _formatDate(DateTime? date) {
+  String _formatDate(DateTime? date, AppLocalizations l10n) {
     if (date == null) return '';
     final now = DateTime.now();
     final diff = now.difference(date);
-    if (diff.inDays > 365) return '${diff.inDays ~/ 365}y ago';
-    if (diff.inDays > 30) return '${diff.inDays ~/ 30}mo ago';
-    if (diff.inDays > 0) return '${diff.inDays}d ago';
-    if (diff.inHours > 0) return '${diff.inHours}h ago';
-    if (diff.inMinutes > 0) return '${diff.inMinutes}m ago';
-    return 'just now';
+    if (diff.inDays > 365) return l10n.ago('${diff.inDays ~/ 365}y');
+    if (diff.inDays > 30) return l10n.ago('${diff.inDays ~/ 30}mo');
+    if (diff.inDays > 0) return l10n.ago('${diff.inDays}d');
+    if (diff.inHours > 0) return l10n.ago('${diff.inHours}h');
+    if (diff.inMinutes > 0) return l10n.ago('${diff.inMinutes}m');
+    return l10n.justNow;
   }
 }

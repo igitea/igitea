@@ -303,9 +303,9 @@ class _EditIssuePageState extends State<EditIssuePage> {
             border: const OutlineInputBorder(),
           ),
           items: [
-            const DropdownMenuItem(
+            DropdownMenuItem(
               value: null,
-              child: Text('None'),
+              child: Text(l10n.none),
             ),
             ..._milestones.map((m) => DropdownMenuItem(
               value: m.id,
