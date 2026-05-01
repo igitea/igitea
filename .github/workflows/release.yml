@@ -75,6 +75,9 @@ jobs:
       - run: flutter pub get
       - run: flutter build macos --release
 
+      - name: Ad-hoc sign
+        run: codesign --force --deep --sign - build/macos/Build/Products/Release/igitea.app
+
       - name: Package DMG
         run: |
           brew install create-dmg
