@@ -1,5 +1,8 @@
 /// Application name displayed in UI.
 const String appName = 'iGitea';
 
-/// Default application version.
-const String appVersion = '0.1.0';
+/// Current application version — kept in sync with pubspec.yaml.
+const String appVersion = '0.23.0';
+
+/// Display string combining name and version.
+const String igiteaVersion = '$appName v$appVersion';

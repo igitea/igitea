@@ -1618,9 +1618,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get justNow => '刚刚';
-
-  @override
-  String get igiteaVersion => 'iGitea v0.12.0';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -3237,7 +3234,4 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get justNow => 'just now';
-
-  @override
-  String get igiteaVersion => 'iGitea v0.23.0';
 }

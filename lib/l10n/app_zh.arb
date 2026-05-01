@@ -517,6 +517,5 @@
   "commitUpdateFile": "更新 {fileName}",
   "api": "API",
   "ui": "UI",
-  "justNow": "刚刚",
-  "igiteaVersion": "iGitea v0.12.0"
+  "justNow": "刚刚"
 }

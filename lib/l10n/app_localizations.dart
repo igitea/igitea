@@ -3226,12 +3226,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'just now'**
   String get justNow;
-
-  /// No description provided for @igiteaVersion.
-  ///
-  /// In en, this message translates to:
-  /// **'iGitea v0.23.0'**
-  String get igiteaVersion;
 }
 
 class _AppLocalizationsDelegate
