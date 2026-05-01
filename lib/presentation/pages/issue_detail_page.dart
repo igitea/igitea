@@ -388,24 +388,32 @@ class _IssueContent extends StatelessWidget {
 
   Widget _buildCommentsList(BuildContext context, List<Comment> comments, AppLocalizations l10n) {
     if (comments.isEmpty) {
-      return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        child: Text(l10n.noComments),
-      );
+      return SizedBox.shrink();
     }
 
     final theme = Theme.of(context);
     final currentUserState = Injection.userNotifier.state;
     final currentUserId = currentUserState is UserLoaded ? currentUserState.user.id : null;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          l10n.commentsParams(comments.length),
-          style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 8),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (comments.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 12, top: 8),
+              child: Row(
+                children: [
+                  Icon(Icons.chat_bubble_outline, size: 16, color: theme.colorScheme.onSurfaceVariant),
+                  const SizedBox(width: 6),
+                  Text(
+                    l10n.commentsParams(comments.length),
+                    style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+            ),
         ...comments.asMap().entries.map((entry) => FadeInWrapper(
           delay: Duration(milliseconds: entry.key * 30),
           child: _CommentItem(
@@ -417,7 +425,7 @@ class _IssueContent extends StatelessWidget {
           ),
         )),
       ],
-    );
+    ));
   }
 
   Widget _buildInfoRow(
@@ -642,20 +650,24 @@ class _CommentItemState extends State<_CommentItem> {
     final bubbleColor = isMe
         ? theme.colorScheme.primaryContainer
         : theme.colorScheme.surfaceContainerHighest;
+    final screenWidth = MediaQuery.of(context).size.width;
+    final maxBubbleWidth = screenWidth > 600 ? 480.0 : screenWidth * 0.75;
+    const minBubbleWidth = 200.0;
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
         children: [
-          if (!isMe) ...[
-            if (widget.comment.user != null)
-              UserAvatar(user: widget.comment.user!, radius: 16)
-            else
-              CircleAvatar(radius: 16, child: Icon(Icons.person, size: 16)),
-            const SizedBox(width: 8),
-          ],
+          if (!isMe)
+            Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: widget.comment.user != null
+                  ? UserAvatar(user: widget.comment.user!, radius: 18)
+                  : CircleAvatar(radius: 18, child: Icon(Icons.person, size: 18)),
+            ),
+          if (!isMe) const SizedBox(width: 10),
           Flexible(
             child: GestureDetector(
               onLongPress: isMe && !_editing
@@ -680,20 +692,21 @@ class _CommentItemState extends State<_CommentItem> {
                   : null,
               child: Container(
                 constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.7,
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              decoration: BoxDecoration(
-                color: bubbleColor,
-                borderRadius: BorderRadius.only(
-                  topLeft: const Radius.circular(16),
-                  topRight: const Radius.circular(16),
-                  bottomLeft: Radius.circular(isMe ? 16 : 4),
-                  bottomRight: Radius.circular(isMe ? 4 : 16),
+                  maxWidth: maxBubbleWidth,
+                  minWidth: minBubbleWidth,
                 ),
-              ),
-              child: Column(
-                crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                decoration: BoxDecoration(
+                  color: bubbleColor,
+                  borderRadius: BorderRadius.only(
+                    topLeft: const Radius.circular(18),
+                    topRight: const Radius.circular(18),
+                    bottomLeft: Radius.circular(isMe ? 18 : 4),
+                    bottomRight: Radius.circular(isMe ? 4 : 18),
+                  ),
+                ),
+                child: Column(
+                  crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                 children: [
                   Row(
                     mainAxisSize: MainAxisSize.min,
