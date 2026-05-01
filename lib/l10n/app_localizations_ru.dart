@@ -552,13 +552,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get signInToGetStarted => 'Sign in to get started';
 
   @override
-  String get quickActions => 'Quick Actions';
+  String get quickActions => 'Быстрые действия';
 
   @override
-  String get yourRepositories => 'Your Repositories';
+  String get yourRepositories => 'Ваши репозитории';
 
   @override
-  String get noRepositoriesFound => 'No repositories found.';
+  String get noRepositoriesFound => 'Репозитории не найдены';
 
   @override
   String helloParams(Object full_name) {
@@ -569,10 +569,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get user => 'User';
 
   @override
-  String get private => 'Private';
+  String get private => 'Приватный';
 
   @override
-  String get untitled => 'Untitled';
+  String get untitled => 'Без названия';
 
   @override
   String get enterSearchQueryRepos =>
@@ -594,13 +594,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get admin => 'Admin';
 
   @override
-  String get repos => 'Repos';
+  String get repos => 'Репозитории';
 
   @override
-  String get followers => 'Followers';
+  String get followers => 'Подписчики';
 
   @override
-  String get following => 'Following';
+  String get following => 'Подписки';
 
   @override
   String get signOutConfirmMessage => 'Are you sure you want to sign out?';
@@ -648,7 +648,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get bytes => 'bytes';
 
   @override
-  String get repository => 'Repository';
+  String get repository => 'Репозиторий';
 
   @override
   String get httpGitDisabled => 'HTTP Git Disabled';
@@ -781,7 +781,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get filePreviewNotAvailable => 'File preview not available';
 
   @override
-  String get download => 'Download';
+  String get download => 'Скачать';
 
   @override
   String get failedToOpenDownloadUrl => 'Failed to open download URL';
@@ -966,13 +966,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get enableWiki => 'Enable Wiki';
 
   @override
-  String get preview => 'Preview';
+  String get preview => 'Предпросмотр';
 
   @override
   String get commitMessage => 'Commit Message';
 
   @override
-  String get commit => 'Commit';
+  String get commit => 'Коммит';
 
   @override
   String get commitMessageHint => 'Describe your changes (optional)';
@@ -1002,7 +1002,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get changedFiles => 'Changed Files';
 
   @override
-  String get tags => 'Tags';
+  String get tags => 'Теги';
 
   @override
   String get noCommits => 'No commits';
@@ -1111,7 +1111,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get descriptionHint => 'Short description of your repository';
 
   @override
-  String get public => 'Public';
+  String get public => 'Публичный';
 
   @override
   String get publicDescription =>
@@ -1230,7 +1230,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get total => 'Total';
 
   @override
-  String get clear => 'Clear';
+  String get clear => 'Очистить';
 
   @override
   String get webhooks => 'Webhooks';
@@ -1404,7 +1404,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get labelColorHint => 'Hex color, e.g. #FF0000';
 
   @override
-  String get filesChanged => 'Files Changed';
+  String get filesChanged => 'Изменённые файлы';
 
   @override
   String get noFilesChanged => 'No files changed';
@@ -1440,10 +1440,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get run => 'Run';
 
   @override
-  String get status => 'Status';
+  String get status => 'Статус';
 
   @override
-  String get jobs => 'Jobs';
+  String get jobs => 'Задачи';
 
   @override
   String get noJobs => 'No jobs';
@@ -1452,10 +1452,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get artifacts => 'Artifacts';
 
   @override
-  String get branch => 'Branch';
+  String get branch => 'Ветка';
 
   @override
-  String get author => 'Author';
+  String get author => 'Автор';
 
   @override
   String get filterByActor => 'Filter by actor';
@@ -1473,13 +1473,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get reviews => 'Reviews';
 
   @override
-  String get approve => 'Approve';
+  String get approve => 'Одобрить';
 
   @override
   String get requestChanges => 'Request Changes';
 
   @override
-  String get comment => 'Comment';
+  String get comment => 'Комментарий';
 
   @override
   String get blame => 'Blame';
@@ -1491,7 +1491,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get pickColor => 'Pick Color';
 
   @override
-  String get sshKeys => 'SSH Keys';
+  String get sshKeys => 'SSH ключи';
 
   @override
   String get allRepos => 'All Repos';
@@ -1537,7 +1537,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get addSshKey => 'Add SSH Key';
 
   @override
-  String get add => 'Add';
+  String get add => 'Добавить';
 
   @override
   String get keyAdded => 'Key added successfully';
@@ -1553,7 +1553,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get addReviewerHint => 'Enter reviewer username';
 
   @override
-  String get subscribe => 'Subscribe';
+  String get subscribe => 'Подписаться';
 
   @override
   String get unsubscribe => 'Unsubscribe';

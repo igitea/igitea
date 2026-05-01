@@ -102,7 +102,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get noResults => 'Keine Ergebnisse gefunden';
 
   @override
-  String get repositories => 'Repositories';
+  String get repositories => 'Repositorys';
 
   @override
   String get repositorySections => 'Repository Sections';
@@ -216,7 +216,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String joinedOn(Object date) {
-    return 'Joined on $date';
+    return 'Beigetreten am $date';
   }
 
   @override
@@ -510,19 +510,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get restoringSession => 'Restoring session...';
 
   @override
-  String get pleaseEnterServerUrl => 'Please enter a server URL';
+  String get pleaseEnterServerUrl => 'Bitte geben Sie eine Server-URL ein';
 
   @override
-  String get pleaseEnterValidUrl => 'Please enter a valid URL';
+  String get pleaseEnterValidUrl => 'Bitte geben Sie eine gültige URL ein';
 
   @override
-  String get connectToGitea => 'Connect to your Gitea instance';
+  String get connectToGitea => 'Mit Ihrer Gitea-Instanz verbinden';
 
   @override
   String get usernamePassword => 'Username & Password';
 
   @override
-  String get serverUrl => 'Server URL';
+  String get serverUrl => 'Server-URL';
 
   @override
   String get enterUsername => 'Enter your username';
@@ -543,7 +543,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get pleaseEnterAccessToken => 'Please enter an access token';
 
   @override
-  String get signInWithToken => 'Sign In with Token';
+  String get signInWithToken => 'Mit Token anmelden';
 
   @override
   String get welcomeToIgitea => 'Welcome to iGitea';
@@ -552,13 +552,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get signInToGetStarted => 'Sign in to get started';
 
   @override
-  String get quickActions => 'Quick Actions';
+  String get quickActions => 'Schnellaktionen';
 
   @override
-  String get yourRepositories => 'Your Repositories';
+  String get yourRepositories => 'Ihre Repositorys';
 
   @override
-  String get noRepositoriesFound => 'No repositories found.';
+  String get noRepositoriesFound => 'Keine Repositorys gefunden';
 
   @override
   String helloParams(Object full_name) {
@@ -569,10 +569,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get user => 'User';
 
   @override
-  String get private => 'Private';
+  String get private => 'Privat';
 
   @override
-  String get untitled => 'Untitled';
+  String get untitled => 'Unbenannt';
 
   @override
   String get enterSearchQueryRepos =>
@@ -594,13 +594,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get admin => 'Admin';
 
   @override
-  String get repos => 'Repos';
+  String get repos => 'Repositorys';
 
   @override
-  String get followers => 'Followers';
+  String get followers => 'Follower';
 
   @override
-  String get following => 'Following';
+  String get following => 'Folge ich';
 
   @override
   String get signOutConfirmMessage => 'Are you sure you want to sign out?';
@@ -669,10 +669,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get timeTrackingDisabled => 'Time Tracking Disabled';
 
   @override
-  String get yes => 'Yes';
+  String get yes => 'Ja';
 
   @override
-  String get no => 'No';
+  String get no => 'Nein';
 
   @override
   String get schedule => 'Schedule';
@@ -695,7 +695,7 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get unknown => 'Unknown';
+  String get unknown => 'Unbekannt';
 
   @override
   String openedParams(Object time) {
@@ -709,7 +709,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get failedToLoadComments => 'Failed to load comments';
 
   @override
-  String get writeComment => 'Write a comment...';
+  String get writeComment => 'Kommentar schreiben';
 
   @override
   String commentsCountParams(Object count) {
@@ -751,7 +751,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get emptyDirectory => 'Empty directory';
 
   @override
-  String get noIssues => 'No issues';
+  String get noIssues => 'Keine Issues';
 
   @override
   String get noPullRequests => 'No pull requests';
@@ -769,7 +769,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get archived => 'Archived';
 
   @override
-  String get defaultBranch => 'Default branch';
+  String get defaultBranch => 'Standard-Branch';
 
   @override
   String get copyCode => 'Copy code';
@@ -781,13 +781,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get filePreviewNotAvailable => 'File preview not available';
 
   @override
-  String get download => 'Download';
+  String get download => 'Herunterladen';
 
   @override
   String get failedToOpenDownloadUrl => 'Failed to open download URL';
 
   @override
-  String get noNotifications => 'No notifications';
+  String get noNotifications => 'Keine Benachrichtigungen';
 
   @override
   String get noTitle => 'No title';
@@ -834,10 +834,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get pleaseEnterTitle => 'Please enter a title';
 
   @override
-  String get noActivity => 'No recent activity';
+  String get noActivity => 'Keine Aktivität';
 
   @override
-  String get createdRepo => 'created repository';
+  String get createdRepo => 'Repository erstellt';
 
   @override
   String get pushedTag => 'pushed tag';
@@ -846,28 +846,28 @@ class AppLocalizationsDe extends AppLocalizations {
   String get deletedTag => 'deleted tag';
 
   @override
-  String get createdIssue => 'created issue';
+  String get createdIssue => 'Issue erstellt';
 
   @override
-  String get closedIssue => 'closed issue';
+  String get closedIssue => 'Issue geschlossen';
 
   @override
   String get reopenedIssue => 'reopened issue';
 
   @override
-  String get createdPR => 'created pull request';
+  String get createdPR => 'PR erstellt';
 
   @override
-  String get mergedPR => 'merged pull request';
+  String get mergedPR => 'PR gemergt';
 
   @override
-  String get closedPR => 'closed pull request';
+  String get closedPR => 'PR geschlossen';
 
   @override
-  String get commentedOnIssue => 'commented on issue';
+  String get commentedOnIssue => 'Issue kommentiert';
 
   @override
-  String get commentedOnPR => 'commented on pull request';
+  String get commentedOnPR => 'PR kommentiert';
 
   @override
   String get forkedRepo => 'forked repository';
@@ -933,22 +933,22 @@ class AppLocalizationsDe extends AppLocalizations {
   String get inRepo => 'in';
 
   @override
-  String get to => 'to';
+  String get to => 'nach';
 
   @override
-  String get from => 'from';
+  String get from => 'von';
 
   @override
-  String get headBranch => 'Head branch';
+  String get headBranch => 'Quell-Branch';
 
   @override
-  String get baseBranch => 'Base branch';
+  String get baseBranch => 'Ziel-Branch';
 
   @override
-  String get pleaseFillAllFields => 'Please fill all required fields';
+  String get pleaseFillAllFields => 'Bitte füllen Sie alle Pflichtfelder aus';
 
   @override
-  String get settingsSaved => 'Settings saved';
+  String get settingsSaved => 'Einstellungen gespeichert';
 
   @override
   String get privateRepo => 'Private repository';
@@ -966,7 +966,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get enableWiki => 'Enable Wiki';
 
   @override
-  String get preview => 'Preview';
+  String get preview => 'Vorschau';
 
   @override
   String get commitMessage => 'Commit Message';
@@ -1005,7 +1005,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get tags => 'Tags';
 
   @override
-  String get noCommits => 'No commits';
+  String get noCommits => 'Keine Commits';
 
   @override
   String get noTags => 'No tags';
@@ -1050,7 +1050,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get teams => 'Teams';
 
   @override
-  String get noTeams => 'No teams';
+  String get noTeams => 'Keine Teams';
 
   @override
   String get location => 'Location';
@@ -1087,7 +1087,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get members => 'Members';
 
   @override
-  String get noMembers => 'No members';
+  String get noMembers => 'Keine Mitglieder';
 
   @override
   String get editOrganization => 'Edit Organization';
@@ -1099,7 +1099,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get createRepository => 'Create Repository';
 
   @override
-  String get repositoryName => 'Repository Name';
+  String get repositoryName => 'Repository-Name';
 
   @override
   String get repositoryNameHint => 'my-awesome-repo';
@@ -1111,7 +1111,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get descriptionHint => 'Short description of your repository';
 
   @override
-  String get public => 'Public';
+  String get public => 'Öffentlich';
 
   @override
   String get publicDescription =>
@@ -1168,7 +1168,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get wikiPageContentHint => 'Write in Markdown...';
 
   @override
-  String get noWikiPages => 'No wiki pages';
+  String get noWikiPages => 'Keine Wiki-Seiten';
 
   @override
   String get noWikiPagesDescription =>
@@ -1181,7 +1181,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get lastCommit => 'Last commit';
 
   @override
-  String get noContent => 'No content';
+  String get noContent => 'Kein Inhalt';
 
   @override
   String get saved => 'Saved';
@@ -1190,13 +1190,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get created => 'Created';
 
   @override
-  String get createMilestone => 'Create Milestone';
+  String get createMilestone => 'Meilenstein erstellen';
 
   @override
-  String get editMilestone => 'Edit Milestone';
+  String get editMilestone => 'Meilenstein bearbeiten';
 
   @override
-  String get deleteMilestone => 'Delete Milestone';
+  String get deleteMilestone => 'Meilenstein löschen';
 
   @override
   String get deleteMilestoneConfirm =>
@@ -1206,7 +1206,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get milestoneDeleted => 'Milestone deleted';
 
   @override
-  String get milestoneTitle => 'Title';
+  String get milestoneTitle => 'Titel';
 
   @override
   String get milestoneDescription => 'Description';
@@ -1215,22 +1215,22 @@ class AppLocalizationsDe extends AppLocalizations {
   String get milestoneDescriptionHint => 'Describe this milestone';
 
   @override
-  String get milestoneDueDate => 'Due Date';
+  String get milestoneDueDate => 'Fälligkeitsdatum';
 
   @override
-  String get milestoneState => 'State';
+  String get milestoneState => 'Status';
 
   @override
-  String get milestoneStateOpen => 'Open';
+  String get milestoneStateOpen => 'Offen';
 
   @override
-  String get milestoneStateClosed => 'Closed';
+  String get milestoneStateClosed => 'Geschlossen';
 
   @override
   String get total => 'Total';
 
   @override
-  String get clear => 'Clear';
+  String get clear => 'Löschen';
 
   @override
   String get webhooks => 'Webhooks';
@@ -1239,16 +1239,16 @@ class AppLocalizationsDe extends AppLocalizations {
   String get webhook => 'Webhook';
 
   @override
-  String get noWebhooks => 'No webhooks';
+  String get noWebhooks => 'Keine Webhooks';
 
   @override
-  String get createWebhook => 'Create Webhook';
+  String get createWebhook => 'Webhook erstellen';
 
   @override
-  String get editWebhook => 'Edit Webhook';
+  String get editWebhook => 'Webhook bearbeiten';
 
   @override
-  String get deleteWebhook => 'Delete Webhook';
+  String get deleteWebhook => 'Webhook löschen';
 
   @override
   String get deleteWebhookConfirm =>
@@ -1285,19 +1285,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get webhookEventsHint => 'Select events to trigger this webhook';
 
   @override
-  String get webhookActive => 'Active';
+  String get webhookActive => 'Aktiv';
 
   @override
-  String get webhookInactive => 'Inactive';
+  String get webhookInactive => 'Inaktiv';
 
   @override
-  String get webhookType => 'Type';
+  String get webhookType => 'Typ';
 
   @override
-  String get webhookCreatedAt => 'Created';
+  String get webhookCreatedAt => 'Erstellt am';
 
   @override
-  String get webhookUpdatedAt => 'Updated';
+  String get webhookUpdatedAt => 'Aktualisiert am';
 
   @override
   String get webhookLastDelivery => 'Last Delivery';
@@ -1370,13 +1370,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get oauth2TokenRefreshed => 'Token refreshed successfully';
 
   @override
-  String get createLabel => 'Create Label';
+  String get createLabel => 'Label erstellen';
 
   @override
-  String get editLabel => 'Edit Label';
+  String get editLabel => 'Label bearbeiten';
 
   @override
-  String get deleteLabel => 'Delete Label';
+  String get deleteLabel => 'Label löschen';
 
   @override
   String get deleteLabelConfirm =>
@@ -1389,7 +1389,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get labelName => 'Name';
 
   @override
-  String get labelNameHint => 'e.g. bug';
+  String get labelNameHint => 'z.B. bug';
 
   @override
   String get labelDescription => 'Description';
@@ -1398,19 +1398,19 @@ class AppLocalizationsDe extends AppLocalizations {
   String get labelDescriptionHint => 'Optional description';
 
   @override
-  String get labelColor => 'Color';
+  String get labelColor => 'Farbe';
 
   @override
-  String get labelColorHint => 'Hex color, e.g. #FF0000';
+  String get labelColorHint => 'Hex-Farbe, z.B. #FF0000';
 
   @override
-  String get filesChanged => 'Files Changed';
+  String get filesChanged => 'Geänderte Dateien';
 
   @override
-  String get noFilesChanged => 'No files changed';
+  String get noFilesChanged => 'Keine Dateien geändert';
 
   @override
-  String get viewDiff => 'View Diff';
+  String get viewDiff => 'Diff anzeigen';
 
   @override
   String get unifiedView => 'Unified view';
@@ -1419,7 +1419,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get splitView => 'Split view';
 
   @override
-  String get compareVersions => 'Compare Versions';
+  String get compareVersions => 'Versionen vergleichen';
 
   @override
   String get baseRef => 'Base (older)';
@@ -1428,13 +1428,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get headRef => 'Head (newer)';
 
   @override
-  String get compare => 'Compare';
+  String get compare => 'Vergleichen';
 
   @override
   String get actions => 'Actions';
 
   @override
-  String get noActions => 'No workflow runs';
+  String get noActions => 'Keine Workflows';
 
   @override
   String get run => 'Run';
@@ -1446,7 +1446,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get jobs => 'Jobs';
 
   @override
-  String get noJobs => 'No jobs';
+  String get noJobs => 'Keine Jobs';
 
   @override
   String get artifacts => 'Artifacts';
@@ -1455,13 +1455,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get branch => 'Branch';
 
   @override
-  String get author => 'Author';
+  String get author => 'Autor';
 
   @override
-  String get filterByActor => 'Filter by actor';
+  String get filterByActor => 'Nach Akteur filtern';
 
   @override
-  String get filterByStatus => 'Filter by status';
+  String get filterByStatus => 'Nach Status filtern';
 
   @override
   String get reviewChanges => 'Review Changes';
@@ -1473,13 +1473,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get reviews => 'Reviews';
 
   @override
-  String get approve => 'Approve';
+  String get approve => 'Genehmigen';
 
   @override
-  String get requestChanges => 'Request Changes';
+  String get requestChanges => 'Änderungen anfordern';
 
   @override
-  String get comment => 'Comment';
+  String get comment => 'Kommentar';
 
   @override
   String get blame => 'Blame';
@@ -1488,37 +1488,37 @@ class AppLocalizationsDe extends AppLocalizations {
   String get diffView => 'Diff View';
 
   @override
-  String get pickColor => 'Pick Color';
+  String get pickColor => 'Farbe auswählen';
 
   @override
-  String get sshKeys => 'SSH Keys';
+  String get sshKeys => 'SSH-Schlüssel';
 
   @override
-  String get allRepos => 'All Repos';
+  String get allRepos => 'Alle Repositorys';
 
   @override
-  String get configuration => 'Configuration';
+  String get configuration => 'Konfiguration';
 
   @override
-  String get none => 'None';
+  String get none => 'Keine';
 
   @override
-  String get more => 'More';
+  String get more => 'Mehr';
 
   @override
-  String get units => 'Units';
+  String get units => 'Einheiten';
 
   @override
-  String get permission => 'Permission';
+  String get permission => 'Berechtigung';
 
   @override
-  String get repoList => 'Repositories';
+  String get repoList => 'Repository-Liste';
 
   @override
-  String get noChanges => 'No changes';
+  String get noChanges => 'Keine Änderungen';
 
   @override
-  String get limited => 'Limited';
+  String get limited => 'Eingeschränkt';
 
   @override
   String get unknownSection => 'Unknown section';
@@ -1537,7 +1537,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get addSshKey => 'Add SSH Key';
 
   @override
-  String get add => 'Add';
+  String get add => 'Hinzufügen';
 
   @override
   String get keyAdded => 'Key added successfully';
@@ -1547,34 +1547,34 @@ class AppLocalizationsDe extends AppLocalizations {
       'Are you sure you want to delete this comment?';
 
   @override
-  String get requestReviewers => 'Request Reviewers';
+  String get requestReviewers => 'Reviewer anfordern';
 
   @override
   String get addReviewerHint => 'Enter reviewer username';
 
   @override
-  String get subscribe => 'Subscribe';
+  String get subscribe => 'Abonnieren';
 
   @override
-  String get unsubscribe => 'Unsubscribe';
+  String get unsubscribe => 'Abo kündigen';
 
   @override
-  String get setDueDate => 'Set Due Date';
+  String get setDueDate => 'Fälligkeitsdatum setzen';
 
   @override
   String get removeDueDate => 'Remove Due Date';
 
   @override
-  String get topics => 'Topics';
+  String get topics => 'Themen';
 
   @override
   String get noTopics => 'No topics';
 
   @override
-  String get branchProtection => 'Branch Protection';
+  String get branchProtection => 'Branch-Schutz';
 
   @override
-  String get protectBranch => 'Protect Branch';
+  String get protectBranch => 'Branch schützen';
 
   @override
   String get https => 'HTTPS';
@@ -1592,7 +1592,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get id => 'ID';
 
   @override
-  String get searchRepositoriesHint => 'Search for repositories';
+  String get searchRepositoriesHint => 'Repositorys durchsuchen';
 
   @override
   String get publicKey => 'Public Key';

@@ -215,7 +215,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String joinedOn(Object date) {
-    return 'Joined on $date';
+    return '$date に参加';
   }
 
   @override
@@ -507,31 +507,31 @@ class AppLocalizationsJa extends AppLocalizations {
   String get restoringSession => 'Restoring session...';
 
   @override
-  String get pleaseEnterServerUrl => 'Please enter a server URL';
+  String get pleaseEnterServerUrl => 'サーバーURLを入力してください';
 
   @override
-  String get pleaseEnterValidUrl => 'Please enter a valid URL';
+  String get pleaseEnterValidUrl => '有効なURLを入力してください';
 
   @override
-  String get connectToGitea => 'Connect to your Gitea instance';
+  String get connectToGitea => 'Giteaインスタンスに接続';
 
   @override
   String get usernamePassword => 'Username & Password';
 
   @override
-  String get serverUrl => 'Server URL';
+  String get serverUrl => 'サーバーURL';
 
   @override
-  String get enterUsername => 'Enter your username';
+  String get enterUsername => 'ユーザー名を入力';
 
   @override
-  String get pleaseEnterUsername => 'Please enter your username';
+  String get pleaseEnterUsername => 'ユーザー名を入力してください';
 
   @override
-  String get enterPassword => 'Enter your password';
+  String get enterPassword => 'パスワードを入力';
 
   @override
-  String get pleaseEnterPassword => 'Please enter your password';
+  String get pleaseEnterPassword => 'パスワードを入力してください';
 
   @override
   String get pasteAccessToken => 'Paste your personal access token';
@@ -540,7 +540,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get pleaseEnterAccessToken => 'Please enter an access token';
 
   @override
-  String get signInWithToken => 'Sign In with Token';
+  String get signInWithToken => 'トークンでログイン';
 
   @override
   String get welcomeToIgitea => 'Welcome to iGitea';
@@ -566,10 +566,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get user => 'User';
 
   @override
-  String get private => 'Private';
+  String get private => '非公開';
 
   @override
-  String get untitled => 'Untitled';
+  String get untitled => '無題';
 
   @override
   String get enterSearchQueryRepos => '検索キーワードを入力';
@@ -665,10 +665,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get timeTrackingDisabled => 'Time Tracking Disabled';
 
   @override
-  String get yes => 'Yes';
+  String get yes => 'はい';
 
   @override
-  String get no => 'No';
+  String get no => 'いいえ';
 
   @override
   String get schedule => 'Schedule';
@@ -691,7 +691,7 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get unknown => 'Unknown';
+  String get unknown => '不明';
 
   @override
   String openedParams(Object time) {
@@ -699,13 +699,13 @@ class AppLocalizationsJa extends AppLocalizations {
   }
 
   @override
-  String get noDescriptionProvided => 'No description provided.';
+  String get noDescriptionProvided => '説明がありません';
 
   @override
   String get failedToLoadComments => 'Failed to load comments';
 
   @override
-  String get writeComment => 'Write a comment...';
+  String get writeComment => 'コメントを書く';
 
   @override
   String commentsCountParams(Object count) {
@@ -747,7 +747,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get emptyDirectory => 'Empty directory';
 
   @override
-  String get noIssues => 'No issues';
+  String get noIssues => 'Issueなし';
 
   @override
   String get noPullRequests => 'No pull requests';
@@ -762,10 +762,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get preRelease => 'Pre-release';
 
   @override
-  String get archived => 'Archived';
+  String get archived => 'アーカイブ済み';
 
   @override
-  String get defaultBranch => 'Default branch';
+  String get defaultBranch => 'デフォルトブランチ';
 
   @override
   String get copyCode => 'Copy code';
@@ -777,13 +777,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get filePreviewNotAvailable => 'File preview not available';
 
   @override
-  String get download => 'Download';
+  String get download => 'ダウンロード';
 
   @override
   String get failedToOpenDownloadUrl => 'Failed to open download URL';
 
   @override
-  String get noNotifications => 'No notifications';
+  String get noNotifications => '通知なし';
 
   @override
   String get noTitle => 'No title';
@@ -830,52 +830,52 @@ class AppLocalizationsJa extends AppLocalizations {
   String get pleaseEnterTitle => 'Please enter a title';
 
   @override
-  String get noActivity => 'No recent activity';
+  String get noActivity => 'アクティビティなし';
 
   @override
-  String get createdRepo => 'created repository';
+  String get createdRepo => 'リポジトリを作成';
 
   @override
-  String get pushedTag => 'pushed tag';
+  String get pushedTag => 'タグをプッシュ';
 
   @override
-  String get deletedTag => 'deleted tag';
+  String get deletedTag => 'タグを削除';
 
   @override
-  String get createdIssue => 'created issue';
+  String get createdIssue => 'Issueを作成';
 
   @override
-  String get closedIssue => 'closed issue';
+  String get closedIssue => 'Issueをクローズ';
 
   @override
-  String get reopenedIssue => 'reopened issue';
+  String get reopenedIssue => 'Issueを再開';
 
   @override
-  String get createdPR => 'created pull request';
+  String get createdPR => 'PRを作成';
 
   @override
-  String get mergedPR => 'merged pull request';
+  String get mergedPR => 'PRをマージ';
 
   @override
-  String get closedPR => 'closed pull request';
+  String get closedPR => 'PRをクローズ';
 
   @override
-  String get commentedOnIssue => 'commented on issue';
+  String get commentedOnIssue => 'Issueにコメント';
 
   @override
-  String get commentedOnPR => 'commented on pull request';
+  String get commentedOnPR => 'PRにコメント';
 
   @override
-  String get forkedRepo => 'forked repository';
+  String get forkedRepo => 'フォークしました';
 
   @override
   String get transferredRepo => 'transferred repository';
 
   @override
-  String get deletedRepo => 'deleted repository';
+  String get deletedRepo => 'リポジトリを削除';
 
   @override
-  String get updatedWiki => 'updated wiki';
+  String get updatedWiki => 'Wikiを更新';
 
   @override
   String get performedAction => 'performed action';
@@ -884,31 +884,31 @@ class AppLocalizationsJa extends AppLocalizations {
   String get commitRepo => 'committed to';
 
   @override
-  String get renameRepo => 'renamed repository';
+  String get renameRepo => 'リポジトリ名を変更';
 
   @override
-  String get starRepo => 'starred repository';
+  String get starRepo => 'スターを付けた';
 
   @override
   String get watchRepo => 'started watching repository';
 
   @override
-  String get reopenPR => 'reopened pull request';
+  String get reopenPR => 'PRを再開';
 
   @override
-  String get approvePR => 'approved pull request';
+  String get approvePR => 'PRを承認';
 
   @override
   String get rejectPR => 'rejected pull request';
 
   @override
-  String get publishRelease => 'published release';
+  String get publishRelease => 'リリースを公開';
 
   @override
-  String get deleteBranch => 'deleted branch';
+  String get deleteBranch => 'ブランチを削除';
 
   @override
-  String get autoMergePR => 'auto-merged pull request';
+  String get autoMergePR => 'PRを自動マージ';
 
   @override
   String get pullReviewDismissed => 'dismissed pull request review';
@@ -926,25 +926,25 @@ class AppLocalizationsJa extends AppLocalizations {
   String get mirrorSyncDelete => 'synced delete to mirror';
 
   @override
-  String get inRepo => 'in';
+  String get inRepo => 'で';
 
   @override
-  String get to => 'to';
+  String get to => 'へ';
 
   @override
-  String get from => 'from';
+  String get from => 'から';
 
   @override
-  String get headBranch => 'Head branch';
+  String get headBranch => '送信元ブランチ';
 
   @override
-  String get baseBranch => 'Base branch';
+  String get baseBranch => '送信先ブランチ';
 
   @override
-  String get pleaseFillAllFields => 'Please fill all required fields';
+  String get pleaseFillAllFields => '必須項目をすべて入力してください';
 
   @override
-  String get settingsSaved => 'Settings saved';
+  String get settingsSaved => '設定を保存しました';
 
   @override
   String get privateRepo => 'Private repository';
@@ -962,13 +962,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get enableWiki => 'Enable Wiki';
 
   @override
-  String get preview => 'Preview';
+  String get preview => 'プレビュー';
 
   @override
   String get commitMessage => 'Commit Message';
 
   @override
-  String get commit => 'Commit';
+  String get commit => 'コミット';
 
   @override
   String get commitMessageHint => 'Describe your changes (optional)';
@@ -998,10 +998,10 @@ class AppLocalizationsJa extends AppLocalizations {
   String get changedFiles => 'Changed Files';
 
   @override
-  String get tags => 'Tags';
+  String get tags => 'タグ';
 
   @override
-  String get noCommits => 'No commits';
+  String get noCommits => 'コミットなし';
 
   @override
   String get noTags => 'No tags';
@@ -1046,7 +1046,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get teams => 'Teams';
 
   @override
-  String get noTeams => 'No teams';
+  String get noTeams => 'チームなし';
 
   @override
   String get location => 'Location';
@@ -1083,7 +1083,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get members => 'Members';
 
   @override
-  String get noMembers => 'No members';
+  String get noMembers => 'メンバーなし';
 
   @override
   String get editOrganization => 'Edit Organization';
@@ -1107,7 +1107,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get descriptionHint => 'リポジトリの簡単な説明';
 
   @override
-  String get public => 'Public';
+  String get public => '公開';
 
   @override
   String get publicDescription => 'インターネット上の誰でもこのリポジトリを見ることができます';
@@ -1162,7 +1162,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get wikiPageContentHint => 'Write in Markdown...';
 
   @override
-  String get noWikiPages => 'No wiki pages';
+  String get noWikiPages => 'Wikiページなし';
 
   @override
   String get noWikiPagesDescription =>
@@ -1175,7 +1175,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get lastCommit => 'Last commit';
 
   @override
-  String get noContent => 'No content';
+  String get noContent => '内容なし';
 
   @override
   String get saved => 'Saved';
@@ -1184,23 +1184,22 @@ class AppLocalizationsJa extends AppLocalizations {
   String get created => 'Created';
 
   @override
-  String get createMilestone => 'Create Milestone';
+  String get createMilestone => 'マイルストーンを作成';
 
   @override
-  String get editMilestone => 'Edit Milestone';
+  String get editMilestone => 'マイルストーンを編集';
 
   @override
-  String get deleteMilestone => 'Delete Milestone';
+  String get deleteMilestone => 'マイルストーンを削除';
 
   @override
-  String get deleteMilestoneConfirm =>
-      'Are you sure you want to delete this milestone? This action cannot be undone.';
+  String get deleteMilestoneConfirm => 'このマイルストーンを削除してもよろしいですか？';
 
   @override
-  String get milestoneDeleted => 'Milestone deleted';
+  String get milestoneDeleted => 'マイルストーンを削除しました';
 
   @override
-  String get milestoneTitle => 'Title';
+  String get milestoneTitle => 'タイトル';
 
   @override
   String get milestoneDescription => 'Description';
@@ -1209,22 +1208,22 @@ class AppLocalizationsJa extends AppLocalizations {
   String get milestoneDescriptionHint => 'Describe this milestone';
 
   @override
-  String get milestoneDueDate => 'Due Date';
+  String get milestoneDueDate => '期限';
 
   @override
-  String get milestoneState => 'State';
+  String get milestoneState => '状態';
 
   @override
-  String get milestoneStateOpen => 'Open';
+  String get milestoneStateOpen => 'オープン';
 
   @override
-  String get milestoneStateClosed => 'Closed';
+  String get milestoneStateClosed => 'クローズ';
 
   @override
   String get total => 'Total';
 
   @override
-  String get clear => 'Clear';
+  String get clear => 'クリア';
 
   @override
   String get webhooks => 'Webhooks';
@@ -1233,23 +1232,22 @@ class AppLocalizationsJa extends AppLocalizations {
   String get webhook => 'Webhook';
 
   @override
-  String get noWebhooks => 'No webhooks';
+  String get noWebhooks => 'Webhookなし';
 
   @override
-  String get createWebhook => 'Create Webhook';
+  String get createWebhook => 'Webhookを作成';
 
   @override
-  String get editWebhook => 'Edit Webhook';
+  String get editWebhook => 'Webhookを編集';
 
   @override
-  String get deleteWebhook => 'Delete Webhook';
+  String get deleteWebhook => 'Webhookを削除';
 
   @override
-  String get deleteWebhookConfirm =>
-      'Are you sure you want to delete this webhook? This action cannot be undone.';
+  String get deleteWebhookConfirm => 'このWebhookを削除してもよろしいですか？';
 
   @override
-  String get webhookDeleted => 'Webhook deleted';
+  String get webhookDeleted => 'Webhookを削除しました';
 
   @override
   String get webhookUrl => 'Payload URL';
@@ -1279,19 +1277,19 @@ class AppLocalizationsJa extends AppLocalizations {
   String get webhookEventsHint => 'Select events to trigger this webhook';
 
   @override
-  String get webhookActive => 'Active';
+  String get webhookActive => 'アクティブ';
 
   @override
-  String get webhookInactive => 'Inactive';
+  String get webhookInactive => '非アクティブ';
 
   @override
-  String get webhookType => 'Type';
+  String get webhookType => 'タイプ';
 
   @override
-  String get webhookCreatedAt => 'Created';
+  String get webhookCreatedAt => '作成日';
 
   @override
-  String get webhookUpdatedAt => 'Updated';
+  String get webhookUpdatedAt => '更新日';
 
   @override
   String get webhookLastDelivery => 'Last Delivery';
@@ -1300,28 +1298,28 @@ class AppLocalizationsJa extends AppLocalizations {
   String get webhookSelectAllEvents => 'Select All';
 
   @override
-  String get webhookPushEvents => 'Push';
+  String get webhookPushEvents => 'プッシュ';
 
   @override
-  String get webhookPullRequestEvents => 'Pull Requests';
+  String get webhookPullRequestEvents => 'Pull Request';
 
   @override
-  String get webhookIssuesEvents => 'Issues';
+  String get webhookIssuesEvents => 'Issue';
 
   @override
-  String get webhookCreateEvents => 'Create';
+  String get webhookCreateEvents => '作成';
 
   @override
-  String get webhookDeleteEvents => 'Delete';
+  String get webhookDeleteEvents => '削除';
 
   @override
-  String get webhookReleaseEvents => 'Releases';
+  String get webhookReleaseEvents => 'リリース';
 
   @override
   String get webhookWikiEvents => 'Wiki';
 
   @override
-  String get webhookStarEvents => 'Star';
+  String get webhookStarEvents => 'スター';
 
   @override
   String get webhookForkEvents => 'Fork';
@@ -1364,56 +1362,55 @@ class AppLocalizationsJa extends AppLocalizations {
   String get oauth2TokenRefreshed => 'Token refreshed successfully';
 
   @override
-  String get createLabel => 'Create Label';
+  String get createLabel => 'ラベルを作成';
 
   @override
-  String get editLabel => 'Edit Label';
+  String get editLabel => 'ラベルを編集';
 
   @override
-  String get deleteLabel => 'Delete Label';
+  String get deleteLabel => 'ラベルを削除';
 
   @override
-  String get deleteLabelConfirm =>
-      'Are you sure you want to delete this label?';
+  String get deleteLabelConfirm => 'このラベルを削除してもよろしいですか？';
 
   @override
-  String get labelDeleted => 'Label deleted';
+  String get labelDeleted => 'ラベルを削除しました';
 
   @override
-  String get labelName => 'Name';
+  String get labelName => '名前';
 
   @override
-  String get labelNameHint => 'e.g. bug';
+  String get labelNameHint => '例: bug';
 
   @override
-  String get labelDescription => 'Description';
+  String get labelDescription => '説明';
 
   @override
-  String get labelDescriptionHint => 'Optional description';
+  String get labelDescriptionHint => '説明（任意）';
 
   @override
-  String get labelColor => 'Color';
+  String get labelColor => '色';
 
   @override
-  String get labelColorHint => 'Hex color, e.g. #FF0000';
+  String get labelColorHint => '16進数カラー（例: #FF0000）';
 
   @override
-  String get filesChanged => 'Files Changed';
+  String get filesChanged => '変更されたファイル';
 
   @override
-  String get noFilesChanged => 'No files changed';
+  String get noFilesChanged => '変更されたファイルはありません';
 
   @override
-  String get viewDiff => 'View Diff';
+  String get viewDiff => '差分を見る';
 
   @override
-  String get unifiedView => 'Unified view';
+  String get unifiedView => '統一表示';
 
   @override
-  String get splitView => 'Split view';
+  String get splitView => '分割表示';
 
   @override
-  String get compareVersions => 'Compare Versions';
+  String get compareVersions => 'バージョン比較';
 
   @override
   String get baseRef => 'Base (older)';
@@ -1422,153 +1419,151 @@ class AppLocalizationsJa extends AppLocalizations {
   String get headRef => 'Head (newer)';
 
   @override
-  String get compare => 'Compare';
+  String get compare => '比較';
 
   @override
   String get actions => 'Actions';
 
   @override
-  String get noActions => 'No workflow runs';
+  String get noActions => 'ワークフローなし';
 
   @override
   String get run => 'Run';
 
   @override
-  String get status => 'Status';
+  String get status => 'ステータス';
 
   @override
-  String get jobs => 'Jobs';
+  String get jobs => 'ジョブ';
 
   @override
-  String get noJobs => 'No jobs';
+  String get noJobs => 'ジョブなし';
 
   @override
-  String get artifacts => 'Artifacts';
+  String get artifacts => 'アーティファクト';
 
   @override
-  String get branch => 'Branch';
+  String get branch => 'ブランチ';
 
   @override
-  String get author => 'Author';
+  String get author => '作成者';
 
   @override
-  String get filterByActor => 'Filter by actor';
+  String get filterByActor => '実行者で絞り込み';
 
   @override
-  String get filterByStatus => 'Filter by status';
+  String get filterByStatus => 'ステータスで絞り込み';
 
   @override
-  String get reviewChanges => 'Review Changes';
+  String get reviewChanges => '変更をレビュー';
 
   @override
-  String get reviewBody => 'Review comment';
+  String get reviewBody => 'レビューコメント';
 
   @override
-  String get reviews => 'Reviews';
+  String get reviews => 'レビュー';
 
   @override
-  String get approve => 'Approve';
+  String get approve => '承認';
 
   @override
-  String get requestChanges => 'Request Changes';
+  String get requestChanges => '変更を依頼';
 
   @override
-  String get comment => 'Comment';
+  String get comment => 'コメント';
 
   @override
-  String get blame => 'Blame';
+  String get blame => ' blame';
 
   @override
-  String get diffView => 'Diff View';
+  String get diffView => '差分表示';
 
   @override
-  String get pickColor => 'Pick Color';
+  String get pickColor => '色を選択';
 
   @override
-  String get sshKeys => 'SSH Keys';
+  String get sshKeys => 'SSH鍵';
 
   @override
-  String get allRepos => 'All Repos';
+  String get allRepos => 'すべてのリポジトリ';
 
   @override
-  String get configuration => 'Configuration';
+  String get configuration => '設定';
 
   @override
-  String get none => 'None';
+  String get none => 'なし';
 
   @override
-  String get more => 'More';
+  String get more => 'もっと';
 
   @override
-  String get units => 'Units';
+  String get units => '単位';
 
   @override
-  String get permission => 'Permission';
+  String get permission => '権限';
 
   @override
-  String get repoList => 'Repositories';
+  String get repoList => 'リポジトリ一覧';
 
   @override
-  String get noChanges => 'No changes';
+  String get noChanges => '変更なし';
 
   @override
-  String get limited => 'Limited';
+  String get limited => '制限付き';
 
   @override
   String get unknownSection => 'Unknown section';
 
   @override
-  String get deleteKey => 'Delete Key';
+  String get deleteKey => '鍵を削除';
 
   @override
-  String get deleteKeyConfirm =>
-      'Are you sure you want to delete this SSH key?';
+  String get deleteKeyConfirm => 'このSSH鍵を削除してもよろしいですか？';
 
   @override
-  String get keyDeleted => 'Key deleted successfully';
+  String get keyDeleted => '鍵を削除しました';
 
   @override
-  String get addSshKey => 'Add SSH Key';
+  String get addSshKey => 'SSH鍵を追加';
 
   @override
-  String get add => 'Add';
+  String get add => '追加';
 
   @override
-  String get keyAdded => 'Key added successfully';
+  String get keyAdded => '鍵を追加しました';
 
   @override
-  String get deleteCommentConfirm =>
-      'Are you sure you want to delete this comment?';
+  String get deleteCommentConfirm => 'このコメントを削除してもよろしいですか？';
 
   @override
-  String get requestReviewers => 'Request Reviewers';
+  String get requestReviewers => 'レビュアーを依頼';
 
   @override
   String get addReviewerHint => 'Enter reviewer username';
 
   @override
-  String get subscribe => 'Subscribe';
+  String get subscribe => '購読';
 
   @override
-  String get unsubscribe => 'Unsubscribe';
+  String get unsubscribe => '購読解除';
 
   @override
-  String get setDueDate => 'Set Due Date';
+  String get setDueDate => '期限を設定';
 
   @override
-  String get removeDueDate => 'Remove Due Date';
+  String get removeDueDate => '期限を削除';
 
   @override
-  String get topics => 'Topics';
+  String get topics => 'トピック';
 
   @override
-  String get noTopics => 'No topics';
+  String get noTopics => 'トピックなし';
 
   @override
-  String get branchProtection => 'Branch Protection';
+  String get branchProtection => 'ブランチ保護';
 
   @override
-  String get protectBranch => 'Protect Branch';
+  String get protectBranch => 'ブランチを保護';
 
   @override
   String get https => 'HTTPS';
