@@ -9,6 +9,7 @@
 
 ### 修复
 - 里程碑编辑：修正 `due_on` 日期格式（添加时区偏移），解决服务器解析错误
+- 查看/编辑 Issue 返回后自动刷新列表数据
 - macOS DMG：修正应用名称为 `igitea.app`（原为不存在的 `Runner.app`）
 - macOS：添加 ad-hoc 签名，减少 Gatekeeper 弹窗
 - Linux AppImage：使用已有的 Android launcher 图标替代缺失的 `assets/icon.png`

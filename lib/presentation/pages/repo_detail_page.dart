@@ -990,6 +990,7 @@ class _IssuesTabState extends State<_IssuesTab> {
                                     owner: widget.owner,
                                     repo: widget.repo,
                                     l10n: widget.l10n,
+                                    onRefresh: _loadIssues,
                                   ),
                                 );
                               },
@@ -1030,8 +1031,9 @@ class _IssueItem extends StatelessWidget {
   final String owner;
   final String repo;
   final AppLocalizations l10n;
+  final VoidCallback? onRefresh;
 
-  const _IssueItem({required this.issue, required this.owner, required this.repo, required this.l10n});
+  const _IssueItem({required this.issue, required this.owner, required this.repo, required this.l10n, this.onRefresh});
 
   @override
   Widget build(BuildContext context) {
@@ -1041,13 +1043,16 @@ class _IssueItem extends StatelessWidget {
     final stateColor = isOpen ? Colors.green : Colors.purple;
 
     return PremiumListCard(
-      onTap: () => Navigator.of(context).push(MaterialPageRoute(
-        builder: (_) => IssueDetailPage(
-          owner: owner,
-          repo: repo,
-          index: issue.number ?? 0,
-        ),
-      )),
+      onTap: () async {
+        await Navigator.of(context).push(MaterialPageRoute(
+          builder: (_) => IssueDetailPage(
+            owner: owner,
+            repo: repo,
+            index: issue.number ?? 0,
+          ),
+        ));
+        onRefresh?.call();
+      },
       child: Row(
         children: [
           issue.user != null

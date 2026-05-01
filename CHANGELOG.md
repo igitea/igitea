@@ -9,6 +9,7 @@
 
 ### Fixed
 - Milestone edit: fix `due_on` date format (add timezone offset) to prevent server parse error
+- Refresh issue list after viewing/editing an issue and navigating back
 - macOS DMG: use correct app name `igitea.app` instead of `Runner.app`
 - macOS: add ad-hoc codesigning to reduce Gatekeeper friction
 - Linux AppImage: use existing Android launcher icon instead of missing `assets/icon.png`
