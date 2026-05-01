@@ -4,6 +4,11 @@
 
 ## [0.23.2] - 2026-05-01
 
+### 新增 — GitHub Release Workflow
+
+- `.github/workflows/release.yml`：推送 `v*` 标签自动构建 Android（APK+AAB）、iOS（IPA）、macOS（DMG）、Linux（AppImage）、Windows（ZIP）
+- 所有构建产物自动上传至 GitHub Release
+
 ## [0.23.1] - 2026-05-01
 
 ### 修复

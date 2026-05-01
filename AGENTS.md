@@ -91,6 +91,8 @@ After any meaningful change (feature, fix, refactor), update **both** the Englis
 - `README.md` + `README.zh-CN.md` — features, phase status, test count
 - `CHANGELOG.md` + `CHANGELOG.zh-CN.md` — version entry with Added/Changed/Fixed
 
+**IMPORTANT: CHANGELOG.zh-CN.md must always have the same content structure as CHANGELOG.md. Never update one without the other.**
+
 Then commit with a clear message (e.g. `feat: ...`, `fix: ...`, `docs: ...`).
 
 ## Changelog Conventions
