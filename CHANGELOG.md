@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.24.0] - 2026-05-02
+
 ### Added
 - Create issue FAB on repo issues tab
 - Opener, relative time, and comment count to issue list items
