@@ -3052,6 +3052,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Are you sure you want to delete this comment?'**
   String get deleteCommentConfirm;
+
+  /// No description provided for @requestReviewers.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Reviewers'**
+  String get requestReviewers;
+
+  /// No description provided for @addReviewerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter reviewer username'**
+  String get addReviewerHint;
+
+  /// No description provided for @subscribe.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscribe'**
+  String get subscribe;
+
+  /// No description provided for @unsubscribe.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsubscribe'**
+  String get unsubscribe;
+
+  /// No description provided for @setDueDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Set Due Date'**
+  String get setDueDate;
+
+  /// No description provided for @removeDueDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Due Date'**
+  String get removeDueDate;
+
+  /// No description provided for @topics.
+  ///
+  /// In en, this message translates to:
+  /// **'Topics'**
+  String get topics;
+
+  /// No description provided for @noTopics.
+  ///
+  /// In en, this message translates to:
+  /// **'No topics'**
+  String get noTopics;
+
+  /// No description provided for @branchProtection.
+  ///
+  /// In en, this message translates to:
+  /// **'Branch Protection'**
+  String get branchProtection;
+
+  /// No description provided for @protectBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'Protect Branch'**
+  String get protectBranch;
 }
 
 class _AppLocalizationsDelegate

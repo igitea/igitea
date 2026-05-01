@@ -1545,4 +1545,34 @@ class AppLocalizationsPt extends AppLocalizations {
   @override
   String get deleteCommentConfirm =>
       'Are you sure you want to delete this comment?';
+
+  @override
+  String get requestReviewers => 'Request Reviewers';
+
+  @override
+  String get addReviewerHint => 'Enter reviewer username';
+
+  @override
+  String get subscribe => 'Subscribe';
+
+  @override
+  String get unsubscribe => 'Unsubscribe';
+
+  @override
+  String get setDueDate => 'Set Due Date';
+
+  @override
+  String get removeDueDate => 'Remove Due Date';
+
+  @override
+  String get topics => 'Topics';
+
+  @override
+  String get noTopics => 'No topics';
+
+  @override
+  String get branchProtection => 'Branch Protection';
+
+  @override
+  String get protectBranch => 'Protect Branch';
 }

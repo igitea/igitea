@@ -488,5 +488,15 @@
   "addSshKey": "Add SSH Key",
   "add": "Add",
   "keyAdded": "Key added successfully",
-  "deleteCommentConfirm": "Are you sure you want to delete this comment?"
+  "deleteCommentConfirm": "Are you sure you want to delete this comment?",
+  "requestReviewers": "Request Reviewers",
+  "addReviewerHint": "Enter reviewer username",
+  "subscribe": "Subscribe",
+  "unsubscribe": "Unsubscribe",
+  "setDueDate": "Set Due Date",
+  "removeDueDate": "Remove Due Date",
+  "topics": "Topics",
+  "noTopics": "No topics",
+  "branchProtection": "Branch Protection",
+  "protectBranch": "Protect Branch"
 }

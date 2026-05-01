@@ -38,6 +38,7 @@ class _EditIssuePageState extends State<EditIssuePage> {
   List<Milestone> _milestones = [];
   bool _labelsLoading = true;
   bool _milestonesLoading = true;
+  DateTime? _dueDate;
 
   @override
   void initState() {

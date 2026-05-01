@@ -1509,6 +1509,80 @@ class GiteaApiService {
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
 
+  /// Create review requests for a PR
+  Future<void> repoCreatePullReviewRequests({
+    required String owner,
+    required String repo,
+    required int index,
+    required Map<String, dynamic> body,
+  }) async {
+    await _client.post(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/pulls/${index.toString()}/requested_reviewers',
+      body: body,
+    );
+  }
+
+  /// Subscribe to an issue
+  Future<void> issueAddSubscription({
+    required String owner,
+    required String repo,
+    required int index,
+  }) async {
+    await _client.put(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues/${index.toString()}/subscriptions',
+    );
+  }
+
+  /// Set issue due date
+  Future<Map<String, dynamic>> issueEditDeadline({
+    required String owner,
+    required String repo,
+    required int index,
+    required Map<String, dynamic> body,
+  }) async {
+    final response = await _client.post(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues/${index.toString()}/deadline',
+      body: body,
+    );
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  /// List repository topics
+  Future<List<String>> repoListTopics({
+    required String owner,
+    required String repo,
+  }) async {
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/topics',
+    );
+    final data = jsonDecode(response.body) as Map<String, dynamic>;
+    return (data['topics'] as List<dynamic>?)?.cast<String>() ?? [];
+  }
+
+  /// List branch protections
+  Future<List<dynamic>> repoListBranchProtections({
+    required String owner,
+    required String repo,
+  }) async {
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/branch_protections',
+    );
+    return jsonDecode(response.body) as List<dynamic>;
+  }
+
+  /// Create branch protection
+  Future<Map<String, dynamic>> repoCreateBranchProtection({
+    required String owner,
+    required String repo,
+    required Map<String, dynamic> body,
+  }) async {
+    final response = await _client.post(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/branch_protections',
+      body: body,
+    );
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
   // Actions
 
   Future<Map<String, dynamic>> repoListActionWorkflows({
