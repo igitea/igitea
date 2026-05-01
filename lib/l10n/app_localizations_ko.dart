@@ -93,7 +93,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get noData => '데이터 없음';
 
   @override
-  String get searchRepos => '리포지토리 검색';
+  String get searchRepos => '저장소 검색';
 
   @override
   String get searchIssues => '이슈 검색';
@@ -102,7 +102,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get noResults => '결과 없음';
 
   @override
-  String get repositories => '리포지토리';
+  String get repositories => '저장소';
 
   @override
   String get repositorySections => 'Repository Sections';
@@ -313,10 +313,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get myIssues => '내 이슈';
 
   @override
-  String get myRepos => '내 리포지토리';
+  String get myRepos => '내 저장소';
 
   @override
-  String get myStars => '내 스타';
+  String get myStars => '즐겨찾기';
 
   @override
   String get feed => '피드';
@@ -468,10 +468,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get editComment => '댓글 편집';
 
   @override
-  String get deleteRepo => '리포지토리 삭제';
+  String get deleteRepo => '저장소 삭제';
 
   @override
-  String get deleteRepoConfirm => '이 리포지토리를 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.';
+  String get deleteRepoConfirm => '이 저장소를 삭제하시겠습니까? 이 작업은 되돌릴 수 없습니다.';
 
   @override
   String get generalSettings => '일반 설정';
@@ -549,13 +549,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get signInToGetStarted => 'Sign in to get started';
 
   @override
-  String get quickActions => 'Quick Actions';
+  String get quickActions => '빠른 작업';
 
   @override
-  String get yourRepositories => 'Your Repositories';
+  String get yourRepositories => '내 저장소';
 
   @override
-  String get noRepositoriesFound => 'No repositories found.';
+  String get noRepositoriesFound => '저장소를 찾을 수 없습니다';
 
   @override
   String helloParams(Object full_name) {
@@ -572,8 +572,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get untitled => 'Untitled';
 
   @override
-  String get enterSearchQueryRepos =>
-      'Enter a search query to find repositories';
+  String get enterSearchQueryRepos => '검색어를 입력하세요';
 
   @override
   String get enterSearchQueryIssues => 'Enter a search query to find issues';
@@ -591,13 +590,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get admin => 'Admin';
 
   @override
-  String get repos => 'Repos';
+  String get repos => '저장소';
 
   @override
-  String get followers => 'Followers';
+  String get followers => '팔로워';
 
   @override
-  String get following => 'Following';
+  String get following => '팔로잉';
 
   @override
   String get signOutConfirmMessage => 'Are you sure you want to sign out?';
@@ -645,7 +644,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get bytes => 'bytes';
 
   @override
-  String get repository => 'Repository';
+  String get repository => '저장소';
 
   @override
   String get httpGitDisabled => 'HTTP Git Disabled';
@@ -1096,27 +1095,25 @@ class AppLocalizationsKo extends AppLocalizations {
   String get createRepository => 'Create Repository';
 
   @override
-  String get repositoryName => 'Repository Name';
+  String get repositoryName => '저장소 이름';
 
   @override
   String get repositoryNameHint => 'my-awesome-repo';
 
   @override
-  String get repositoryNameRequired => 'Repository name is required';
+  String get repositoryNameRequired => '저장소 이름은 필수입니다';
 
   @override
-  String get descriptionHint => 'Short description of your repository';
+  String get descriptionHint => '저장소에 대한 간단한 설명';
 
   @override
   String get public => 'Public';
 
   @override
-  String get publicDescription =>
-      'Anyone on the internet can see this repository';
+  String get publicDescription => '인터넷의 모든 사람이 이 저장소를 볼 수 있습니다';
 
   @override
-  String get privateDescription =>
-      'You choose who can see and commit to this repository';
+  String get privateDescription => '누가 보고 커밋할 수 있는지 선택할 수 있습니다';
 
   @override
   String get initializeWithReadme => 'Initialize with README';
@@ -1589,7 +1586,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get id => 'ID';
 
   @override
-  String get searchRepositoriesHint => 'Search for repositories';
+  String get searchRepositoriesHint => '저장소 검색';
 
   @override
   String get publicKey => 'Public Key';

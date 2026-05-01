@@ -310,7 +310,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get recentActivity => '最近活动';
 
   @override
-  String get myIssues => '我的问题';
+  String get myIssues => '我的 Issue';
 
   @override
   String get myRepos => '我的仓库';
@@ -471,7 +471,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get deleteRepo => '删除仓库';
 
   @override
-  String get deleteRepoConfirm => '确定要删除此仓库吗？此操作无法撤销。';
+  String get deleteRepoConfirm => '确定要删除此仓库吗？此操作不可撤销。';
 
   @override
   String get generalSettings => '通用设置';
@@ -549,13 +549,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get signInToGetStarted => 'Sign in to get started';
 
   @override
-  String get quickActions => 'Quick Actions';
+  String get quickActions => '快捷操作';
 
   @override
-  String get yourRepositories => 'Your Repositories';
+  String get yourRepositories => '我的仓库';
 
   @override
-  String get noRepositoriesFound => 'No repositories found.';
+  String get noRepositoriesFound => '未找到仓库';
 
   @override
   String helloParams(Object full_name) {
@@ -572,8 +572,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get untitled => 'Untitled';
 
   @override
-  String get enterSearchQueryRepos =>
-      'Enter a search query to find repositories';
+  String get enterSearchQueryRepos => '输入搜索关键词查找仓库';
 
   @override
   String get enterSearchQueryIssues => 'Enter a search query to find issues';
@@ -591,13 +590,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get admin => 'Admin';
 
   @override
-  String get repos => 'Repos';
+  String get repos => '仓库';
 
   @override
-  String get followers => 'Followers';
+  String get followers => '关注者';
 
   @override
-  String get following => 'Following';
+  String get following => '正在关注';
 
   @override
   String get signOutConfirmMessage => 'Are you sure you want to sign out?';
@@ -645,7 +644,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get bytes => 'bytes';
 
   @override
-  String get repository => 'Repository';
+  String get repository => '仓库';
 
   @override
   String get httpGitDisabled => 'HTTP Git Disabled';
@@ -1101,19 +1100,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get repositoryNameHint => 'my-awesome-repo';
 
   @override
-  String get repositoryNameRequired => '仓库名称不能为空';
+  String get repositoryNameRequired => '仓库名称为必填项';
 
   @override
-  String get descriptionHint => '简短描述你的仓库';
+  String get descriptionHint => '仓库的简短描述';
 
   @override
   String get public => '公开';
 
   @override
-  String get publicDescription => '互联网上的任何人都可以看到这个仓库';
+  String get publicDescription => '任何人都可以看到此仓库';
 
   @override
-  String get privateDescription => '你可以选择谁可以看到并提交到这个仓库';
+  String get privateDescription => '你可以选择谁可以看到并提交到此仓库';
 
   @override
   String get initializeWithReadme => '使用 README 初始化';
@@ -1938,7 +1937,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get recentActivity => '最近活動';
 
   @override
-  String get myIssues => '我的問題';
+  String get myIssues => '我的 Issue';
 
   @override
   String get myRepos => '我的倉庫';
@@ -2099,7 +2098,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get deleteRepo => '刪除倉庫';
 
   @override
-  String get deleteRepoConfirm => '確定要刪除此倉庫嗎？此操作無法復原。';
+  String get deleteRepoConfirm => '確定要刪除此倉庫嗎？此操作不可撤銷。';
 
   @override
   String get generalSettings => '通用設定';
@@ -2177,13 +2176,13 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get signInToGetStarted => 'Sign in to get started';
 
   @override
-  String get quickActions => 'Quick Actions';
+  String get quickActions => '快捷操作';
 
   @override
-  String get yourRepositories => 'Your Repositories';
+  String get yourRepositories => '我的倉庫';
 
   @override
-  String get noRepositoriesFound => 'No repositories found.';
+  String get noRepositoriesFound => '未找到倉庫';
 
   @override
   String helloParams(Object full_name) {
@@ -2200,8 +2199,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get untitled => 'Untitled';
 
   @override
-  String get enterSearchQueryRepos =>
-      'Enter a search query to find repositories';
+  String get enterSearchQueryRepos => '輸入搜尋關鍵字查找倉庫';
 
   @override
   String get enterSearchQueryIssues => 'Enter a search query to find issues';
@@ -2219,13 +2217,13 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get admin => 'Admin';
 
   @override
-  String get repos => 'Repos';
+  String get repos => '倉庫';
 
   @override
-  String get followers => 'Followers';
+  String get followers => '關注者';
 
   @override
-  String get following => 'Following';
+  String get following => '正在關注';
 
   @override
   String get signOutConfirmMessage => 'Are you sure you want to sign out?';
@@ -2273,7 +2271,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get bytes => 'bytes';
 
   @override
-  String get repository => 'Repository';
+  String get repository => '倉庫';
 
   @override
   String get httpGitDisabled => 'HTTP Git Disabled';
@@ -2724,27 +2722,25 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get createRepository => 'Create Repository';
 
   @override
-  String get repositoryName => 'Repository Name';
+  String get repositoryName => '倉庫名稱';
 
   @override
   String get repositoryNameHint => 'my-awesome-repo';
 
   @override
-  String get repositoryNameRequired => 'Repository name is required';
+  String get repositoryNameRequired => '倉庫名稱為必填項';
 
   @override
-  String get descriptionHint => 'Short description of your repository';
+  String get descriptionHint => '倉庫的簡短描述';
 
   @override
   String get public => 'Public';
 
   @override
-  String get publicDescription =>
-      'Anyone on the internet can see this repository';
+  String get publicDescription => '任何人都可以看到此倉庫';
 
   @override
-  String get privateDescription =>
-      'You choose who can see and commit to this repository';
+  String get privateDescription => '你可以選擇誰可以看到並提交到此倉庫';
 
   @override
   String get initializeWithReadme => 'Initialize with README';
@@ -3217,7 +3213,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get id => 'ID';
 
   @override
-  String get searchRepositoriesHint => 'Search for repositories';
+  String get searchRepositoriesHint => '搜尋倉庫';
 
   @override
   String get publicKey => 'Public Key';

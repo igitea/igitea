@@ -310,13 +310,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get recentActivity => '最近のアクティビティ';
 
   @override
-  String get myIssues => '自分のイシュー';
+  String get myIssues => 'マイ Issue';
 
   @override
-  String get myRepos => '自分のリポジトリ';
+  String get myRepos => 'マイリポジトリ';
 
   @override
-  String get myStars => 'スター付き';
+  String get myStars => 'スター';
 
   @override
   String get feed => 'フィード';
@@ -549,13 +549,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get signInToGetStarted => 'Sign in to get started';
 
   @override
-  String get quickActions => 'Quick Actions';
+  String get quickActions => 'クイック操作';
 
   @override
-  String get yourRepositories => 'Your Repositories';
+  String get yourRepositories => 'あなたのリポジトリ';
 
   @override
-  String get noRepositoriesFound => 'No repositories found.';
+  String get noRepositoriesFound => 'リポジトリが見つかりません';
 
   @override
   String helloParams(Object full_name) {
@@ -572,8 +572,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get untitled => 'Untitled';
 
   @override
-  String get enterSearchQueryRepos =>
-      'Enter a search query to find repositories';
+  String get enterSearchQueryRepos => '検索キーワードを入力';
 
   @override
   String get enterSearchQueryIssues => 'Enter a search query to find issues';
@@ -591,13 +590,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get admin => 'Admin';
 
   @override
-  String get repos => 'Repos';
+  String get repos => 'リポジトリ';
 
   @override
-  String get followers => 'Followers';
+  String get followers => 'フォロワー';
 
   @override
-  String get following => 'Following';
+  String get following => 'フォロー中';
 
   @override
   String get signOutConfirmMessage => 'Are you sure you want to sign out?';
@@ -645,7 +644,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get bytes => 'bytes';
 
   @override
-  String get repository => 'Repository';
+  String get repository => 'リポジトリ';
 
   @override
   String get httpGitDisabled => 'HTTP Git Disabled';
@@ -1096,27 +1095,25 @@ class AppLocalizationsJa extends AppLocalizations {
   String get createRepository => 'Create Repository';
 
   @override
-  String get repositoryName => 'Repository Name';
+  String get repositoryName => 'リポジトリ名';
 
   @override
   String get repositoryNameHint => 'my-awesome-repo';
 
   @override
-  String get repositoryNameRequired => 'Repository name is required';
+  String get repositoryNameRequired => 'リポジトリ名は必須です';
 
   @override
-  String get descriptionHint => 'Short description of your repository';
+  String get descriptionHint => 'リポジトリの簡単な説明';
 
   @override
   String get public => 'Public';
 
   @override
-  String get publicDescription =>
-      'Anyone on the internet can see this repository';
+  String get publicDescription => 'インターネット上の誰でもこのリポジトリを見ることができます';
 
   @override
-  String get privateDescription =>
-      'You choose who can see and commit to this repository';
+  String get privateDescription => 'あなたが誰に閲覧・コミットを許可するか選択できます';
 
   @override
   String get initializeWithReadme => 'Initialize with README';
@@ -1589,7 +1586,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get id => 'ID';
 
   @override
-  String get searchRepositoriesHint => 'Search for repositories';
+  String get searchRepositoriesHint => 'リポジトリを検索';
 
   @override
   String get publicKey => 'Public Key';
