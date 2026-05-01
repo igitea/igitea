@@ -26,6 +26,7 @@ import 'release_detail_page.dart';
 import 'repo_file_page.dart';
 import 'tag_detail_page.dart';
 import 'wiki_list_page.dart';
+import 'create_issue_page.dart';
 import 'create_milestone_page.dart';
 import 'webhook_list_page.dart';
 import 'label_list_page.dart';
@@ -1410,6 +1411,18 @@ class _RepoSectionPage extends StatelessWidget {
         title: Text(title),
       ),
       body: _buildSection(l10n),
+      floatingActionButton: sectionId == 'issues'
+          ? FloatingActionButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => CreateIssuePage(owner: owner, repo: repo),
+                  ),
+                );
+              },
+              child: const Icon(Icons.add),
+            )
+          : null,
     );
   }
 
