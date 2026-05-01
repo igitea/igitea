@@ -93,6 +93,14 @@ After any meaningful change (feature, fix, refactor), update **both** the Englis
 
 Then commit with a clear message (e.g. `feat: ...`, `fix: ...`, `docs: ...`).
 
+## Changelog Conventions
+
+Entries go under `## [Unreleased]` during development. When cutting a release:
+
+1. Replace `## [Unreleased]` with `## [x.y.z] - YYYY-MM-DD` (e.g. `## [0.13.0] - 2026-05-01`)
+2. Add a new `## [Unreleased]` heading above it for future work
+3. Read version from `pubspec.yaml` (`version:` line) to keep consistent
+
 ## Key Files
 
 - `lib/core/di/injection.dart` — all DI wiring
