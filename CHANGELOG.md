@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+## [0.23.1] - 2026-05-01
+
+### Fixed
+
+- Chinese translations: completed 400+ keys
+- Moved `igiteaVersion` from ARB to Dart constant
+
 ### Changed — i18n: Replace hardcoded English strings across all pages
 
 - 20+ pages updated: repo detail, settings, dashboard, repo list, organizations, teams, issues, SSH keys, login, commit/PR detail, actions, file compare/history, repo file
