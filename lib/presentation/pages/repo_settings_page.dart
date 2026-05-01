@@ -113,6 +113,31 @@ class _RepoSettingsPageState extends State<RepoSettingsPage> {
               subtitle: Text(widget.repo.default_branch!),
             ),
           ListTile(
+            leading: const Icon(Icons.shield_outlined),
+            title: Text(l10n.branchProtection),
+            subtitle: Text(l10n.protectBranch),
+            onTap: () async {
+              try {
+                await Injection.apiService.repoCreateBranchProtection(
+                  owner: widget.owner,
+                  repo: widget.repo,
+                  body: {'branch_name': widget.repo.default_branch!},
+                );
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(l10n.settingsSaved)),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('${l10n.error}: $e')),
+                  );
+                }
+              }
+            },
+          ),
+          ListTile(
             leading: Icon(Icons.delete, color: theme.colorScheme.error),
             title: Text(
               l10n.deleteRepo,
