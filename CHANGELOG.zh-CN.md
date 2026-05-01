@@ -2,15 +2,171 @@
 
 ## [Unreleased]
 
-### 变更 — i18n：替换所有页面中的硬编码英文字符串
-
-- 更新 20+ 个页面：仓库详情、设置、仪表板、仓库列表、组织、团队、Issues、SSH 密钥、登录、提交/PR 详情、Actions、文件对比/历史、代码文件
-- 将统计标签、克隆 URL、PR 状态、相对日期、表单验证、空状态等硬编码字符串替换为 l10n 调用
-- 新增 20 个 ARB 键用于之前未翻译的字符串
-- 为所有新键添加中文翻译
-- 在 10+ 个文件中使用现有 `l10n.ago()` 实现相对日期格式化
-
 ### 新增 — 里程碑 CRUD
+
+- `CreateMilestonePage`：创建里程碑页面
+  - 标题输入（必填验证）
+  - 描述输入（Markdown，多行）
+  - 日期选择器设置截止日期
+  - AppBar 保存按钮带加载指示器
+- `EditMilestonePage`：编辑里程碑页面
+  - 预填现有数据（标题、描述、截止日期）
+  - 支持清除截止日期
+  - 保存成功自动刷新列表
+- `MilestoneDetailPage` 增强：
+  - AppBar 添加编辑和删除按钮
+  - 删除前显示确认对话框
+  - 编辑后返回自动刷新
+- `_MilestonesTab` 增强：
+  - 添加浮动操作按钮（FAB）用于新建里程碑
+  - 空状态显示时仍可创建
+  - 创建/编辑后自动刷新
+- 新增 UseCases：`GetMilestoneUseCase`、`EditMilestoneUseCase`、`DeleteMilestoneUseCase`
+- 新增 ARB 键：`createMilestone`、`editMilestone`、`deleteMilestone`、`deleteMilestoneConfirm`、`milestoneDeleted`、`milestoneTitle`、`milestoneDescription`、`milestoneDueDate` 等
+- 更新 `Injection` 类：三个初始化路径均添加里程碑 CRUD use cases
+- 更新 `IssueNotifier`：新增 `createMilestone`、`editMilestone`、`deleteMilestone` 方法
+
+### 新增 — Wiki 完整支持
+
+- `WikiEditPage`：创建和编辑 Wiki 页面
+  - 标题输入框（创建时必填，编辑时只读）
+  - Markdown 内容编辑器，支持实时预览切换
+  - 可选的提交消息输入
+  - 表单验证：标题不能为空
+  - AppBar 保存按钮带加载指示器
+- `WikiListPage` 重构：
+  - 添加浮动操作按钮（FAB）用于创建新页面
+  - 使用 `EmptyState` 组件替代内联空状态
+  - 支持国际化（l10n）
+  - 点击页面后返回自动刷新列表
+- `WikiDetailPage` 增强：
+  - AppBar 添加编辑和删除按钮
+  - 删除前显示确认对话框
+  - 支持 Markdown 内容选择
+  - 使用 `Either` 模式替代 try-catch
+- 新增 UseCases：`GetWikiPageUseCase`、`ListWikiPagesUseCase`、`CreateWikiPageUseCase`、`EditWikiPageUseCase`、`DeleteWikiPageUseCase`
+- 新增 Repository 方法：`getWikiPage`、`listWikiPages`、`createWikiPage`、`editWikiPage`、`deleteWikiPage`
+- 新增 ARB 键：`wiki`、`newWikiPage`、`editWikiPage`、`deleteWikiPage`、`deleteWikiPageConfirm`、`wikiPageDeleted`、`wikiPageTitle`、`wikiPageContent`、`noWikiPages`、`createFirstWikiPage`、`lastCommit`、`commitMessage`、`saved`、`created` 等
+- 更新 `Injection` 类：三个初始化路径均添加 Wiki use cases
+- 更新 `RepoNotifier`：添加 Wiki 相关字段和方法
+
+### 修复
+
+- 修复 `RepoDetailPage` 中未显示 Wiki 入口的问题：在仓库区块列表中添加 Wiki 选项（`id: 'wiki'`），并在 `_RepoSectionPage` 中处理 Wiki 导航到 `WikiListPage`
+- 修复 Wiki 页面双层返回按钮：Wiki 绕过 `_RepoSectionPage` 直接导航
+- 修复 Issue 编辑页标签闪烁消失：`IssueNotifier._state` 被 `listLabels`/`listMilestones` 互相覆盖，改为本地缓存
+- 修复 Issue 标签保存不生效：Gitea API 标签需通过 `PUT /issues/{index}/labels` 独立端点管理，`EditIssueOption` 不支持 `labels` 字段
+- 修复 Issue 创建/编辑时标签数据格式：API 期望 label ID（int）而非 label 名称（String）
+- 修复 Commit 详情页 Changed files 窗口缩放时右侧溢出：diff 行用 `SingleChildScrollView(horizontal)` 包裹
+
+### 新增 — Webhook 管理
+
+- `WebhookListPage`：仓库 Webhook 列表，FAB 新建，下拉刷新，空状态处理
+- `WebhookDetailPage`：查看配置（URL、Content-Type）、事件列表、状态，支持删除
+- `CreateWebhookPage`：创建表单（URL、Secret、Content-Type、事件多选、Active 开关）
+- 新增 UseCases：`ListHooksUseCase`、`CreateHookUseCase`、`DeleteHookUseCase`
+- 更新 `RepoNotifier`：新增 Hook 相关方法
+
+### 新增 — 标签管理
+
+- `LabelListPage`：仓库标签列表，带颜色圆点指示器
+- `CreateLabelPage`：创建标签（名称、描述、预设色板选择器）
+- `EditLabelPage`：编辑标签 + 删除按钮 + 确认对话框
+- `IssueNotifier`：新增 `createLabel`、`editLabel`、`deleteLabel` 方法
+- 新增 UseCases：`EditLabelUseCase`、`DeleteLabelUseCase`
+- 仓库区块列表新增 Labels 入口
+
+### 新增 — OAuth2 登录
+
+- 登录页新增 OAuth2 标签页（第三个标签）
+- 流程：填写 Client ID/Secret → 浏览器授权 → 粘贴 Code → 交换 Token → 自动登录
+- `AuthMethod.oauth2` + `refreshToken` 支持
+- `AuthStorage` 新增 refresh token 持久化
+- 新增 `postRaw` API 方法用于 `/login/oauth/access_token` 端点
+
+### 新增 — Issue 创建/编辑增强
+
+- `CreateIssuePage`：新增标签多选（FilterChip 带颜色指示）+ 里程碑下拉选择
+- `EditIssuePage`：标签/里程碑选择同样增强，FilterChip 显示标签颜色
+- 创建/编辑请求支持 `labels`（ID 列表）和 `milestone` 字段
+
+### 新增 — PR Diff 查看器
+
+- `DiffParser`：统一 diff 格式解析器（DiffFile → DiffHunk → DiffLine）
+- `PrDiffViewerPage`：文件级导航、@@ hunk 头部、行级新增（绿）/删除（红）着色、行号栏
+- Unified/Split 视图模式切换
+- `PrFilesPage` 新增"View Diff"按钮 + 文件项点击进入 diff 查看器
+
+### 新增 — 文件历史与对比
+
+- `FileHistoryPage`：文件提交历史列表，关联 CommitDetailPage
+- `FileComparePage`：Base/Head ref 输入 → diff 渲染
+- `FileBlamePage`：利用 blame API 逐行显示 commit SHA + 作者头像 + 行号 + 代码
+- 文件查看器 AppBar 新增 `⋯` 菜单（History / Compare / Blame）
+- `listCommits` 全线支持 `path` 参数过滤
+
+### 新增 — Commit 内联 Diff
+
+- `commit_detail_page.dart`：changed files 可展开显示内联 diff
+- 新增 `repoGetCommitDiff` API → `GET /git/commits/{sha}.diff`
+- 文件头部显示 `+n -m` 增减统计，点击展开/收起
+
+### 新增 — CI/CD Actions 集成
+
+- `ActionsListPage` 增强：
+  - 按 workflow 文件分组显示运行列表
+  - 状态筛选器（All / success / failure / in_progress / queued / cancelled / skipped）
+  - 参与者（actor）筛选器
+  - 无限滚动分页，滚动到底部自动加载更多
+  - 退出页面后返回保持状态（`AutomaticKeepAliveClientMixin`）
+  - `repoListActionWorkflows` 获取 workflow 列表
+  - Job 日志自动轮询刷新（每 5 秒）
+  - 构建产物下载：artifact 项增加下载按钮，保存到应用文档目录
+
+### 新增 — PR 代码审查
+
+- PR 详情页 AppBar 新增 Review 按钮（Comment / Approve / Request Changes）
+- 审查列表：状态徽章、作者、正文、时间戳
+- 新增 `repoCreatePullReviewRequests`：PR 审查请求对话框，支持添加审查者
+
+### 新增 — Webhook 编辑
+
+- Webhook 详情页 AppBar 新增编辑按钮，对话框更新 URL
+
+### 新增 — Issue/PR 评论编辑与删除
+
+- 评论气泡右上角 `⋯` 菜单：编辑（内联 TextField + Save/Cancel）/ 删除（确认对话框）
+- 依赖 `issueEditComment` / `issueDeleteComment` API
+
+### 新增 — Issue 订阅与截止日期
+
+- Issue 详情页新增订阅按钮（ActionChip）
+- Issue 编辑页新增截止日期选择器（日期选择 + 清除）
+
+### 新增 — 仓库主题标签
+
+- 仓库头部显示 topics 标签（Chip 列表）
+
+### 新增 — 分支保护
+
+- 仓库设置页新增"分支保护"按钮，一键保护默认分支
+
+### 新增 — 活跃度翻译完善
+
+- 补齐所有 26 种 `op_type` 的翻译键
+- 修复 `comment_pull_request` → `comment_pull` 不匹配 bug
+- 新增事件：commit_repo、rename_repo、star_repo、watch_repo、approve PR、reject PR 等
+
+### 变更
+
+- 文件查看器 AppBar 重构：原 History 按钮移入 `⋯` 菜单
+- `UIConstants` 替换所有硬编码间距（16→`md`、8→`sm`、4→`xs`）
+- `home_page.dart`：移除无用 `_TabData` 类，抽离 `_buildNavigationRail`/`_buildNavigationBar`
+- `ListCommitsParams` 新增 `path` 参数
+- `state?.value == 'open'` 字符串比较 → `state?.isOpen` 枚举扩展
+- Injection 三条路径新增 `_assertUseCasesInitialized()` 安全断言
+
+## [0.23.0] - 2026-05-01
 
 - `CreateMilestonePage`：创建里程碑页面
   - 标题输入（必填验证）

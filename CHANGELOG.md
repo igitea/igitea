@@ -179,6 +179,8 @@
 - Fix `RenderFlex` overflow in file viewer by replacing `Expanded` with `ConstrainedBox` in horizontal scrollable
 - Fix Android APK crash on launch: align `applicationId` and `MainActivity` package with namespace (`com.charleypeng.igitea`)
 
+## [0.23.0] - 2026-05-01
+
 ## [0.22.0] - 2026-04-26
 
 ### Added — Milestones
