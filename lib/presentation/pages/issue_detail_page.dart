@@ -216,6 +216,28 @@ class _IssueContent extends StatelessWidget {
                   Injection.issueNotifier.listComments(owner, repo, index);
                 },
               ),
+              ActionChip(
+                label: Text(l10n.subscribe),
+                avatar: const Icon(Icons.notifications_outlined, size: 16),
+                onPressed: () async {
+                  try {
+                    await Injection.apiService.issueAddSubscription(
+                      owner: owner, repo: repo, index: index,
+                    );
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(AppLocalizations.of(context)!.subscribe)),
+                      );
+                    }
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('${AppLocalizations.of(context)!.error}: $e')),
+                      );
+                    }
+                  }
+                },
+              ),
             ],
           ),
           const SizedBox(height: 16),
