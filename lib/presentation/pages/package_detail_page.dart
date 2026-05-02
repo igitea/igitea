@@ -96,38 +96,64 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
     return state is PackageDetailError ? state.message : null;
   }
 
+  String get _host {
+    final uri = Uri.tryParse(Injection.apiClient.baseUrl);
+    return uri?.host ?? 'host';
+  }
+
+  String get _baseUrl {
+    return Injection.apiClient.baseUrl.replaceAll(RegExp(r'/+$'), '');
+  }
+
   String _installCommand() {
     final n = widget.name;
     final v = widget.version;
+    final h = _host;
+    final b = _baseUrl;
+    final o = widget.owner;
     switch (widget.type.toLowerCase()) {
       case 'npm':
-        return 'npm install $n@$v';
+        return 'npm config set @$o:registry $b/api/packages/$o/npm/\n'
+            'npm install @$o/$n@$v';
       case 'pypi':
-        return 'pip install $n==$v';
+        return 'pip install --index-url $b/api/packages/$o/pypi/simple/ $n==$v';
       case 'nuget':
-        return 'dotnet add package $n --version $v';
+        return 'dotnet nuget add source $b/api/packages/$o/nuget/index.json\n'
+            'dotnet add package $n --version $v';
       case 'maven':
-        return '<dependency>\n  <groupId>...</groupId>\n  <artifactId>$n</artifactId>\n  <version>$v</version>\n</dependency>';
+        return '<repository>\n'
+            '  <id>gitea</id>\n'
+            '  <url>$b/api/packages/$o/maven</url>\n'
+            '</repository>\n\n'
+            '<dependency>\n'
+            '  <groupId>...</groupId>\n'
+            '  <artifactId>$n</artifactId>\n'
+            '  <version>$v</version>\n'
+            '</dependency>';
       case 'composer':
-        return 'composer require $n:$v';
+        return 'composer config repo.$n composer $b/api/packages/$o/composer\n'
+            'composer require $n:$v';
       case 'rubygems':
-        return 'gem install $n -v $v';
+        return 'gem install $n -v $v --source $b/api/packages/$o/rubygems';
       case 'go':
-        return 'go get $n@$v';
+        return 'GOPROXY=$b/api/packages/$o/go go get $n@$v';
       case 'container':
-        return 'docker pull $n:$v';
+        return 'docker pull $h/$n:$v';
       case 'helm':
-        return 'helm install $n --version $v';
+        return 'helm repo add $n $b/api/packages/$o/helm\n'
+            'helm install $n --version $v';
       case 'conan':
-        return 'conan install $n/$v@';
+        return 'conan remote add $n $b/api/packages/$o/conan\n'
+            'conan install $n/$v@';
       case 'conda':
-        return 'conda install $n=$v';
+        return 'conda config --add channels $b/api/packages/$o/conda\n'
+            'conda install $n=$v';
       case 'cran':
-        return 'install.packages("$n")';
+        return 'install.packages("$n", repos="$b/api/packages/$o/cran")';
       case 'debian':
-        return 'apt install $n=$v';
+        return 'curl -s $b/api/packages/$o/debian/pool/$n/$v/$n.deb | sudo apt install';
       case 'generic':
-        return '$n @ $v';
+        return 'curl -O $b/api/packages/$o/generic/$n/$v/<file>';
       default:
         return '$widget.type: $n@$v';
     }
