@@ -16,6 +16,7 @@ import '../widgets/user_avatar.dart';
 import 'create_org_page.dart';
 import 'create_repo_page.dart';
 import 'emails_page.dart';
+import 'follow_page.dart';
 import 'package_list_page.dart';
 import 'organization_detail_page.dart';
 import 'settings_page.dart';
@@ -326,9 +327,13 @@ class _StatsRow extends StatelessWidget {
         children: [
           Expanded(child: _StatItem(label: l10n.repos, value: '${user.starred_repos_count ?? 0}')),
           const SizedBox(width: UIConstants.sm),
-          Expanded(child: _StatItem(label: l10n.followers, value: '${user.followers_count ?? 0}')),
+          Expanded(child: _StatItem(label: l10n.followers, value: '${user.followers_count ?? 0}', onTap: () {
+            Navigator.of(context).push(MaterialPageRoute(builder: (_) => FollowPage(username: user.login ?? '')));
+          })),
           const SizedBox(width: UIConstants.sm),
-          Expanded(child: _StatItem(label: l10n.following, value: '${user.following_count ?? 0}')),
+          Expanded(child: _StatItem(label: l10n.following, value: '${user.following_count ?? 0}', onTap: () {
+            Navigator.of(context).push(MaterialPageRoute(builder: (_) => FollowPage(username: user.login ?? '')));
+          })),
         ],
       ),
     );
@@ -338,13 +343,14 @@ class _StatsRow extends StatelessWidget {
 class _StatItem extends StatelessWidget {
   final String label;
   final String value;
+  final VoidCallback? onTap;
 
-  const _StatItem({required this.label, required this.value});
+  const _StatItem({required this.label, required this.value, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return PremiumCard(
+    final child = PremiumCard(
       padding: const EdgeInsets.symmetric(vertical: UIConstants.md),
       child: Column(
         children: [
@@ -356,6 +362,8 @@ class _StatItem extends StatelessWidget {
         ],
       ),
     );
+    if (onTap == null) return child;
+    return InkWell(onTap: onTap, borderRadius: BorderRadius.circular(12), child: child);
   }
 }
 
