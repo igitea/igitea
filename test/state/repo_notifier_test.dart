@@ -385,6 +385,9 @@ void main() {
         listHooksUseCase: ListHooksUseCase(repository: fakeRepo),
         createHookUseCase: CreateHookUseCase(repository: fakeRepo),
         deleteHookUseCase: DeleteHookUseCase(repository: fakeRepo),
+        listCollaboratorsUseCase: ListCollaboratorsUseCase(repository: fakeRepo),
+        addCollaboratorUseCase: AddCollaboratorUseCase(repository: fakeRepo),
+        removeCollaboratorUseCase: RemoveCollaboratorUseCase(repository: fakeRepo),
       );
     });
 

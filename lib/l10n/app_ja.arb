@@ -576,8 +576,14 @@
   "teamDeleted": "チームを削除しました",
   "memberAdded": "メンバーを追加しました",
   "memberRemoved": "メンバーを削除しました",
-  "noSearchResults": "ユーザーが見つかりません"
-,
+  "noSearchResults": "ユーザーが見つかりません",
   "teamCanCreateOrgRepos": "Can create org repos",
-  "teamIncludesAllRepos": "Includes all repositories"
+  "teamIncludesAllRepos": "Includes all repositories",
+  "collaborators": "コラボレーター",
+  "noCollaborators": "なし",
+  "addCollaborator": "追加",
+  "removeCollaborator": "削除",
+  "removeCollaboratorConfirmParams": "{username} を削除しますか？",
+  "collaboratorAdded": "追加しました",
+  "collaboratorRemoved": "削除しました"
 }

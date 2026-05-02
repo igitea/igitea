@@ -1826,4 +1826,27 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get teamIncludesAllRepos => 'Includes all repositories';
+
+  @override
+  String get collaborators => 'Mitwirkende';
+
+  @override
+  String get noCollaborators => 'Keine';
+
+  @override
+  String get addCollaborator => 'Hinzufügen';
+
+  @override
+  String get removeCollaborator => 'Entfernen';
+
+  @override
+  String removeCollaboratorConfirmParams(Object username) {
+    return '$username entfernen?';
+  }
+
+  @override
+  String get collaboratorAdded => 'Hinzugefügt';
+
+  @override
+  String get collaboratorRemoved => 'Entfernt';
 }

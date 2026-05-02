@@ -4,6 +4,7 @@
 
 ### Added
 - Team CRUD: create/edit/delete teams, add/remove team members with user search dialog
+- Repository collaborators management: list/add/remove collaborators with user search
 
 ## [0.25.0] - 2026-05-02
 

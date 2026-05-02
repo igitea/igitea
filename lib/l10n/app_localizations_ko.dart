@@ -1813,4 +1813,27 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get teamIncludesAllRepos => 'Includes all repositories';
+
+  @override
+  String get collaborators => '협력자';
+
+  @override
+  String get noCollaborators => '없음';
+
+  @override
+  String get addCollaborator => '추가';
+
+  @override
+  String get removeCollaborator => '제거';
+
+  @override
+  String removeCollaboratorConfirmParams(Object username) {
+    return '$username을(를) 제거하시겠습니까?';
+  }
+
+  @override
+  String get collaboratorAdded => '추가됨';
+
+  @override
+  String get collaboratorRemoved => '제거됨';
 }

@@ -20,6 +20,7 @@ import '../widgets/file_icon.dart';
 import 'branch_detail_page.dart';
 import 'commit_detail_page.dart';
 import 'create_release_page.dart';
+import 'collaborators_page.dart';
 import 'issue_detail_page.dart';
 import 'milestone_detail_page.dart';
 import 'pr_detail_page.dart';
@@ -117,6 +118,7 @@ class _RepoDetailPageState extends State<RepoDetailPage> {
       _SectionItem(id: 'tags', title: l10n.tags, icon: Icons.label),
       _SectionItem(id: 'wiki', title: l10n.wiki, icon: Icons.book_outlined),
       _SectionItem(id: 'webhooks', title: l10n.webhooks, icon: Icons.webhook),
+      _SectionItem(id: 'collaborators', title: l10n.collaborators, icon: Icons.people_outline),
       _SectionItem(id: 'labels', title: l10n.labels, icon: Icons.label_outline),
       _SectionItem(id: 'actions', title: l10n.actions, icon: Icons.play_circle_outline),
     ];
@@ -199,6 +201,17 @@ class _RepoDetailPageState extends State<RepoDetailPage> {
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (_) => WebhookListPage(
+            owner: widget.owner,
+            repo: widget.repo,
+          ),
+        ),
+      );
+      return;
+    }
+    if (sectionId == 'collaborators') {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => CollaboratorsPage(
             owner: widget.owner,
             repo: widget.repo,
           ),
@@ -1680,6 +1693,7 @@ class _RepoSectionPage extends StatelessWidget {
       'tags' => l10n.tags,
       'wiki' => l10n.wiki,
       'webhooks' => l10n.webhooks,
+      'collaborators' => l10n.collaborators,
       _ => '',
     };
   }

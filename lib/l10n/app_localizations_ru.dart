@@ -1826,4 +1826,27 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get teamIncludesAllRepos => 'Includes all repositories';
+
+  @override
+  String get collaborators => 'Сотрудники';
+
+  @override
+  String get noCollaborators => 'Нет';
+
+  @override
+  String get addCollaborator => 'Добавить';
+
+  @override
+  String get removeCollaborator => 'Удалить';
+
+  @override
+  String removeCollaboratorConfirmParams(Object username) {
+    return 'Удалить $username?';
+  }
+
+  @override
+  String get collaboratorAdded => 'Добавлен';
+
+  @override
+  String get collaboratorRemoved => 'Удален';
 }

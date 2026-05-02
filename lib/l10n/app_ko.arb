@@ -576,8 +576,14 @@
   "teamDeleted": "팀이 삭제되었습니다",
   "memberAdded": "멤버가 추가되었습니다",
   "memberRemoved": "멤버가 제거되었습니다",
-  "noSearchResults": "사용자를 찾을 수 없습니다"
-,
+  "noSearchResults": "사용자를 찾을 수 없습니다",
   "teamCanCreateOrgRepos": "Can create org repos",
-  "teamIncludesAllRepos": "Includes all repositories"
+  "teamIncludesAllRepos": "Includes all repositories",
+  "collaborators": "협력자",
+  "noCollaborators": "없음",
+  "addCollaborator": "추가",
+  "removeCollaborator": "제거",
+  "removeCollaboratorConfirmParams": "{username}을(를) 제거하시겠습니까?",
+  "collaboratorAdded": "추가됨",
+  "collaboratorRemoved": "제거됨"
 }

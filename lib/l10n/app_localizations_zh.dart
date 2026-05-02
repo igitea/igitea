@@ -1807,6 +1807,29 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get teamIncludesAllRepos => '包含所有仓库';
+
+  @override
+  String get collaborators => '协作者';
+
+  @override
+  String get noCollaborators => '无协作者';
+
+  @override
+  String get addCollaborator => '添加协作者';
+
+  @override
+  String get removeCollaborator => '移除';
+
+  @override
+  String removeCollaboratorConfirmParams(Object username) {
+    return '将 $username 从协作者中移除？';
+  }
+
+  @override
+  String get collaboratorAdded => '协作者已添加';
+
+  @override
+  String get collaboratorRemoved => '协作者已移除';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -3612,4 +3635,27 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get teamIncludesAllRepos => '包含所有倉庫';
+
+  @override
+  String get collaborators => '協作者';
+
+  @override
+  String get noCollaborators => '無協作者';
+
+  @override
+  String get addCollaborator => '加入協作者';
+
+  @override
+  String get removeCollaborator => '移除';
+
+  @override
+  String removeCollaboratorConfirmParams(Object username) {
+    return '將 $username 從協作者中移除？';
+  }
+
+  @override
+  String get collaboratorAdded => '協作者已加入';
+
+  @override
+  String get collaboratorRemoved => '協作者已移除';
 }

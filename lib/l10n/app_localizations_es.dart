@@ -1826,4 +1826,27 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get teamIncludesAllRepos => 'Includes all repositories';
+
+  @override
+  String get collaborators => 'Colaboradores';
+
+  @override
+  String get noCollaborators => 'Sin colaboradores';
+
+  @override
+  String get addCollaborator => 'Añadir';
+
+  @override
+  String get removeCollaborator => 'Eliminar';
+
+  @override
+  String removeCollaboratorConfirmParams(Object username) {
+    return '¿Eliminar a $username?';
+  }
+
+  @override
+  String get collaboratorAdded => 'Añadido';
+
+  @override
+  String get collaboratorRemoved => 'Eliminado';
 }

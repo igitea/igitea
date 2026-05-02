@@ -579,5 +579,12 @@
   "memberRemoved": "Member removed successfully",
   "noSearchResults": "No users found",
   "teamCanCreateOrgRepos": "Can create org repos",
-  "teamIncludesAllRepos": "Includes all repositories"
+  "teamIncludesAllRepos": "Includes all repositories",
+  "collaborators": "Collaborators",
+  "noCollaborators": "No collaborators",
+  "addCollaborator": "Add Collaborator",
+  "removeCollaborator": "Remove",
+  "removeCollaboratorConfirmParams": "Remove {username} from collaborators?",
+  "collaboratorAdded": "Collaborator added",
+  "collaboratorRemoved": "Collaborator removed"
 }

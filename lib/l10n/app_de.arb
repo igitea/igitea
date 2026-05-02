@@ -576,8 +576,14 @@
   "teamDeleted": "Team gelöscht",
   "memberAdded": "Mitglied hinzugefügt",
   "memberRemoved": "Mitglied entfernt",
-  "noSearchResults": "Keine Ergebnisse"
-,
+  "noSearchResults": "Keine Ergebnisse",
   "teamCanCreateOrgRepos": "Can create org repos",
-  "teamIncludesAllRepos": "Includes all repositories"
+  "teamIncludesAllRepos": "Includes all repositories",
+  "collaborators": "Mitwirkende",
+  "noCollaborators": "Keine",
+  "addCollaborator": "Hinzufügen",
+  "removeCollaborator": "Entfernen",
+  "removeCollaboratorConfirmParams": "{username} entfernen?",
+  "collaboratorAdded": "Hinzugefügt",
+  "collaboratorRemoved": "Entfernt"
 }

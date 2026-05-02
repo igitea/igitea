@@ -576,8 +576,14 @@
   "teamDeleted": "Команда удалена",
   "memberAdded": "Участник добавлен",
   "memberRemoved": "Участник удален",
-  "noSearchResults": "Нет результатов"
-,
+  "noSearchResults": "Нет результатов",
   "teamCanCreateOrgRepos": "Can create org repos",
-  "teamIncludesAllRepos": "Includes all repositories"
+  "teamIncludesAllRepos": "Includes all repositories",
+  "collaborators": "Сотрудники",
+  "noCollaborators": "Нет",
+  "addCollaborator": "Добавить",
+  "removeCollaborator": "Удалить",
+  "removeCollaboratorConfirmParams": "Удалить {username}?",
+  "collaboratorAdded": "Добавлен",
+  "collaboratorRemoved": "Удален"
 }

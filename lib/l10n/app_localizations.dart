@@ -3592,6 +3592,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Includes all repositories'**
   String get teamIncludesAllRepos;
+
+  /// No description provided for @collaborators.
+  ///
+  /// In en, this message translates to:
+  /// **'Collaborators'**
+  String get collaborators;
+
+  /// No description provided for @noCollaborators.
+  ///
+  /// In en, this message translates to:
+  /// **'No collaborators'**
+  String get noCollaborators;
+
+  /// No description provided for @addCollaborator.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Collaborator'**
+  String get addCollaborator;
+
+  /// No description provided for @removeCollaborator.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get removeCollaborator;
+
+  /// No description provided for @removeCollaboratorConfirmParams.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {username} from collaborators?'**
+  String removeCollaboratorConfirmParams(Object username);
+
+  /// No description provided for @collaboratorAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Collaborator added'**
+  String get collaboratorAdded;
+
+  /// No description provided for @collaboratorRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Collaborator removed'**
+  String get collaboratorRemoved;
 }
 
 class _AppLocalizationsDelegate

@@ -269,6 +269,9 @@ class RepoNotifier extends ChangeNotifier {
   ListHooksUseCase _listHooksUseCase;
   CreateHookUseCase _createHookUseCase;
   DeleteHookUseCase _deleteHookUseCase;
+  ListCollaboratorsUseCase _listCollaboratorsUseCase;
+  AddCollaboratorUseCase _addCollaboratorUseCase;
+  RemoveCollaboratorUseCase _removeCollaboratorUseCase;
 
   RepoState _state = const RepoInitial();
   RepoState get state => _state;
@@ -341,6 +344,9 @@ class RepoNotifier extends ChangeNotifier {
     required ListHooksUseCase listHooksUseCase,
     required CreateHookUseCase createHookUseCase,
     required DeleteHookUseCase deleteHookUseCase,
+    required ListCollaboratorsUseCase listCollaboratorsUseCase,
+    required AddCollaboratorUseCase addCollaboratorUseCase,
+    required RemoveCollaboratorUseCase removeCollaboratorUseCase,
   }) : _getRepoUseCase = getRepoUseCase,
        _searchReposUseCase = searchReposUseCase,
        _listBranchesUseCase = listBranchesUseCase,
@@ -371,7 +377,10 @@ class RepoNotifier extends ChangeNotifier {
        _deleteWikiPageUseCase = deleteWikiPageUseCase,
        _listHooksUseCase = listHooksUseCase,
        _createHookUseCase = createHookUseCase,
-       _deleteHookUseCase = deleteHookUseCase;
+       _deleteHookUseCase = deleteHookUseCase,
+       _listCollaboratorsUseCase = listCollaboratorsUseCase,
+       _addCollaboratorUseCase = addCollaboratorUseCase,
+       _removeCollaboratorUseCase = removeCollaboratorUseCase;
 
   void updateUseCases({
     required GetRepoUseCase getRepoUseCase,
@@ -405,6 +414,9 @@ class RepoNotifier extends ChangeNotifier {
     required ListHooksUseCase listHooksUseCase,
     required CreateHookUseCase createHookUseCase,
     required DeleteHookUseCase deleteHookUseCase,
+    required ListCollaboratorsUseCase listCollaboratorsUseCase,
+    required AddCollaboratorUseCase addCollaboratorUseCase,
+    required RemoveCollaboratorUseCase removeCollaboratorUseCase,
   }) {
     _getRepoUseCase = getRepoUseCase;
     _searchReposUseCase = searchReposUseCase;
@@ -437,6 +449,9 @@ class RepoNotifier extends ChangeNotifier {
     _listHooksUseCase = listHooksUseCase;
     _createHookUseCase = createHookUseCase;
     _deleteHookUseCase = deleteHookUseCase;
+    _listCollaboratorsUseCase = listCollaboratorsUseCase;
+    _addCollaboratorUseCase = addCollaboratorUseCase;
+    _removeCollaboratorUseCase = removeCollaboratorUseCase;
   }
 
   Future<void> getRepo(String owner, String repo) async {
@@ -951,5 +966,28 @@ class RepoNotifier extends ChangeNotifier {
     return await _deleteHookUseCase.call(
       DeleteHookParams(owner: owner, repo: repo, id: id),
     );
+  }
+
+  Future<List<User>?> listCollaborators(String owner, String repo) async {
+    final result = await _listCollaboratorsUseCase.call(ListCollaboratorsParams(owner: owner, repo: repo));
+    return switch (result) {
+      Right(:final value) => value,
+      _ => null,
+    };
+  }
+
+  Future<bool> addCollaborator(String owner, String repo, String username, String? permission) async {
+    final body = permission != null ? <String, dynamic>{'permission': permission} : null;
+    final result = await _addCollaboratorUseCase.call(
+      AddCollaboratorParams(owner: owner, repo: repo, collaborator: username, body: body),
+    );
+    return result is Right;
+  }
+
+  Future<bool> removeCollaborator(String owner, String repo, String username) async {
+    final result = await _removeCollaboratorUseCase.call(
+      RemoveCollaboratorParams(owner: owner, repo: repo, collaborator: username),
+    );
+    return result is Right;
   }
 }

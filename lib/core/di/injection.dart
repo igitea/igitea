@@ -90,6 +90,9 @@ class Injection {
   static late ListHooksUseCase listHooksUseCase;
   static late CreateHookUseCase createHookUseCase;
   static late DeleteHookUseCase deleteHookUseCase;
+  static late ListCollaboratorsUseCase listCollaboratorsUseCase;
+  static late AddCollaboratorUseCase addCollaboratorUseCase;
+  static late RemoveCollaboratorUseCase removeCollaboratorUseCase;
   static late ListIssuesUseCase listIssuesUseCase;
   static late GetIssueUseCase getIssueUseCase;
   static late CreateIssueUseCase createIssueUseCase;
@@ -188,6 +191,9 @@ class Injection {
     assert(listHooksUseCase != null);
     assert(createHookUseCase != null);
     assert(deleteHookUseCase != null);
+    assert(listCollaboratorsUseCase != null);
+    assert(addCollaboratorUseCase != null);
+    assert(removeCollaboratorUseCase != null);
     assert(listIssuesUseCase != null);
     assert(getIssueUseCase != null);
     assert(createIssueUseCase != null);
@@ -300,6 +306,9 @@ class Injection {
     listHooksUseCase = ListHooksUseCase(repository: repoRepository);
     createHookUseCase = CreateHookUseCase(repository: repoRepository);
     deleteHookUseCase = DeleteHookUseCase(repository: repoRepository);
+    listCollaboratorsUseCase = ListCollaboratorsUseCase(repository: repoRepository);
+    addCollaboratorUseCase = AddCollaboratorUseCase(repository: repoRepository);
+    removeCollaboratorUseCase = RemoveCollaboratorUseCase(repository: repoRepository);
     listIssuesUseCase = ListIssuesUseCase(repository: issueRepository);
     getIssueUseCase = GetIssueUseCase(repository: issueRepository);
     createIssueUseCase = CreateIssueUseCase(repository: issueRepository);
@@ -441,6 +450,9 @@ class Injection {
         listHooksUseCase: listHooksUseCase,
         createHookUseCase: createHookUseCase,
         deleteHookUseCase: deleteHookUseCase,
+        listCollaboratorsUseCase: listCollaboratorsUseCase,
+        addCollaboratorUseCase: addCollaboratorUseCase,
+        removeCollaboratorUseCase: removeCollaboratorUseCase,
       );
       issueNotifier.updateUseCases(
         listIssuesUseCase: listIssuesUseCase,
@@ -538,6 +550,9 @@ class Injection {
         listHooksUseCase: listHooksUseCase,
         createHookUseCase: createHookUseCase,
         deleteHookUseCase: deleteHookUseCase,
+        listCollaboratorsUseCase: listCollaboratorsUseCase,
+        addCollaboratorUseCase: addCollaboratorUseCase,
+        removeCollaboratorUseCase: removeCollaboratorUseCase,
       );
       issueNotifier = IssueNotifier(
         listIssuesUseCase: listIssuesUseCase,
@@ -657,6 +672,9 @@ class Injection {
       listHooksUseCase: listHooksUseCase,
       createHookUseCase: createHookUseCase,
       deleteHookUseCase: deleteHookUseCase,
+      listCollaboratorsUseCase: listCollaboratorsUseCase,
+      addCollaboratorUseCase: addCollaboratorUseCase,
+      removeCollaboratorUseCase: removeCollaboratorUseCase,
     );
     issueNotifier.updateUseCases(
       listIssuesUseCase: listIssuesUseCase,

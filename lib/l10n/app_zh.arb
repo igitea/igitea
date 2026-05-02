@@ -578,5 +578,12 @@
   "memberRemoved": "成员已移除",
   "noSearchResults": "未找到用户",
   "teamCanCreateOrgRepos": "允许创建组织仓库",
-  "teamIncludesAllRepos": "包含所有仓库"
+  "teamIncludesAllRepos": "包含所有仓库",
+  "collaborators": "协作者",
+  "noCollaborators": "无协作者",
+  "addCollaborator": "添加协作者",
+  "removeCollaborator": "移除",
+  "removeCollaboratorConfirmParams": "将 {username} 从协作者中移除？",
+  "collaboratorAdded": "协作者已添加",
+  "collaboratorRemoved": "协作者已移除"
 }

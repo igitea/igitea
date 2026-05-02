@@ -870,3 +870,42 @@ class DeleteHookUseCase {
     return _repository.deleteHook(params.owner, params.repo, params.id);
   }
 }
+
+class ListCollaboratorsUseCase {
+  final RepoRepository _repository;
+  ListCollaboratorsUseCase({required RepoRepository repository}) : _repository = repository;
+  Future<Either<Failure, List<User>>> call(ListCollaboratorsParams params) async {
+    return _repository.listCollaborators(params.owner, params.repo, page: params.page, limit: params.limit);
+  }
+}
+
+class ListCollaboratorsParams {
+  final String owner; final String repo; final int? page; final int? limit;
+  ListCollaboratorsParams({required this.owner, required this.repo, this.page, this.limit});
+}
+
+class AddCollaboratorUseCase {
+  final RepoRepository _repository;
+  AddCollaboratorUseCase({required RepoRepository repository}) : _repository = repository;
+  Future<Either<Failure, void>> call(AddCollaboratorParams params) async {
+    return _repository.addCollaborator(params.owner, params.repo, params.collaborator, params.body ?? {});
+  }
+}
+
+class AddCollaboratorParams {
+  final String owner; final String repo; final String collaborator; final Map<String, dynamic>? body;
+  AddCollaboratorParams({required this.owner, required this.repo, required this.collaborator, this.body});
+}
+
+class RemoveCollaboratorUseCase {
+  final RepoRepository _repository;
+  RemoveCollaboratorUseCase({required RepoRepository repository}) : _repository = repository;
+  Future<Either<Failure, void>> call(RemoveCollaboratorParams params) async {
+    return _repository.removeCollaborator(params.owner, params.repo, params.collaborator);
+  }
+}
+
+class RemoveCollaboratorParams {
+  final String owner; final String repo; final String collaborator;
+  RemoveCollaboratorParams({required this.owner, required this.repo, required this.collaborator});
+}
