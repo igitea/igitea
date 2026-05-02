@@ -163,7 +163,7 @@ jobs:
         shell: pwsh
         run: |
           "Y" | flutter pub run msix:create --release
-          Copy-Item "igitea.msix" -Destination "artifacts\igitea-${{ github.ref_name }}-windows-x64.msix"
+          Copy-Item "build\windows\x64\runner\Release\igitea.msix" -Destination "artifacts\igitea-${{ github.ref_name }}-windows-x64.msix"
 
       - uses: actions/upload-artifact@v4
         with:
