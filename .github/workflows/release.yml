@@ -162,8 +162,7 @@ jobs:
       - name: Build MSIX Installer
         shell: pwsh
         run: |
-          flutter pub run msix:create --release
-          Copy-Item "igitea.msix" -Destination "artifacts\igitea-${{ github.ref_name }}-windows-x64.msix"
+          flutter pub run msix:create --release --install-certificate --output-path artifacts\igitea-${{ github.ref_name }}-windows-x64.msix
 
       - uses: actions/upload-artifact@v4
         with:
