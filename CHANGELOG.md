@@ -5,6 +5,8 @@
 ### Added
 - Team CRUD: create/edit/delete teams, add/remove team members with user search dialog
 - Repository collaborators management: list/add/remove collaborators with user search
+- Branch protection management: list/create/delete branch protections
+- Organization webhooks management: list/create/delete org-level webhooks
 
 ## [0.25.0] - 2026-05-02
 

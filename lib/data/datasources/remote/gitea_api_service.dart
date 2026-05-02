@@ -554,6 +554,43 @@ class GiteaApiService {
     return Hook.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
   }
 
+  Future<List<Hook>> orgListHooks({
+    required String org,
+    int? page,
+    int? limit,
+  }) async {
+    final query = <String, String>{};
+    if (page != null) query['page'] = page.toString();
+    if (limit != null) query['limit'] = limit.toString();
+    final response = await _client.get('/orgs/${Uri.encodeComponent(org)}/hooks', queryParameters: query);
+    final list = jsonDecode(response.body) as List<dynamic>;
+    return list.map((e) => Hook.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<Hook> orgCreateHook({
+    required String org,
+    required Map<String, dynamic> body,
+  }) async {
+    final response = await _client.post('/orgs/${Uri.encodeComponent(org)}/hooks', body: body);
+    return Hook.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+  }
+
+  Future<Hook> orgEditHook({
+    required String org,
+    required int id,
+    required Map<String, dynamic> body,
+  }) async {
+    final response = await _client.patch('/orgs/${Uri.encodeComponent(org)}/hooks/${id.toString()}', body: body);
+    return Hook.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+  }
+
+  Future<void> orgDeleteHook({
+    required String org,
+    required int id,
+  }) async {
+    await _client.delete('/orgs/${Uri.encodeComponent(org)}/hooks/${id.toString()}');
+  }
+
   Future<List<ContentsResponse>> repoGetContents({
     required String owner,
     required String repo,
@@ -1682,6 +1719,40 @@ class GiteaApiService {
       body: body,
     );
     return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> repoGetBranchProtection({
+    required String owner,
+    required String repo,
+    required String name,
+  }) async {
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/branch_protections/${Uri.encodeComponent(name)}',
+    );
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<Map<String, dynamic>> repoEditBranchProtection({
+    required String owner,
+    required String repo,
+    required String name,
+    required Map<String, dynamic> body,
+  }) async {
+    final response = await _client.patch(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/branch_protections/${Uri.encodeComponent(name)}',
+      body: body,
+    );
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<void> repoDeleteBranchProtection({
+    required String owner,
+    required String repo,
+    required String name,
+  }) async {
+    await _client.delete(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/branch_protections/${Uri.encodeComponent(name)}',
+    );
   }
 
   // Actions

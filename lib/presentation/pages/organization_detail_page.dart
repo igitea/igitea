@@ -9,6 +9,7 @@ import '../widgets/empty_state.dart';
 import '../widgets/org_avatar.dart';
 import '../widgets/premium_card.dart';
 import 'edit_org_page.dart';
+import 'org_webhook_list_page.dart';
 import 'repo_detail_page.dart';
 import 'team_detail_page.dart';
 import 'create_team_page.dart';
@@ -90,6 +91,13 @@ class _OrganizationDetailPageState extends State<OrganizationDetailPage>
                       Injection.organizationNotifier.getOrg(widget.orgName);
                     }
                   });
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.webhook),
+                tooltip: l10n.webhooks,
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => OrgWebhookListPage(org: org.name ?? '')));
                 },
               ),
             ],

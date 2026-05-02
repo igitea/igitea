@@ -65,6 +65,16 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 - List webhooks with type, URL, and active status
 - Webhook detail: configuration, events list, edit and delete actions
 - Create webhooks: URL, secret, content type, event multi-select, active toggle
+- Organization-level webhook management
+
+### Collaborators
+- List repository collaborators
+- Add/remove collaborators with user search
+
+### Branch Protection
+- List branch protections with branch name and creation date
+- Create branch protection for a branch name
+- Delete branch protection with confirmation
 
 ### Packages
 - Browse packages with type filter chips
