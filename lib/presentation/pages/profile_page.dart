@@ -350,7 +350,8 @@ class _StatItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final child = PremiumCard(
+    return PremiumCard(
+      onTap: onTap,
       padding: const EdgeInsets.symmetric(vertical: UIConstants.md),
       child: Column(
         children: [
@@ -362,8 +363,6 @@ class _StatItem extends StatelessWidget {
         ],
       ),
     );
-    if (onTap == null) return child;
-    return InkWell(onTap: onTap, borderRadius: BorderRadius.circular(12), child: child);
   }
 }
 
