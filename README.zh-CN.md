@@ -18,7 +18,7 @@
 - Material 3 设计系统，高级 UI 打磨
 - 统一的 4px 间距网格和字体层级，覆盖所有页面
 - 120+ 个数据模型，基于 OpenAPI 规范自动生成
-- 45+ 个领域用例，采用 `Either<Failure, T>` 模式
+- 49+ 个领域用例，采用 `Either<Failure, T>` 模式
 - 247 个测试通过，`flutter analyze` 无错误
 
 ### 认证
@@ -65,6 +65,12 @@
 - Webhook 列表：类型、URL、激活状态
 - Webhook 详情：配置信息、事件列表、编辑、删除
 - 创建 Webhook：URL、Secret、Content-Type、事件多选、激活开关
+
+### 软件包
+- 按类型筛选浏览软件包
+- 软件包详情：类型、版本、创建者、创建时间、关联仓库
+- 文件列表（可读的文件大小）
+- 确认后删除软件包版本
 
 ### CI/CD Actions
 - 按 workflow 文件分组显示工作流运行

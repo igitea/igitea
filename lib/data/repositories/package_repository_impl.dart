@@ -31,6 +31,25 @@ class PackageRepositoryImpl implements PackageRepository {
   }
 
   @override
+  Future<Either<Failure, List<Package>>> listPackageVersions(
+    String owner,
+    String type,
+    String name, {
+    int? page,
+    int? limit,
+  }) async {
+    return execute(
+      () => _apiService.listPackageVersions(
+        owner: owner,
+        type: type,
+        name: name,
+        page: page,
+        limit: limit,
+      ),
+    );
+  }
+
+  @override
   Future<Either<Failure, Package>> getPackage(
     String owner,
     String type,

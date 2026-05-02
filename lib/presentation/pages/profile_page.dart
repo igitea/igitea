@@ -15,6 +15,7 @@ import '../widgets/premium_card.dart';
 import '../widgets/user_avatar.dart';
 import 'create_org_page.dart';
 import 'create_repo_page.dart';
+import 'package_list_page.dart';
 import 'organization_detail_page.dart';
 import 'settings_page.dart';
 import 'starred_repos_page.dart';
@@ -188,6 +189,21 @@ class _ProfileContent extends StatelessWidget {
                 Icon(Icons.star_outline, color: Theme.of(context).colorScheme.primary),
                 const SizedBox(width: UIConstants.md),
                 Expanded(child: Text(l10n.starredRepos)),
+                const Icon(Icons.chevron_right),
+              ],
+            ),
+          ),
+          PremiumCard(
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => PackageListPage(owner: user.login ?? ''),
+              ));
+            },
+            child: Row(
+              children: [
+                Icon(Icons.inventory_2_outlined, color: Theme.of(context).colorScheme.primary),
+                const SizedBox(width: UIConstants.md),
+                Expanded(child: Text(l10n.packages)),
                 const Icon(Icons.chevron_right),
               ],
             ),

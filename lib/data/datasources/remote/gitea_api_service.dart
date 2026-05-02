@@ -1176,6 +1176,26 @@ class GiteaApiService {
         .toList();
   }
 
+  Future<List<Package>> listPackageVersions({
+    required String owner,
+    required String type,
+    required String name,
+    int? page,
+    int? limit,
+  }) async {
+    final query = <String, String>{};
+    if (page != null) query['page'] = page.toString();
+    if (limit != null) query['limit'] = limit.toString();
+    final response = await _client.get(
+      '/packages/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(type)}/${Uri.encodeComponent(name)}',
+      queryParameters: query,
+    );
+    final list = jsonDecode(response.body) as List<dynamic>;
+    return list
+        .map((e) => Package.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
   Future<Package> getPackage({
     required String owner,
     required String type,

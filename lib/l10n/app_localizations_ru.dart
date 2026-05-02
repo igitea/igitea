@@ -1634,4 +1634,62 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get justNow => 'just now';
+
+  @override
+  String get packages => 'Пакеты';
+
+  @override
+  String get noPackages => 'Пакеты не найдены';
+
+  @override
+  String get packageType => 'Тип';
+
+  @override
+  String get packageVersion => 'Версия';
+
+  @override
+  String get packageFiles => 'Файлы';
+
+  @override
+  String get packageSize => 'Размер';
+
+  @override
+  String get packageCreator => 'Создатель';
+
+  @override
+  String get packageCreated => 'Создан';
+
+  @override
+  String get packageRepository => 'Репозиторий';
+
+  @override
+  String get deletePackage => 'Удалить пакет';
+
+  @override
+  String get deletePackageConfirm =>
+      'Вы уверены, что хотите удалить эту версию пакета? Это действие нельзя отменить.';
+
+  @override
+  String get packageDeleted => 'Версия пакета успешно удалена';
+
+  @override
+  String get allTypes => 'Все';
+
+  @override
+  String get installation => 'Установка';
+
+  @override
+  String get packageUrl => 'URL пакета';
+
+  @override
+  String get copy => 'Копировать';
+
+  @override
+  String get totalSize => 'Общий размер';
+
+  @override
+  String get versions => 'Версии';
+
+  @override
+  String get noVersions => 'Нет версий';
 }

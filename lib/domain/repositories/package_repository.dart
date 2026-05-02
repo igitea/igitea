@@ -13,6 +13,15 @@ abstract class PackageRepository {
     String? q,
   });
 
+  /// List all versions of a package.
+  Future<Either<Failure, List<Package>>> listPackageVersions(
+    String owner,
+    String type,
+    String name, {
+    int? page,
+    int? limit,
+  });
+
   /// Get a specific package.
   Future<Either<Failure, Package>> getPackage(
     String owner,

@@ -30,6 +30,7 @@ import '../../presentation/state/auth_notifier.dart';
 import '../../presentation/state/issue_notifier.dart';
 import '../../presentation/state/notification_notifier.dart';
 import '../../presentation/state/organization_notifier.dart';
+import '../../presentation/state/package_notifier.dart';
 import '../../presentation/state/repo_notifier.dart';
 import '../../presentation/state/theme_notifier.dart';
 import '../../presentation/state/user_notifier.dart';
@@ -119,6 +120,9 @@ class Injection {
   static late MarkThreadReadUseCase markThreadReadUseCase;
   static late ListPackagesUseCase listPackagesUseCase;
   static late GetPackageUseCase getPackageUseCase;
+  static late ListPackageFilesUseCase listPackageFilesUseCase;
+  static late ListPackageVersionsUseCase listPackageVersionsUseCase;
+  static late DeletePackageUseCase deletePackageUseCase;
   static late SearchUsersUseCase searchUsersUseCase;
   static late CreateUserUseCase createUserUseCase;
   static late DeleteUserUseCase deleteUserUseCase;
@@ -139,6 +143,7 @@ class Injection {
   static late IssueNotifier issueNotifier;
   static late OrgNotifier organizationNotifier;
   static late NotificationNotifier notificationNotifier;
+  static late PackageNotifier packageNotifier;
   static late ThemeNotifier themeNotifier;
   static late AdminNotifier adminNotifier;
 
@@ -208,6 +213,9 @@ class Injection {
     assert(markThreadReadUseCase != null);
     assert(listPackagesUseCase != null);
     assert(getPackageUseCase != null);
+    assert(listPackageFilesUseCase != null);
+    assert(listPackageVersionsUseCase != null);
+    assert(deletePackageUseCase != null);
     assert(searchUsersUseCase != null);
     assert(createUserUseCase != null);
     assert(deleteUserUseCase != null);
@@ -331,6 +339,9 @@ class Injection {
     );
     listPackagesUseCase = ListPackagesUseCase(repository: packageRepository);
     getPackageUseCase = GetPackageUseCase(repository: packageRepository);
+    listPackageFilesUseCase = ListPackageFilesUseCase(repository: packageRepository);
+    listPackageVersionsUseCase = ListPackageVersionsUseCase(repository: packageRepository);
+    deletePackageUseCase = DeletePackageUseCase(repository: packageRepository);
     searchUsersUseCase = SearchUsersUseCase(repository: adminRepository);
     createUserUseCase = CreateUserUseCase(repository: adminRepository);
     deleteUserUseCase = DeleteUserUseCase(repository: adminRepository);
@@ -442,6 +453,13 @@ class Injection {
         markNotificationsReadUseCase: markNotificationsReadUseCase,
         checkNewAvailableUseCase: checkNewNotificationsUseCase,
       );
+      packageNotifier.updateUseCases(
+        listPackagesUseCase: listPackagesUseCase,
+        getPackageUseCase: getPackageUseCase,
+        listPackageFilesUseCase: listPackageFilesUseCase,
+        deletePackageUseCase: deletePackageUseCase,
+        listPackageVersionsUseCase: listPackageVersionsUseCase,
+      );
       adminNotifier.updateUseCases(
         searchUsersUseCase: searchUsersUseCase,
         createUserUseCase: createUserUseCase,
@@ -525,6 +543,13 @@ class Injection {
         checkNewAvailableUseCase: checkNewNotificationsUseCase,
       );
       themeNotifier = ThemeNotifier();
+      packageNotifier = PackageNotifier(
+        listPackagesUseCase: listPackagesUseCase,
+        getPackageUseCase: getPackageUseCase,
+        listPackageFilesUseCase: listPackageFilesUseCase,
+        deletePackageUseCase: deletePackageUseCase,
+        listPackageVersionsUseCase: listPackageVersionsUseCase,
+      );
       adminNotifier = AdminNotifier(
         searchUsersUseCase: searchUsersUseCase,
         createUserUseCase: createUserUseCase,
@@ -627,6 +652,13 @@ class Injection {
       markThreadReadUseCase: markThreadReadUseCase,
       markNotificationsReadUseCase: markNotificationsReadUseCase,
       checkNewAvailableUseCase: checkNewNotificationsUseCase,
+    );
+    packageNotifier.updateUseCases(
+      listPackagesUseCase: listPackagesUseCase,
+      getPackageUseCase: getPackageUseCase,
+      listPackageFilesUseCase: listPackageFilesUseCase,
+      deletePackageUseCase: deletePackageUseCase,
+      listPackageVersionsUseCase: listPackageVersionsUseCase,
     );
     adminNotifier.updateUseCases(
       searchUsersUseCase: searchUsersUseCase,

@@ -1623,4 +1623,61 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get justNow => 'just now';
+
+  @override
+  String get packages => '패키지';
+
+  @override
+  String get noPackages => '패키지를 찾을 수 없습니다';
+
+  @override
+  String get packageType => '유형';
+
+  @override
+  String get packageVersion => '버전';
+
+  @override
+  String get packageFiles => '파일';
+
+  @override
+  String get packageSize => '크기';
+
+  @override
+  String get packageCreator => '작성자';
+
+  @override
+  String get packageCreated => '생성일';
+
+  @override
+  String get packageRepository => '저장소';
+
+  @override
+  String get deletePackage => '패키지 삭제';
+
+  @override
+  String get deletePackageConfirm => '이 패키지 버전을 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.';
+
+  @override
+  String get packageDeleted => '패키지 버전이 삭제되었습니다';
+
+  @override
+  String get allTypes => '전체';
+
+  @override
+  String get installation => '설치 방법';
+
+  @override
+  String get packageUrl => '패키지 URL';
+
+  @override
+  String get copy => '복사';
+
+  @override
+  String get totalSize => '총 크기';
+
+  @override
+  String get versions => '버전';
+
+  @override
+  String get noVersions => '버전 없음';
 }

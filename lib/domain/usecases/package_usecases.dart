@@ -65,3 +65,100 @@ class GetPackageParams {
     required this.version,
   });
 }
+
+class ListPackageVersionsUseCase {
+  final PackageRepository _repository;
+
+  ListPackageVersionsUseCase({required PackageRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, List<Package>>> call(
+    ListPackageVersionsParams params,
+  ) async {
+    return _repository.listPackageVersions(
+      params.owner,
+      params.type,
+      params.name,
+      page: params.page,
+      limit: params.limit,
+    );
+  }
+}
+
+class ListPackageVersionsParams {
+  final String owner;
+  final String type;
+  final String name;
+  final int? page;
+  final int? limit;
+
+  ListPackageVersionsParams({
+    required this.owner,
+    required this.type,
+    required this.name,
+    this.page,
+    this.limit,
+  });
+}
+
+class ListPackageFilesUseCase {
+  final PackageRepository _repository;
+
+  ListPackageFilesUseCase({required PackageRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, List<PackageFile>>> call(
+    ListPackageFilesParams params,
+  ) async {
+    return _repository.listPackageFiles(
+      params.owner,
+      params.type,
+      params.name,
+      params.version,
+    );
+  }
+}
+
+class ListPackageFilesParams {
+  final String owner;
+  final String type;
+  final String name;
+  final String version;
+
+  ListPackageFilesParams({
+    required this.owner,
+    required this.type,
+    required this.name,
+    required this.version,
+  });
+}
+
+class DeletePackageUseCase {
+  final PackageRepository _repository;
+
+  DeletePackageUseCase({required PackageRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, void>> call(DeletePackageParams params) async {
+    return _repository.deletePackage(
+      params.owner,
+      params.type,
+      params.name,
+      params.version,
+    );
+  }
+}
+
+class DeletePackageParams {
+  final String owner;
+  final String type;
+  final String name;
+  final String version;
+
+  DeletePackageParams({
+    required this.owner,
+    required this.type,
+    required this.name,
+    required this.version,
+  });
+}

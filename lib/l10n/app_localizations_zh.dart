@@ -1618,6 +1618,63 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get justNow => '刚刚';
+
+  @override
+  String get packages => '软件包';
+
+  @override
+  String get noPackages => '未找到软件包';
+
+  @override
+  String get packageType => '类型';
+
+  @override
+  String get packageVersion => '版本';
+
+  @override
+  String get packageFiles => '文件';
+
+  @override
+  String get packageSize => '大小';
+
+  @override
+  String get packageCreator => '创建者';
+
+  @override
+  String get packageCreated => '创建时间';
+
+  @override
+  String get packageRepository => '仓库';
+
+  @override
+  String get deletePackage => '删除软件包';
+
+  @override
+  String get deletePackageConfirm => '确定要删除此软件包版本吗？此操作无法撤销。';
+
+  @override
+  String get packageDeleted => '软件包版本已删除';
+
+  @override
+  String get allTypes => '全部';
+
+  @override
+  String get installation => '安装方式';
+
+  @override
+  String get packageUrl => '包地址';
+
+  @override
+  String get copy => '复制';
+
+  @override
+  String get totalSize => '总大小';
+
+  @override
+  String get versions => '版本列表';
+
+  @override
+  String get noVersions => '暂无版本';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -3234,4 +3291,61 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get justNow => 'just now';
+
+  @override
+  String get packages => '套件';
+
+  @override
+  String get noPackages => '未找到套件';
+
+  @override
+  String get packageType => '類型';
+
+  @override
+  String get packageVersion => '版本';
+
+  @override
+  String get packageFiles => '檔案';
+
+  @override
+  String get packageSize => '大小';
+
+  @override
+  String get packageCreator => '建立者';
+
+  @override
+  String get packageCreated => '建立時間';
+
+  @override
+  String get packageRepository => '倉庫';
+
+  @override
+  String get deletePackage => '刪除套件';
+
+  @override
+  String get deletePackageConfirm => '確定要刪除此套件版本嗎？此操作無法復原。';
+
+  @override
+  String get packageDeleted => '套件版本已刪除';
+
+  @override
+  String get allTypes => '全部';
+
+  @override
+  String get installation => '安裝方式';
+
+  @override
+  String get packageUrl => '套件位址';
+
+  @override
+  String get copy => '複製';
+
+  @override
+  String get totalSize => '總大小';
+
+  @override
+  String get versions => '版本列表';
+
+  @override
+  String get noVersions => '暫無版本';
 }

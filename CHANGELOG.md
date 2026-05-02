@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+### Added
+- Packages management: list packages with type filter, package detail with version info and file list, delete package version
+- Packages entry on Profile page
+
 ## [0.24.0] - 2026-05-02
 
 ### Added

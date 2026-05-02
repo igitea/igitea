@@ -22,6 +22,18 @@ class MockPackageRepository implements PackageRepository {
   }
 
   @override
+  Future<Either<Failure, List<Package>>> listPackageVersions(
+    String owner,
+    String type,
+    String name, {
+    int? page,
+    int? limit,
+  }) async {
+    if (shouldFail) return Left(failure);
+    return const Right([Package(id: 1, name: 'pkg1', type: 'cargo', version: '1.0.0')]);
+  }
+
+  @override
   Future<Either<Failure, Package>> getPackage(
     String owner,
     String type,

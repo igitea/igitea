@@ -1634,4 +1634,62 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get justNow => 'just now';
+
+  @override
+  String get packages => 'Pakete';
+
+  @override
+  String get noPackages => 'Keine Pakete gefunden';
+
+  @override
+  String get packageType => 'Typ';
+
+  @override
+  String get packageVersion => 'Version';
+
+  @override
+  String get packageFiles => 'Dateien';
+
+  @override
+  String get packageSize => 'Größe';
+
+  @override
+  String get packageCreator => 'Ersteller';
+
+  @override
+  String get packageCreated => 'Erstellt';
+
+  @override
+  String get packageRepository => 'Repository';
+
+  @override
+  String get deletePackage => 'Paket löschen';
+
+  @override
+  String get deletePackageConfirm =>
+      'Möchten Sie diese Paketversion wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.';
+
+  @override
+  String get packageDeleted => 'Paketversion erfolgreich gelöscht';
+
+  @override
+  String get allTypes => 'Alle';
+
+  @override
+  String get installation => 'Installation';
+
+  @override
+  String get packageUrl => 'Paket-URL';
+
+  @override
+  String get copy => 'Kopieren';
+
+  @override
+  String get totalSize => 'Gesamtgröße';
+
+  @override
+  String get versions => 'Versionen';
+
+  @override
+  String get noVersions => 'Keine Versionen';
 }

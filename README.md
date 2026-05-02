@@ -18,7 +18,7 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 - Material 3 Design System with premium UI polish
 - Consistent 4px spacing grid and typography hierarchy across all pages
 - 120+ data models auto-generated from OpenAPI spec
-- 45+ domain use cases with `Either<Failure, T>` pattern
+- 49+ domain use cases with `Either<Failure, T>` pattern
 - 247 tests passing, `flutter analyze` clean
 
 ### Authentication
@@ -65,6 +65,12 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 - List webhooks with type, URL, and active status
 - Webhook detail: configuration, events list, edit and delete actions
 - Create webhooks: URL, secret, content type, event multi-select, active toggle
+
+### Packages
+- Browse packages with type filter chips
+- Package detail: type, version, creator, created date, repository link
+- File list with human-readable sizes
+- Delete package version with confirmation
 
 ### CI/CD Actions
 - Workflow runs grouped by workflow file

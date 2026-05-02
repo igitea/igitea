@@ -1623,4 +1623,61 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get justNow => 'just now';
+
+  @override
+  String get packages => 'パッケージ';
+
+  @override
+  String get noPackages => 'パッケージが見つかりません';
+
+  @override
+  String get packageType => '種類';
+
+  @override
+  String get packageVersion => 'バージョン';
+
+  @override
+  String get packageFiles => 'ファイル';
+
+  @override
+  String get packageSize => 'サイズ';
+
+  @override
+  String get packageCreator => '作成者';
+
+  @override
+  String get packageCreated => '作成日時';
+
+  @override
+  String get packageRepository => 'リポジトリ';
+
+  @override
+  String get deletePackage => 'パッケージを削除';
+
+  @override
+  String get deletePackageConfirm => 'このパッケージバージョンを削除してもよろしいですか？この操作は元に戻せません。';
+
+  @override
+  String get packageDeleted => 'パッケージバージョンが削除されました';
+
+  @override
+  String get allTypes => 'すべて';
+
+  @override
+  String get installation => 'インストール';
+
+  @override
+  String get packageUrl => 'パッケージURL';
+
+  @override
+  String get copy => 'コピー';
+
+  @override
+  String get totalSize => '合計サイズ';
+
+  @override
+  String get versions => 'バージョン';
+
+  @override
+  String get noVersions => 'バージョンなし';
 }

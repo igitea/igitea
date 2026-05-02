@@ -3226,6 +3226,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'just now'**
   String get justNow;
+
+  /// No description provided for @packages.
+  ///
+  /// In en, this message translates to:
+  /// **'Packages'**
+  String get packages;
+
+  /// No description provided for @noPackages.
+  ///
+  /// In en, this message translates to:
+  /// **'No packages found'**
+  String get noPackages;
+
+  /// No description provided for @packageType.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get packageType;
+
+  /// No description provided for @packageVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Version'**
+  String get packageVersion;
+
+  /// No description provided for @packageFiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Files'**
+  String get packageFiles;
+
+  /// No description provided for @packageSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Size'**
+  String get packageSize;
+
+  /// No description provided for @packageCreator.
+  ///
+  /// In en, this message translates to:
+  /// **'Creator'**
+  String get packageCreator;
+
+  /// No description provided for @packageCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Created'**
+  String get packageCreated;
+
+  /// No description provided for @packageRepository.
+  ///
+  /// In en, this message translates to:
+  /// **'Repository'**
+  String get packageRepository;
+
+  /// No description provided for @deletePackage.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Package'**
+  String get deletePackage;
+
+  /// No description provided for @deletePackageConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this package version? This action cannot be undone.'**
+  String get deletePackageConfirm;
+
+  /// No description provided for @packageDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Package version deleted successfully'**
+  String get packageDeleted;
+
+  /// No description provided for @allTypes.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get allTypes;
+
+  /// No description provided for @installation.
+  ///
+  /// In en, this message translates to:
+  /// **'Installation'**
+  String get installation;
+
+  /// No description provided for @packageUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Package URL'**
+  String get packageUrl;
+
+  /// No description provided for @copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get copy;
+
+  /// No description provided for @totalSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Size'**
+  String get totalSize;
+
+  /// No description provided for @versions.
+  ///
+  /// In en, this message translates to:
+  /// **'Versions'**
+  String get versions;
+
+  /// No description provided for @noVersions.
+  ///
+  /// In en, this message translates to:
+  /// **'No versions'**
+  String get noVersions;
 }
 
 class _AppLocalizationsDelegate
