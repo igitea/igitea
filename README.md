@@ -84,6 +84,8 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 - Click org avatars to navigate to detail page
 - List organization repositories with navigation
 - Team detail page with members and repositories
+- Create/edit/delete teams with permission management
+- Add/remove team members with user search
 - Edit organization name, description, location, website, email, visibility
 - Create new organizations from profile
 

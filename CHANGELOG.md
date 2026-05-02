@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Added
+- Team CRUD: create/edit/delete teams, add/remove team members with user search dialog
+
 ## [0.25.0] - 2026-05-02
 
 ### Added
