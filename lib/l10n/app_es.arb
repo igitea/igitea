@@ -550,5 +550,6 @@
   "releaseCreated": "Release creado exitosamente",
   "releaseUpdated": "Release actualizado exitosamente",
   "releaseDeleted": "Release eliminado exitosamente",
-  "chooseTag": "Elegir etiqueta"
+  "chooseTag": "Elegir etiqueta",
+  "defaultLabels": "Selección rápida"
 }

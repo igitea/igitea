@@ -550,5 +550,6 @@
   "releaseCreated": "Release 建立成功",
   "releaseUpdated": "Release 更新成功",
   "releaseDeleted": "Release 已刪除",
-  "chooseTag": "選擇標籤"
+  "chooseTag": "選擇標籤",
+  "defaultLabels": "快速選擇"
 }

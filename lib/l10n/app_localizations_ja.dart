@@ -1722,4 +1722,7 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get chooseTag => 'タグを選択';
+
+  @override
+  String get defaultLabels => 'クイック選択';
 }

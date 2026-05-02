@@ -1722,4 +1722,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get chooseTag => '태그 선택';
+
+  @override
+  String get defaultLabels => '빠른 선택';
 }

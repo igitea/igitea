@@ -1735,4 +1735,7 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get chooseTag => 'Tag wählen';
+
+  @override
+  String get defaultLabels => 'Schnellauswahl';
 }

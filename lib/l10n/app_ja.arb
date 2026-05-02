@@ -550,5 +550,6 @@
   "releaseCreated": "リリースを作成しました",
   "releaseUpdated": "リリースを更新しました",
   "releaseDeleted": "リリースを削除しました",
-  "chooseTag": "タグを選択"
+  "chooseTag": "タグを選択",
+  "defaultLabels": "クイック選択"
 }

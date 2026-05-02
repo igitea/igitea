@@ -1736,4 +1736,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get chooseTag => 'Choisir un tag';
+
+  @override
+  String get defaultLabels => 'Sélection rapide';
 }

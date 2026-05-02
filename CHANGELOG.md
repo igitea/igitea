@@ -7,6 +7,7 @@
 - Packages entry on Profile page
 - Release CRUD: create/edit/delete releases with branch dropdown, tag name (manual or pick existing), draft/prerelease toggles
 - Version list in package detail page with pagination and version switching
+- Quick pick default labels when creating/editing labels (bug, enhancement, documentation, etc.)
 
 ### Fixed
 - Deduplicate packages by name on list page

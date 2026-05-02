@@ -550,5 +550,6 @@
   "releaseCreated": "Release erfolgreich erstellt",
   "releaseUpdated": "Release erfolgreich aktualisiert",
   "releaseDeleted": "Release erfolgreich gelöscht",
-  "chooseTag": "Tag wählen"
+  "chooseTag": "Tag wählen",
+  "defaultLabels": "Schnellauswahl"
 }

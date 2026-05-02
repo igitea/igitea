@@ -551,5 +551,6 @@
   "releaseCreated": "Release created successfully",
   "releaseUpdated": "Release updated successfully",
   "releaseDeleted": "Release deleted successfully",
-  "chooseTag": "Pick tag"
+  "chooseTag": "Pick tag",
+  "defaultLabels": "Quick pick"
 }

@@ -1717,6 +1717,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get chooseTag => '选择标签';
+
+  @override
+  String get defaultLabels => '快速选择';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -3432,4 +3435,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get chooseTag => '選擇標籤';
+
+  @override
+  String get defaultLabels => '快速選擇';
 }

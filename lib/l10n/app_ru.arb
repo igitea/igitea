@@ -550,5 +550,6 @@
   "releaseCreated": "Релиз успешно создан",
   "releaseUpdated": "Релиз успешно обновлен",
   "releaseDeleted": "Релиз успешно удален",
-  "chooseTag": "Выбрать тег"
+  "chooseTag": "Выбрать тег",
+  "defaultLabels": "Быстрый выбор"
 }

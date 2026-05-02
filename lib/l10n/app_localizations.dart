@@ -3424,6 +3424,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Pick tag'**
   String get chooseTag;
+
+  /// No description provided for @defaultLabels.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick pick'**
+  String get defaultLabels;
 }
 
 class _AppLocalizationsDelegate

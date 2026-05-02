@@ -1735,4 +1735,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get chooseTag => 'Pick tag';
+
+  @override
+  String get defaultLabels => 'Quick pick';
 }

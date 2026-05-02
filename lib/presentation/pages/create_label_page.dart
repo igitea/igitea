@@ -25,6 +25,19 @@ class _CreateLabelPageState extends State<CreateLabelPage> {
   late final TextEditingController _colorController;
   bool _isSaving = false;
 
+  static const _defaultLabels = [
+    ('bug', 'DC3545'),
+    ('enhancement', '28A745'),
+    ('documentation', '007BFF'),
+    ('help wanted', 'FD7E14'),
+    ('question', '6F42C1'),
+    ('duplicate', '6C757D'),
+    ('invalid', 'FFC107'),
+    ('wontfix', '343A40'),
+    ('good first issue', '17A2B8'),
+    ('feature', 'E83E8C'),
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -39,6 +52,13 @@ class _CreateLabelPageState extends State<CreateLabelPage> {
     _descriptionController.dispose();
     _colorController.dispose();
     super.dispose();
+  }
+
+  void _selectDefault(String name, String color) {
+    setState(() {
+      _nameController.text = name;
+      _colorController.text = '#$color';
+    });
   }
 
   Future<void> _pickColor() async {
@@ -120,6 +140,10 @@ class _CreateLabelPageState extends State<CreateLabelPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            if (_nameController.text.trim().isEmpty) ...[
+              _buildDefaultLabels(l10n),
+              const SizedBox(height: UIConstants.md),
+            ],
             TextField(
               controller: _nameController,
               decoration: InputDecoration(
@@ -170,6 +194,40 @@ class _CreateLabelPageState extends State<CreateLabelPage> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildDefaultLabels(AppLocalizations l10n) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n.defaultLabels,
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+        ),
+        const SizedBox(height: UIConstants.sm),
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            children: _defaultLabels.map((label) {
+              final (name, color) = label;
+              return Padding(
+                padding: const EdgeInsets.only(right: UIConstants.sm),
+                child: ActionChip(
+                  avatar: CircleAvatar(
+                    backgroundColor: Color(int.parse('FF$color', radix: 16)),
+                    radius: 6,
+                  ),
+                  label: Text(name, style: Theme.of(context).textTheme.labelSmall),
+                  onPressed: () => _selectDefault(name, color),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+      ],
     );
   }
 }
