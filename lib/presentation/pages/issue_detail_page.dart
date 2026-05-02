@@ -3,8 +3,11 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/animations/animated_wrapper.dart';
 import '../../core/di/injection.dart';
+import '../../core/errors/failures.dart';
+import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../domain/entities/issue_state.dart';
+import '../../domain/usecases/issue_usecases.dart';
 import '../../l10n/app_localizations.dart';
 import '../../presentation/state/issue_notifier.dart';
 import '../../presentation/state/user_notifier.dart';
@@ -476,11 +479,10 @@ class _IssueContent extends StatelessWidget {
 
   void _showMilestoneEditor(BuildContext context, Issue issue) async {
     final l10n = AppLocalizations.of(context)!;
-    await Injection.issueNotifier.listMilestones(owner, repo);
-    final milestonesState = Injection.issueNotifier.state;
-    if (milestonesState is! MilestonesLoaded) return;
-
-    final allMilestones = milestonesState.milestones;
+    final result = await Injection.listMilestonesUseCase.call(
+      ListMilestonesParams(owner: owner, repo: repo),
+    );
+    final milestones = result is Right<Failure, List<Milestone>> ? result.value : <Milestone>[];
     int? selectedMilestoneId = issue.milestone?.id;
 
     if (!context.mounted) return;
@@ -499,7 +501,7 @@ class _IssueContent extends StatelessWidget {
                   onChanged: (v) => setState(() => selectedMilestoneId = v),
                   child: ListView.builder(
                     shrinkWrap: true,
-                    itemCount: allMilestones.length + 1,
+                    itemCount: milestones.length + 1,
                     itemBuilder: (ctx, index) {
                       if (index == 0) {
                         return RadioListTile<int?>(
@@ -507,7 +509,7 @@ class _IssueContent extends StatelessWidget {
                           value: null,
                         );
                       }
-                      final milestone = allMilestones[index - 1];
+                      final milestone = milestones[index - 1];
                       return RadioListTile<int?>(
                         title: Text(milestone.title ?? ''),
                         value: milestone.id,
