@@ -7,6 +7,7 @@ import '../../l10n/app_localizations.dart';
 import '../state/organization_notifier.dart';
 import '../widgets/user_avatar.dart';
 import 'repo_detail_page.dart';
+import 'edit_team_page.dart';
 
 class TeamDetailPage extends StatefulWidget {
   final int teamId;
@@ -71,6 +72,26 @@ class _TeamDetailPageState extends State<TeamDetailPage>
             pinned: true,
             floating: true,
             forceElevated: innerBoxIsScrolled,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.edit_outlined),
+                tooltip: l10n.editTeam,
+                onPressed: () async {
+                  final result = await Navigator.push<bool>(
+                    context,
+                    MaterialPageRoute(builder: (_) => EditTeamPage(team: team)),
+                  );
+                  if (result == true && mounted) {
+                    Injection.organizationNotifier.getTeam(widget.teamId);
+                  }
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.delete_outline),
+                tooltip: l10n.deleteTeam,
+                onPressed: () => _deleteTeam(team, l10n),
+              ),
+            ],
           ),
           SliverToBoxAdapter(
             child: _TeamHeader(team: team),
@@ -99,6 +120,31 @@ class _TeamDetailPageState extends State<TeamDetailPage>
         ],
       ),
     );
+  }
+
+  Future<void> _deleteTeam(Team team, AppLocalizations l10n) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.deleteTeam),
+        content: Text(l10n.deleteTeamConfirm),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
+            child: Text(l10n.delete),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && mounted) {
+      final success = await Injection.organizationNotifier.deleteTeam(id: team.id!);
+      if (mounted && success) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.teamDeleted)));
+        Navigator.pop(context, true);
+      }
+    }
   }
 }
 
@@ -292,50 +338,160 @@ class _MembersTabState extends State<_MembersTab> {
     });
   }
 
+  Future<void> _addMember() async {
+    final l10n = AppLocalizations.of(context)!;
+    final controller = TextEditingController();
+    List<User> results = [];
+    bool searching = false;
+
+    final username = await showDialog<String>(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (ctx, setDialogState) => AlertDialog(
+          title: Text(l10n.addMember),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: controller,
+                decoration: InputDecoration(
+                  hintText: l10n.searchMembers,
+                  border: const OutlineInputBorder(),
+                ),
+                onChanged: (q) async {
+                  if (q.trim().isEmpty) {
+                    setDialogState(() => results = []);
+                    return;
+                  }
+                  setDialogState(() => searching = true);
+                  try {
+                    results = await Injection.apiService.adminSearchUsers(login_name: q.trim());
+                  } catch (_) {
+                    results = [];
+                  }
+                  setDialogState(() => searching = false);
+                },
+              ),
+              const SizedBox(height: 12),
+              if (searching)
+                const CircularProgressIndicator(strokeWidth: 2)
+              else if (results.isEmpty && controller.text.trim().isNotEmpty)
+                Text(l10n.noSearchResults)
+              else
+                ...results.map((u) => ListTile(
+                  leading: UserAvatar(user: u, radius: 14),
+                  title: Text(u.login ?? ''),
+                  dense: true,
+                  onTap: () => Navigator.pop(ctx, u.login),
+                )),
+            ],
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l10n.cancel)),
+          ],
+        ),
+      ),
+    );
+
+    if (username != null && username.isNotEmpty) {
+      final success = await Injection.organizationNotifier.addTeamMember(
+        id: widget.teamId,
+        username: username,
+      );
+      if (mounted && success) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.memberAdded)));
+        Injection.organizationNotifier.listTeamMembers(widget.teamId);
+      }
+    }
+  }
+
+  Future<void> _removeMember(String username) async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.removeMember),
+        content: Text(l10n.removeMemberConfirmParams(username)),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
+          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(l10n.removeMember)),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      final success = await Injection.organizationNotifier.removeTeamMember(
+        id: widget.teamId,
+        username: username,
+      );
+      if (mounted && success) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.memberRemoved)));
+        Injection.organizationNotifier.listTeamMembers(widget.teamId);
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return ListenableBuilder(
-      listenable: Injection.organizationNotifier,
-      builder: (context, _) {
-        final state = Injection.organizationNotifier.teamMembersState;
-        if (state is OrgTeamMembersLoaded) {
-          final members = state.members;
-          if (members.isEmpty) {
-            return RefreshIndicator(
-              onRefresh: () => Injection.organizationNotifier.listTeamMembers(widget.teamId),
-              child: ListView(
-                children: [Center(child: Text(l10n.noMembers))],
-              ),
-            );
-          }
-          return RefreshIndicator(
-            onRefresh: () => Injection.organizationNotifier.listTeamMembers(widget.teamId),
-            child: ListView.builder(
-              itemCount: members.length,
-              itemBuilder: (context, index) {
-                final member = members[index];
-                return FadeInWrapper(
-                  delay: Duration(milliseconds: index * 30),
-                  child: ListTile(
-                    leading: UserAvatar(user: member, radius: 16),
-                    title: Text(member.login ?? member.full_name ?? ''),
-                    subtitle: member.full_name != null ? Text(member.full_name!) : null,
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: _addMember,
+              icon: const Icon(Icons.person_add_outlined, size: 18),
+              label: Text(l10n.addMember),
+            ),
+          ),
+        ),
+        Expanded(
+          child: ListenableBuilder(
+            listenable: Injection.organizationNotifier,
+            builder: (context, _) {
+              final state = Injection.organizationNotifier.teamMembersState;
+              if (state is OrgTeamMembersLoaded) {
+                final members = state.members;
+                if (members.isEmpty) {
+                  return RefreshIndicator(
+                    onRefresh: () => Injection.organizationNotifier.listTeamMembers(widget.teamId),
+                    child: ListView(children: [Center(child: Text(l10n.noMembers))]),
+                  );
+                }
+                return RefreshIndicator(
+                  onRefresh: () => Injection.organizationNotifier.listTeamMembers(widget.teamId),
+                  child: ListView.builder(
+                    itemCount: members.length,
+                    itemBuilder: (context, index) {
+                      final member = members[index];
+                      return FadeInWrapper(
+                        delay: Duration(milliseconds: index * 30),
+                        child: ListTile(
+                          leading: UserAvatar(user: member, radius: 16),
+                          title: Text(member.login ?? member.full_name ?? ''),
+                          subtitle: member.full_name != null ? Text(member.full_name!) : null,
+                          trailing: IconButton(
+                            icon: const Icon(Icons.remove_circle_outline),
+                            tooltip: l10n.removeMember,
+                            onPressed: () => _removeMember(member.login ?? ''),
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 );
-              },
-            ),
-          );
-        } else if (state is OrgError) {
-          return RefreshIndicator(
-            onRefresh: () => Injection.organizationNotifier.listTeamMembers(widget.teamId),
-            child: ListView(
-              children: [Center(child: Text(state.message))],
-            ),
-          );
-        }
-        return const Center(child: CircularProgressIndicator());
-      },
+              } else if (state is OrgError) {
+                return RefreshIndicator(
+                  onRefresh: () => Injection.organizationNotifier.listTeamMembers(widget.teamId),
+                  child: ListView(children: [Center(child: Text(state.message))]),
+                );
+              }
+              return const Center(child: CircularProgressIndicator());
+            },
+          ),
+        ),
+      ],
     );
   }
 }

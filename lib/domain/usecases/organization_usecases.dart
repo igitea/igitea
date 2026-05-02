@@ -164,3 +164,91 @@ class CreateOrgUseCase {
     return _repository.createOrg(body);
   }
 }
+
+class CreateTeamUseCase {
+  final OrganizationRepository _repository;
+
+  CreateTeamUseCase({required OrganizationRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, Team>> call(CreateTeamParams params) async {
+    return _repository.createTeam(params.org, params.option);
+  }
+}
+
+class CreateTeamParams {
+  final String org;
+  final CreateTeamOption option;
+
+  CreateTeamParams({required this.org, required this.option});
+}
+
+class EditTeamUseCase {
+  final OrganizationRepository _repository;
+
+  EditTeamUseCase({required OrganizationRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, Team>> call(EditTeamParams params) async {
+    return _repository.editTeam(params.id, params.option);
+  }
+}
+
+class EditTeamParams {
+  final int id;
+  final EditTeamOption option;
+
+  EditTeamParams({required this.id, required this.option});
+}
+
+class DeleteTeamUseCase {
+  final OrganizationRepository _repository;
+
+  DeleteTeamUseCase({required OrganizationRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, void>> call(DeleteTeamParams params) async {
+    return _repository.deleteTeam(params.id);
+  }
+}
+
+class DeleteTeamParams {
+  final int id;
+  DeleteTeamParams({required this.id});
+}
+
+class AddTeamMemberUseCase {
+  final OrganizationRepository _repository;
+
+  AddTeamMemberUseCase({required OrganizationRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, void>> call(AddTeamMemberParams params) async {
+    return _repository.addTeamMember(params.id, params.username);
+  }
+}
+
+class AddTeamMemberParams {
+  final int id;
+  final String username;
+
+  AddTeamMemberParams({required this.id, required this.username});
+}
+
+class RemoveTeamMemberUseCase {
+  final OrganizationRepository _repository;
+
+  RemoveTeamMemberUseCase({required OrganizationRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, void>> call(RemoveTeamMemberParams params) async {
+    return _repository.removeTeamMember(params.id, params.username);
+  }
+}
+
+class RemoveTeamMemberParams {
+  final int id;
+  final String username;
+
+  RemoveTeamMemberParams({required this.id, required this.username});
+}

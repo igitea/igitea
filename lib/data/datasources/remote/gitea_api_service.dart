@@ -1097,6 +1097,46 @@ class GiteaApiService {
         .toList();
   }
 
+  Future<Team> orgCreateTeam({
+    required String org,
+    required CreateTeamOption body,
+  }) async {
+    final response = await _client.post(
+      '/orgs/${Uri.encodeComponent(org)}/teams',
+      body: body.toJson(),
+    );
+    return Team.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+  }
+
+  Future<Team> orgEditTeam({
+    required int id,
+    required EditTeamOption body,
+  }) async {
+    final response = await _client.patch(
+      '/teams/${id.toString()}',
+      body: body.toJson(),
+    );
+    return Team.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+  }
+
+  Future<void> orgDeleteTeam({required int id}) async {
+    await _client.delete('/teams/${id.toString()}');
+  }
+
+  Future<void> orgAddTeamMember({
+    required int id,
+    required String username,
+  }) async {
+    await _client.put('/teams/${id.toString()}/members/${Uri.encodeComponent(username)}');
+  }
+
+  Future<void> orgRemoveTeamMember({
+    required int id,
+    required String username,
+  }) async {
+    await _client.delete('/teams/${id.toString()}/members/${Uri.encodeComponent(username)}');
+  }
+
   // Notification
 
   Future<List<NotificationThread>> notifyGetList({

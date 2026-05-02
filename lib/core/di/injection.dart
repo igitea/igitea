@@ -116,6 +116,11 @@ class Injection {
   static late ListTeamReposUseCase listTeamReposUseCase;
   static late EditOrgUseCase editOrgUseCase;
   static late CreateOrgUseCase createOrgUseCase;
+  static late CreateTeamUseCase createTeamUseCase;
+  static late EditTeamUseCase editTeamUseCase;
+  static late DeleteTeamUseCase deleteTeamUseCase;
+  static late AddTeamMemberUseCase addTeamMemberUseCase;
+  static late RemoveTeamMemberUseCase removeTeamMemberUseCase;
   static late ListNotificationsUseCase listNotificationsUseCase;
   static late ListRepoNotificationsUseCase listRepoNotificationsUseCase;
   static late MarkNotificationsReadUseCase markNotificationsReadUseCase;
@@ -209,6 +214,11 @@ class Injection {
     assert(listTeamReposUseCase != null);
     assert(editOrgUseCase != null);
     assert(createOrgUseCase != null);
+    assert(createTeamUseCase != null);
+    assert(editTeamUseCase != null);
+    assert(deleteTeamUseCase != null);
+    assert(addTeamMemberUseCase != null);
+    assert(removeTeamMemberUseCase != null);
     assert(listNotificationsUseCase != null);
     assert(listRepoNotificationsUseCase != null);
     assert(markNotificationsReadUseCase != null);
@@ -328,6 +338,11 @@ class Injection {
     );
     editOrgUseCase = EditOrgUseCase(repository: organizationRepository);
     createOrgUseCase = CreateOrgUseCase(repository: organizationRepository);
+    createTeamUseCase = CreateTeamUseCase(repository: organizationRepository);
+    editTeamUseCase = EditTeamUseCase(repository: organizationRepository);
+    deleteTeamUseCase = DeleteTeamUseCase(repository: organizationRepository);
+    addTeamMemberUseCase = AddTeamMemberUseCase(repository: organizationRepository);
+    removeTeamMemberUseCase = RemoveTeamMemberUseCase(repository: organizationRepository);
     listNotificationsUseCase = ListNotificationsUseCase(
       repository: notificationRepository,
     );
@@ -455,6 +470,11 @@ class Injection {
         listTeamReposUseCase: listTeamReposUseCase,
         editOrgUseCase: editOrgUseCase,
         createOrgUseCase: createOrgUseCase,
+        createTeamUseCase: createTeamUseCase,
+        editTeamUseCase: editTeamUseCase,
+        deleteTeamUseCase: deleteTeamUseCase,
+        addTeamMemberUseCase: addTeamMemberUseCase,
+        removeTeamMemberUseCase: removeTeamMemberUseCase,
       );
       notificationNotifier.updateUseCases(
         listNotificationsUseCase: listNotificationsUseCase,
@@ -547,6 +567,11 @@ class Injection {
         listTeamReposUseCase: listTeamReposUseCase,
         editOrgUseCase: editOrgUseCase,
         createOrgUseCase: createOrgUseCase,
+        createTeamUseCase: createTeamUseCase,
+        editTeamUseCase: editTeamUseCase,
+        deleteTeamUseCase: deleteTeamUseCase,
+        addTeamMemberUseCase: addTeamMemberUseCase,
+        removeTeamMemberUseCase: removeTeamMemberUseCase,
       );
       notificationNotifier = NotificationNotifier(
         listNotificationsUseCase: listNotificationsUseCase,
@@ -661,6 +686,11 @@ class Injection {
       listTeamReposUseCase: listTeamReposUseCase,
       editOrgUseCase: editOrgUseCase,
       createOrgUseCase: createOrgUseCase,
+      createTeamUseCase: createTeamUseCase,
+      editTeamUseCase: editTeamUseCase,
+      deleteTeamUseCase: deleteTeamUseCase,
+      addTeamMemberUseCase: addTeamMemberUseCase,
+      removeTeamMemberUseCase: removeTeamMemberUseCase,
     );
     notificationNotifier.updateUseCases(
       listNotificationsUseCase: listNotificationsUseCase,

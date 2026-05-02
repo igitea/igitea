@@ -109,4 +109,45 @@ class OrganizationRepositoryImpl implements OrganizationRepository {
       () => _apiService.orgListTeamRepos(id: id, page: page, limit: limit),
     );
   }
+
+  @override
+  Future<Either<Failure, Team>> createTeam(
+    String org,
+    CreateTeamOption option,
+  ) async {
+    return execute(
+      () => _apiService.orgCreateTeam(org: org, body: option),
+    );
+  }
+
+  @override
+  Future<Either<Failure, Team>> editTeam(
+    int id,
+    EditTeamOption option,
+  ) async {
+    return execute(
+      () => _apiService.orgEditTeam(id: id, body: option),
+    );
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteTeam(int id) async {
+    return execute(() => _apiService.orgDeleteTeam(id: id));
+  }
+
+  @override
+  Future<Either<Failure, void>> addTeamMember(
+    int id,
+    String username,
+  ) async {
+    return execute(() => _apiService.orgAddTeamMember(id: id, username: username));
+  }
+
+  @override
+  Future<Either<Failure, void>> removeTeamMember(
+    int id,
+    String username,
+  ) async {
+    return execute(() => _apiService.orgRemoveTeamMember(id: id, username: username));
+  }
 }

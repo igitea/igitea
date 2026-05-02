@@ -11,6 +11,7 @@ import '../widgets/premium_card.dart';
 import 'edit_org_page.dart';
 import 'repo_detail_page.dart';
 import 'team_detail_page.dart';
+import 'create_team_page.dart';
 
 class OrganizationDetailPage extends StatefulWidget {
   final String orgName;
@@ -560,12 +561,24 @@ class _TeamsTabState extends State<_TeamsTab> {
     });
   }
 
+  Future<void> _createTeam() async {
+    final result = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(builder: (_) => CreateTeamPage(org: widget.orgName)),
+    );
+    if (result == true && mounted) {
+      Injection.organizationNotifier.listOrgTeams(widget.orgName);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    return ListenableBuilder(
+    return Stack(
+      children: [
+        ListenableBuilder(
       listenable: Injection.organizationNotifier,
       builder: (context, _) {
         final state = Injection.organizationNotifier.teamsState;
@@ -687,6 +700,17 @@ class _TeamsTabState extends State<_TeamsTab> {
         }
         return const Center(child: CircularProgressIndicator());
       },
+    ),
+        Positioned(
+          right: 16,
+          bottom: 16,
+          child: FloatingActionButton.extended(
+            onPressed: _createTeam,
+            icon: const Icon(Icons.add),
+            label: Text(l10n.createTeam),
+          ),
+        ),
+      ],
     );
   }
 }

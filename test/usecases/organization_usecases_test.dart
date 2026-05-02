@@ -80,6 +80,33 @@ class MockOrganizationRepository implements OrganizationRepository {
     int? page,
     int? limit,
   }) => throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, Team>> createTeam(
+    String org,
+    CreateTeamOption option,
+  ) => throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, Team>> editTeam(
+    int id,
+    EditTeamOption option,
+  ) => throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, void>> deleteTeam(int id) => throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, void>> addTeamMember(
+    int id,
+    String username,
+  ) => throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, void>> removeTeamMember(
+    int id,
+    String username,
+  ) => throw UnimplementedError();
 }
 
 void main() {

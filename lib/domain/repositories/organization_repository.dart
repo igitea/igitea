@@ -62,4 +62,31 @@ abstract class OrganizationRepository {
     int? page,
     int? limit,
   });
+
+  /// Create a team in an organization.
+  Future<Either<Failure, Team>> createTeam(
+    String org,
+    CreateTeamOption option,
+  );
+
+  /// Edit a team.
+  Future<Either<Failure, Team>> editTeam(
+    int id,
+    EditTeamOption option,
+  );
+
+  /// Delete a team.
+  Future<Either<Failure, void>> deleteTeam(int id);
+
+  /// Add a member to a team.
+  Future<Either<Failure, void>> addTeamMember(
+    int id,
+    String username,
+  );
+
+  /// Remove a member from a team.
+  Future<Either<Failure, void>> removeTeamMember(
+    int id,
+    String username,
+  );
 }

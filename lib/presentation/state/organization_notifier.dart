@@ -67,6 +67,11 @@ class OrgNotifier extends ChangeNotifier {
   ListTeamReposUseCase _listTeamReposUseCase;
   EditOrgUseCase _editOrgUseCase;
   CreateOrgUseCase _createOrgUseCase;
+  CreateTeamUseCase _createTeamUseCase;
+  EditTeamUseCase _editTeamUseCase;
+  DeleteTeamUseCase _deleteTeamUseCase;
+  AddTeamMemberUseCase _addTeamMemberUseCase;
+  RemoveTeamMemberUseCase _removeTeamMemberUseCase;
 
   // Main state for org operations (getOrg, editOrg, createOrg, listOrgs)
   OrgState _state = const OrgInitial();
@@ -98,6 +103,11 @@ class OrgNotifier extends ChangeNotifier {
     required ListTeamReposUseCase listTeamReposUseCase,
     required EditOrgUseCase editOrgUseCase,
     required CreateOrgUseCase createOrgUseCase,
+    required CreateTeamUseCase createTeamUseCase,
+    required EditTeamUseCase editTeamUseCase,
+    required DeleteTeamUseCase deleteTeamUseCase,
+    required AddTeamMemberUseCase addTeamMemberUseCase,
+    required RemoveTeamMemberUseCase removeTeamMemberUseCase,
   }) : _getOrgUseCase = getOrgUseCase,
        _listCurrentUserOrgsUseCase = listCurrentUserOrgsUseCase,
        _listOrgReposUseCase = listOrgReposUseCase,
@@ -106,7 +116,12 @@ class OrgNotifier extends ChangeNotifier {
        _listTeamMembersUseCase = listTeamMembersUseCase,
        _listTeamReposUseCase = listTeamReposUseCase,
        _editOrgUseCase = editOrgUseCase,
-       _createOrgUseCase = createOrgUseCase;
+       _createOrgUseCase = createOrgUseCase,
+       _createTeamUseCase = createTeamUseCase,
+       _editTeamUseCase = editTeamUseCase,
+       _deleteTeamUseCase = deleteTeamUseCase,
+       _addTeamMemberUseCase = addTeamMemberUseCase,
+       _removeTeamMemberUseCase = removeTeamMemberUseCase;
 
   void updateUseCases({
     required GetOrgUseCase getOrgUseCase,
@@ -118,6 +133,11 @@ class OrgNotifier extends ChangeNotifier {
     required ListTeamReposUseCase listTeamReposUseCase,
     required EditOrgUseCase editOrgUseCase,
     required CreateOrgUseCase createOrgUseCase,
+    required CreateTeamUseCase createTeamUseCase,
+    required EditTeamUseCase editTeamUseCase,
+    required DeleteTeamUseCase deleteTeamUseCase,
+    required AddTeamMemberUseCase addTeamMemberUseCase,
+    required RemoveTeamMemberUseCase removeTeamMemberUseCase,
   }) {
     _getOrgUseCase = getOrgUseCase;
     _listCurrentUserOrgsUseCase = listCurrentUserOrgsUseCase;
@@ -128,6 +148,11 @@ class OrgNotifier extends ChangeNotifier {
     _listTeamReposUseCase = listTeamReposUseCase;
     _editOrgUseCase = editOrgUseCase;
     _createOrgUseCase = createOrgUseCase;
+    _createTeamUseCase = createTeamUseCase;
+    _editTeamUseCase = editTeamUseCase;
+    _deleteTeamUseCase = deleteTeamUseCase;
+    _addTeamMemberUseCase = addTeamMemberUseCase;
+    _removeTeamMemberUseCase = removeTeamMemberUseCase;
   }
 
   Future<void> getOrg(String org) async {
@@ -274,5 +299,36 @@ class OrgNotifier extends ChangeNotifier {
         _state = OrgLoaded(value);
         notifyListeners();
     }
+  }
+
+  Future<bool> createTeam({
+    required String org,
+    required CreateTeamOption option,
+  }) async {
+    final result = await _createTeamUseCase.call(CreateTeamParams(org: org, option: option));
+    return result is Right;
+  }
+
+  Future<bool> editTeam({
+    required int id,
+    required EditTeamOption option,
+  }) async {
+    final result = await _editTeamUseCase.call(EditTeamParams(id: id, option: option));
+    return result is Right;
+  }
+
+  Future<bool> deleteTeam({required int id}) async {
+    final result = await _deleteTeamUseCase.call(DeleteTeamParams(id: id));
+    return result is Right;
+  }
+
+  Future<bool> addTeamMember({required int id, required String username}) async {
+    final result = await _addTeamMemberUseCase.call(AddTeamMemberParams(id: id, username: username));
+    return result is Right;
+  }
+
+  Future<bool> removeTeamMember({required int id, required String username}) async {
+    final result = await _removeTeamMemberUseCase.call(RemoveTeamMemberParams(id: id, username: username));
+    return result is Right;
   }
 }
