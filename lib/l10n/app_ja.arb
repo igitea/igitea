@@ -558,5 +558,26 @@
   "applyAllLabelsParams": "Apply all ({count} labels)",
   "creating": "Creating...",
   "addCustomLabel": "Add custom label",
-  "selectTemplate": "Select a template"
+  "selectTemplate": "Select a template",
+  "createTeam": "チームを作成",
+  "editTeam": "チームを編集",
+  "deleteTeam": "チームを削除",
+  "deleteTeamConfirm": "このチームを削除してもよろしいですか？",
+  "teamName": "チーム名",
+  "teamNameRequired": "チーム名は必須です",
+  "teamDescription": "説明",
+  "teamPermission": "権限",
+  "searchMembers": "ユーザー検索",
+  "addMember": "メンバー追加",
+  "removeMember": "削除",
+  "removeMemberConfirmParams": "{username} をチームから削除しますか？",
+  "teamCreated": "チームを作成しました",
+  "teamUpdated": "チームを更新しました",
+  "teamDeleted": "チームを削除しました",
+  "memberAdded": "メンバーを追加しました",
+  "memberRemoved": "メンバーを削除しました",
+  "noSearchResults": "ユーザーが見つかりません"
+,
+  "teamCanCreateOrgRepos": "Can create org repos",
+  "teamIncludesAllRepos": "Includes all repositories"
 }

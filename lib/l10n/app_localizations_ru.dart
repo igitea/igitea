@@ -1764,4 +1764,66 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get selectTemplate => 'Select a template';
+
+  @override
+  String get createTeam => 'Создать команду';
+
+  @override
+  String get editTeam => 'Редактировать';
+
+  @override
+  String get deleteTeam => 'Удалить';
+
+  @override
+  String get deleteTeamConfirm => 'Удалить команду?';
+
+  @override
+  String get teamName => 'Название';
+
+  @override
+  String get teamNameRequired => 'Название обязательно';
+
+  @override
+  String get teamDescription => 'Описание';
+
+  @override
+  String get teamPermission => 'Права';
+
+  @override
+  String get searchMembers => 'Поиск';
+
+  @override
+  String get addMember => 'Добавить';
+
+  @override
+  String get removeMember => 'Удалить';
+
+  @override
+  String removeMemberConfirmParams(Object username) {
+    return 'Удалить $username?';
+  }
+
+  @override
+  String get teamCreated => 'Команда создана';
+
+  @override
+  String get teamUpdated => 'Команда обновлена';
+
+  @override
+  String get teamDeleted => 'Команда удалена';
+
+  @override
+  String get memberAdded => 'Участник добавлен';
+
+  @override
+  String get memberRemoved => 'Участник удален';
+
+  @override
+  String get noSearchResults => 'Нет результатов';
+
+  @override
+  String get teamCanCreateOrgRepos => 'Can create org repos';
+
+  @override
+  String get teamIncludesAllRepos => 'Includes all repositories';
 }

@@ -558,5 +558,26 @@
   "applyAllLabelsParams": "Apply all ({count} labels)",
   "creating": "Creating...",
   "addCustomLabel": "Add custom label",
-  "selectTemplate": "Select a template"
+  "selectTemplate": "Select a template",
+  "createTeam": "Créer équipe",
+  "editTeam": "Modifier équipe",
+  "deleteTeam": "Supprimer équipe",
+  "deleteTeamConfirm": "Supprimer cette équipe ?",
+  "teamName": "Nom",
+  "teamNameRequired": "Nom requis",
+  "teamDescription": "Description",
+  "teamPermission": "Permission",
+  "searchMembers": "Rechercher",
+  "addMember": "Ajouter",
+  "removeMember": "Retirer",
+  "removeMemberConfirmParams": "Retirer {username} ?",
+  "teamCreated": "Équipe créée",
+  "teamUpdated": "Équipe mise à jour",
+  "teamDeleted": "Équipe supprimée",
+  "memberAdded": "Membre ajouté",
+  "memberRemoved": "Membre retiré",
+  "noSearchResults": "Aucun résultat"
+,
+  "teamCanCreateOrgRepos": "Can create org repos",
+  "teamIncludesAllRepos": "Includes all repositories"
 }

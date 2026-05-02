@@ -558,5 +558,26 @@
   "applyAllLabelsParams": "Apply all ({count} labels)",
   "creating": "Creating...",
   "addCustomLabel": "Add custom label",
-  "selectTemplate": "Select a template"
+  "selectTemplate": "Select a template",
+  "createTeam": "Создать команду",
+  "editTeam": "Редактировать",
+  "deleteTeam": "Удалить",
+  "deleteTeamConfirm": "Удалить команду?",
+  "teamName": "Название",
+  "teamNameRequired": "Название обязательно",
+  "teamDescription": "Описание",
+  "teamPermission": "Права",
+  "searchMembers": "Поиск",
+  "addMember": "Добавить",
+  "removeMember": "Удалить",
+  "removeMemberConfirmParams": "Удалить {username}?",
+  "teamCreated": "Команда создана",
+  "teamUpdated": "Команда обновлена",
+  "teamDeleted": "Команда удалена",
+  "memberAdded": "Участник добавлен",
+  "memberRemoved": "Участник удален",
+  "noSearchResults": "Нет результатов"
+,
+  "teamCanCreateOrgRepos": "Can create org repos",
+  "teamIncludesAllRepos": "Includes all repositories"
 }

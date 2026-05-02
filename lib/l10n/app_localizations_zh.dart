@@ -1745,6 +1745,68 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get selectTemplate => '选择一个模板';
+
+  @override
+  String get createTeam => '创建团队';
+
+  @override
+  String get editTeam => '编辑团队';
+
+  @override
+  String get deleteTeam => '删除团队';
+
+  @override
+  String get deleteTeamConfirm => '确定要删除此团队吗？此操作无法撤销。';
+
+  @override
+  String get teamName => '团队名称';
+
+  @override
+  String get teamNameRequired => '团队名称不能为空';
+
+  @override
+  String get teamDescription => '描述';
+
+  @override
+  String get teamPermission => '权限';
+
+  @override
+  String get searchMembers => '搜索用户添加';
+
+  @override
+  String get addMember => '添加成员';
+
+  @override
+  String get removeMember => '移除';
+
+  @override
+  String removeMemberConfirmParams(Object username) {
+    return '将 $username 从团队中移除？';
+  }
+
+  @override
+  String get teamCreated => '团队创建成功';
+
+  @override
+  String get teamUpdated => '团队更新成功';
+
+  @override
+  String get teamDeleted => '团队已删除';
+
+  @override
+  String get memberAdded => '成员已添加';
+
+  @override
+  String get memberRemoved => '成员已移除';
+
+  @override
+  String get noSearchResults => '未找到用户';
+
+  @override
+  String get teamCanCreateOrgRepos => '允许创建组织仓库';
+
+  @override
+  String get teamIncludesAllRepos => '包含所有仓库';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -3488,4 +3550,66 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get selectTemplate => '選擇一個模板';
+
+  @override
+  String get createTeam => '建立團隊';
+
+  @override
+  String get editTeam => '編輯團隊';
+
+  @override
+  String get deleteTeam => '刪除團隊';
+
+  @override
+  String get deleteTeamConfirm => '確定要刪除此團隊嗎？此操作無法復原。';
+
+  @override
+  String get teamName => '團隊名稱';
+
+  @override
+  String get teamNameRequired => '團隊名稱不能為空';
+
+  @override
+  String get teamDescription => '描述';
+
+  @override
+  String get teamPermission => '權限';
+
+  @override
+  String get searchMembers => '搜尋用戶加入';
+
+  @override
+  String get addMember => '加入成員';
+
+  @override
+  String get removeMember => '移除';
+
+  @override
+  String removeMemberConfirmParams(Object username) {
+    return '將 $username 從團隊中移除？';
+  }
+
+  @override
+  String get teamCreated => '團隊建立成功';
+
+  @override
+  String get teamUpdated => '團隊更新成功';
+
+  @override
+  String get teamDeleted => '團隊已刪除';
+
+  @override
+  String get memberAdded => '成員已加入';
+
+  @override
+  String get memberRemoved => '成員已移除';
+
+  @override
+  String get noSearchResults => '未找到用戶';
+
+  @override
+  String get teamCanCreateOrgRepos => '允許創建組織倉庫';
+
+  @override
+  String get teamIncludesAllRepos => '包含所有倉庫';
 }

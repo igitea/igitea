@@ -3472,6 +3472,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select a template'**
   String get selectTemplate;
+
+  /// No description provided for @createTeam.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Team'**
+  String get createTeam;
+
+  /// No description provided for @editTeam.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Team'**
+  String get editTeam;
+
+  /// No description provided for @deleteTeam.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Team'**
+  String get deleteTeam;
+
+  /// No description provided for @deleteTeamConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this team? This action cannot be undone.'**
+  String get deleteTeamConfirm;
+
+  /// No description provided for @teamName.
+  ///
+  /// In en, this message translates to:
+  /// **'Team name'**
+  String get teamName;
+
+  /// No description provided for @teamNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Team name is required'**
+  String get teamNameRequired;
+
+  /// No description provided for @teamDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get teamDescription;
+
+  /// No description provided for @teamPermission.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission'**
+  String get teamPermission;
+
+  /// No description provided for @searchMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'Search users to add'**
+  String get searchMembers;
+
+  /// No description provided for @addMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Member'**
+  String get addMember;
+
+  /// No description provided for @removeMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get removeMember;
+
+  /// No description provided for @removeMemberConfirmParams.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {username} from this team?'**
+  String removeMemberConfirmParams(Object username);
+
+  /// No description provided for @teamCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Team created successfully'**
+  String get teamCreated;
+
+  /// No description provided for @teamUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Team updated successfully'**
+  String get teamUpdated;
+
+  /// No description provided for @teamDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Team deleted successfully'**
+  String get teamDeleted;
+
+  /// No description provided for @memberAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Member added successfully'**
+  String get memberAdded;
+
+  /// No description provided for @memberRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Member removed successfully'**
+  String get memberRemoved;
+
+  /// No description provided for @noSearchResults.
+  ///
+  /// In en, this message translates to:
+  /// **'No users found'**
+  String get noSearchResults;
+
+  /// No description provided for @teamCanCreateOrgRepos.
+  ///
+  /// In en, this message translates to:
+  /// **'Can create org repos'**
+  String get teamCanCreateOrgRepos;
+
+  /// No description provided for @teamIncludesAllRepos.
+  ///
+  /// In en, this message translates to:
+  /// **'Includes all repositories'**
+  String get teamIncludesAllRepos;
 }
 
 class _AppLocalizationsDelegate

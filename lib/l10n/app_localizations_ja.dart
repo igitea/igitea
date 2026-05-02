@@ -1751,4 +1751,66 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get selectTemplate => 'Select a template';
+
+  @override
+  String get createTeam => 'チームを作成';
+
+  @override
+  String get editTeam => 'チームを編集';
+
+  @override
+  String get deleteTeam => 'チームを削除';
+
+  @override
+  String get deleteTeamConfirm => 'このチームを削除してもよろしいですか？';
+
+  @override
+  String get teamName => 'チーム名';
+
+  @override
+  String get teamNameRequired => 'チーム名は必須です';
+
+  @override
+  String get teamDescription => '説明';
+
+  @override
+  String get teamPermission => '権限';
+
+  @override
+  String get searchMembers => 'ユーザー検索';
+
+  @override
+  String get addMember => 'メンバー追加';
+
+  @override
+  String get removeMember => '削除';
+
+  @override
+  String removeMemberConfirmParams(Object username) {
+    return '$username をチームから削除しますか？';
+  }
+
+  @override
+  String get teamCreated => 'チームを作成しました';
+
+  @override
+  String get teamUpdated => 'チームを更新しました';
+
+  @override
+  String get teamDeleted => 'チームを削除しました';
+
+  @override
+  String get memberAdded => 'メンバーを追加しました';
+
+  @override
+  String get memberRemoved => 'メンバーを削除しました';
+
+  @override
+  String get noSearchResults => 'ユーザーが見つかりません';
+
+  @override
+  String get teamCanCreateOrgRepos => 'Can create org repos';
+
+  @override
+  String get teamIncludesAllRepos => 'Includes all repositories';
 }

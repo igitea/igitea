@@ -1764,4 +1764,67 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get selectTemplate => 'Select a template';
+
+  @override
+  String get createTeam => 'Create Team';
+
+  @override
+  String get editTeam => 'Edit Team';
+
+  @override
+  String get deleteTeam => 'Delete Team';
+
+  @override
+  String get deleteTeamConfirm =>
+      'Are you sure you want to delete this team? This action cannot be undone.';
+
+  @override
+  String get teamName => 'Team name';
+
+  @override
+  String get teamNameRequired => 'Team name is required';
+
+  @override
+  String get teamDescription => 'Description';
+
+  @override
+  String get teamPermission => 'Permission';
+
+  @override
+  String get searchMembers => 'Search users to add';
+
+  @override
+  String get addMember => 'Add Member';
+
+  @override
+  String get removeMember => 'Remove';
+
+  @override
+  String removeMemberConfirmParams(Object username) {
+    return 'Remove $username from this team?';
+  }
+
+  @override
+  String get teamCreated => 'Team created successfully';
+
+  @override
+  String get teamUpdated => 'Team updated successfully';
+
+  @override
+  String get teamDeleted => 'Team deleted successfully';
+
+  @override
+  String get memberAdded => 'Member added successfully';
+
+  @override
+  String get memberRemoved => 'Member removed successfully';
+
+  @override
+  String get noSearchResults => 'No users found';
+
+  @override
+  String get teamCanCreateOrgRepos => 'Can create org repos';
+
+  @override
+  String get teamIncludesAllRepos => 'Includes all repositories';
 }

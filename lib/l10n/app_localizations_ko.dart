@@ -1751,4 +1751,66 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get selectTemplate => 'Select a template';
+
+  @override
+  String get createTeam => '팀 생성';
+
+  @override
+  String get editTeam => '팀 편집';
+
+  @override
+  String get deleteTeam => '팀 삭제';
+
+  @override
+  String get deleteTeamConfirm => '이 팀을 삭제하시겠습니까?';
+
+  @override
+  String get teamName => '팀 이름';
+
+  @override
+  String get teamNameRequired => '팀 이름은 필수입니다';
+
+  @override
+  String get teamDescription => '설명';
+
+  @override
+  String get teamPermission => '권한';
+
+  @override
+  String get searchMembers => '사용자 검색';
+
+  @override
+  String get addMember => '멤버 추가';
+
+  @override
+  String get removeMember => '제거';
+
+  @override
+  String removeMemberConfirmParams(Object username) {
+    return '$username을(를) 팀에서 제거하시겠습니까?';
+  }
+
+  @override
+  String get teamCreated => '팀이 생성되었습니다';
+
+  @override
+  String get teamUpdated => '팀이 업데이트되었습니다';
+
+  @override
+  String get teamDeleted => '팀이 삭제되었습니다';
+
+  @override
+  String get memberAdded => '멤버가 추가되었습니다';
+
+  @override
+  String get memberRemoved => '멤버가 제거되었습니다';
+
+  @override
+  String get noSearchResults => '사용자를 찾을 수 없습니다';
+
+  @override
+  String get teamCanCreateOrgRepos => 'Can create org repos';
+
+  @override
+  String get teamIncludesAllRepos => 'Includes all repositories';
 }
