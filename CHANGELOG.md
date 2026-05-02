@@ -11,6 +11,8 @@
 ### Fixed
 - Deduplicate packages by name on list page
 - Package URL uses correct Gitea web UI format
+- ScrollController assertion error when navigating back from organization and team detail pages
+- Notification page crash due to type cast error (`NotificationSubject.type` from API is a String, not an object)
 
 ## [0.24.0] - 2026-05-02
 

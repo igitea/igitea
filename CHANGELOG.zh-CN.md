@@ -11,6 +11,8 @@
 ### Fixed
 - 包列表按名称去重
 - 包 URL 使用正确的 Gitea Web UI 格式
+- 修复从组织和团队详情页返回时的 ScrollController 断言错误
+- 修复通知页面因类型转换导致的崩溃（API 返回的 `NotificationSubject.type` 是字符串而非对象）
 
 ## [0.24.0] - 2026-05-02
 
