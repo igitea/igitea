@@ -2,11 +2,20 @@
 
 ## [Unreleased]
 
+## [0.26.0] - 2026-05-02
+
 ### Added
 - Team CRUD: create/edit/delete teams, add/remove team members with user search dialog
 - Repository collaborators management: list/add/remove collaborators with user search
 - Branch protection management: list/create/delete branch protections
 - Organization webhooks management: list/create/delete org-level webhooks
+- Labels on repo issues tab with color-coded chips
+- Windows MSIX installer in release workflow
+
+### Fixed
+- Issue detail milestone editor infinite loading by bypassing shared notifier state
+- Label text invisible due to missing alpha channel in color parsing
+- Milestone dropdown infinite loading due to concurrent state writes
 
 ## [0.25.0] - 2026-05-02
 
