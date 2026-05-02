@@ -7,7 +7,7 @@ class NotificationSubject {
   final String? latest_comment_url;
   final StateType? state;
   final String? title;
-  final NotifySubjectType? type;
+  final String? type;
   final String? url;
   const NotificationSubject({
     this.html_url,
@@ -31,9 +31,7 @@ class NotificationSubject {
           ? StateType.fromJson(json['state'])
           : null,
       title: json['title'] != null ? json['title'] as String : null,
-      type: json['type'] != null
-          ? NotifySubjectType.fromJson(json['type'] as Map<String, dynamic>)
-          : null,
+      type: json['type'] != null ? json['type'] as String : null,
       url: json['url'] != null ? json['url'] as String : null,
     );
   }
@@ -46,7 +44,7 @@ class NotificationSubject {
       map['latest_comment_url'] = latest_comment_url!;
     if (state != null) map['state'] = state!.toJson();
     if (title != null) map['title'] = title!;
-    if (type != null) map['type'] = type!.toJson();
+    if (type != null) map['type'] = type!;
     if (url != null) map['url'] = url!;
     return map;
   }
