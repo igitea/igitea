@@ -1178,7 +1178,8 @@ class _LabelRow extends StatelessWidget {
   Color _color(String? hex) {
     if (hex == null || hex.isEmpty) return Colors.grey;
     try {
-      return Color(int.parse(hex.replaceFirst('#', 'FF'), radix: 16));
+      final h = hex.replaceFirst('#', '');
+      return Color(int.parse('FF$h', radix: 16));
     } catch (_) {
       return Colors.grey;
     }
