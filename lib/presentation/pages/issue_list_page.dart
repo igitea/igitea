@@ -352,14 +352,14 @@ class _LabelRow extends StatelessWidget {
             ),
             child: Text(
               label.name ?? '',
-              style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: c, height: 1.3),
+              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: c, height: 1.2),
             ),
           );
         }),
         if (overflow > 0)
           Text(
             '+$overflow',
-            style: TextStyle(fontSize: 10, fontWeight: FontWeight.w500, color: theme.colorScheme.onSurfaceVariant),
+            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: theme.colorScheme.onSurfaceVariant),
           ),
       ],
     );

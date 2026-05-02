@@ -48,48 +48,51 @@ class _OrgWebhookListPageState extends State<OrgWebhookListPage> {
     final result = await showDialog<bool>(
       context: context,
       builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setDialogState) => AlertDialog(
-          title: Text(l10n.create),
-          content: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                TextField(controller: urlCtrl, decoration: const InputDecoration(labelText: 'URL', border: OutlineInputBorder())),
-                const SizedBox(height: 12),
-                TextField(controller: secretCtrl, decoration: const InputDecoration(labelText: 'Secret', border: OutlineInputBorder())),
-                const SizedBox(height: 12),
-                DropdownButtonFormField<String>(
-                  value: contentType,
-                  items: const [
-                    DropdownMenuItem(value: 'json', child: Text('JSON')),
-                    DropdownMenuItem(value: 'form', child: Text('Form')),
-                  ],
-                  onChanged: (v) => setDialogState(() => contentType = v ?? 'json'),
-                  decoration: const InputDecoration(labelText: 'Content Type', border: OutlineInputBorder()),
-                ),
-                const SizedBox(height: 12),
-                SwitchListTile(title: const Text('Active'), value: active, onChanged: (v) => setDialogState(() => active = v), contentPadding: EdgeInsets.zero),
-              ],
+        builder: (ctx, setDialogState) {
+          final l10n = AppLocalizations.of(ctx)!;
+          return AlertDialog(
+            title: Text(l10n.create),
+            content: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  TextField(controller: urlCtrl, decoration: InputDecoration(labelText: l10n.webhookUrl, border: const OutlineInputBorder())),
+                  const SizedBox(height: 12),
+                  TextField(controller: secretCtrl, decoration: InputDecoration(labelText: l10n.webhookSecret, border: const OutlineInputBorder())),
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<String>(
+                    value: contentType,
+                    items: [
+                      DropdownMenuItem(value: 'json', child: const Text('JSON')),
+                      DropdownMenuItem(value: 'form', child: const Text('Form')),
+                    ],
+                    onChanged: (v) => setDialogState(() => contentType = v ?? 'json'),
+                    decoration: InputDecoration(labelText: l10n.contentType, border: const OutlineInputBorder()),
+                  ),
+                  const SizedBox(height: 12),
+                  SwitchListTile(title: Text(l10n.active), value: active, onChanged: (v) => setDialogState(() => active = v), contentPadding: EdgeInsets.zero),
+                ],
+              ),
             ),
-          ),
-          actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
-            FilledButton(
-              onPressed: urlCtrl.text.trim().isEmpty ? null : () {
-                Injection.apiService.orgCreateHook(
-                  org: widget.org,
-                  body: {
-                    'type': 'gitea',
-                    'config': {'url': urlCtrl.text.trim(), 'content_type': contentType, 'secret': secretCtrl.text.trim()},
-                    'active': active,
-                    'events': ['push'],
-                  },
-                ).then((_) => Navigator.pop(ctx, true)).catchError((_) => Navigator.pop(ctx, false));
-              },
-              child: Text(l10n.create),
-            ),
-          ],
-        ),
+            actions: [
+              TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
+              FilledButton(
+                onPressed: urlCtrl.text.trim().isEmpty ? null : () {
+                  Injection.apiService.orgCreateHook(
+                    org: widget.org,
+                    body: {
+                      'type': 'gitea',
+                      'config': {'url': urlCtrl.text.trim(), 'content_type': contentType, 'secret': secretCtrl.text.trim()},
+                      'active': active,
+                      'events': ['push'],
+                    },
+                  ).then((_) => Navigator.pop(ctx, true)).catchError((_) => Navigator.pop(ctx, false));
+                },
+                child: Text(l10n.create),
+              ),
+            ],
+          );
+        },
       ),
     );
 

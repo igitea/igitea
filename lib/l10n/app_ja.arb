@@ -379,9 +379,9 @@
   "deleteWebhook": "Webhookを削除",
   "deleteWebhookConfirm": "このWebhookを削除してもよろしいですか？",
   "webhookDeleted": "Webhookを削除しました",
-  "webhookUrl": "Payload URL",
+  "webhookUrl": "URL",
   "webhookUrlHint": "https://example.com/webhook",
-  "webhookSecret": "Secret",
+  "webhookSecret": "シークレット",
   "webhookSecretHint": "Optional secret token",
   "webhookContentType": "Content Type",
   "webhookContentTypeJson": "application/json",
@@ -585,5 +585,7 @@
   "removeCollaborator": "削除",
   "removeCollaboratorConfirmParams": "{username} を削除しますか？",
   "collaboratorAdded": "追加しました",
-  "collaboratorRemoved": "削除しました"
+  "collaboratorRemoved": "削除しました",
+  "contentType": "コンテンツタイプ",
+  "active": "有効"
 }

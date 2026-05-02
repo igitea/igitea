@@ -1250,13 +1250,13 @@ class AppLocalizationsJa extends AppLocalizations {
   String get webhookDeleted => 'Webhookを削除しました';
 
   @override
-  String get webhookUrl => 'Payload URL';
+  String get webhookUrl => 'URL';
 
   @override
   String get webhookUrlHint => 'https://example.com/webhook';
 
   @override
-  String get webhookSecret => 'Secret';
+  String get webhookSecret => 'シークレット';
 
   @override
   String get webhookSecretHint => 'Optional secret token';
@@ -1836,4 +1836,10 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get collaboratorRemoved => '削除しました';
+
+  @override
+  String get contentType => 'コンテンツタイプ';
+
+  @override
+  String get active => '有効';
 }

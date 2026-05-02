@@ -1258,7 +1258,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get webhookDeleted => 'Webhook deleted';
 
   @override
-  String get webhookUrl => 'Payload URL';
+  String get webhookUrl => 'URL';
 
   @override
   String get webhookUrlHint => 'https://example.com/webhook';
@@ -1850,4 +1850,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get collaboratorRemoved => 'Collaborator removed';
+
+  @override
+  String get contentType => 'Content Type';
+
+  @override
+  String get active => 'Active';
 }

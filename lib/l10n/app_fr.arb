@@ -379,7 +379,7 @@
   "deleteWebhook": "Supprimer le webhook",
   "deleteWebhookConfirm": "Are you sure you want to delete this webhook? This action cannot be undone.",
   "webhookDeleted": "Webhook deleted",
-  "webhookUrl": "Payload URL",
+  "webhookUrl": "URL",
   "webhookUrlHint": "https://example.com/webhook",
   "webhookSecret": "Secret",
   "webhookSecretHint": "Optional secret token",
@@ -585,5 +585,7 @@
   "removeCollaborator": "Retirer",
   "removeCollaboratorConfirmParams": "Retirer {username} ?",
   "collaboratorAdded": "Ajouté",
-  "collaboratorRemoved": "Retiré"
+  "collaboratorRemoved": "Retiré",
+  "contentType": "Type de contenu",
+  "active": "Actif"
 }

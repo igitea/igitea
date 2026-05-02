@@ -1147,6 +1147,10 @@ class _IssueItem extends StatelessWidget {
                       ),
                   ],
                 ),
+                if (issue.labels != null && issue.labels!.isNotEmpty) ...[
+                  const SizedBox(height: UIConstants.xs),
+                  _LabelRow(labels: issue.labels!),
+                ],
               ],
             ),
           ),
@@ -1164,6 +1168,54 @@ class _IssueItem extends StatelessWidget {
     if (diff.inHours > 0) return l10n.ago('${diff.inHours}h');
     if (diff.inMinutes > 0) return l10n.ago('${diff.inMinutes}m');
     return l10n.justNow;
+  }
+}
+
+class _LabelRow extends StatelessWidget {
+  final List<Label> labels;
+  const _LabelRow({required this.labels});
+
+  Color _color(String? hex) {
+    if (hex == null || hex.isEmpty) return Colors.grey;
+    try {
+      return Color(int.parse(hex.replaceFirst('#', 'FF'), radix: 16));
+    } catch (_) {
+      return Colors.grey;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    const maxShow = 4;
+    final overflow = labels.length - maxShow;
+
+    return Wrap(
+      spacing: 4,
+      runSpacing: 3,
+      children: [
+        ...labels.take(maxShow).map((label) {
+          final c = _color(label.color);
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+            decoration: BoxDecoration(
+              color: c.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(3),
+              border: Border.all(color: c.withValues(alpha: 0.35), width: 0.5),
+            ),
+            child: Text(
+              label.name ?? '',
+              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: c, height: 1.2),
+            ),
+          );
+        }),
+        if (overflow > 0)
+          Text(
+            '+$overflow',
+            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: theme.colorScheme.onSurfaceVariant),
+          ),
+      ],
+    );
   }
 }
 

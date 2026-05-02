@@ -379,9 +379,9 @@
   "deleteWebhook": "刪除 Webhook",
   "deleteWebhookConfirm": "确定要刪除此 Webhook 吗？此操作不可撤销。",
   "webhookDeleted": "Webhook 已刪除",
-  "webhookUrl": "回调地址",
+  "webhookUrl": "URL",
   "webhookUrlHint": "https://example.com/webhook",
-  "webhookSecret": "金鑰",
+  "webhookSecret": "密鑰",
   "webhookSecretHint": "可选金鑰",
   "webhookContentType": "內容类型",
   "webhookContentTypeJson": "application/json",
@@ -585,5 +585,7 @@
   "removeCollaborator": "移除",
   "removeCollaboratorConfirmParams": "將 {username} 從協作者中移除？",
   "collaboratorAdded": "協作者已加入",
-  "collaboratorRemoved": "協作者已移除"
+  "collaboratorRemoved": "協作者已移除",
+  "contentType": "內容類型",
+  "active": "啟用"
 }

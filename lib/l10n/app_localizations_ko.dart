@@ -1250,13 +1250,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get webhookDeleted => '웹훅이 삭제되었습니다';
 
   @override
-  String get webhookUrl => 'Payload URL';
+  String get webhookUrl => 'URL';
 
   @override
   String get webhookUrlHint => 'https://example.com/webhook';
 
   @override
-  String get webhookSecret => 'Secret';
+  String get webhookSecret => '비밀키';
 
   @override
   String get webhookSecretHint => 'Optional secret token';
@@ -1836,4 +1836,10 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get collaboratorRemoved => '제거됨';
+
+  @override
+  String get contentType => '콘텐츠 유형';
+
+  @override
+  String get active => '활성';
 }

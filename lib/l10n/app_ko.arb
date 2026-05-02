@@ -379,9 +379,9 @@
   "deleteWebhook": "웹훅 삭제",
   "deleteWebhookConfirm": "이 웹훅을 삭제하시겠습니까?",
   "webhookDeleted": "웹훅이 삭제되었습니다",
-  "webhookUrl": "Payload URL",
+  "webhookUrl": "URL",
   "webhookUrlHint": "https://example.com/webhook",
-  "webhookSecret": "Secret",
+  "webhookSecret": "비밀키",
   "webhookSecretHint": "Optional secret token",
   "webhookContentType": "Content Type",
   "webhookContentTypeJson": "application/json",
@@ -585,5 +585,7 @@
   "removeCollaborator": "제거",
   "removeCollaboratorConfirmParams": "{username}을(를) 제거하시겠습니까?",
   "collaboratorAdded": "추가됨",
-  "collaboratorRemoved": "제거됨"
+  "collaboratorRemoved": "제거됨",
+  "contentType": "콘텐츠 유형",
+  "active": "활성"
 }

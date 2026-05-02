@@ -1246,7 +1246,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get webhookDeleted => 'Webhook 已删除';
 
   @override
-  String get webhookUrl => '回调地址';
+  String get webhookUrl => 'URL';
 
   @override
   String get webhookUrlHint => 'https://example.com/webhook';
@@ -1830,6 +1830,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get collaboratorRemoved => '协作者已移除';
+
+  @override
+  String get contentType => '内容类型';
+
+  @override
+  String get active => '启用';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -3074,13 +3080,13 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get webhookDeleted => 'Webhook 已刪除';
 
   @override
-  String get webhookUrl => '回调地址';
+  String get webhookUrl => 'URL';
 
   @override
   String get webhookUrlHint => 'https://example.com/webhook';
 
   @override
-  String get webhookSecret => '金鑰';
+  String get webhookSecret => '密鑰';
 
   @override
   String get webhookSecretHint => '可选金鑰';
@@ -3658,4 +3664,10 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get collaboratorRemoved => '協作者已移除';
+
+  @override
+  String get contentType => '內容類型';
+
+  @override
+  String get active => '啟用';
 }

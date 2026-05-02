@@ -2486,7 +2486,7 @@ abstract class AppLocalizations {
   /// No description provided for @webhookUrl.
   ///
   /// In en, this message translates to:
-  /// **'Payload URL'**
+  /// **'URL'**
   String get webhookUrl;
 
   /// No description provided for @webhookUrlHint.
@@ -3634,6 +3634,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Collaborator removed'**
   String get collaboratorRemoved;
+
+  /// No description provided for @contentType.
+  ///
+  /// In en, this message translates to:
+  /// **'Content Type'**
+  String get contentType;
+
+  /// No description provided for @active.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get active;
 }
 
 class _AppLocalizationsDelegate

@@ -379,7 +379,7 @@
   "deleteWebhook": "删除 Webhook",
   "deleteWebhookConfirm": "确定要删除此 Webhook 吗？此操作不可撤销。",
   "webhookDeleted": "Webhook 已删除",
-  "webhookUrl": "回调地址",
+  "webhookUrl": "URL",
   "webhookUrlHint": "https://example.com/webhook",
   "webhookSecret": "密钥",
   "webhookSecretHint": "可选密钥",
@@ -585,5 +585,7 @@
   "removeCollaborator": "移除",
   "removeCollaboratorConfirmParams": "将 {username} 从协作者中移除？",
   "collaboratorAdded": "协作者已添加",
-  "collaboratorRemoved": "协作者已移除"
+  "collaboratorRemoved": "协作者已移除",
+  "contentType": "内容类型",
+  "active": "启用"
 }

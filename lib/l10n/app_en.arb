@@ -586,5 +586,9 @@
   "removeCollaborator": "Remove",
   "removeCollaboratorConfirmParams": "Remove {username} from collaborators?",
   "collaboratorAdded": "Collaborator added",
-  "collaboratorRemoved": "Collaborator removed"
+  "collaboratorRemoved": "Collaborator removed",
+  "webhookUrl": "URL",
+  "webhookSecret": "Secret",
+  "contentType": "Content Type",
+  "active": "Active"
 }
