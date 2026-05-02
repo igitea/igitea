@@ -30,7 +30,8 @@ class _UserReposPageState extends State<UserReposPage> {
   Future<void> _load() async {
     setState(() => _loading = true);
     try {
-      _repos = await Injection.apiService.userListRepos(username: widget.username);
+      final all = await Injection.apiService.userListRepos(username: widget.username);
+      _repos = all.where((r) => r.owner?.login == widget.username).toList();
     } catch (_) {
       _repos = [];
     }
