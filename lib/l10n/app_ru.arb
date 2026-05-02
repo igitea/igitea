@@ -587,5 +587,7 @@
   "collaboratorAdded": "Добавлен",
   "collaboratorRemoved": "Удален",
   "contentType": "Тип содержимого",
-  "active": "Активен"
+  "active": "Активен",
+  "emails": "Эл. почта",
+  "addEmail": "Добавить"
 }

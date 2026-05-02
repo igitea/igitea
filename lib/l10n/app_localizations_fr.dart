@@ -1856,4 +1856,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get active => 'Actif';
+
+  @override
+  String get emails => 'Emails';
+
+  @override
+  String get addEmail => 'Ajouter email';
 }

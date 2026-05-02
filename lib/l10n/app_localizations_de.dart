@@ -1855,4 +1855,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get active => 'Aktiv';
+
+  @override
+  String get emails => 'E-Mails';
+
+  @override
+  String get addEmail => 'E-Mail hinzufügen';
 }

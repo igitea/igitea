@@ -587,5 +587,7 @@
   "collaboratorAdded": "추가됨",
   "collaboratorRemoved": "제거됨",
   "contentType": "콘텐츠 유형",
-  "active": "활성"
+  "active": "활성",
+  "emails": "이메일",
+  "addEmail": "이메일 추가"
 }

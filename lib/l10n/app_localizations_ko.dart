@@ -1842,4 +1842,10 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get active => '활성';
+
+  @override
+  String get emails => '이메일';
+
+  @override
+  String get addEmail => '이메일 추가';
 }

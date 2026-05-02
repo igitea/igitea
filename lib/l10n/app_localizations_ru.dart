@@ -1855,4 +1855,10 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get active => 'Активен';
+
+  @override
+  String get emails => 'Эл. почта';
+
+  @override
+  String get addEmail => 'Добавить';
 }

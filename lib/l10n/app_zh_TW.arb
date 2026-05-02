@@ -587,5 +587,7 @@
   "collaboratorAdded": "協作者已加入",
   "collaboratorRemoved": "協作者已移除",
   "contentType": "內容類型",
-  "active": "啟用"
+  "active": "啟用",
+  "emails": "電子郵件",
+  "addEmail": "新增郵件"
 }

@@ -1855,4 +1855,10 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get active => 'Activo';
+
+  @override
+  String get emails => 'Correos';
+
+  @override
+  String get addEmail => 'Añadir correo';
 }

@@ -1855,4 +1855,10 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get active => 'Ativo';
+
+  @override
+  String get emails => 'Emails';
+
+  @override
+  String get addEmail => 'Adicionar email';
 }

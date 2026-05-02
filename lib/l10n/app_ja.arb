@@ -587,5 +587,7 @@
   "collaboratorAdded": "追加しました",
   "collaboratorRemoved": "削除しました",
   "contentType": "コンテンツタイプ",
-  "active": "有効"
+  "active": "有効",
+  "emails": "メールアドレス",
+  "addEmail": "メール追加"
 }

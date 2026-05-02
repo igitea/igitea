@@ -590,5 +590,7 @@
   "webhookUrl": "URL",
   "webhookSecret": "Secret",
   "contentType": "Content Type",
-  "active": "Active"
+  "active": "Active",
+  "emails": "Email Addresses",
+  "addEmail": "Add Email"
 }

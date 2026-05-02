@@ -587,5 +587,7 @@
   "collaboratorAdded": "Ajouté",
   "collaboratorRemoved": "Retiré",
   "contentType": "Type de contenu",
-  "active": "Actif"
+  "active": "Actif",
+  "emails": "Emails",
+  "addEmail": "Ajouter email"
 }

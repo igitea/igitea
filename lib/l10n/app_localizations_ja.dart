@@ -1842,4 +1842,10 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get active => '有効';
+
+  @override
+  String get emails => 'メールアドレス';
+
+  @override
+  String get addEmail => 'メール追加';
 }

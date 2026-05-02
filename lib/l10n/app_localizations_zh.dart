@@ -1836,6 +1836,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get active => '启用';
+
+  @override
+  String get emails => '邮箱地址';
+
+  @override
+  String get addEmail => '添加邮箱';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -3670,4 +3676,10 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get active => '啟用';
+
+  @override
+  String get emails => '電子郵件';
+
+  @override
+  String get addEmail => '新增郵件';
 }

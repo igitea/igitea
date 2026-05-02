@@ -3646,6 +3646,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Active'**
   String get active;
+
+  /// No description provided for @emails.
+  ///
+  /// In en, this message translates to:
+  /// **'Email Addresses'**
+  String get emails;
+
+  /// No description provided for @addEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Email'**
+  String get addEmail;
 }
 
 class _AppLocalizationsDelegate
