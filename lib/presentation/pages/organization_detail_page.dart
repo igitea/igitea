@@ -376,11 +376,7 @@ class _ReposTab extends StatefulWidget {
   State<_ReposTab> createState() => _ReposTabState();
 }
 
-class _ReposTabState extends State<_ReposTab>
-    with AutomaticKeepAliveClientMixin {
-  @override
-  bool get wantKeepAlive => true;
-
+class _ReposTabState extends State<_ReposTab> {
   @override
   void initState() {
     super.initState();
@@ -391,7 +387,6 @@ class _ReposTabState extends State<_ReposTab>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
@@ -556,11 +551,7 @@ class _TeamsTab extends StatefulWidget {
   State<_TeamsTab> createState() => _TeamsTabState();
 }
 
-class _TeamsTabState extends State<_TeamsTab>
-    with AutomaticKeepAliveClientMixin {
-  @override
-  bool get wantKeepAlive => true;
-
+class _TeamsTabState extends State<_TeamsTab> {
   @override
   void initState() {
     super.initState();
@@ -571,7 +562,6 @@ class _TeamsTabState extends State<_TeamsTab>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 

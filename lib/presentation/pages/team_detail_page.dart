@@ -283,11 +283,7 @@ class _MembersTab extends StatefulWidget {
   State<_MembersTab> createState() => _MembersTabState();
 }
 
-class _MembersTabState extends State<_MembersTab>
-    with AutomaticKeepAliveClientMixin {
-  @override
-  bool get wantKeepAlive => true;
-
+class _MembersTabState extends State<_MembersTab> {
   @override
   void initState() {
     super.initState();
@@ -298,7 +294,6 @@ class _MembersTabState extends State<_MembersTab>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     final l10n = AppLocalizations.of(context)!;
     return ListenableBuilder(
       listenable: Injection.organizationNotifier,
@@ -354,11 +349,7 @@ class _ReposTab extends StatefulWidget {
   State<_ReposTab> createState() => _ReposTabState();
 }
 
-class _ReposTabState extends State<_ReposTab>
-    with AutomaticKeepAliveClientMixin {
-  @override
-  bool get wantKeepAlive => true;
-
+class _ReposTabState extends State<_ReposTab> {
   @override
   void initState() {
     super.initState();
@@ -369,7 +360,6 @@ class _ReposTabState extends State<_ReposTab>
 
   @override
   Widget build(BuildContext context) {
-    super.build(context);
     final l10n = AppLocalizations.of(context)!;
     return ListenableBuilder(
       listenable: Injection.organizationNotifier,
