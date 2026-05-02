@@ -17,6 +17,7 @@ import 'create_org_page.dart';
 import 'create_repo_page.dart';
 import 'emails_page.dart';
 import 'follow_page.dart';
+import 'user_repos_page.dart';
 import 'package_list_page.dart';
 import 'organization_detail_page.dart';
 import 'settings_page.dart';
@@ -325,7 +326,9 @@ class _StatsRow extends StatelessWidget {
       padding: UIConstants.pagePadding,
       child: Row(
         children: [
-          Expanded(child: _StatItem(label: l10n.repos, value: '${user.starred_repos_count ?? 0}')),
+          Expanded(child: _StatItem(label: l10n.repos, value: '${user.starred_repos_count ?? 0}', onTap: () {
+            Navigator.of(context).push(MaterialPageRoute(builder: (_) => UserReposPage(username: user.login ?? '')));
+          })),
           const SizedBox(width: UIConstants.sm),
           Expanded(child: _StatItem(label: l10n.followers, value: '${user.followers_count ?? 0}', onTap: () {
             Navigator.of(context).push(MaterialPageRoute(builder: (_) => FollowPage(username: user.login ?? '')));
