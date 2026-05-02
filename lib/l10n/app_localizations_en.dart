@@ -1692,4 +1692,47 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noVersions => 'No versions';
+
+  @override
+  String get createRelease => 'Create Release';
+
+  @override
+  String get editRelease => 'Edit Release';
+
+  @override
+  String get deleteRelease => 'Delete Release';
+
+  @override
+  String get deleteReleaseConfirm =>
+      'Are you sure you want to delete this release? This action cannot be undone.';
+
+  @override
+  String get releaseTagName => 'Tag name';
+
+  @override
+  String get releaseTagNameRequired => 'Tag name is required';
+
+  @override
+  String get releaseTitle => 'Release title';
+
+  @override
+  String get releaseBody => 'Release notes';
+
+  @override
+  String get targetCommitish => 'Target';
+
+  @override
+  String get tagMessage => 'Tag message';
+
+  @override
+  String get releaseCreated => 'Release created successfully';
+
+  @override
+  String get releaseUpdated => 'Release updated successfully';
+
+  @override
+  String get releaseDeleted => 'Release deleted successfully';
+
+  @override
+  String get chooseTag => 'Pick tag';
 }

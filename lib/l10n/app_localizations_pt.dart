@@ -736,7 +736,7 @@ class AppLocalizationsPt extends AppLocalizations {
   String get merged => 'Merged';
 
   @override
-  String get draft => 'Draft';
+  String get draft => 'Rascunho';
 
   @override
   String get failedToLoadRepo => 'Failed to load repository';
@@ -1692,4 +1692,47 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get noVersions => 'Sem versões';
+
+  @override
+  String get createRelease => 'Criar Release';
+
+  @override
+  String get editRelease => 'Editar Release';
+
+  @override
+  String get deleteRelease => 'Excluir Release';
+
+  @override
+  String get deleteReleaseConfirm =>
+      'Tem certeza de que deseja excluir este release? Esta ação não pode ser desfeita.';
+
+  @override
+  String get releaseTagName => 'Nome da tag';
+
+  @override
+  String get releaseTagNameRequired => 'Nome da tag é obrigatório';
+
+  @override
+  String get releaseTitle => 'Título do release';
+
+  @override
+  String get releaseBody => 'Notas do release';
+
+  @override
+  String get targetCommitish => 'Alvo';
+
+  @override
+  String get tagMessage => 'Mensagem da tag';
+
+  @override
+  String get releaseCreated => 'Release criado com sucesso';
+
+  @override
+  String get releaseUpdated => 'Release atualizado com sucesso';
+
+  @override
+  String get releaseDeleted => 'Release excluído com sucesso';
+
+  @override
+  String get chooseTag => 'Escolher tag';
 }

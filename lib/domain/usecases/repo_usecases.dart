@@ -218,6 +218,90 @@ class ListReleasesUseCase {
   }
 }
 
+class CreateReleaseUseCase {
+  final RepoRepository _repository;
+
+  CreateReleaseUseCase({required RepoRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, Release>> call(CreateReleaseParams params) async {
+    return _repository.createRelease(
+      params.owner,
+      params.repo,
+      params.option,
+    );
+  }
+}
+
+class CreateReleaseParams {
+  final String owner;
+  final String repo;
+  final CreateReleaseOption option;
+
+  CreateReleaseParams({
+    required this.owner,
+    required this.repo,
+    required this.option,
+  });
+}
+
+class EditReleaseUseCase {
+  final RepoRepository _repository;
+
+  EditReleaseUseCase({required RepoRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, Release>> call(EditReleaseParams params) async {
+    return _repository.editRelease(
+      params.owner,
+      params.repo,
+      params.id,
+      params.option,
+    );
+  }
+}
+
+class EditReleaseParams {
+  final String owner;
+  final String repo;
+  final int id;
+  final EditReleaseOption option;
+
+  EditReleaseParams({
+    required this.owner,
+    required this.repo,
+    required this.id,
+    required this.option,
+  });
+}
+
+class DeleteReleaseUseCase {
+  final RepoRepository _repository;
+
+  DeleteReleaseUseCase({required RepoRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, void>> call(DeleteReleaseParams params) async {
+    return _repository.deleteRelease(
+      params.owner,
+      params.repo,
+      params.id,
+    );
+  }
+}
+
+class DeleteReleaseParams {
+  final String owner;
+  final String repo;
+  final int id;
+
+  DeleteReleaseParams({
+    required this.owner,
+    required this.repo,
+    required this.id,
+  });
+}
+
 class GetRepoContentsParams {
   final String owner;
   final String repo;

@@ -3340,6 +3340,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No versions'**
   String get noVersions;
+
+  /// No description provided for @createRelease.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Release'**
+  String get createRelease;
+
+  /// No description provided for @editRelease.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Release'**
+  String get editRelease;
+
+  /// No description provided for @deleteRelease.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Release'**
+  String get deleteRelease;
+
+  /// No description provided for @deleteReleaseConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this release? This action cannot be undone.'**
+  String get deleteReleaseConfirm;
+
+  /// No description provided for @releaseTagName.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag name'**
+  String get releaseTagName;
+
+  /// No description provided for @releaseTagNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag name is required'**
+  String get releaseTagNameRequired;
+
+  /// No description provided for @releaseTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Release title'**
+  String get releaseTitle;
+
+  /// No description provided for @releaseBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Release notes'**
+  String get releaseBody;
+
+  /// No description provided for @targetCommitish.
+  ///
+  /// In en, this message translates to:
+  /// **'Target'**
+  String get targetCommitish;
+
+  /// No description provided for @tagMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag message'**
+  String get tagMessage;
+
+  /// No description provided for @releaseCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Release created successfully'**
+  String get releaseCreated;
+
+  /// No description provided for @releaseUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Release updated successfully'**
+  String get releaseUpdated;
+
+  /// No description provided for @releaseDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Release deleted successfully'**
+  String get releaseDeleted;
+
+  /// No description provided for @chooseTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick tag'**
+  String get chooseTag;
 }
 
 class _AppLocalizationsDelegate

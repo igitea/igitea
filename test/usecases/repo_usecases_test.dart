@@ -95,6 +95,37 @@ class MockRepoRepository implements RepoRepository {
   }
 
   @override
+  Future<Either<Failure, Release>> createRelease(
+    String owner,
+    String repo,
+    CreateReleaseOption option,
+  ) async {
+    if (shouldFail) return Left(failure);
+    return Right(Release(id: 1, tag_name: option.tag_name));
+  }
+
+  @override
+  Future<Either<Failure, Release>> editRelease(
+    String owner,
+    String repo,
+    int id,
+    EditReleaseOption option,
+  ) async {
+    if (shouldFail) return Left(failure);
+    return Right(Release(id: id, tag_name: option.tag_name));
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteRelease(
+    String owner,
+    String repo,
+    int id,
+  ) async {
+    if (shouldFail) return Left(failure);
+    return const Right(null);
+  }
+
+  @override
   Future<Either<Failure, void>> deleteRepo(String owner, String repo) =>
       throw UnimplementedError();
 

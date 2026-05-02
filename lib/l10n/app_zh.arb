@@ -536,5 +536,19 @@
   "copy": "复制",
   "totalSize": "总大小",
   "versions": "版本列表",
-  "noVersions": "暂无版本"
+  "noVersions": "暂无版本",
+  "createRelease": "创建 Release",
+  "editRelease": "编辑 Release",
+  "deleteRelease": "删除 Release",
+  "deleteReleaseConfirm": "确定要删除此 Release 吗？此操作无法撤销。",
+  "releaseTagName": "标签名",
+  "releaseTagNameRequired": "标签名不能为空",
+  "releaseTitle": "Release 标题",
+  "releaseBody": "更新日志",
+  "targetCommitish": "目标分支",
+  "tagMessage": "标签消息",
+  "releaseCreated": "Release 创建成功",
+  "releaseUpdated": "Release 更新成功",
+  "releaseDeleted": "Release 已删除",
+  "chooseTag": "选择标签"
 }

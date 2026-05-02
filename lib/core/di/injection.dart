@@ -66,6 +66,9 @@ class Injection {
   static late GetCommitUseCase getCommitUseCase;
   static late GetTagUseCase getTagUseCase;
   static late ListReleasesUseCase listReleasesUseCase;
+  static late CreateReleaseUseCase createReleaseUseCase;
+  static late EditReleaseUseCase editReleaseUseCase;
+  static late DeleteReleaseUseCase deleteReleaseUseCase;
   static late GetRepoContentsUseCase getRepoContentsUseCase;
   static late ListPullRequestsUseCase listPullRequestsUseCase;
   static late GetPullRequestUseCase getPullRequestUseCase;
@@ -263,6 +266,9 @@ class Injection {
     getCommitUseCase = GetCommitUseCase(repository: repoRepository);
     getTagUseCase = GetTagUseCase(repository: repoRepository);
     listReleasesUseCase = ListReleasesUseCase(repository: repoRepository);
+    createReleaseUseCase = CreateReleaseUseCase(repository: repoRepository);
+    editReleaseUseCase = EditReleaseUseCase(repository: repoRepository);
+    deleteReleaseUseCase = DeleteReleaseUseCase(repository: repoRepository);
     getRepoContentsUseCase = GetRepoContentsUseCase(repository: repoRepository);
     listPullRequestsUseCase = ListPullRequestsUseCase(repository: repoRepository);
     getPullRequestUseCase = GetPullRequestUseCase(repository: repoRepository);
@@ -400,6 +406,9 @@ class Injection {
         listPullRequestsUseCase: listPullRequestsUseCase,
         getPullRequestUseCase: getPullRequestUseCase,
         listReleasesUseCase: listReleasesUseCase,
+        createReleaseUseCase: createReleaseUseCase,
+        editReleaseUseCase: editReleaseUseCase,
+        deleteReleaseUseCase: deleteReleaseUseCase,
         starRepoUseCase: starRepoUseCase,
         unstarRepoUseCase: unstarRepoUseCase,
         checkStarredUseCase: checkStarredUseCase,
@@ -489,6 +498,9 @@ class Injection {
         listPullRequestsUseCase: listPullRequestsUseCase,
         getPullRequestUseCase: getPullRequestUseCase,
         listReleasesUseCase: listReleasesUseCase,
+        createReleaseUseCase: createReleaseUseCase,
+        editReleaseUseCase: editReleaseUseCase,
+        deleteReleaseUseCase: deleteReleaseUseCase,
         starRepoUseCase: starRepoUseCase,
         unstarRepoUseCase: unstarRepoUseCase,
         checkStarredUseCase: checkStarredUseCase,
@@ -600,6 +612,9 @@ class Injection {
       listPullRequestsUseCase: listPullRequestsUseCase,
       getPullRequestUseCase: getPullRequestUseCase,
       listReleasesUseCase: listReleasesUseCase,
+      createReleaseUseCase: createReleaseUseCase,
+      editReleaseUseCase: editReleaseUseCase,
+      deleteReleaseUseCase: deleteReleaseUseCase,
       starRepoUseCase: starRepoUseCase,
       unstarRepoUseCase: unstarRepoUseCase,
       checkStarredUseCase: checkStarredUseCase,

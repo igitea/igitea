@@ -249,6 +249,9 @@ class RepoNotifier extends ChangeNotifier {
   ListPullRequestsUseCase _listPullRequestsUseCase;
   GetPullRequestUseCase _getPullRequestUseCase;
   ListReleasesUseCase _listReleasesUseCase;
+  CreateReleaseUseCase _createReleaseUseCase;
+  EditReleaseUseCase _editReleaseUseCase;
+  DeleteReleaseUseCase _deleteReleaseUseCase;
   StarRepoUseCase _starRepoUseCase;
   UnstarRepoUseCase _unstarRepoUseCase;
   CheckStarredUseCase _checkStarredUseCase;
@@ -318,6 +321,9 @@ class RepoNotifier extends ChangeNotifier {
     required ListPullRequestsUseCase listPullRequestsUseCase,
     required GetPullRequestUseCase getPullRequestUseCase,
     required ListReleasesUseCase listReleasesUseCase,
+    required CreateReleaseUseCase createReleaseUseCase,
+    required EditReleaseUseCase editReleaseUseCase,
+    required DeleteReleaseUseCase deleteReleaseUseCase,
     required StarRepoUseCase starRepoUseCase,
     required UnstarRepoUseCase unstarRepoUseCase,
     required CheckStarredUseCase checkStarredUseCase,
@@ -346,6 +352,9 @@ class RepoNotifier extends ChangeNotifier {
        _listPullRequestsUseCase = listPullRequestsUseCase,
        _getPullRequestUseCase = getPullRequestUseCase,
        _listReleasesUseCase = listReleasesUseCase,
+       _createReleaseUseCase = createReleaseUseCase,
+       _editReleaseUseCase = editReleaseUseCase,
+       _deleteReleaseUseCase = deleteReleaseUseCase,
        _starRepoUseCase = starRepoUseCase,
        _unstarRepoUseCase = unstarRepoUseCase,
        _checkStarredUseCase = checkStarredUseCase,
@@ -376,6 +385,9 @@ class RepoNotifier extends ChangeNotifier {
     required ListPullRequestsUseCase listPullRequestsUseCase,
     required GetPullRequestUseCase getPullRequestUseCase,
     required ListReleasesUseCase listReleasesUseCase,
+    required CreateReleaseUseCase createReleaseUseCase,
+    required EditReleaseUseCase editReleaseUseCase,
+    required DeleteReleaseUseCase deleteReleaseUseCase,
     required StarRepoUseCase starRepoUseCase,
     required UnstarRepoUseCase unstarRepoUseCase,
     required CheckStarredUseCase checkStarredUseCase,
@@ -405,6 +417,9 @@ class RepoNotifier extends ChangeNotifier {
     _listPullRequestsUseCase = listPullRequestsUseCase;
     _getPullRequestUseCase = getPullRequestUseCase;
     _listReleasesUseCase = listReleasesUseCase;
+    _createReleaseUseCase = createReleaseUseCase;
+    _editReleaseUseCase = editReleaseUseCase;
+    _deleteReleaseUseCase = deleteReleaseUseCase;
     _starRepoUseCase = starRepoUseCase;
     _unstarRepoUseCase = unstarRepoUseCase;
     _checkStarredUseCase = checkStarredUseCase;
@@ -628,6 +643,61 @@ class RepoNotifier extends ChangeNotifier {
       case Right<Failure, List<Release>>(:final value):
         _releasesState = ReleasesLoaded(value);
         notifyListeners();
+    }
+  }
+
+  Future<bool> createRelease({
+    required String owner,
+    required String repo,
+    required CreateReleaseOption option,
+  }) async {
+    final result = await _createReleaseUseCase.call(
+      CreateReleaseParams(owner: owner, repo: repo, option: option),
+    );
+    switch (result) {
+      case Right<Failure, Release>():
+        return true;
+      case Left<Failure, Release>(:final value):
+        _releasesState = ReleasesError(value.message);
+        notifyListeners();
+        return false;
+    }
+  }
+
+  Future<bool> editRelease({
+    required String owner,
+    required String repo,
+    required int id,
+    required EditReleaseOption option,
+  }) async {
+    final result = await _editReleaseUseCase.call(
+      EditReleaseParams(owner: owner, repo: repo, id: id, option: option),
+    );
+    switch (result) {
+      case Right<Failure, Release>():
+        return true;
+      case Left<Failure, Release>(:final value):
+        _releasesState = ReleasesError(value.message);
+        notifyListeners();
+        return false;
+    }
+  }
+
+  Future<bool> deleteRelease({
+    required String owner,
+    required String repo,
+    required int id,
+  }) async {
+    final result = await _deleteReleaseUseCase.call(
+      DeleteReleaseParams(owner: owner, repo: repo, id: id),
+    );
+    switch (result) {
+      case Right<Failure, void>():
+        return true;
+      case Left<Failure, void>(:final value):
+        _releasesState = ReleasesError(value.message);
+        notifyListeners();
+        return false;
     }
   }
 

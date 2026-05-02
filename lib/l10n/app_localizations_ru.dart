@@ -736,7 +736,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get merged => 'Merged';
 
   @override
-  String get draft => 'Draft';
+  String get draft => 'Черновик';
 
   @override
   String get failedToLoadRepo => 'Failed to load repository';
@@ -1692,4 +1692,47 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get noVersions => 'Нет версий';
+
+  @override
+  String get createRelease => 'Создать релиз';
+
+  @override
+  String get editRelease => 'Редактировать релиз';
+
+  @override
+  String get deleteRelease => 'Удалить релиз';
+
+  @override
+  String get deleteReleaseConfirm =>
+      'Вы уверены, что хотите удалить этот релиз? Это действие нельзя отменить.';
+
+  @override
+  String get releaseTagName => 'Имя тега';
+
+  @override
+  String get releaseTagNameRequired => 'Имя тега обязательно';
+
+  @override
+  String get releaseTitle => 'Название релиза';
+
+  @override
+  String get releaseBody => 'Примечания к релизу';
+
+  @override
+  String get targetCommitish => 'Цель';
+
+  @override
+  String get tagMessage => 'Сообщение тега';
+
+  @override
+  String get releaseCreated => 'Релиз успешно создан';
+
+  @override
+  String get releaseUpdated => 'Релиз успешно обновлен';
+
+  @override
+  String get releaseDeleted => 'Релиз успешно удален';
+
+  @override
+  String get chooseTag => 'Выбрать тег';
 }

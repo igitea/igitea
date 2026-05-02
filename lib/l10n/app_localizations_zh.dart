@@ -1675,6 +1675,48 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get noVersions => '暂无版本';
+
+  @override
+  String get createRelease => '创建 Release';
+
+  @override
+  String get editRelease => '编辑 Release';
+
+  @override
+  String get deleteRelease => '删除 Release';
+
+  @override
+  String get deleteReleaseConfirm => '确定要删除此 Release 吗？此操作无法撤销。';
+
+  @override
+  String get releaseTagName => '标签名';
+
+  @override
+  String get releaseTagNameRequired => '标签名不能为空';
+
+  @override
+  String get releaseTitle => 'Release 标题';
+
+  @override
+  String get releaseBody => '更新日志';
+
+  @override
+  String get targetCommitish => '目标分支';
+
+  @override
+  String get tagMessage => '标签消息';
+
+  @override
+  String get releaseCreated => 'Release 创建成功';
+
+  @override
+  String get releaseUpdated => 'Release 更新成功';
+
+  @override
+  String get releaseDeleted => 'Release 已删除';
+
+  @override
+  String get chooseTag => '选择标签';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -3348,4 +3390,46 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get noVersions => '暫無版本';
+
+  @override
+  String get createRelease => '建立 Release';
+
+  @override
+  String get editRelease => '編輯 Release';
+
+  @override
+  String get deleteRelease => '刪除 Release';
+
+  @override
+  String get deleteReleaseConfirm => '確定要刪除此 Release 嗎？此操作無法復原。';
+
+  @override
+  String get releaseTagName => '標籤名';
+
+  @override
+  String get releaseTagNameRequired => '標籤名不能為空';
+
+  @override
+  String get releaseTitle => 'Release 標題';
+
+  @override
+  String get releaseBody => '發布說明';
+
+  @override
+  String get targetCommitish => '目標分支';
+
+  @override
+  String get tagMessage => '標籤訊息';
+
+  @override
+  String get releaseCreated => 'Release 建立成功';
+
+  @override
+  String get releaseUpdated => 'Release 更新成功';
+
+  @override
+  String get releaseDeleted => 'Release 已刪除';
+
+  @override
+  String get chooseTag => '選擇標籤';
 }

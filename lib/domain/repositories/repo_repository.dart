@@ -85,6 +85,28 @@ abstract class RepoRepository {
     int id,
   );
 
+  /// Create a release.
+  Future<Either<Failure, Release>> createRelease(
+    String owner,
+    String repo,
+    CreateReleaseOption option,
+  );
+
+  /// Edit a release.
+  Future<Either<Failure, Release>> editRelease(
+    String owner,
+    String repo,
+    int id,
+    EditReleaseOption option,
+  );
+
+  /// Delete a release.
+  Future<Either<Failure, void>> deleteRelease(
+    String owner,
+    String repo,
+    int id,
+  );
+
   /// List collaborators in a repository.
   Future<Either<Failure, List<User>>> listCollaborators(
     String owner,

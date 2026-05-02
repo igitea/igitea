@@ -19,6 +19,7 @@ import '../widgets/user_avatar.dart';
 import '../widgets/file_icon.dart';
 import 'branch_detail_page.dart';
 import 'commit_detail_page.dart';
+import 'create_release_page.dart';
 import 'issue_detail_page.dart';
 import 'milestone_detail_page.dart';
 import 'pr_detail_page.dart';
@@ -1416,53 +1417,89 @@ class _ReleasesTabState extends State<_ReleasesTab> {
     });
   }
 
+  void _createRelease() async {
+    final result = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CreateReleasePage(
+          owner: widget.owner,
+          repo: widget.repo,
+        ),
+      ),
+    );
+    if (result == true && mounted) {
+      Injection.repoNotifier.listReleases(widget.owner, widget.repo);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return ListenableBuilder(
-      listenable: Injection.repoNotifier,
-      builder: (context, _) {
-        final state = Injection.repoNotifier.releasesState;
-        return switch (state) {
-          ReleasesLoading() => const Center(child: CircularProgressIndicator()),
-          ReleasesError(:final message) => Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text('${widget.l10n.error}: $message'),
-                  const SizedBox(height: UIConstants.md),
-                  FilledButton(
-                    onPressed: () => Injection.repoNotifier.listReleases(
-                        widget.owner, widget.repo),
-                    child: Text(widget.l10n.retry),
+    return Stack(
+      children: [
+        ListenableBuilder(
+          listenable: Injection.repoNotifier,
+          builder: (context, _) {
+            final state = Injection.repoNotifier.releasesState;
+            return switch (state) {
+              ReleasesLoading() => const Center(child: CircularProgressIndicator()),
+              ReleasesError(:final message) => Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text('${widget.l10n.error}: $message'),
+                      const SizedBox(height: UIConstants.md),
+                      FilledButton(
+                        onPressed: () => Injection.repoNotifier.listReleases(
+                            widget.owner, widget.repo),
+                        child: Text(widget.l10n.retry),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-          ReleasesLoaded(:final releases) => releases.isEmpty
-              ? EmptyState(icon: Icons.new_releases_outlined, title: widget.l10n.noReleases)
-              : ListView.builder(
-                  padding: UIConstants.pagePadding + const EdgeInsets.symmetric(vertical: UIConstants.sm),
-                  itemCount: releases.length,
-                  itemBuilder: (context, index) {
-                    final release = releases[index];
-                    return FadeInWrapper(
-                      delay: Duration(milliseconds: index * 20),
-                      child: _ReleaseItem(release: release, l10n: widget.l10n),
-                    );
-                  },
                 ),
-          _ => EmptyState(icon: Icons.new_releases_outlined, title: widget.l10n.noReleases),
-        };
-      },
+              ReleasesLoaded(:final releases) => releases.isEmpty
+                  ? EmptyState(icon: Icons.new_releases_outlined, title: widget.l10n.noReleases)
+                  : ListView.builder(
+                      padding: UIConstants.pagePadding +
+                          EdgeInsets.only(bottom: 80),
+                      itemCount: releases.length,
+                      itemBuilder: (context, index) {
+                        final release = releases[index];
+                        return FadeInWrapper(
+                          delay: Duration(milliseconds: index * 20),
+                          child: _ReleaseItem(
+                            release: release,
+                            owner: widget.owner,
+                            repo: widget.repo,
+                            l10n: widget.l10n,
+                          ),
+                        );
+                      },
+                    ),
+              _ => EmptyState(icon: Icons.new_releases_outlined, title: widget.l10n.noReleases),
+            };
+          },
+        ),
+        Positioned(
+          right: UIConstants.md,
+          bottom: UIConstants.md,
+          child: FloatingActionButton.extended(
+            onPressed: _createRelease,
+            icon: const Icon(Icons.add),
+            label: Text(widget.l10n.createRelease),
+          ),
+        ),
+      ],
     );
   }
 }
 
 class _ReleaseItem extends StatelessWidget {
   final Release release;
+  final String owner;
+  final String repo;
   final AppLocalizations l10n;
 
-  const _ReleaseItem({required this.release, required this.l10n});
+  const _ReleaseItem({required this.release, required this.owner, required this.repo, required this.l10n});
 
   @override
   Widget build(BuildContext context) {
@@ -1472,7 +1509,11 @@ class _ReleaseItem extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => ReleaseDetailPage(release: release),
+            builder: (_) => ReleaseDetailPage(
+              owner: owner,
+              repo: repo,
+              release: release,
+            ),
           ),
         );
       },

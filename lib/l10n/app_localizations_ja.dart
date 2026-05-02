@@ -732,7 +732,7 @@ class AppLocalizationsJa extends AppLocalizations {
   String get merged => 'Merged';
 
   @override
-  String get draft => 'Draft';
+  String get draft => '下書き';
 
   @override
   String get failedToLoadRepo => 'Failed to load repository';
@@ -1680,4 +1680,46 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get noVersions => 'バージョンなし';
+
+  @override
+  String get createRelease => 'リリースを作成';
+
+  @override
+  String get editRelease => 'リリースを編集';
+
+  @override
+  String get deleteRelease => 'リリースを削除';
+
+  @override
+  String get deleteReleaseConfirm => 'このリリースを削除してもよろしいですか？この操作は元に戻せません。';
+
+  @override
+  String get releaseTagName => 'タグ名';
+
+  @override
+  String get releaseTagNameRequired => 'タグ名は必須です';
+
+  @override
+  String get releaseTitle => 'リリースタイトル';
+
+  @override
+  String get releaseBody => 'リリースノート';
+
+  @override
+  String get targetCommitish => 'ターゲット';
+
+  @override
+  String get tagMessage => 'タグメッセージ';
+
+  @override
+  String get releaseCreated => 'リリースを作成しました';
+
+  @override
+  String get releaseUpdated => 'リリースを更新しました';
+
+  @override
+  String get releaseDeleted => 'リリースを削除しました';
+
+  @override
+  String get chooseTag => 'タグを選択';
 }

@@ -166,6 +166,53 @@ class RepoRepositoryImpl implements RepoRepository {
   }
 
   @override
+  Future<Either<Failure, Release>> createRelease(
+    String owner,
+    String repo,
+    CreateReleaseOption option,
+  ) async {
+    return execute(
+      () => _apiService.repoCreateRelease(
+        owner: owner,
+        repo: repo,
+        body: option,
+      ),
+    );
+  }
+
+  @override
+  Future<Either<Failure, Release>> editRelease(
+    String owner,
+    String repo,
+    int id,
+    EditReleaseOption option,
+  ) async {
+    return execute(
+      () => _apiService.repoEditRelease(
+        owner: owner,
+        repo: repo,
+        id: id,
+        body: option,
+      ),
+    );
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteRelease(
+    String owner,
+    String repo,
+    int id,
+  ) async {
+    return execute(
+      () => _apiService.repoDeleteRelease(
+        owner: owner,
+        repo: repo,
+        id: id,
+      ),
+    );
+  }
+
+  @override
   Future<Either<Failure, List<User>>> listCollaborators(
     String owner,
     String repo, {

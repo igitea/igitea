@@ -536,5 +536,20 @@
   "copy": "Copy",
   "totalSize": "Total Size",
   "versions": "Versions",
-  "noVersions": "No versions"
+  "noVersions": "No versions",
+  "createRelease": "Create Release",
+  "editRelease": "Edit Release",
+  "deleteRelease": "Delete Release",
+  "deleteReleaseConfirm": "Are you sure you want to delete this release? This action cannot be undone.",
+  "releaseTagName": "Tag name",
+  "releaseTagNameRequired": "Tag name is required",
+  "releaseTitle": "Release title",
+  "releaseBody": "Release notes",
+  "draft": "Draft",
+  "targetCommitish": "Target",
+  "tagMessage": "Tag message",
+  "releaseCreated": "Release created successfully",
+  "releaseUpdated": "Release updated successfully",
+  "releaseDeleted": "Release deleted successfully",
+  "chooseTag": "Pick tag"
 }

@@ -732,7 +732,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get merged => 'Merged';
 
   @override
-  String get draft => 'Draft';
+  String get draft => '초안';
 
   @override
   String get failedToLoadRepo => 'Failed to load repository';
@@ -1680,4 +1680,46 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get noVersions => '버전 없음';
+
+  @override
+  String get createRelease => '릴리즈 생성';
+
+  @override
+  String get editRelease => '릴리즈 편집';
+
+  @override
+  String get deleteRelease => '릴리즈 삭제';
+
+  @override
+  String get deleteReleaseConfirm => '이 릴리즈를 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.';
+
+  @override
+  String get releaseTagName => '태그 이름';
+
+  @override
+  String get releaseTagNameRequired => '태그 이름은 필수입니다';
+
+  @override
+  String get releaseTitle => '릴리즈 제목';
+
+  @override
+  String get releaseBody => '릴리즈 노트';
+
+  @override
+  String get targetCommitish => '대상';
+
+  @override
+  String get tagMessage => '태그 메시지';
+
+  @override
+  String get releaseCreated => '릴리즈가 생성되었습니다';
+
+  @override
+  String get releaseUpdated => '릴리즈가 업데이트되었습니다';
+
+  @override
+  String get releaseDeleted => '릴리즈가 삭제되었습니다';
+
+  @override
+  String get chooseTag => '태그 선택';
 }

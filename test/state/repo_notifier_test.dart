@@ -313,6 +313,37 @@ class FakeRepoRepository implements RepoRepository {
     if (shouldFail) return Left(failure);
     return Right(null);
   }
+
+  @override
+  Future<Either<Failure, Release>> createRelease(
+    String owner,
+    String repo,
+    CreateReleaseOption option,
+  ) async {
+    if (shouldFail) return Left(failure);
+    return Right(Release(id: 1, tag_name: option.tag_name));
+  }
+
+  @override
+  Future<Either<Failure, Release>> editRelease(
+    String owner,
+    String repo,
+    int id,
+    EditReleaseOption option,
+  ) async {
+    if (shouldFail) return Left(failure);
+    return Right(Release(id: id, tag_name: option.tag_name));
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteRelease(
+    String owner,
+    String repo,
+    int id,
+  ) async {
+    if (shouldFail) return Left(failure);
+    return const Right(null);
+  }
 }
 
 void main() {
@@ -334,6 +365,9 @@ void main() {
         listPullRequestsUseCase: ListPullRequestsUseCase(repository: fakeRepo),
         getPullRequestUseCase: GetPullRequestUseCase(repository: fakeRepo),
         listReleasesUseCase: ListReleasesUseCase(repository: fakeRepo),
+        createReleaseUseCase: CreateReleaseUseCase(repository: fakeRepo),
+        editReleaseUseCase: EditReleaseUseCase(repository: fakeRepo),
+        deleteReleaseUseCase: DeleteReleaseUseCase(repository: fakeRepo),
         starRepoUseCase: StarRepoUseCase(repository: fakeRepo),
         unstarRepoUseCase: UnstarRepoUseCase(repository: fakeRepo),
         checkStarredUseCase: CheckStarredUseCase(repository: fakeRepo),

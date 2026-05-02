@@ -89,6 +89,28 @@ class MockRepoRepository implements RepoRepository {
   ) => throw UnimplementedError();
 
   @override
+  Future<Either<Failure, Release>> createRelease(
+    String owner,
+    String repo,
+    CreateReleaseOption option,
+  ) => throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, Release>> editRelease(
+    String owner,
+    String repo,
+    int id,
+    EditReleaseOption option,
+  ) => throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, void>> deleteRelease(
+    String owner,
+    String repo,
+    int id,
+  ) => throw UnimplementedError();
+
+  @override
   Future<Either<Failure, List<User>>> listCollaborators(
     String owner,
     String repo, {

@@ -428,6 +428,41 @@ class GiteaApiService {
     return Release.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
   }
 
+  Future<Release> repoCreateRelease({
+    required String owner,
+    required String repo,
+    required CreateReleaseOption body,
+  }) async {
+    final response = await _client.post(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/releases',
+      body: body.toJson(),
+    );
+    return Release.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+  }
+
+  Future<Release> repoEditRelease({
+    required String owner,
+    required String repo,
+    required int id,
+    required EditReleaseOption body,
+  }) async {
+    final response = await _client.patch(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/releases/${id.toString()}',
+      body: body.toJson(),
+    );
+    return Release.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+  }
+
+  Future<void> repoDeleteRelease({
+    required String owner,
+    required String repo,
+    required int id,
+  }) async {
+    await _client.delete(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/releases/${id.toString()}',
+    );
+  }
+
   Future<List<User>> repoListCollaborators({
     required String owner,
     required String repo,

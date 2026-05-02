@@ -536,5 +536,19 @@
   "copy": "複製",
   "totalSize": "總大小",
   "versions": "版本列表",
-  "noVersions": "暫無版本"
+  "noVersions": "暫無版本",
+  "createRelease": "建立 Release",
+  "editRelease": "編輯 Release",
+  "deleteRelease": "刪除 Release",
+  "deleteReleaseConfirm": "確定要刪除此 Release 嗎？此操作無法復原。",
+  "releaseTagName": "標籤名",
+  "releaseTagNameRequired": "標籤名不能為空",
+  "releaseTitle": "Release 標題",
+  "releaseBody": "發布說明",
+  "targetCommitish": "目標分支",
+  "tagMessage": "標籤訊息",
+  "releaseCreated": "Release 建立成功",
+  "releaseUpdated": "Release 更新成功",
+  "releaseDeleted": "Release 已刪除",
+  "chooseTag": "選擇標籤"
 }
