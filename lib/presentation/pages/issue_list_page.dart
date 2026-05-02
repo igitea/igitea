@@ -276,25 +276,7 @@ class _IssueCard extends StatelessWidget {
           ),
           if (issue.labels != null && issue.labels!.isNotEmpty) ...[
             const SizedBox(height: UIConstants.sm),
-            Wrap(
-              spacing: UIConstants.xs,
-              runSpacing: UIConstants.xs,
-              children: issue.labels!.take(3).map((label) {
-                return Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: _parseColor(label.color)?.withValues(alpha: 0.2) ?? theme.colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(UIConstants.chipRadius),
-                  ),
-                  child: Text(
-                    label.name ?? '',
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: _parseColor(label.color) ?? theme.colorScheme.onPrimaryContainer,
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
+            _LabelRow(labels: issue.labels!),
           ],
           const SizedBox(height: UIConstants.sm),
           Row(
@@ -334,13 +316,52 @@ class _IssueCard extends StatelessWidget {
     if (diff.inHours > 0) return '${diff.inHours}h ago';
     return 'just now';
   }
+}
 
-  Color? _parseColor(String? colorStr) {
-    if (colorStr == null || colorStr.isEmpty) return null;
+class _LabelRow extends StatelessWidget {
+  final List<Label> labels;
+  const _LabelRow({required this.labels});
+
+  Color _color(String? hex) {
+    if (hex == null || hex.isEmpty) return Colors.grey;
     try {
-      return Color(int.parse(colorStr.replaceFirst('#', ''), radix: 16) + 0xFF000000);
+      return Color(int.parse(hex.replaceFirst('#', 'FF'), radix: 16));
     } catch (_) {
-      return null;
+      return Colors.grey;
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    const maxShow = 4;
+    final overflow = labels.length - maxShow;
+
+    return Wrap(
+      spacing: 4,
+      runSpacing: 3,
+      children: [
+        ...labels.take(maxShow).map((label) {
+          final c = _color(label.color);
+          return Container(
+            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+            decoration: BoxDecoration(
+              color: c.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(3),
+              border: Border.all(color: c.withValues(alpha: 0.35), width: 0.5),
+            ),
+            child: Text(
+              label.name ?? '',
+              style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: c, height: 1.3),
+            ),
+          );
+        }),
+        if (overflow > 0)
+          Text(
+            '+$overflow',
+            style: TextStyle(fontSize: 10, fontWeight: FontWeight.w500, color: theme.colorScheme.onSurfaceVariant),
+          ),
+      ],
+    );
   }
 }
