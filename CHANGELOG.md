@@ -5,6 +5,12 @@
 ### Added
 - Packages management: list packages with type filter, package detail with version info and file list, delete package version
 - Packages entry on Profile page
+- Release CRUD: create/edit/delete releases with branch dropdown, tag name (manual or pick existing), draft/prerelease toggles
+- Version list in package detail page with pagination and version switching
+
+### Fixed
+- Deduplicate packages by name on list page
+- Package URL uses correct Gitea web UI format
 
 ## [0.24.0] - 2026-05-02
 
