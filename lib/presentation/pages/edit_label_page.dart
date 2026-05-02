@@ -27,19 +27,8 @@ class _EditLabelPageState extends State<EditLabelPage> {
   late final TextEditingController _descriptionController;
   late final TextEditingController _colorController;
   bool _isSaving = false;
-
-  static const _defaultLabels = [
-    ('bug', 'DC3545'),
-    ('enhancement', '28A745'),
-    ('documentation', '007BFF'),
-    ('help wanted', 'FD7E14'),
-    ('question', '6F42C1'),
-    ('duplicate', '6C757D'),
-    ('invalid', 'FFC107'),
-    ('wontfix', '343A40'),
-    ('good first issue', '17A2B8'),
-    ('feature', 'E83E8C'),
-  ];
+  List<Map<String, dynamic>> _templates = [];
+  bool _templatesLoading = false;
 
   @override
   void initState() {
@@ -47,6 +36,7 @@ class _EditLabelPageState extends State<EditLabelPage> {
     _nameController = TextEditingController(text: widget.label.name ?? '');
     _descriptionController = TextEditingController(text: widget.label.description ?? '');
     _colorController = TextEditingController(text: '#${widget.label.color ?? '808080'}');
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadTemplates());
   }
 
   @override
@@ -62,10 +52,43 @@ class _EditLabelPageState extends State<EditLabelPage> {
     return Color(int.parse('FF$h', radix: 16));
   }
 
-  void _selectDefault(String name, String color) {
+  Future<void> _loadTemplates() async {
+    setState(() => _templatesLoading = true);
+    try {
+      _templates = await Injection.apiService.listLabelTemplates();
+    } catch (_) {
+      _templates = [];
+    }
+    if (mounted) {
+      if (_templates.isEmpty) _templates = _fallbackTemplates();
+      setState(() => _templatesLoading = false);
+    }
+  }
+
+  static List<Map<String, dynamic>> _fallbackTemplates() {
+    return const [
+      {'name': 'bug', 'color': 'ee0701', 'description': 'Something is not working'},
+      {'name': 'enhancement', 'color': '84b6eb', 'description': 'New feature or request'},
+      {'name': 'documentation', 'color': '0075ca', 'description': 'Improvements or additions to documentation'},
+      {'name': 'help wanted', 'color': '008672', 'description': 'Extra attention is needed'},
+      {'name': 'question', 'color': 'cc317c', 'description': 'Further information is requested'},
+      {'name': 'duplicate', 'color': 'cccccc', 'description': 'This already exists'},
+      {'name': 'invalid', 'color': 'e4e669', 'description': 'This does not seem right'},
+      {'name': 'wontfix', 'color': 'ffffff', 'description': 'This will not be worked on'},
+      {'name': 'good first issue', 'color': '7057ff', 'description': 'Good for newcomers'},
+      {'name': 'feature', 'color': 'fbca04', 'description': 'New functionality'},
+    ];
+  }
+
+  void _applyTemplate(Map<String, dynamic> template) {
     setState(() {
-      _nameController.text = name;
-      _colorController.text = '#$color';
+      _nameController.text = template['name']?.toString() ?? '';
+      if (template['color'] != null) {
+        _colorController.text = '#${template['color'].toString().replaceFirst('#', '')}';
+      }
+      if (template['description'] != null) {
+        _descriptionController.text = template['description'].toString();
+      }
     });
   }
 
@@ -196,7 +219,7 @@ class _EditLabelPageState extends State<EditLabelPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (_nameController.text.trim().isEmpty) ...[
-              _buildDefaultLabels(l10n),
+              _buildTemplatesSection(l10n),
               const SizedBox(height: UIConstants.md),
             ],
             TextField(
@@ -252,7 +275,7 @@ class _EditLabelPageState extends State<EditLabelPage> {
     );
   }
 
-  Widget _buildDefaultLabels(AppLocalizations l10n) {
+  Widget _buildTemplatesSection(AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -263,25 +286,39 @@ class _EditLabelPageState extends State<EditLabelPage> {
           ),
         ),
         const SizedBox(height: UIConstants.sm),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: _defaultLabels.map((label) {
-              final (name, color) = label;
-              return Padding(
-                padding: const EdgeInsets.only(right: UIConstants.sm),
-                child: ActionChip(
-                  avatar: CircleAvatar(
-                    backgroundColor: Color(int.parse('FF$color', radix: 16)),
-                    radius: 6,
-                  ),
-                  label: Text(name, style: Theme.of(context).textTheme.labelSmall),
-                  onPressed: () => _selectDefault(name, color),
+        if (_templatesLoading)
+          const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
+        else
+          DropdownButtonFormField<int>(
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+            ),
+            hint: Text(l10n.selectTemplate),
+            isExpanded: true,
+            items: _templates.asMap().entries.map((entry) {
+              final t = entry.value;
+              final name = t['name']?.toString() ?? '';
+              final colorHex = t['color']?.toString().replaceFirst('#', '') ?? '808080';
+              final color = Color(int.parse('FF$colorHex', radix: 16));
+              return DropdownMenuItem(
+                value: entry.key,
+                child: Row(
+                  children: [
+                    Container(
+                      width: 14, height: 14,
+                      margin: const EdgeInsets.only(right: 8),
+                      decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+                    ),
+                    Text(name),
+                  ],
                 ),
               );
             }).toList(),
+            onChanged: (index) {
+              if (index != null) _applyTemplate(_templates[index]);
+            },
           ),
-        ),
       ],
     );
   }

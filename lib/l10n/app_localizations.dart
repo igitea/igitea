@@ -3430,6 +3430,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Quick pick'**
   String get defaultLabels;
+
+  /// No description provided for @applyLabelSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply label set'**
+  String get applyLabelSet;
+
+  /// No description provided for @applyLabelSetDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a predefined label set to create all labels at once.'**
+  String get applyLabelSetDescription;
+
+  /// No description provided for @applyAllLabels.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply all ({count} labels)'**
+  String applyAllLabels(Object count);
+
+  /// No description provided for @creating.
+  ///
+  /// In en, this message translates to:
+  /// **'Creating...'**
+  String get creating;
+
+  /// No description provided for @addCustomLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Add custom label'**
+  String get addCustomLabel;
+
+  /// No description provided for @selectTemplate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a template'**
+  String get selectTemplate;
 }
 
 class _AppLocalizationsDelegate

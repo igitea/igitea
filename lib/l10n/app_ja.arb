@@ -551,5 +551,12 @@
   "releaseUpdated": "リリースを更新しました",
   "releaseDeleted": "リリースを削除しました",
   "chooseTag": "タグを選択",
-  "defaultLabels": "クイック選択"
+  "defaultLabels": "クイック選択",
+  "applyLabelSet": "Apply label set",
+  "applyLabelSetDescription": "Select a predefined label set to create all labels at once.",
+  "applyAllLabels": "Apply all ({count} labels)",
+  "applyAllLabelsParams": "Apply all ({count} labels)",
+  "creating": "Creating...",
+  "addCustomLabel": "Add custom label",
+  "selectTemplate": "Select a template"
 }

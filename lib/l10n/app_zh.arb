@@ -551,5 +551,12 @@
   "releaseUpdated": "Release 更新成功",
   "releaseDeleted": "Release 已删除",
   "chooseTag": "选择标签",
-  "defaultLabels": "快速选择"
+  "defaultLabels": "快速选择",
+  "applyLabelSet": "应用标签模板集",
+  "applyLabelSetDescription": "选择一个预定义的标签模板集，一键创建所有标签。",
+  "applyAllLabels": "全部应用（{count} 个标签）",
+  "applyAllLabelsParams": "全部应用（{count} 个标签）",
+  "creating": "创建中...",
+  "addCustomLabel": "添加自定义标签",
+  "selectTemplate": "选择一个模板"
 }

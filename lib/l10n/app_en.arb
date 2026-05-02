@@ -552,5 +552,12 @@
   "releaseUpdated": "Release updated successfully",
   "releaseDeleted": "Release deleted successfully",
   "chooseTag": "Pick tag",
-  "defaultLabels": "Quick pick"
+  "defaultLabels": "Quick pick",
+  "applyLabelSet": "Apply label set",
+  "applyLabelSetDescription": "Select a predefined label set to create all labels at once.",
+  "applyAllLabels": "Apply all ({count} labels)",
+  "applyAllLabelsParams": "Apply all ({count} labels)",
+  "creating": "Creating...",
+  "addCustomLabel": "Add custom label",
+  "selectTemplate": "Select a template"
 }

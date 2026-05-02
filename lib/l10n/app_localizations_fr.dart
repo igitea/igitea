@@ -1739,4 +1739,22 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get defaultLabels => 'Sélection rapide';
+
+  @override
+  String get applyLabelSet => 'Apply label set';
+
+  @override
+  String get applyLabelSetDescription => 'Select a predefined label set to create all labels at once.';
+
+  @override
+  String applyAllLabels(Object count) => 'Apply all ($count labels)';
+
+  @override
+  String get creating => 'Creating...';
+
+  @override
+  String get addCustomLabel => 'Add custom label';
+
+  @override
+  String get selectTemplate => 'Select a template';
 }

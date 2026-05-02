@@ -1720,6 +1720,24 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get defaultLabels => '快速选择';
+
+  @override
+  String get applyLabelSet => '应用标签模板集';
+
+  @override
+  String get applyLabelSetDescription => '选择一个预定义的标签模板集，一键创建所有标签。';
+
+  @override
+  String applyAllLabels(Object count) => '全部应用（$count 个标签）';
+
+  @override
+  String get creating => '创建中...';
+
+  @override
+  String get addCustomLabel => '添加自定义标签';
+
+  @override
+  String get selectTemplate => '选择一个模板';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -3438,4 +3456,22 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get defaultLabels => '快速選擇';
+
+  @override
+  String get applyLabelSet => '應用標籤模板集';
+
+  @override
+  String get applyLabelSetDescription => '選擇一個預定義的標籤模板集，一鍵創建所有標籤。';
+
+  @override
+  String applyAllLabels(Object count) => '全部應用（$count 個標籤）';
+
+  @override
+  String get creating => '創建中...';
+
+  @override
+  String get addCustomLabel => '添加自定義標籤';
+
+  @override
+  String get selectTemplate => '選擇一個模板';
 }

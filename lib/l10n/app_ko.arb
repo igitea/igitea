@@ -551,5 +551,12 @@
   "releaseUpdated": "릴리즈가 업데이트되었습니다",
   "releaseDeleted": "릴리즈가 삭제되었습니다",
   "chooseTag": "태그 선택",
-  "defaultLabels": "빠른 선택"
+  "defaultLabels": "빠른 선택",
+  "applyLabelSet": "Apply label set",
+  "applyLabelSetDescription": "Select a predefined label set to create all labels at once.",
+  "applyAllLabels": "Apply all ({count} labels)",
+  "applyAllLabelsParams": "Apply all ({count} labels)",
+  "creating": "Creating...",
+  "addCustomLabel": "Add custom label",
+  "selectTemplate": "Select a template"
 }

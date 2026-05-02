@@ -551,5 +551,12 @@
   "releaseUpdated": "Release erfolgreich aktualisiert",
   "releaseDeleted": "Release erfolgreich gelöscht",
   "chooseTag": "Tag wählen",
-  "defaultLabels": "Schnellauswahl"
+  "defaultLabels": "Schnellauswahl",
+  "applyLabelSet": "Apply label set",
+  "applyLabelSetDescription": "Select a predefined label set to create all labels at once.",
+  "applyAllLabels": "Apply all ({count} labels)",
+  "applyAllLabelsParams": "Apply all ({count} labels)",
+  "creating": "Creating...",
+  "addCustomLabel": "Add custom label",
+  "selectTemplate": "Select a template"
 }

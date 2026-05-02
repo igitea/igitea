@@ -1383,6 +1383,12 @@ class GiteaApiService {
     );
   }
 
+  Future<List<Map<String, dynamic>>> listLabelTemplates() async {
+    final response = await _client.get('/label/templates');
+    final list = jsonDecode(response.body) as List<dynamic>;
+    return list.map((e) => e as Map<String, dynamic>).toList();
+  }
+
   Future<String> renderMarkdown({Map<String, dynamic>? body}) async {
     final response = await _client.post('/markdown', body: body);
     return response.body;

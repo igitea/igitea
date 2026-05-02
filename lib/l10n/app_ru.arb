@@ -551,5 +551,12 @@
   "releaseUpdated": "Релиз успешно обновлен",
   "releaseDeleted": "Релиз успешно удален",
   "chooseTag": "Выбрать тег",
-  "defaultLabels": "Быстрый выбор"
+  "defaultLabels": "Быстрый выбор",
+  "applyLabelSet": "Apply label set",
+  "applyLabelSetDescription": "Select a predefined label set to create all labels at once.",
+  "applyAllLabels": "Apply all ({count} labels)",
+  "applyAllLabelsParams": "Apply all ({count} labels)",
+  "creating": "Creating...",
+  "addCustomLabel": "Add custom label",
+  "selectTemplate": "Select a template"
 }

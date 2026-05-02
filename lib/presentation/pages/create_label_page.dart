@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
+import '../../core/errors/failures.dart';
 import '../../core/utils/either.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -24,19 +25,9 @@ class _CreateLabelPageState extends State<CreateLabelPage> {
   late final TextEditingController _descriptionController;
   late final TextEditingController _colorController;
   bool _isSaving = false;
-
-  static const _defaultLabels = [
-    ('bug', 'DC3545'),
-    ('enhancement', '28A745'),
-    ('documentation', '007BFF'),
-    ('help wanted', 'FD7E14'),
-    ('question', '6F42C1'),
-    ('duplicate', '6C757D'),
-    ('invalid', 'FFC107'),
-    ('wontfix', '343A40'),
-    ('good first issue', '17A2B8'),
-    ('feature', 'E83E8C'),
-  ];
+  List<Map<String, dynamic>> _templates = [];
+  bool _templatesLoading = false;
+  bool _isApplyingSet = false;
 
   @override
   void initState() {
@@ -44,6 +35,7 @@ class _CreateLabelPageState extends State<CreateLabelPage> {
     _nameController = TextEditingController();
     _descriptionController = TextEditingController();
     _colorController = TextEditingController(text: '#00B4AB');
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadTemplates());
   }
 
   @override
@@ -54,11 +46,64 @@ class _CreateLabelPageState extends State<CreateLabelPage> {
     super.dispose();
   }
 
-  void _selectDefault(String name, String color) {
-    setState(() {
-      _nameController.text = name;
-      _colorController.text = '#$color';
-    });
+  Future<void> _loadTemplates() async {
+    setState(() => _templatesLoading = true);
+    try {
+      _templates = await Injection.apiService.listLabelTemplates();
+    } catch (_) {
+      _templates = [];
+    }
+    if (mounted) {
+      if (_templates.isEmpty) _templates = _fallbackTemplates();
+      setState(() => _templatesLoading = false);
+    }
+  }
+
+  static List<Map<String, dynamic>> _fallbackTemplates() {
+    return const [
+      {'name': 'bug', 'color': 'ee0701', 'description': 'Something is not working'},
+      {'name': 'enhancement', 'color': '84b6eb', 'description': 'New feature or request'},
+      {'name': 'documentation', 'color': '0075ca', 'description': 'Improvements or additions to documentation'},
+      {'name': 'help wanted', 'color': '008672', 'description': 'Extra attention is needed'},
+      {'name': 'question', 'color': 'cc317c', 'description': 'Further information is requested'},
+      {'name': 'duplicate', 'color': 'cccccc', 'description': 'This already exists'},
+      {'name': 'invalid', 'color': 'e4e669', 'description': 'This does not seem right'},
+      {'name': 'wontfix', 'color': 'ffffff', 'description': 'This will not be worked on'},
+      {'name': 'good first issue', 'color': '7057ff', 'description': 'Good for newcomers'},
+      {'name': 'feature', 'color': 'fbca04', 'description': 'New functionality'},
+    ];
+  }
+
+  Future<void> _applyTemplateSet() async {
+    final l10n = AppLocalizations.of(context)!;
+    setState(() => _isApplyingSet = true);
+
+    int created = 0;
+    for (final t in _templates) {
+      final name = t['name']?.toString() ?? '';
+      final color = t['color']?.toString() ?? '';
+      final desc = t['description']?.toString() ?? '';
+      if (name.isEmpty) continue;
+
+      final result = await Injection.issueNotifier.createLabel(
+        widget.owner,
+        widget.repo,
+        {
+          'name': name,
+          'color': color.replaceFirst('#', ''),
+          if (desc.isNotEmpty) 'description': desc,
+        },
+      );
+      if (result is Right<Failure, void>) created++;
+    }
+
+    if (mounted) {
+      setState(() => _isApplyingSet = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${l10n.created}: $created ${l10n.labels}')),
+      );
+      Navigator.of(context).pop(true);
+    }
   }
 
   Future<void> _pickColor() async {
@@ -80,7 +125,6 @@ class _CreateLabelPageState extends State<CreateLabelPage> {
   Future<void> _save() async {
     final l10n = AppLocalizations.of(context)!;
     final name = _nameController.text.trim();
-
     if (name.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.titleRequired)),
@@ -90,31 +134,29 @@ class _CreateLabelPageState extends State<CreateLabelPage> {
 
     setState(() => _isSaving = true);
 
-    final body = <String, dynamic>{
-      'name': name,
-      'color': _colorController.text.replaceFirst('#', ''),
-      if (_descriptionController.text.trim().isNotEmpty)
-        'description': _descriptionController.text.trim(),
-    };
-
     final result = await Injection.issueNotifier.createLabel(
       widget.owner,
       widget.repo,
-      body,
+      {
+        'name': name,
+        'color': _colorController.text.replaceFirst('#', ''),
+        if (_descriptionController.text.trim().isNotEmpty)
+          'description': _descriptionController.text.trim(),
+      },
     );
 
     if (mounted) {
       setState(() => _isSaving = false);
-      switch (result) {
-        case Left(:final value):
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${l10n.error}: ${value.message}')),
-          );
-        case Right():
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.created)),
-          );
-          Navigator.of(context).pop(true);
+      if (result is Right<Failure, void>) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.created)),
+        );
+        Navigator.of(context).pop(true);
+      } else {
+        final err = (result as Left<Failure, void>).value;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${l10n.error}: ${err.message}')),
+        );
       }
     }
   }
@@ -124,26 +166,107 @@ class _CreateLabelPageState extends State<CreateLabelPage> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.createLabel),
-        actions: [
-          IconButton(
-            icon: _isSaving
-                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                : const Icon(Icons.save),
-            onPressed: _isSaving ? null : _save,
-          ),
-        ],
-      ),
+      appBar: AppBar(title: Text(l10n.createLabel)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(UIConstants.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (_nameController.text.trim().isEmpty) ...[
-              _buildDefaultLabels(l10n),
+            _buildTemplateSetSection(l10n),
+            const SizedBox(height: UIConstants.lg),
+            const Divider(),
+            const SizedBox(height: UIConstants.lg),
+            _buildCustomLabelSection(l10n),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTemplateSetSection(AppLocalizations l10n) {
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(UIConstants.md),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.playlist_add, size: 20, color: Theme.of(context).colorScheme.primary),
+                const SizedBox(width: UIConstants.sm),
+                Text(l10n.applyLabelSet, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
+              ],
+            ),
+            const SizedBox(height: UIConstants.sm),
+            Text(
+              l10n.applyLabelSetDescription,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: UIConstants.md),
+            if (_templatesLoading)
+              const Center(child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)))
+            else ...[
+              Wrap(
+                spacing: UIConstants.sm,
+                runSpacing: UIConstants.xs,
+                children: _templates.asMap().entries.map((entry) {
+                  final t = entry.value;
+                  final name = t['name']?.toString() ?? '';
+                  final colorHex = t['color']?.toString().replaceFirst('#', '') ?? '808080';
+                  final color = Color(int.parse('FF$colorHex', radix: 16));
+                  return Chip(
+                    avatar: CircleAvatar(backgroundColor: color, radius: 6),
+                    label: Text(name, style: Theme.of(context).textTheme.labelSmall),
+                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    visualDensity: VisualDensity.compact,
+                  );
+                }).toList(),
+              ),
               const SizedBox(height: UIConstants.md),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton.icon(
+                  onPressed: _isApplyingSet ? null : _applyTemplateSet,
+                  icon: _isApplyingSet
+                      ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                      : const Icon(Icons.check, size: 18),
+                  label: Text(_isApplyingSet ? l10n.creating : l10n.applyAllLabels(_templates.length)),
+                ),
+              ),
             ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCustomLabelSection(AppLocalizations l10n) {
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(UIConstants.md),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(Icons.add_circle_outline, size: 20, color: Theme.of(context).colorScheme.primary),
+                const SizedBox(width: UIConstants.sm),
+                Text(l10n.addCustomLabel, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
+              ],
+            ),
+            const SizedBox(height: UIConstants.md),
             TextField(
               controller: _nameController,
               decoration: InputDecoration(
@@ -173,61 +296,30 @@ class _CreateLabelPageState extends State<CreateLabelPage> {
                       border: const OutlineInputBorder(),
                       prefixIcon: Container(
                         margin: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: _parseColor(_colorController.text),
-                          shape: BoxShape.circle,
-                        ),
-                        width: 24,
-                        height: 24,
+                        decoration: BoxDecoration(color: _parseColor(_colorController.text), shape: BoxShape.circle),
+                        width: 24, height: 24,
                       ),
                     ),
                   ),
                 ),
                 const SizedBox(width: UIConstants.sm),
-                IconButton(
-                  icon: const Icon(Icons.colorize),
-                  onPressed: _pickColor,
-                  tooltip: l10n.labelColor,
-                ),
+                IconButton(icon: const Icon(Icons.colorize), onPressed: _pickColor, tooltip: l10n.labelColor),
               ],
+            ),
+            const SizedBox(height: UIConstants.md),
+            SizedBox(
+              width: double.infinity,
+              child: FilledButton.icon(
+                onPressed: _isSaving ? null : _save,
+                icon: _isSaving
+                    ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white))
+                    : const Icon(Icons.add, size: 18),
+                label: Text(l10n.createLabel),
+              ),
             ),
           ],
         ),
       ),
-    );
-  }
-
-  Widget _buildDefaultLabels(AppLocalizations l10n) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          l10n.defaultLabels,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: Theme.of(context).colorScheme.onSurfaceVariant,
-          ),
-        ),
-        const SizedBox(height: UIConstants.sm),
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Row(
-            children: _defaultLabels.map((label) {
-              final (name, color) = label;
-              return Padding(
-                padding: const EdgeInsets.only(right: UIConstants.sm),
-                child: ActionChip(
-                  avatar: CircleAvatar(
-                    backgroundColor: Color(int.parse('FF$color', radix: 16)),
-                    radius: 6,
-                  ),
-                  label: Text(name, style: Theme.of(context).textTheme.labelSmall),
-                  onPressed: () => _selectDefault(name, color),
-                ),
-              );
-            }).toList(),
-          ),
-        ),
-      ],
     );
   }
 }
@@ -268,25 +360,17 @@ class _ColorPickerDialogState extends State<_ColorPickerDialog> {
           return GestureDetector(
             onTap: () => Navigator.of(context).pop(color),
             child: Container(
-              width: 40,
-              height: 40,
+              width: 40, height: 40,
               decoration: BoxDecoration(
                 color: color,
                 shape: BoxShape.circle,
-                border: _selected.toARGB32() == color.toARGB32()
-                    ? Border.all(color: Colors.white, width: 3)
-                    : null,
+                border: _selected.toARGB32() == color.toARGB32() ? Border.all(color: Colors.white, width: 3) : null,
               ),
             ),
           );
         }).toList(),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(l10n.cancel),
-        ),
-      ],
+      actions: [TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(l10n.cancel))],
     );
   }
 }
