@@ -54,9 +54,9 @@ class _EditIssuePageState extends State<EditIssuePage> {
     _selectedMilestoneId = widget.issue.milestone?.id;
     _dueDate = widget.issue.due_date;
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _loadLabels();
-      _loadMilestones();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await _loadLabels();
+      await _loadMilestones();
     });
   }
 
