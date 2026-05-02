@@ -37,7 +37,9 @@ class _PackageListPageState extends State<PackageListPage> {
 
   List<Package> get _packages {
     final state = Injection.packageNotifier.listState;
-    return state is PackageListLoaded ? state.packages : [];
+    if (state is! PackageListLoaded) return [];
+    final seen = <String>{};
+    return state.packages.where((p) => seen.add(p.name ?? '')).toList();
   }
 
   bool get _loading => Injection.packageNotifier.listState is PackageListLoading;
