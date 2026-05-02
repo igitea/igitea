@@ -2,12 +2,16 @@
 
 ## [Unreleased]
 
+## [0.25.0] - 2026-05-02
+
 ### Added
 - Packages management: list packages with type filter, package detail with version info and file list, delete package version
 - Packages entry on Profile page
 - Release CRUD: create/edit/delete releases with branch dropdown, tag name (manual or pick existing), draft/prerelease toggles
 - Version list in package detail page with pagination and version switching
 - Quick pick default labels when creating/editing labels (bug, enhancement, documentation, etc.)
+- Label template sets: create all labels at once from predefined templates
+- i18n for create/edit label pages (7 new ARB keys)
 
 ### Fixed
 - Deduplicate packages by name on list page
