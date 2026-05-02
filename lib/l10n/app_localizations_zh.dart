@@ -1728,7 +1728,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get applyLabelSetDescription => '选择一个预定义的标签模板集，一键创建所有标签。';
 
   @override
-  String applyAllLabels(Object count) => '全部应用（$count 个标签）';
+  String applyAllLabels(Object count) {
+    return '全部应用（$count 个标签）';
+  }
+
+  @override
+  String applyAllLabelsParams(Object count) {
+    return '全部应用（$count 个标签）';
+  }
 
   @override
   String get creating => '创建中...';
@@ -3464,7 +3471,14 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get applyLabelSetDescription => '選擇一個預定義的標籤模板集，一鍵創建所有標籤。';
 
   @override
-  String applyAllLabels(Object count) => '全部應用（$count 個標籤）';
+  String applyAllLabels(Object count) {
+    return '全部應用（$count 個標籤）';
+  }
+
+  @override
+  String applyAllLabelsParams(Object count) {
+    return '全部應用（$count 個標籤）';
+  }
 
   @override
   String get creating => '創建中...';

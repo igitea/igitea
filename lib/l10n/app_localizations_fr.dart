@@ -1744,10 +1744,18 @@ class AppLocalizationsFr extends AppLocalizations {
   String get applyLabelSet => 'Apply label set';
 
   @override
-  String get applyLabelSetDescription => 'Select a predefined label set to create all labels at once.';
+  String get applyLabelSetDescription =>
+      'Select a predefined label set to create all labels at once.';
 
   @override
-  String applyAllLabels(Object count) => 'Apply all ($count labels)';
+  String applyAllLabels(Object count) {
+    return 'Apply all ($count labels)';
+  }
+
+  @override
+  String applyAllLabelsParams(Object count) {
+    return 'Apply all ($count labels)';
+  }
 
   @override
   String get creating => 'Creating...';

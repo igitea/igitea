@@ -3449,6 +3449,12 @@ abstract class AppLocalizations {
   /// **'Apply all ({count} labels)'**
   String applyAllLabels(Object count);
 
+  /// No description provided for @applyAllLabelsParams.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply all ({count} labels)'**
+  String applyAllLabelsParams(Object count);
+
   /// No description provided for @creating.
   ///
   /// In en, this message translates to:
