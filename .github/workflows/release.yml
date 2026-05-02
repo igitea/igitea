@@ -159,6 +159,12 @@ jobs:
           New-Item -ItemType Directory -Path artifacts -Force
           Compress-Archive -Path "build\windows\x64\runner\Release\*" -DestinationPath "artifacts\igitea-${{ github.ref_name }}-windows-x64.zip"
 
+      - name: Build MSIX Installer
+        shell: pwsh
+        run: |
+          flutter pub run msix:create --release
+          Copy-Item "igitea.msix" -Destination "artifacts\igitea-${{ github.ref_name }}-windows-x64.msix"
+
       - uses: actions/upload-artifact@v4
         with:
           name: windows
@@ -186,6 +192,7 @@ jobs:
             merged-artifacts/**/*.dmg
             merged-artifacts/**/*.AppImage
             merged-artifacts/**/*.zip
+            merged-artifacts/**/*.msix
           generate_release_notes: true
           draft: false
           prerelease: false
