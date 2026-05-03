@@ -8,6 +8,7 @@ import '../../data/models/generated/generated_models.dart';
 import '../../domain/entities/auth_state.dart';
 import '../../l10n/app_localizations.dart';
 
+import 'admin_dashboard_page.dart';
 import 'ssh_keys_page.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -146,6 +147,19 @@ class _SettingsPageState extends State<SettingsPage> {
               ),
             ),
             const SizedBox(height: 8),
+            ListTile(
+              leading: const Icon(Icons.dashboard_outlined),
+              title: Text(l10n.adminPanel),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const AdminDashboardPage(),
+                  ),
+                );
+              },
+            ),
             ListTile(
               leading: const Icon(Icons.people_outlined),
               title: Text(l10n.userManagement),

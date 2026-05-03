@@ -52,4 +52,25 @@ abstract class AdminRepository {
 
   /// Delete an admin-level hook.
   Future<Either<Failure, void>> deleteAdminHook(int id);
+
+  /// List admin-level runners.
+  Future<Either<Failure, List<ActionRunner>>> listAdminRunners({int? page, int? limit});
+
+  /// Get an admin-level runner.
+  Future<Either<Failure, ActionRunner>> getAdminRunner(int runnerId);
+
+  /// Get runner registration token.
+  Future<Either<Failure, String>> getAdminRunnerRegistrationToken();
+
+  /// List user badges.
+  Future<Either<Failure, List<Badge>>> listUserBadges(String username);
+
+  /// Create a user badge.
+  Future<Either<Failure, Badge>> createUserBadge(String username, Map<String, dynamic> body);
+
+  /// Delete a user badge.
+  Future<Either<Failure, void>> deleteUserBadge(String username, int badgeId);
+
+  /// List admin emails.
+  Future<Either<Failure, List<Email>>> listAdminEmails({int? page, int? limit});
 }

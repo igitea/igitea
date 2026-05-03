@@ -3,6 +3,13 @@
 ## [Unreleased]
 
 ### Added
+- 管理后台：系统级管理仪表盘
+  - 系统 Hooks：列出、查看、删除管理员 Webhook
+  - 定时任务：列出计划任务并触发手动执行
+  - Action Runners：列出自托管 Runner 并获取注册 Token
+  - 邮件记录：浏览管理员邮件日志
+  - 用户徽章：管理用户徽章（列出、创建、删除）
+  - 从设置 → 管理后台进入（仅管理员）
 - 为 17 个页面新增 Widget 测试（共 35 个测试用例，全部通过）
   - `DashboardPage`、`EmailsPage`、`FollowPage`、`GpgKeysPage`、`IssueListPage`、`NotificationPage`、`OrganizationDetailPage`、`ProfilePage`、`RepoListPage`、`RepoStargazersPage`、`SearchPage`、`SettingsPage`、`StarredReposPage`、`TagProtectionsPage`、`UserProfilePage`、`UserReposPage`
   - 全部使用 `buildTestableWidget()` 包装，支持国际化

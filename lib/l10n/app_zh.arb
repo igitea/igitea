@@ -638,5 +638,19 @@
   "stargazers": "星标用户",
   "subscribers": "订阅者",
   "noStargazers": "暂无星标用户",
-  "noSubscribers": "暂无订阅者"
+  "noSubscribers": "暂无订阅者",
+  "adminHooksTitle": "系统 Hooks",
+  "adminCronTitle": "定时任务",
+  "adminRunnersTitle": "Actions Runners",
+  "adminEmailsTitle": "邮件记录",
+  "adminBadgesTitle": "徽章管理",
+  "adminRunCron": "立即执行",
+  "adminGetToken": "获取注册 Token",
+  "adminNoHooks": "未配置系统 Hooks",
+  "adminNoCron": "无定时任务",
+  "adminNoRunners": "无 Action Runners",
+  "adminNoEmails": "无邮件记录",
+  "adminNoBadges": "无徽章",
+  "adminBadgeUsername": "用户名",
+  "adminBadgeDescription": "描述"
 }

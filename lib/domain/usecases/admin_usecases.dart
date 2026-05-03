@@ -97,3 +97,127 @@ class RunCronTaskUseCase {
     return _repository.runCron(task);
   }
 }
+
+class ListAdminHooksUseCase {
+  final AdminRepository _repository;
+
+  ListAdminHooksUseCase({required AdminRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, List<Hook>>> call({int? page, int? limit, String? type}) async {
+    return _repository.listAdminHooks(page: page, limit: limit, type: type);
+  }
+}
+
+class GetAdminHookUseCase {
+  final AdminRepository _repository;
+
+  GetAdminHookUseCase({required AdminRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, Hook>> call(int id) async {
+    return _repository.getAdminHook(id);
+  }
+}
+
+class DeleteAdminHookUseCase {
+  final AdminRepository _repository;
+
+  DeleteAdminHookUseCase({required AdminRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, void>> call(int id) async {
+    return _repository.deleteAdminHook(id);
+  }
+}
+
+class ListAdminRunnersUseCase {
+  final AdminRepository _repository;
+
+  ListAdminRunnersUseCase({required AdminRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, List<ActionRunner>>> call({int? page, int? limit}) async {
+    return _repository.listAdminRunners(page: page, limit: limit);
+  }
+}
+
+class GetAdminRunnerUseCase {
+  final AdminRepository _repository;
+
+  GetAdminRunnerUseCase({required AdminRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, ActionRunner>> call(int runnerId) async {
+    return _repository.getAdminRunner(runnerId);
+  }
+}
+
+class GetAdminRunnerRegistrationTokenUseCase {
+  final AdminRepository _repository;
+
+  GetAdminRunnerRegistrationTokenUseCase({required AdminRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, String>> call() async {
+    return _repository.getAdminRunnerRegistrationToken();
+  }
+}
+
+class ListUserBadgesUseCase {
+  final AdminRepository _repository;
+
+  ListUserBadgesUseCase({required AdminRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, List<Badge>>> call(String username) async {
+    return _repository.listUserBadges(username);
+  }
+}
+
+class CreateUserBadgeUseCase {
+  final AdminRepository _repository;
+
+  CreateUserBadgeUseCase({required AdminRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, Badge>> call(CreateUserBadgeParams params) async {
+    return _repository.createUserBadge(params.username, params.body);
+  }
+}
+
+class CreateUserBadgeParams {
+  final String username;
+  final Map<String, dynamic> body;
+
+  CreateUserBadgeParams({required this.username, required this.body});
+}
+
+class DeleteUserBadgeUseCase {
+  final AdminRepository _repository;
+
+  DeleteUserBadgeUseCase({required AdminRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, void>> call(DeleteUserBadgeParams params) async {
+    return _repository.deleteUserBadge(params.username, params.badgeId);
+  }
+}
+
+class DeleteUserBadgeParams {
+  final String username;
+  final int badgeId;
+
+  DeleteUserBadgeParams({required this.username, required this.badgeId});
+}
+
+class ListAdminEmailsUseCase {
+  final AdminRepository _repository;
+
+  ListAdminEmailsUseCase({required AdminRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, List<Email>>> call({int? page, int? limit}) async {
+    return _repository.listAdminEmails(page: page, limit: limit);
+  }
+}

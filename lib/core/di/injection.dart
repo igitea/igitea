@@ -141,6 +141,16 @@ class Injection {
   static late ListCronTasksUseCase listCronTasksUseCase;
   static late EditUserUseCase editUserUseCase;
   static late RunCronTaskUseCase runCronTaskUseCase;
+  static late ListAdminHooksUseCase listAdminHooksUseCase;
+  static late GetAdminHookUseCase getAdminHookUseCase;
+  static late DeleteAdminHookUseCase deleteAdminHookUseCase;
+  static late ListAdminRunnersUseCase listAdminRunnersUseCase;
+  static late GetAdminRunnerUseCase getAdminRunnerUseCase;
+  static late GetAdminRunnerRegistrationTokenUseCase getAdminRunnerRegistrationTokenUseCase;
+  static late ListAdminEmailsUseCase listAdminEmailsUseCase;
+  static late ListUserBadgesUseCase listUserBadgesUseCase;
+  static late CreateUserBadgeUseCase createUserBadgeUseCase;
+  static late DeleteUserBadgeUseCase deleteUserBadgeUseCase;
   static late GetGitignoreTemplatesUseCase getGitignoreTemplatesUseCase;
   static late RenderMarkdownUseCase renderMarkdownUseCase;
   static late GetNodeInfoUseCase getNodeInfoUseCase;
@@ -242,6 +252,16 @@ class Injection {
     assert(listCronTasksUseCase != null);
     assert(editUserUseCase != null);
     assert(runCronTaskUseCase != null);
+    assert(listAdminHooksUseCase != null);
+    assert(getAdminHookUseCase != null);
+    assert(deleteAdminHookUseCase != null);
+    assert(listAdminRunnersUseCase != null);
+    assert(getAdminRunnerUseCase != null);
+    assert(getAdminRunnerRegistrationTokenUseCase != null);
+    assert(listAdminEmailsUseCase != null);
+    assert(listUserBadgesUseCase != null);
+    assert(createUserBadgeUseCase != null);
+    assert(deleteUserBadgeUseCase != null);
     assert(getGitignoreTemplatesUseCase != null);
     assert(renderMarkdownUseCase != null);
     assert(getNodeInfoUseCase != null);
@@ -389,6 +409,16 @@ class Injection {
     getGeneralRepoSettingsUseCase = GetGeneralRepoSettingsUseCase(repository: miscRepository);
     editUserUseCase = EditUserUseCase(repository: adminRepository);
     runCronTaskUseCase = RunCronTaskUseCase(repository: adminRepository);
+    listAdminHooksUseCase = ListAdminHooksUseCase(repository: adminRepository);
+    getAdminHookUseCase = GetAdminHookUseCase(repository: adminRepository);
+    deleteAdminHookUseCase = DeleteAdminHookUseCase(repository: adminRepository);
+    listAdminRunnersUseCase = ListAdminRunnersUseCase(repository: adminRepository);
+    getAdminRunnerUseCase = GetAdminRunnerUseCase(repository: adminRepository);
+    getAdminRunnerRegistrationTokenUseCase = GetAdminRunnerRegistrationTokenUseCase(repository: adminRepository);
+    listAdminEmailsUseCase = ListAdminEmailsUseCase(repository: adminRepository);
+    listUserBadgesUseCase = ListUserBadgesUseCase(repository: adminRepository);
+    createUserBadgeUseCase = CreateUserBadgeUseCase(repository: adminRepository);
+    deleteUserBadgeUseCase = DeleteUserBadgeUseCase(repository: adminRepository);
   }
 
   static void initialize({
@@ -509,6 +539,18 @@ class Injection {
         createUserUseCase: createUserUseCase,
         editUserUseCase: editUserUseCase,
         deleteUserUseCase: deleteUserUseCase,
+        listAdminHooksUseCase: listAdminHooksUseCase,
+        getAdminHookUseCase: getAdminHookUseCase,
+        deleteAdminHookUseCase: deleteAdminHookUseCase,
+        listCronTasksUseCase: listCronTasksUseCase,
+        runCronTaskUseCase: runCronTaskUseCase,
+        listAdminRunnersUseCase: listAdminRunnersUseCase,
+        getAdminRunnerUseCase: getAdminRunnerUseCase,
+        getAdminRunnerRegistrationTokenUseCase: getAdminRunnerRegistrationTokenUseCase,
+        listAdminEmailsUseCase: listAdminEmailsUseCase,
+        listUserBadgesUseCase: listUserBadgesUseCase,
+        createUserBadgeUseCase: createUserBadgeUseCase,
+        deleteUserBadgeUseCase: deleteUserBadgeUseCase,
       );
     } else {
       authNotifier = AuthNotifier(
@@ -611,6 +653,18 @@ class Injection {
         createUserUseCase: createUserUseCase,
         editUserUseCase: editUserUseCase,
         deleteUserUseCase: deleteUserUseCase,
+        listAdminHooksUseCase: listAdminHooksUseCase,
+        getAdminHookUseCase: getAdminHookUseCase,
+        deleteAdminHookUseCase: deleteAdminHookUseCase,
+        listCronTasksUseCase: listCronTasksUseCase,
+        runCronTaskUseCase: runCronTaskUseCase,
+        listAdminRunnersUseCase: listAdminRunnersUseCase,
+        getAdminRunnerUseCase: getAdminRunnerUseCase,
+        getAdminRunnerRegistrationTokenUseCase: getAdminRunnerRegistrationTokenUseCase,
+        listAdminEmailsUseCase: listAdminEmailsUseCase,
+        listUserBadgesUseCase: listUserBadgesUseCase,
+        createUserBadgeUseCase: createUserBadgeUseCase,
+        deleteUserBadgeUseCase: deleteUserBadgeUseCase,
       );
       _initialized = true;
     }
@@ -733,6 +787,18 @@ class Injection {
       createUserUseCase: createUserUseCase,
       editUserUseCase: editUserUseCase,
       deleteUserUseCase: deleteUserUseCase,
+      listAdminHooksUseCase: listAdminHooksUseCase,
+      getAdminHookUseCase: getAdminHookUseCase,
+      deleteAdminHookUseCase: deleteAdminHookUseCase,
+      listCronTasksUseCase: listCronTasksUseCase,
+      runCronTaskUseCase: runCronTaskUseCase,
+      listAdminRunnersUseCase: listAdminRunnersUseCase,
+      getAdminRunnerUseCase: getAdminRunnerUseCase,
+      getAdminRunnerRegistrationTokenUseCase: getAdminRunnerRegistrationTokenUseCase,
+      listAdminEmailsUseCase: listAdminEmailsUseCase,
+      listUserBadgesUseCase: listUserBadgesUseCase,
+      createUserBadgeUseCase: createUserBadgeUseCase,
+      deleteUserBadgeUseCase: deleteUserBadgeUseCase,
     );
   }
 }

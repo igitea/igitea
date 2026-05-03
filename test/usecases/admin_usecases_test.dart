@@ -74,6 +74,34 @@ class MockAdminRepository implements AdminRepository {
   @override
   Future<Either<Failure, void>> deleteAdminHook(int id) =>
       throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, List<ActionRunner>>> listAdminRunners({int? page, int? limit}) =>
+      throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, ActionRunner>> getAdminRunner(int runnerId) =>
+      throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, String>> getAdminRunnerRegistrationToken() =>
+      throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, List<Badge>>> listUserBadges(String username) =>
+      throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, Badge>> createUserBadge(String username, Map<String, dynamic> body) =>
+      throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, void>> deleteUserBadge(String username, int badgeId) =>
+      throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, List<Email>>> listAdminEmails({int? page, int? limit}) =>
+      throw UnimplementedError();
 }
 
 void main() {

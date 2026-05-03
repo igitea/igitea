@@ -641,5 +641,19 @@
   "stargazers": "Stargazers",
   "subscribers": "Subscribers",
   "noStargazers": "No stargazers yet",
-  "noSubscribers": "No subscribers yet"
+  "noSubscribers": "No subscribers yet",
+  "adminHooksTitle": "System Hooks",
+  "adminCronTitle": "Cron Tasks",
+  "adminRunnersTitle": "Actions Runners",
+  "adminEmailsTitle": "Emails",
+  "adminBadgesTitle": "Badges",
+  "adminRunCron": "Run Now",
+  "adminGetToken": "Get Registration Token",
+  "adminNoHooks": "No system hooks configured",
+  "adminNoCron": "No cron tasks",
+  "adminNoRunners": "No action runners",
+  "adminNoEmails": "No emails",
+  "adminNoBadges": "No badges",
+  "adminBadgeUsername": "Username",
+  "adminBadgeDescription": "Description"
 }

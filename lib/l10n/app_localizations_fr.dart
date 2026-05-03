@@ -2008,4 +2008,46 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get noSubscribers => 'No subscribers yet';
+
+  @override
+  String get adminHooksTitle => 'System Hooks';
+
+  @override
+  String get adminCronTitle => 'Cron Tasks';
+
+  @override
+  String get adminRunnersTitle => 'Actions Runners';
+
+  @override
+  String get adminEmailsTitle => 'Emails';
+
+  @override
+  String get adminBadgesTitle => 'Badges';
+
+  @override
+  String get adminRunCron => 'Run Now';
+
+  @override
+  String get adminGetToken => 'Get Registration Token';
+
+  @override
+  String get adminNoHooks => 'No system hooks configured';
+
+  @override
+  String get adminNoCron => 'No cron tasks';
+
+  @override
+  String get adminNoRunners => 'No action runners';
+
+  @override
+  String get adminNoEmails => 'No emails';
+
+  @override
+  String get adminNoBadges => 'No badges';
+
+  @override
+  String get adminBadgeUsername => 'Username';
+
+  @override
+  String get adminBadgeDescription => 'Description';
 }

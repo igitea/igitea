@@ -3946,6 +3946,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No subscribers yet'**
   String get noSubscribers;
+
+  /// No description provided for @adminHooksTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'System Hooks'**
+  String get adminHooksTitle;
+
+  /// No description provided for @adminCronTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cron Tasks'**
+  String get adminCronTitle;
+
+  /// No description provided for @adminRunnersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Actions Runners'**
+  String get adminRunnersTitle;
+
+  /// No description provided for @adminEmailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Emails'**
+  String get adminEmailsTitle;
+
+  /// No description provided for @adminBadgesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Badges'**
+  String get adminBadgesTitle;
+
+  /// No description provided for @adminRunCron.
+  ///
+  /// In en, this message translates to:
+  /// **'Run Now'**
+  String get adminRunCron;
+
+  /// No description provided for @adminGetToken.
+  ///
+  /// In en, this message translates to:
+  /// **'Get Registration Token'**
+  String get adminGetToken;
+
+  /// No description provided for @adminNoHooks.
+  ///
+  /// In en, this message translates to:
+  /// **'No system hooks configured'**
+  String get adminNoHooks;
+
+  /// No description provided for @adminNoCron.
+  ///
+  /// In en, this message translates to:
+  /// **'No cron tasks'**
+  String get adminNoCron;
+
+  /// No description provided for @adminNoRunners.
+  ///
+  /// In en, this message translates to:
+  /// **'No action runners'**
+  String get adminNoRunners;
+
+  /// No description provided for @adminNoEmails.
+  ///
+  /// In en, this message translates to:
+  /// **'No emails'**
+  String get adminNoEmails;
+
+  /// No description provided for @adminNoBadges.
+  ///
+  /// In en, this message translates to:
+  /// **'No badges'**
+  String get adminNoBadges;
+
+  /// No description provided for @adminBadgeUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'Username'**
+  String get adminBadgeUsername;
+
+  /// No description provided for @adminBadgeDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get adminBadgeDescription;
 }
 
 class _AppLocalizationsDelegate

@@ -99,4 +99,39 @@ class AdminRepositoryImpl implements AdminRepository {
   Future<Either<Failure, void>> deleteAdminHook(int id) async {
     return execute(() => _apiService.adminDeleteHook(id: id));
   }
+
+  @override
+  Future<Either<Failure, List<ActionRunner>>> listAdminRunners({int? page, int? limit}) async {
+    return execute(() => _apiService.adminGetRunners(page: page, limit: limit));
+  }
+
+  @override
+  Future<Either<Failure, ActionRunner>> getAdminRunner(int runnerId) async {
+    return execute(() => _apiService.adminGetRunner(runnerId: runnerId));
+  }
+
+  @override
+  Future<Either<Failure, String>> getAdminRunnerRegistrationToken() async {
+    return execute(() => _apiService.adminGetRunnerRegistrationToken());
+  }
+
+  @override
+  Future<Either<Failure, List<Badge>>> listUserBadges(String username) async {
+    return execute(() => _apiService.adminListUserBadges(username: username));
+  }
+
+  @override
+  Future<Either<Failure, Badge>> createUserBadge(String username, Map<String, dynamic> body) async {
+    return execute(() => _apiService.adminCreateUserBadge(username: username, body: body));
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteUserBadge(String username, int badgeId) async {
+    return execute(() => _apiService.adminDeleteUserBadge(username: username, badgeId: badgeId));
+  }
+
+  @override
+  Future<Either<Failure, List<Email>>> listAdminEmails({int? page, int? limit}) async {
+    return execute(() => _apiService.adminListEmails(page: page, limit: limit));
+  }
 }

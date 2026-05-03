@@ -1986,6 +1986,48 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get noSubscribers => '暂无订阅者';
+
+  @override
+  String get adminHooksTitle => '系统 Hooks';
+
+  @override
+  String get adminCronTitle => '定时任务';
+
+  @override
+  String get adminRunnersTitle => 'Actions Runners';
+
+  @override
+  String get adminEmailsTitle => '邮件记录';
+
+  @override
+  String get adminBadgesTitle => '徽章管理';
+
+  @override
+  String get adminRunCron => '立即执行';
+
+  @override
+  String get adminGetToken => '获取注册 Token';
+
+  @override
+  String get adminNoHooks => '未配置系统 Hooks';
+
+  @override
+  String get adminNoCron => '无定时任务';
+
+  @override
+  String get adminNoRunners => '无 Action Runners';
+
+  @override
+  String get adminNoEmails => '无邮件记录';
+
+  @override
+  String get adminNoBadges => '无徽章';
+
+  @override
+  String get adminBadgeUsername => '用户名';
+
+  @override
+  String get adminBadgeDescription => '描述';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).

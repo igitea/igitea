@@ -3,6 +3,13 @@
 ## [Unreleased]
 
 ### Added
+- Admin Panel: system-level management dashboard
+  - System Hooks: list, view, and delete admin webhooks
+  - Cron Tasks: list scheduled tasks and trigger manual execution
+  - Action Runners: list self-hosted runners and get registration token
+  - Email Logs: browse admin email records
+  - User Badges: manage user badges (list, create, delete)
+  - Accessible from Settings → Admin Panel (admin users only)
 - Widget tests for 17 pages (35 test cases total, all passing)
   - `DashboardPage`, `EmailsPage`, `FollowPage`, `GpgKeysPage`, `IssueListPage`, `NotificationPage`, `OrganizationDetailPage`, `ProfilePage`, `RepoListPage`, `RepoStargazersPage`, `SearchPage`, `SettingsPage`, `StarredReposPage`, `TagProtectionsPage`, `UserProfilePage`, `UserReposPage`
   - All wrapped with `buildTestableWidget()` for l10n support
