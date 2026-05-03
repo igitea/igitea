@@ -90,7 +90,7 @@ def from_json_expr(prop_name: str, prop: dict) -> str:
         items = prop.get("items", {})
         if "$ref" in items:
             class_name = items["$ref"].split("/")[-1]
-            if class_name in ("StateType", "ReviewStateType"):
+            if class_name in ("StateType", "ReviewStateType", "NotifySubjectType"):
                 return (
                     f"(json['{prop_name}'] as List<dynamic>)"
                     f".map((e) => {class_name}.fromJson(e))"
