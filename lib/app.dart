@@ -8,6 +8,12 @@ import 'presentation/pages/home_page.dart';
 import 'presentation/pages/issue_detail_page.dart';
 import 'presentation/pages/pr_detail_page.dart';
 import 'presentation/pages/repo_detail_page.dart';
+import 'presentation/pages/organization_detail_page.dart';
+import 'presentation/pages/search_page.dart';
+import 'presentation/pages/notification_page.dart';
+import 'presentation/pages/user_profile_page.dart';
+import 'presentation/pages/settings_page.dart';
+import 'presentation/pages/starred_repos_page.dart';
 
 class IGiteaApp extends StatefulWidget {
   const IGiteaApp({super.key});
@@ -97,6 +103,22 @@ class _IGiteaAppState extends State<IGiteaApp> {
     if (uri == null) return null;
 
     final path = uri.path;
+
+    // Static routes
+    if (path == '/explore') {
+      return MaterialPageRoute(builder: (_) => const SearchPage());
+    }
+    if (path == '/notifications') {
+      return MaterialPageRoute(builder: (_) => const NotificationPage());
+    }
+    if (path == '/settings') {
+      return MaterialPageRoute(builder: (_) => const SettingsPage());
+    }
+    if (path == '/stars') {
+      return MaterialPageRoute(builder: (_) => const StarredReposPage());
+    }
+
+    // Parameterized routes
     final match = _parsePath(path);
     if (match == null) return null;
 
@@ -104,19 +126,40 @@ class _IGiteaAppState extends State<IGiteaApp> {
     final owner = match['owner'];
     final repo = match['repo'];
     final index = int.tryParse(match['index'] ?? '');
+    final orgName = match['orgName'];
+    final username = match['username'];
 
-    if (type == 'issue' && index != null && owner != null && repo != null) {
-      return MaterialPageRoute(
-        builder: (_) => IssueDetailPage(owner: owner, repo: repo, index: index),
-      );
-    } else if (type == 'pull' && index != null && owner != null && repo != null) {
-      return MaterialPageRoute(
-        builder: (_) => PRDetailPage(owner: owner, repo: repo, index: index),
-      );
-    } else if (type == 'repo' && owner != null && repo != null) {
-      return MaterialPageRoute(
-        builder: (_) => RepoDetailPage(owner: owner, repo: repo),
-      );
+    switch (type) {
+      case 'issue':
+        if (index != null && owner != null && repo != null) {
+          return MaterialPageRoute(
+            builder: (_) => IssueDetailPage(owner: owner, repo: repo, index: index),
+          );
+        }
+      case 'pull':
+        if (index != null && owner != null && repo != null) {
+          return MaterialPageRoute(
+            builder: (_) => PRDetailPage(owner: owner, repo: repo, index: index),
+          );
+        }
+      case 'repo':
+        if (owner != null && repo != null) {
+          return MaterialPageRoute(
+            builder: (_) => RepoDetailPage(owner: owner, repo: repo),
+          );
+        }
+      case 'org':
+        if (orgName != null) {
+          return MaterialPageRoute(
+            builder: (_) => OrganizationDetailPage(orgName: orgName),
+          );
+        }
+      case 'user':
+        if (username != null) {
+          return MaterialPageRoute(
+            builder: (_) => UserProfilePage(username: username),
+          );
+        }
     }
 
     return null;
@@ -126,6 +169,8 @@ class _IGiteaAppState extends State<IGiteaApp> {
     final issuePattern = RegExp(r'^/([^/]+)/([^/]+)/issues/(\d+)$');
     final prPattern = RegExp(r'^/([^/]+)/([^/]+)/pulls/(\d+)$');
     final repoPattern = RegExp(r'^/([^/]+)/([^/]+)$');
+    final orgPattern = RegExp(r'^/org/([^/]+)$');
+    final userPattern = RegExp(r'^/user/([^/]+)$');
 
     if (issuePattern.hasMatch(path)) {
       final match = issuePattern.firstMatch(path)!;
@@ -144,6 +189,22 @@ class _IGiteaAppState extends State<IGiteaApp> {
         'owner': match.group(1)!,
         'repo': match.group(2)!,
         'index': match.group(3)!,
+      };
+    }
+
+    if (orgPattern.hasMatch(path)) {
+      final match = orgPattern.firstMatch(path)!;
+      return {
+        'type': 'org',
+        'orgName': match.group(1)!,
+      };
+    }
+
+    if (userPattern.hasMatch(path)) {
+      final match = userPattern.firstMatch(path)!;
+      return {
+        'type': 'user',
+        'username': match.group(1)!,
       };
     }
 

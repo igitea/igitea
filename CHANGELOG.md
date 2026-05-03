@@ -3,6 +3,9 @@
 ## [Unreleased]
 
 ### Added
+- Widget tests for 17 pages (35 test cases total, all passing)
+  - `DashboardPage`, `EmailsPage`, `FollowPage`, `GpgKeysPage`, `IssueListPage`, `NotificationPage`, `OrganizationDetailPage`, `ProfilePage`, `RepoListPage`, `RepoStargazersPage`, `SearchPage`, `SettingsPage`, `StarredReposPage`, `TagProtectionsPage`, `UserProfilePage`, `UserReposPage`
+  - All wrapped with `buildTestableWidget()` for l10n support
 - Search page user search tab (`_UserSearchResults` / `_SearchUserCard`)
   - Third tab in `SearchPage` alongside Repositories and Issues
   - Calls `GET /users/search` via new `SearchPublicUsersUseCase`

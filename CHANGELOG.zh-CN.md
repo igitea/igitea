@@ -3,6 +3,9 @@
 ## [Unreleased]
 
 ### Added
+- 为 17 个页面新增 Widget 测试（共 35 个测试用例，全部通过）
+  - `DashboardPage`、`EmailsPage`、`FollowPage`、`GpgKeysPage`、`IssueListPage`、`NotificationPage`、`OrganizationDetailPage`、`ProfilePage`、`RepoListPage`、`RepoStargazersPage`、`SearchPage`、`SettingsPage`、`StarredReposPage`、`TagProtectionsPage`、`UserProfilePage`、`UserReposPage`
+  - 全部使用 `buildTestableWidget()` 包装，支持国际化
 - Search 页面新增用户搜索标签页（`_UserSearchResults` / `_SearchUserCard`）
   - `SearchPage` 第三个标签页，与仓库、问题并列
   - 通过 `GET /users/search` 调用，新增 `SearchPublicUsersUseCase`

@@ -19,7 +19,7 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 - Consistent 4px spacing grid and typography hierarchy across all pages
 - 120+ data models auto-generated from OpenAPI spec
 - 49+ domain use cases with `Either<Failure, T>` pattern
-- 247 tests passing, `flutter analyze` clean
+- 264 tests passing, `flutter analyze` clean
 
 ### Authentication
 - Username/password login (primary)
