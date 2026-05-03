@@ -109,10 +109,14 @@ class GiteaApiService {
   }
 
   Future<bool> userCheckFollow({required String username}) async {
-    final response = await _client.get(
-      '/user/following/${Uri.encodeComponent(username)}',
-    );
-    return response.statusCode == 204;
+    try {
+      final response = await _client.get(
+        '/user/following/${Uri.encodeComponent(username)}',
+      );
+      return response.statusCode == 204;
+    } catch (_) {
+      return false;
+    }
   }
 
   Future<void> userFollow({required String username}) async {

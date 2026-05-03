@@ -41,16 +41,16 @@ class _UserProfilePageState extends State<UserProfilePage> {
   Future<void> _load() async {
     setState(() => _loading = true);
     try {
-      final results = await Future.wait([
-        Injection.apiService.userGet(username: widget.username),
-        Injection.apiService.orgListUserOrgs(username: widget.username),
-        Injection.apiService.userListRepos(username: widget.username),
-        Injection.apiService.userCheckFollow(username: widget.username),
-      ]);
-      _user = results[0] as User;
-      _orgs = results[1] as List<Organization>;
-      _repos = results[2] as List<Repository>;
-      _isFollowing = results[3] as bool;
+      _user = await Injection.apiService.userGet(username: widget.username);
+    } catch (_) {}
+    try {
+      _orgs = await Injection.apiService.orgListUserOrgs(username: widget.username);
+    } catch (_) {}
+    try {
+      _repos = await Injection.apiService.userListRepos(username: widget.username);
+    } catch (_) {}
+    try {
+      _isFollowing = await Injection.apiService.userCheckFollow(username: widget.username);
     } catch (_) {}
     if (mounted) setState(() => _loading = false);
   }
