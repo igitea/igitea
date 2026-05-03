@@ -252,4 +252,53 @@ abstract class RepoRepository {
     String repo,
     String pageName,
   );
+
+  /// List repository actions secrets.
+  Future<Either<Failure, List<Secret>>> listRepoActionsSecrets(
+    String owner,
+    String repo,
+  );
+
+  /// Create or update a repository actions secret.
+  Future<Either<Failure, void>> createOrUpdateRepoActionsSecret(
+    String owner,
+    String repo,
+    String secretName,
+    Map<String, dynamic> body,
+  );
+
+  /// Delete a repository actions secret.
+  Future<Either<Failure, void>> deleteRepoActionsSecret(
+    String owner,
+    String repo,
+    String secretName,
+  );
+
+  /// List repository actions variables.
+  Future<Either<Failure, List<ActionVariable>>> listRepoActionsVariables(
+    String owner,
+    String repo,
+  );
+
+  /// Get a repository actions variable.
+  Future<Either<Failure, ActionVariable>> getRepoActionsVariable(
+    String owner,
+    String repo,
+    String variableName,
+  );
+
+  /// Create or update a repository actions variable.
+  Future<Either<Failure, void>> createOrUpdateRepoActionsVariable(
+    String owner,
+    String repo,
+    String variableName,
+    Map<String, dynamic> body,
+  );
+
+  /// Delete a repository actions variable.
+  Future<Either<Failure, void>> deleteRepoActionsVariable(
+    String owner,
+    String repo,
+    String variableName,
+  );
 }

@@ -112,7 +112,7 @@ class PullRequest {
       requested_reviewers: json['requested_reviewers'] != null ? (json['requested_reviewers'] as List<dynamic>).map((e) => User.fromJson(e as Map<String, dynamic>)).toList() : null,
       requested_reviewers_teams: json['requested_reviewers_teams'] != null ? (json['requested_reviewers_teams'] as List<dynamic>).map((e) => Team.fromJson(e as Map<String, dynamic>)).toList() : null,
       review_comments: json['review_comments'] != null ? (json['review_comments'] as num).toInt() : null,
-      state: json['state'] != null ? StateType.fromJson(json['state'] as Map<String, dynamic>) : null,
+      state: json['state'] != null ? StateType.fromJson(json['state']) : null,
       title: json['title'] != null ? json['title'] as String : null,
       updated_at: json['updated_at'] != null ? DateTime.parse(json['updated_at'] as String) : null,
       url: json['url'] != null ? json['url'] as String : null,

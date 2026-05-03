@@ -2070,4 +2070,43 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get confirmDelete => 'Confirm Delete';
+
+  @override
+  String get actionsSecretsTitle => 'Actions Secrets';
+
+  @override
+  String get actionsVariablesTitle => 'Actions Variables';
+
+  @override
+  String get actionsNoSecrets => 'No secrets configured';
+
+  @override
+  String get actionsNoVariables => 'No variables configured';
+
+  @override
+  String get actionsCreateSecret => 'Create Secret';
+
+  @override
+  String get actionsCreateVariable => 'Create Variable';
+
+  @override
+  String get actionsSecretName => 'Secret Name';
+
+  @override
+  String get actionsSecretValue => 'Secret Value';
+
+  @override
+  String get actionsVariableName => 'Variable Name';
+
+  @override
+  String get actionsVariableValue => 'Variable Value';
+
+  @override
+  String get actionsDeleteSecretConfirm => 'Delete this secret?';
+
+  @override
+  String get actionsDeleteVariableConfirm => 'Delete this variable?';
+
+  @override
+  String get deleted => 'Deleted';
 }

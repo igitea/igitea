@@ -2238,4 +2238,79 @@ class GiteaApiService {
   Future<void> userDeleteOAuth2App(int id) async {
     await _client.delete('/user/applications/oauth2/$id');
   }
+
+  // Organization Actions Secrets
+
+  Future<List<Secret>> orgListActionsSecrets(String org) async {
+    final response = await _client.get('/orgs/$org/actions/secrets');
+    final json = jsonDecode(response.body) as List<dynamic>;
+    return json.map((e) => Secret.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<void> orgCreateOrUpdateActionsSecret(String org, String secretName, Map<String, dynamic> body) async {
+    await _client.put('/orgs/$org/actions/secrets/$secretName', body: body);
+  }
+
+  Future<void> orgDeleteActionsSecret(String org, String secretName) async {
+    await _client.delete('/orgs/$org/actions/secrets/$secretName');
+  }
+
+  // Organization Actions Variables
+
+  Future<List<ActionVariable>> orgListActionsVariables(String org) async {
+    final response = await _client.get('/orgs/$org/actions/variables');
+    final json = jsonDecode(response.body) as List<dynamic>;
+    return json.map((e) => ActionVariable.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<ActionVariable> orgGetActionsVariable(String org, String variableName) async {
+    final response = await _client.get('/orgs/$org/actions/variables/$variableName');
+    return ActionVariable.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+  }
+
+  Future<void> orgCreateOrUpdateActionsVariable(String org, String variableName, Map<String, dynamic> body) async {
+    await _client.put('/orgs/$org/actions/variables/$variableName', body: body);
+  }
+
+  Future<void> orgDeleteActionsVariable(String org, String variableName) async {
+    await _client.delete('/orgs/$org/actions/variables/$variableName');
+  }
+
+  // Repository Actions Secrets
+
+  Future<List<Secret>> repoListActionsSecrets(String owner, String repo) async {
+    final response = await _client.get('/repos/$owner/$repo/actions/secrets');
+    final json = jsonDecode(response.body) as List<dynamic>;
+    return json.map((e) => Secret.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<void> repoCreateOrUpdateActionsSecret(String owner, String repo, String secretName, Map<String, dynamic> body) async {
+    await _client.put('/repos/$owner/$repo/actions/secrets/$secretName', body: body);
+  }
+
+  Future<void> repoDeleteActionsSecret(String owner, String repo, String secretName) async {
+    await _client.delete('/repos/$owner/$repo/actions/secrets/$secretName');
+  }
+
+  // Repository Actions Variables
+
+  Future<List<ActionVariable>> repoListActionsVariables(String owner, String repo) async {
+    final response = await _client.get('/repos/$owner/$repo/actions/variables');
+    final json = jsonDecode(response.body) as List<dynamic>;
+    return json.map((e) => ActionVariable.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<ActionVariable> repoGetActionsVariable(String owner, String repo, String variableName) async {
+    final response = await _client.get('/repos/$owner/$repo/actions/variables/$variableName');
+    return ActionVariable.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+  }
+
+  Future<void> repoCreateOrUpdateActionsVariable(String owner, String repo, String variableName, Map<String, dynamic> body) async {
+    await _client.put('/repos/$owner/$repo/actions/variables/$variableName', body: body);
+  }
+
+  Future<void> repoDeleteActionsVariable(String owner, String repo, String variableName) async {
+    await _client.delete('/repos/$owner/$repo/actions/variables/$variableName');
+  }
+
 }

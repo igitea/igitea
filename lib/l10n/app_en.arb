@@ -662,5 +662,18 @@
   "oauthRedirectUri": "Redirect URI",
   "oauthDeleteAppConfirm": "Delete OAuth application",
   "name": "Name",
-  "confirmDelete": "Confirm Delete"
+  "confirmDelete": "Confirm Delete",
+  "actionsSecretsTitle": "Actions Secrets",
+  "actionsVariablesTitle": "Actions Variables",
+  "actionsNoSecrets": "No secrets configured",
+  "actionsNoVariables": "No variables configured",
+  "actionsCreateSecret": "Create Secret",
+  "actionsCreateVariable": "Create Variable",
+  "actionsSecretName": "Secret Name",
+  "actionsSecretValue": "Secret Value",
+  "actionsVariableName": "Variable Name",
+  "actionsVariableValue": "Variable Value",
+  "actionsDeleteSecretConfirm": "Delete this secret?",
+  "actionsDeleteVariableConfirm": "Delete this variable?",
+  "deleted": "Deleted"
 }

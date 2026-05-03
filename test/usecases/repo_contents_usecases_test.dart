@@ -286,6 +286,21 @@ class MockRepoRepository implements RepoRepository {
     String pageName,
   ) =>
       throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, List<Secret>>> listRepoActionsSecrets(String owner, String repo) async => const Right([]);
+  @override
+  Future<Either<Failure, void>> createOrUpdateRepoActionsSecret(String owner, String repo, String secretName, Map<String, dynamic> body) async => const Right(null);
+  @override
+  Future<Either<Failure, void>> deleteRepoActionsSecret(String owner, String repo, String secretName) async => const Right(null);
+  @override
+  Future<Either<Failure, List<ActionVariable>>> listRepoActionsVariables(String owner, String repo) async => const Right([]);
+  @override
+  Future<Either<Failure, ActionVariable>> getRepoActionsVariable(String owner, String repo, String variableName) async => Right(ActionVariable());
+  @override
+  Future<Either<Failure, void>> createOrUpdateRepoActionsVariable(String owner, String repo, String variableName, Map<String, dynamic> body) async => const Right(null);
+  @override
+  Future<Either<Failure, void>> deleteRepoActionsVariable(String owner, String repo, String variableName) async => const Right(null);
 }
 
 void main() {

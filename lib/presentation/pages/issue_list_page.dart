@@ -28,7 +28,7 @@ class _IssueListPageState extends State<IssueListPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final notifier = Injection.issueNotifier;
       if (notifier.issuesListState is! IssuesListLoaded) {
-        notifier.searchIssues('', state: notifier.issuesListFilter);
+        notifier.searchIssues('', state: notifier.issuesListFilter ?? 'open');
       }
     });
   }
@@ -43,7 +43,7 @@ class _IssueListPageState extends State<IssueListPage> {
     final notifier = Injection.issueNotifier;
     notifier.searchIssues(
       _searchQuery,
-      state: notifier.issuesListFilter,
+      state: notifier.issuesListFilter ?? 'open',
     );
   }
 
@@ -87,7 +87,7 @@ class _IssueListPageState extends State<IssueListPage> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: UIConstants.md, vertical: UIConstants.sm),
               child: _FilterChips(
-                selectedState: Injection.issueNotifier.issuesListFilter,
+                selectedState: Injection.issueNotifier.issuesListFilter ?? 'open',
                 onSelected: (state) {
                   setState(() {});
                   Injection.issueNotifier.searchIssues(
@@ -121,7 +121,14 @@ class _IssueListPageState extends State<IssueListPage> {
                       ],
                     ),
                   ),
-                  IssuesListLoaded(:final issues) => _IssueList(issues: issues, onRefresh: _forceReload, l10n: l10n),
+                  IssuesListLoaded(:final issues, :final hasMore) => _IssueList(
+                    issues: issues,
+                    hasMore: hasMore,
+                    loadingMore: Injection.issueNotifier.loadingMore,
+                    onRefresh: _forceReload,
+                    onLoadMore: () => Injection.issueNotifier.loadMoreIssues(),
+                    l10n: l10n,
+                  ),
                   _ => const Center(
                     child: CircularProgressIndicator(),
                   ),
@@ -148,11 +155,6 @@ class _FilterChips extends StatelessWidget {
       spacing: UIConstants.sm,
       children: [
         FilterChip(
-          label: Text(l10n.all),
-          selected: selectedState == null,
-          onSelected: (_) => onSelected(null),
-        ),
-        FilterChip(
           label: Text(l10n.open),
           selected: selectedState == 'open',
           onSelected: (_) => onSelected('open'),
@@ -162,35 +164,100 @@ class _FilterChips extends StatelessWidget {
           selected: selectedState == 'closed',
           onSelected: (_) => onSelected('closed'),
         ),
+        FilterChip(
+          label: Text(l10n.all),
+          selected: selectedState == 'all',
+          onSelected: (_) => onSelected('all'),
+        ),
       ],
     );
   }
 }
 
-class _IssueList extends StatelessWidget {
+class _IssueList extends StatefulWidget {
   final List<Issue> issues;
+  final bool hasMore;
+  final bool loadingMore;
   final VoidCallback onRefresh;
+  final VoidCallback onLoadMore;
   final AppLocalizations l10n;
 
-  const _IssueList({required this.issues, required this.onRefresh, required this.l10n});
+  const _IssueList({
+    required this.issues,
+    required this.hasMore,
+    required this.loadingMore,
+    required this.onRefresh,
+    required this.onLoadMore,
+    required this.l10n,
+  });
+
+  @override
+  State<_IssueList> createState() => _IssueListState();
+}
+
+class _IssueListState extends State<_IssueList> {
+  late final ScrollController _scrollController;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController = ScrollController()..addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      if (widget.hasMore && !widget.loadingMore) {
+        widget.onLoadMore();
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (issues.isEmpty) {
-      return EmptyState(icon: Icons.bug_report_outlined, title: l10n.noIssuesFound);
+    if (widget.issues.isEmpty && !widget.loadingMore) {
+      return EmptyState(icon: Icons.bug_report_outlined, title: widget.l10n.noIssuesFound);
     }
     return RefreshIndicator(
-      onRefresh: () async => onRefresh(),
+      onRefresh: () async => widget.onRefresh(),
       child: ListView.builder(
+        controller: _scrollController,
         padding: UIConstants.pagePadding + const EdgeInsets.symmetric(vertical: UIConstants.sm),
-        itemCount: issues.length,
+        itemCount: widget.issues.length + (widget.hasMore || widget.loadingMore ? 1 : 0),
         itemBuilder: (context, index) {
-          final issue = issues[index];
+          if (index >= widget.issues.length) {
+            return const _LoadingIndicator();
+          }
+          final issue = widget.issues[index];
           return FadeInWrapper(
-            delay: Duration(milliseconds: index * 40),
-            child: _IssueCard(issue: issue, l10n: l10n),
+            delay: Duration(milliseconds: (index * 40).clamp(0, 300)),
+            child: _IssueCard(issue: issue, l10n: widget.l10n),
           );
         },
+      ),
+    );
+  }
+}
+
+class _LoadingIndicator extends StatelessWidget {
+  const _LoadingIndicator();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.symmetric(vertical: 16),
+      child: Center(
+        child: SizedBox(
+          width: 24,
+          height: 24,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        ),
       ),
     );
   }

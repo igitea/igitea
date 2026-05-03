@@ -518,4 +518,67 @@ class RepoRepositoryImpl implements RepoRepository {
       ),
     );
   }
+
+  @override
+  Future<Either<Failure, List<Secret>>> listRepoActionsSecrets(
+    String owner,
+    String repo,
+  ) async {
+    return execute(() => _apiService.repoListActionsSecrets(owner, repo));
+  }
+
+  @override
+  Future<Either<Failure, void>> createOrUpdateRepoActionsSecret(
+    String owner,
+    String repo,
+    String secretName,
+    Map<String, dynamic> body,
+  ) async {
+    return execute(() => _apiService.repoCreateOrUpdateActionsSecret(owner, repo, secretName, body));
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteRepoActionsSecret(
+    String owner,
+    String repo,
+    String secretName,
+  ) async {
+    return execute(() => _apiService.repoDeleteActionsSecret(owner, repo, secretName));
+  }
+
+  @override
+  Future<Either<Failure, List<ActionVariable>>> listRepoActionsVariables(
+    String owner,
+    String repo,
+  ) async {
+    return execute(() => _apiService.repoListActionsVariables(owner, repo));
+  }
+
+  @override
+  Future<Either<Failure, ActionVariable>> getRepoActionsVariable(
+    String owner,
+    String repo,
+    String variableName,
+  ) async {
+    return execute(() => _apiService.repoGetActionsVariable(owner, repo, variableName));
+  }
+
+  @override
+  Future<Either<Failure, void>> createOrUpdateRepoActionsVariable(
+    String owner,
+    String repo,
+    String variableName,
+    Map<String, dynamic> body,
+  ) async {
+    return execute(() => _apiService.repoCreateOrUpdateActionsVariable(owner, repo, variableName, body));
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteRepoActionsVariable(
+    String owner,
+    String repo,
+    String variableName,
+  ) async {
+    return execute(() => _apiService.repoDeleteActionsVariable(owner, repo, variableName));
+  }
 }

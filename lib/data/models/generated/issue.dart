@@ -78,7 +78,7 @@ class Issue {
       pull_request: json['pull_request'] != null ? PullRequestMeta.fromJson(json['pull_request'] as Map<String, dynamic>) : null,
       ref: json['ref'] != null ? json['ref'] as String : null,
       repository: json['repository'] != null ? RepositoryMeta.fromJson(json['repository'] as Map<String, dynamic>) : null,
-      state: json['state'] != null ? StateType.fromJson(json['state'] as Map<String, dynamic>) : null,
+      state: json['state'] != null ? StateType.fromJson(json['state']) : null,
       time_estimate: json['time_estimate'] != null ? (json['time_estimate'] as num).toInt() : null,
       title: json['title'] != null ? json['title'] as String : null,
       updated_at: json['updated_at'] != null ? DateTime.parse(json['updated_at'] as String) : null,

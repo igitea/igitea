@@ -4072,6 +4072,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Confirm Delete'**
   String get confirmDelete;
+
+  /// No description provided for @actionsSecretsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Actions Secrets'**
+  String get actionsSecretsTitle;
+
+  /// No description provided for @actionsVariablesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Actions Variables'**
+  String get actionsVariablesTitle;
+
+  /// No description provided for @actionsNoSecrets.
+  ///
+  /// In en, this message translates to:
+  /// **'No secrets configured'**
+  String get actionsNoSecrets;
+
+  /// No description provided for @actionsNoVariables.
+  ///
+  /// In en, this message translates to:
+  /// **'No variables configured'**
+  String get actionsNoVariables;
+
+  /// No description provided for @actionsCreateSecret.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Secret'**
+  String get actionsCreateSecret;
+
+  /// No description provided for @actionsCreateVariable.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Variable'**
+  String get actionsCreateVariable;
+
+  /// No description provided for @actionsSecretName.
+  ///
+  /// In en, this message translates to:
+  /// **'Secret Name'**
+  String get actionsSecretName;
+
+  /// No description provided for @actionsSecretValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Secret Value'**
+  String get actionsSecretValue;
+
+  /// No description provided for @actionsVariableName.
+  ///
+  /// In en, this message translates to:
+  /// **'Variable Name'**
+  String get actionsVariableName;
+
+  /// No description provided for @actionsVariableValue.
+  ///
+  /// In en, this message translates to:
+  /// **'Variable Value'**
+  String get actionsVariableValue;
+
+  /// No description provided for @actionsDeleteSecretConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this secret?'**
+  String get actionsDeleteSecretConfirm;
+
+  /// No description provided for @actionsDeleteVariableConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this variable?'**
+  String get actionsDeleteVariableConfirm;
+
+  /// No description provided for @deleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted'**
+  String get deleted;
 }
 
 class _AppLocalizationsDelegate

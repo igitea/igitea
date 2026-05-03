@@ -2049,6 +2049,45 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get confirmDelete => '确认删除';
+
+  @override
+  String get actionsSecretsTitle => 'Actions Secrets';
+
+  @override
+  String get actionsVariablesTitle => 'Actions Variables';
+
+  @override
+  String get actionsNoSecrets => '未配置 Secrets';
+
+  @override
+  String get actionsNoVariables => '未配置 Variables';
+
+  @override
+  String get actionsCreateSecret => '创建 Secret';
+
+  @override
+  String get actionsCreateVariable => '创建 Variable';
+
+  @override
+  String get actionsSecretName => 'Secret 名称';
+
+  @override
+  String get actionsSecretValue => 'Secret 值';
+
+  @override
+  String get actionsVariableName => 'Variable 名称';
+
+  @override
+  String get actionsVariableValue => 'Variable 值';
+
+  @override
+  String get actionsDeleteSecretConfirm => '删除此 Secret？';
+
+  @override
+  String get actionsDeleteVariableConfirm => '删除此 Variable？';
+
+  @override
+  String get deleted => '已删除';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).

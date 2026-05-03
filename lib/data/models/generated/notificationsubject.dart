@@ -23,7 +23,7 @@ class NotificationSubject {
       html_url: json['html_url'] != null ? json['html_url'] as String : null,
       latest_comment_html_url: json['latest_comment_html_url'] != null ? json['latest_comment_html_url'] as String : null,
       latest_comment_url: json['latest_comment_url'] != null ? json['latest_comment_url'] as String : null,
-      state: json['state'] != null ? StateType.fromJson(json['state'] as Map<String, dynamic>) : null,
+      state: json['state'] != null ? StateType.fromJson(json['state']) : null,
       title: json['title'] != null ? json['title'] as String : null,
       type: json['type'] != null ? NotifySubjectType.fromJson(json['type'] as Map<String, dynamic>) : null,
       url: json['url'] != null ? json['url'] as String : null,

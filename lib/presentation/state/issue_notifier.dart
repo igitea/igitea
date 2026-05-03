@@ -73,7 +73,8 @@ class IssuesListLoading extends IssuesListState {
 
 class IssuesListLoaded extends IssuesListState {
   final List<Issue> issues;
-  const IssuesListLoaded(this.issues);
+  final bool hasMore;
+  const IssuesListLoaded(this.issues, {this.hasMore = true});
 }
 
 class IssuesListError extends IssuesListState {
@@ -111,6 +112,11 @@ class IssueNotifier extends ChangeNotifier {
   String? lastSearchQuery;
   String? _issuesListFilter;
   String? get issuesListFilter => _issuesListFilter;
+
+  static const _pageSize = 20;
+  int _currentPage = 1;
+  bool _loadingMore = false;
+  bool get loadingMore => _loadingMore;
 
   IssueNotifier({
     required ListIssuesUseCase listIssuesUseCase,
@@ -426,6 +432,7 @@ _listMilestonesUseCase = listMilestonesUseCase;
     String? milestones,
   }) async {
     _issuesListFilter = state;
+    _currentPage = 1;
     _issuesListState = const IssuesListLoading();
     notifyListeners();
 
@@ -436,6 +443,8 @@ _listMilestonesUseCase = listMilestonesUseCase;
         state: state,
         labels: labels,
         milestones: milestones,
+        page: _currentPage,
+        limit: _pageSize,
       ),
     );
     switch (result) {
@@ -443,8 +452,39 @@ _listMilestonesUseCase = listMilestonesUseCase;
         _issuesListState = IssuesListError(value.message);
         notifyListeners();
       case Right<Failure, List<Issue>>(:final value):
-        _issuesListState = IssuesListLoaded(value);
+        final hasMore = value.length >= _pageSize;
+        _issuesListState = IssuesListLoaded(value, hasMore: hasMore);
         notifyListeners();
     }
+  }
+
+  Future<void> loadMoreIssues() async {
+    if (_loadingMore) return;
+    final currentState = _issuesListState;
+    if (currentState is! IssuesListLoaded) return;
+    if (!currentState.hasMore) return;
+
+    _loadingMore = true;
+    notifyListeners();
+
+    _currentPage++;
+    final result = await _searchIssuesUseCase.call(
+      SearchIssuesParams(
+        q: lastSearchQuery?.isEmpty ?? true ? null : lastSearchQuery,
+        state: _issuesListFilter,
+        page: _currentPage,
+        limit: _pageSize,
+      ),
+    );
+    switch (result) {
+      case Left<Failure, List<Issue>>():
+        _currentPage--;
+      case Right<Failure, List<Issue>>(:final value):
+        final allIssues = [...currentState.issues, ...value];
+        final hasMore = value.length >= _pageSize;
+        _issuesListState = IssuesListLoaded(allIssues, hasMore: hasMore);
+    }
+    _loadingMore = false;
+    notifyListeners();
   }
 }

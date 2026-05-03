@@ -659,5 +659,18 @@
   "oauthRedirectUri": "重定向 URI",
   "oauthDeleteAppConfirm": "删除 OAuth 应用",
   "name": "名称",
-  "confirmDelete": "确认删除"
+  "confirmDelete": "确认删除",
+  "actionsSecretsTitle": "Actions Secrets",
+  "actionsVariablesTitle": "Actions Variables",
+  "actionsNoSecrets": "未配置 Secrets",
+  "actionsNoVariables": "未配置 Variables",
+  "actionsCreateSecret": "创建 Secret",
+  "actionsCreateVariable": "创建 Variable",
+  "actionsSecretName": "Secret 名称",
+  "actionsSecretValue": "Secret 值",
+  "actionsVariableName": "Variable 名称",
+  "actionsVariableValue": "Variable 值",
+  "actionsDeleteSecretConfirm": "删除此 Secret？",
+  "actionsDeleteVariableConfirm": "删除此 Variable？",
+  "deleted": "已删除"
 }

@@ -33,7 +33,7 @@ class Milestone {
       due_on: json['due_on'] != null ? DateTime.parse(json['due_on'] as String) : null,
       id: json['id'] != null ? (json['id'] as num).toInt() : null,
       open_issues: json['open_issues'] != null ? (json['open_issues'] as num).toInt() : null,
-      state: json['state'] != null ? StateType.fromJson(json['state'] as Map<String, dynamic>) : null,
+      state: json['state'] != null ? StateType.fromJson(json['state']) : null,
       title: json['title'] != null ? json['title'] as String : null,
       updated_at: json['updated_at'] != null ? DateTime.parse(json['updated_at'] as String) : null,
     );

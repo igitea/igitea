@@ -252,3 +252,77 @@ class RemoveTeamMemberParams {
 
   RemoveTeamMemberParams({required this.id, required this.username});
 }
+
+class ListOrgActionsSecretsUseCase {
+  final OrganizationRepository _repository;
+  ListOrgActionsSecretsUseCase({required OrganizationRepository repository}) : _repository = repository;
+  Future<Either<Failure, List<Secret>>> call(String org) async => _repository.listOrgActionsSecrets(org);
+}
+
+class CreateOrUpdateOrgActionsSecretUseCase {
+  final OrganizationRepository _repository;
+  CreateOrUpdateOrgActionsSecretUseCase({required OrganizationRepository repository}) : _repository = repository;
+  Future<Either<Failure, void>> call(CreateOrUpdateOrgActionsSecretParams params) async =>
+      _repository.createOrUpdateOrgActionsSecret(params.org, params.secretName, params.body);
+}
+class CreateOrUpdateOrgActionsSecretParams {
+  final String org;
+  final String secretName;
+  final Map<String, dynamic> body;
+  CreateOrUpdateOrgActionsSecretParams({required this.org, required this.secretName, required this.body});
+}
+
+class DeleteOrgActionsSecretUseCase {
+  final OrganizationRepository _repository;
+  DeleteOrgActionsSecretUseCase({required OrganizationRepository repository}) : _repository = repository;
+  Future<Either<Failure, void>> call(DeleteOrgActionsSecretParams params) async =>
+      _repository.deleteOrgActionsSecret(params.org, params.secretName);
+}
+class DeleteOrgActionsSecretParams {
+  final String org;
+  final String secretName;
+  DeleteOrgActionsSecretParams({required this.org, required this.secretName});
+}
+
+class ListOrgActionsVariablesUseCase {
+  final OrganizationRepository _repository;
+  ListOrgActionsVariablesUseCase({required OrganizationRepository repository}) : _repository = repository;
+  Future<Either<Failure, List<ActionVariable>>> call(String org) async => _repository.listOrgActionsVariables(org);
+}
+
+class GetOrgActionsVariableUseCase {
+  final OrganizationRepository _repository;
+  GetOrgActionsVariableUseCase({required OrganizationRepository repository}) : _repository = repository;
+  Future<Either<Failure, ActionVariable>> call(GetOrgActionsVariableParams params) async =>
+      _repository.getOrgActionsVariable(params.org, params.variableName);
+}
+class GetOrgActionsVariableParams {
+  final String org;
+  final String variableName;
+  GetOrgActionsVariableParams({required this.org, required this.variableName});
+}
+
+class CreateOrUpdateOrgActionsVariableUseCase {
+  final OrganizationRepository _repository;
+  CreateOrUpdateOrgActionsVariableUseCase({required OrganizationRepository repository}) : _repository = repository;
+  Future<Either<Failure, void>> call(CreateOrUpdateOrgActionsVariableParams params) async =>
+      _repository.createOrUpdateOrgActionsVariable(params.org, params.variableName, params.body);
+}
+class CreateOrUpdateOrgActionsVariableParams {
+  final String org;
+  final String variableName;
+  final Map<String, dynamic> body;
+  CreateOrUpdateOrgActionsVariableParams({required this.org, required this.variableName, required this.body});
+}
+
+class DeleteOrgActionsVariableUseCase {
+  final OrganizationRepository _repository;
+  DeleteOrgActionsVariableUseCase({required OrganizationRepository repository}) : _repository = repository;
+  Future<Either<Failure, void>> call(DeleteOrgActionsVariableParams params) async =>
+      _repository.deleteOrgActionsVariable(params.org, params.variableName);
+}
+class DeleteOrgActionsVariableParams {
+  final String org;
+  final String variableName;
+  DeleteOrgActionsVariableParams({required this.org, required this.variableName});
+}

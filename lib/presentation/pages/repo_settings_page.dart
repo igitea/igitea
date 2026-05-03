@@ -4,6 +4,8 @@ import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/repo_notifier.dart';
+import 'repo_actions_secrets_page.dart';
+import 'repo_actions_variables_page.dart';
 import 'tag_protections_page.dart';
 
 class RepoSettingsPage extends StatefulWidget {
@@ -146,6 +148,30 @@ class _RepoSettingsPageState extends State<RepoSettingsPage> {
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
                 builder: (_) => TagProtectionsPage(
+                  owner: widget.repo.owner?.login ?? '',
+                  repo: widget.repo.name ?? '',
+                ),
+              ));
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.lock),
+            title: Text(l10n.actionsSecretsTitle),
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => RepoActionsSecretsPage(
+                  owner: widget.repo.owner?.login ?? '',
+                  repo: widget.repo.name ?? '',
+                ),
+              ));
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.code),
+            title: Text(l10n.actionsVariablesTitle),
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => RepoActionsVariablesPage(
                   owner: widget.repo.owner?.login ?? '',
                   repo: widget.repo.name ?? '',
                 ),

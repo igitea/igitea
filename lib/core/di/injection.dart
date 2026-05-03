@@ -30,6 +30,8 @@ import '../../domain/usecases/user_oauth_usecases.dart';
 import '../../domain/usecases/user_usecases.dart';
 import '../../presentation/state/admin_notifier.dart';
 import '../../presentation/state/user_oauth_notifier.dart';
+import '../../presentation/state/org_actions_notifier.dart';
+import '../../presentation/state/repo_actions_notifier.dart';
 import '../../presentation/state/auth_notifier.dart';
 import '../../presentation/state/issue_notifier.dart';
 import '../../presentation/state/notification_notifier.dart';
@@ -168,6 +170,22 @@ class Injection {
   static late GetOAuth2AppUseCase getOAuth2AppUseCase;
   static late DeleteOAuth2AppUseCase deleteOAuth2AppUseCase;
 
+  static late ListOrgActionsSecretsUseCase listOrgActionsSecretsUseCase;
+  static late CreateOrUpdateOrgActionsSecretUseCase createOrUpdateOrgActionsSecretUseCase;
+  static late DeleteOrgActionsSecretUseCase deleteOrgActionsSecretUseCase;
+  static late ListOrgActionsVariablesUseCase listOrgActionsVariablesUseCase;
+  static late GetOrgActionsVariableUseCase getOrgActionsVariableUseCase;
+  static late CreateOrUpdateOrgActionsVariableUseCase createOrUpdateOrgActionsVariableUseCase;
+  static late DeleteOrgActionsVariableUseCase deleteOrgActionsVariableUseCase;
+
+  static late ListRepoActionsSecretsUseCase listRepoActionsSecretsUseCase;
+  static late CreateOrUpdateRepoActionsSecretUseCase createOrUpdateRepoActionsSecretUseCase;
+  static late DeleteRepoActionsSecretUseCase deleteRepoActionsSecretUseCase;
+  static late ListRepoActionsVariablesUseCase listRepoActionsVariablesUseCase;
+  static late GetRepoActionsVariableUseCase getRepoActionsVariableUseCase;
+  static late CreateOrUpdateRepoActionsVariableUseCase createOrUpdateRepoActionsVariableUseCase;
+  static late DeleteRepoActionsVariableUseCase deleteRepoActionsVariableUseCase;
+
   static late AuthNotifier authNotifier;
   static late UserNotifier userNotifier;
   static late RepoNotifier repoNotifier;
@@ -178,6 +196,8 @@ class Injection {
   static late ThemeNotifier themeNotifier;
   static late AdminNotifier adminNotifier;
   static late UserOAuthNotifier userOAuthNotifier;
+  static late OrgActionsNotifier orgActionsNotifier;
+  static late RepoActionsNotifier repoActionsNotifier;
 
   static bool _initialized = false;
 
@@ -438,6 +458,20 @@ class Injection {
     listUserBadgesUseCase = ListUserBadgesUseCase(repository: adminRepository);
     createUserBadgeUseCase = CreateUserBadgeUseCase(repository: adminRepository);
     deleteUserBadgeUseCase = DeleteUserBadgeUseCase(repository: adminRepository);
+    listOrgActionsSecretsUseCase = ListOrgActionsSecretsUseCase(repository: organizationRepository);
+    createOrUpdateOrgActionsSecretUseCase = CreateOrUpdateOrgActionsSecretUseCase(repository: organizationRepository);
+    deleteOrgActionsSecretUseCase = DeleteOrgActionsSecretUseCase(repository: organizationRepository);
+    listOrgActionsVariablesUseCase = ListOrgActionsVariablesUseCase(repository: organizationRepository);
+    getOrgActionsVariableUseCase = GetOrgActionsVariableUseCase(repository: organizationRepository);
+    createOrUpdateOrgActionsVariableUseCase = CreateOrUpdateOrgActionsVariableUseCase(repository: organizationRepository);
+    deleteOrgActionsVariableUseCase = DeleteOrgActionsVariableUseCase(repository: organizationRepository);
+    listRepoActionsSecretsUseCase = ListRepoActionsSecretsUseCase(repository: repoRepository);
+    createOrUpdateRepoActionsSecretUseCase = CreateOrUpdateRepoActionsSecretUseCase(repository: repoRepository);
+    deleteRepoActionsSecretUseCase = DeleteRepoActionsSecretUseCase(repository: repoRepository);
+    listRepoActionsVariablesUseCase = ListRepoActionsVariablesUseCase(repository: repoRepository);
+    getRepoActionsVariableUseCase = GetRepoActionsVariableUseCase(repository: repoRepository);
+    createOrUpdateRepoActionsVariableUseCase = CreateOrUpdateRepoActionsVariableUseCase(repository: repoRepository);
+    deleteRepoActionsVariableUseCase = DeleteRepoActionsVariableUseCase(repository: repoRepository);
   }
 
   static void initialize({
@@ -577,6 +611,24 @@ class Injection {
         getOAuth2AppUseCase: getOAuth2AppUseCase,
         deleteOAuth2AppUseCase: deleteOAuth2AppUseCase,
       );
+      orgActionsNotifier.updateUseCases(
+        listOrgActionsSecretsUseCase: listOrgActionsSecretsUseCase,
+        createOrUpdateOrgActionsSecretUseCase: createOrUpdateOrgActionsSecretUseCase,
+        deleteOrgActionsSecretUseCase: deleteOrgActionsSecretUseCase,
+        listOrgActionsVariablesUseCase: listOrgActionsVariablesUseCase,
+        getOrgActionsVariableUseCase: getOrgActionsVariableUseCase,
+        createOrUpdateOrgActionsVariableUseCase: createOrUpdateOrgActionsVariableUseCase,
+        deleteOrgActionsVariableUseCase: deleteOrgActionsVariableUseCase,
+      );
+      repoActionsNotifier.updateUseCases(
+        listRepoActionsSecretsUseCase: listRepoActionsSecretsUseCase,
+        createOrUpdateRepoActionsSecretUseCase: createOrUpdateRepoActionsSecretUseCase,
+        deleteRepoActionsSecretUseCase: deleteRepoActionsSecretUseCase,
+        listRepoActionsVariablesUseCase: listRepoActionsVariablesUseCase,
+        getRepoActionsVariableUseCase: getRepoActionsVariableUseCase,
+        createOrUpdateRepoActionsVariableUseCase: createOrUpdateRepoActionsVariableUseCase,
+        deleteRepoActionsVariableUseCase: deleteRepoActionsVariableUseCase,
+      );
     } else {
       authNotifier = AuthNotifier(
         loginUseCase: loginUseCase,
@@ -696,6 +748,24 @@ class Injection {
         createOAuth2AppUseCase: createOAuth2AppUseCase,
         getOAuth2AppUseCase: getOAuth2AppUseCase,
         deleteOAuth2AppUseCase: deleteOAuth2AppUseCase,
+      );
+      orgActionsNotifier = OrgActionsNotifier(
+        listOrgActionsSecretsUseCase: listOrgActionsSecretsUseCase,
+        createOrUpdateOrgActionsSecretUseCase: createOrUpdateOrgActionsSecretUseCase,
+        deleteOrgActionsSecretUseCase: deleteOrgActionsSecretUseCase,
+        listOrgActionsVariablesUseCase: listOrgActionsVariablesUseCase,
+        getOrgActionsVariableUseCase: getOrgActionsVariableUseCase,
+        createOrUpdateOrgActionsVariableUseCase: createOrUpdateOrgActionsVariableUseCase,
+        deleteOrgActionsVariableUseCase: deleteOrgActionsVariableUseCase,
+      );
+      repoActionsNotifier = RepoActionsNotifier(
+        listRepoActionsSecretsUseCase: listRepoActionsSecretsUseCase,
+        createOrUpdateRepoActionsSecretUseCase: createOrUpdateRepoActionsSecretUseCase,
+        deleteRepoActionsSecretUseCase: deleteRepoActionsSecretUseCase,
+        listRepoActionsVariablesUseCase: listRepoActionsVariablesUseCase,
+        getRepoActionsVariableUseCase: getRepoActionsVariableUseCase,
+        createOrUpdateRepoActionsVariableUseCase: createOrUpdateRepoActionsVariableUseCase,
+        deleteRepoActionsVariableUseCase: deleteRepoActionsVariableUseCase,
       );
       _initialized = true;
     }
@@ -836,6 +906,24 @@ class Injection {
       createOAuth2AppUseCase: createOAuth2AppUseCase,
       getOAuth2AppUseCase: getOAuth2AppUseCase,
       deleteOAuth2AppUseCase: deleteOAuth2AppUseCase,
+    );
+    orgActionsNotifier.updateUseCases(
+      listOrgActionsSecretsUseCase: listOrgActionsSecretsUseCase,
+      createOrUpdateOrgActionsSecretUseCase: createOrUpdateOrgActionsSecretUseCase,
+      deleteOrgActionsSecretUseCase: deleteOrgActionsSecretUseCase,
+      listOrgActionsVariablesUseCase: listOrgActionsVariablesUseCase,
+      getOrgActionsVariableUseCase: getOrgActionsVariableUseCase,
+      createOrUpdateOrgActionsVariableUseCase: createOrUpdateOrgActionsVariableUseCase,
+      deleteOrgActionsVariableUseCase: deleteOrgActionsVariableUseCase,
+    );
+    repoActionsNotifier.updateUseCases(
+      listRepoActionsSecretsUseCase: listRepoActionsSecretsUseCase,
+      createOrUpdateRepoActionsSecretUseCase: createOrUpdateRepoActionsSecretUseCase,
+      deleteRepoActionsSecretUseCase: deleteRepoActionsSecretUseCase,
+      listRepoActionsVariablesUseCase: listRepoActionsVariablesUseCase,
+      getRepoActionsVariableUseCase: getRepoActionsVariableUseCase,
+      createOrUpdateRepoActionsVariableUseCase: createOrUpdateRepoActionsVariableUseCase,
+      deleteRepoActionsVariableUseCase: deleteRepoActionsVariableUseCase,
     );
   }
 }

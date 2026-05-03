@@ -909,3 +909,80 @@ class RemoveCollaboratorParams {
   final String owner; final String repo; final String collaborator;
   RemoveCollaboratorParams({required this.owner, required this.repo, required this.collaborator});
 }
+
+class ListRepoActionsSecretsUseCase {
+  final RepoRepository _repository;
+  ListRepoActionsSecretsUseCase({required RepoRepository repository}) : _repository = repository;
+  Future<Either<Failure, List<Secret>>> call(ListRepoActionsSecretsParams params) async =>
+      _repository.listRepoActionsSecrets(params.owner, params.repo);
+}
+class ListRepoActionsSecretsParams {
+  final String owner; final String repo;
+  ListRepoActionsSecretsParams({required this.owner, required this.repo});
+}
+
+class CreateOrUpdateRepoActionsSecretUseCase {
+  final RepoRepository _repository;
+  CreateOrUpdateRepoActionsSecretUseCase({required RepoRepository repository}) : _repository = repository;
+  Future<Either<Failure, void>> call(CreateOrUpdateRepoActionsSecretParams params) async =>
+      _repository.createOrUpdateRepoActionsSecret(params.owner, params.repo, params.secretName, params.body);
+}
+class CreateOrUpdateRepoActionsSecretParams {
+  final String owner; final String repo; final String secretName; final Map<String, dynamic> body;
+  CreateOrUpdateRepoActionsSecretParams({required this.owner, required this.repo, required this.secretName, required this.body});
+}
+
+class DeleteRepoActionsSecretUseCase {
+  final RepoRepository _repository;
+  DeleteRepoActionsSecretUseCase({required RepoRepository repository}) : _repository = repository;
+  Future<Either<Failure, void>> call(DeleteRepoActionsSecretParams params) async =>
+      _repository.deleteRepoActionsSecret(params.owner, params.repo, params.secretName);
+}
+class DeleteRepoActionsSecretParams {
+  final String owner; final String repo; final String secretName;
+  DeleteRepoActionsSecretParams({required this.owner, required this.repo, required this.secretName});
+}
+
+class ListRepoActionsVariablesUseCase {
+  final RepoRepository _repository;
+  ListRepoActionsVariablesUseCase({required RepoRepository repository}) : _repository = repository;
+  Future<Either<Failure, List<ActionVariable>>> call(ListRepoActionsVariablesParams params) async =>
+      _repository.listRepoActionsVariables(params.owner, params.repo);
+}
+class ListRepoActionsVariablesParams {
+  final String owner; final String repo;
+  ListRepoActionsVariablesParams({required this.owner, required this.repo});
+}
+
+class GetRepoActionsVariableUseCase {
+  final RepoRepository _repository;
+  GetRepoActionsVariableUseCase({required RepoRepository repository}) : _repository = repository;
+  Future<Either<Failure, ActionVariable>> call(GetRepoActionsVariableParams params) async =>
+      _repository.getRepoActionsVariable(params.owner, params.repo, params.variableName);
+}
+class GetRepoActionsVariableParams {
+  final String owner; final String repo; final String variableName;
+  GetRepoActionsVariableParams({required this.owner, required this.repo, required this.variableName});
+}
+
+class CreateOrUpdateRepoActionsVariableUseCase {
+  final RepoRepository _repository;
+  CreateOrUpdateRepoActionsVariableUseCase({required RepoRepository repository}) : _repository = repository;
+  Future<Either<Failure, void>> call(CreateOrUpdateRepoActionsVariableParams params) async =>
+      _repository.createOrUpdateRepoActionsVariable(params.owner, params.repo, params.variableName, params.body);
+}
+class CreateOrUpdateRepoActionsVariableParams {
+  final String owner; final String repo; final String variableName; final Map<String, dynamic> body;
+  CreateOrUpdateRepoActionsVariableParams({required this.owner, required this.repo, required this.variableName, required this.body});
+}
+
+class DeleteRepoActionsVariableUseCase {
+  final RepoRepository _repository;
+  DeleteRepoActionsVariableUseCase({required RepoRepository repository}) : _repository = repository;
+  Future<Either<Failure, void>> call(DeleteRepoActionsVariableParams params) async =>
+      _repository.deleteRepoActionsVariable(params.owner, params.repo, params.variableName);
+}
+class DeleteRepoActionsVariableParams {
+  final String owner; final String repo; final String variableName;
+  DeleteRepoActionsVariableParams({required this.owner, required this.repo, required this.variableName});
+}

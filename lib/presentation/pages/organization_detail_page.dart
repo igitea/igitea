@@ -9,6 +9,8 @@ import '../widgets/empty_state.dart';
 import '../widgets/org_avatar.dart';
 import '../widgets/premium_card.dart';
 import 'edit_org_page.dart';
+import 'org_actions_secrets_page.dart';
+import 'org_actions_variables_page.dart';
 import 'org_webhook_list_page.dart';
 import 'repo_detail_page.dart';
 import 'team_detail_page.dart';
@@ -98,6 +100,20 @@ class _OrganizationDetailPageState extends State<OrganizationDetailPage>
                 tooltip: l10n.webhooks,
                 onPressed: () {
                   Navigator.push(context, MaterialPageRoute(builder: (_) => OrgWebhookListPage(org: org.name ?? '')));
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.lock),
+                tooltip: l10n.actionsSecretsTitle,
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => OrgActionsSecretsPage(org: org.name ?? '')));
+                },
+              ),
+              IconButton(
+                icon: const Icon(Icons.code),
+                tooltip: l10n.actionsVariablesTitle,
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => OrgActionsVariablesPage(org: org.name ?? '')));
                 },
               ),
             ],

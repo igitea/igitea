@@ -15,6 +15,12 @@
   - 显示客户端 ID、重定向 URI 和创建时间
   - 从设置 → OAuth 应用进入
 - 为 17 个页面新增 Widget 测试（共 35 个测试用例，全部通过）
+- 组织/仓库 Actions 密钥与变量管理
+  - 组织 Actions 密钥：通过 `GET/PUT/DELETE /orgs/{org}/actions/secrets` 列出、创建、删除
+  - 组织 Actions 变量：通过 `GET/PUT/DELETE /orgs/{org}/actions/variables` 列出、查看、创建、删除
+  - 仓库 Actions 密钥：通过 `GET/PUT/DELETE /repos/{owner}/{repo}/actions/secrets` 列出、创建、删除
+  - 仓库 Actions 变量：通过 `GET/PUT/DELETE /repos/{owner}/{repo}/actions/variables` 列出、查看、创建、删除
+  - 从组织详情页（工具栏图标）和仓库设置页进入
   - `DashboardPage`、`EmailsPage`、`FollowPage`、`GpgKeysPage`、`IssueListPage`、`NotificationPage`、`OrganizationDetailPage`、`ProfilePage`、`RepoListPage`、`RepoStargazersPage`、`SearchPage`、`SettingsPage`、`StarredReposPage`、`TagProtectionsPage`、`UserProfilePage`、`UserReposPage`
   - 全部使用 `buildTestableWidget()` 包装，支持国际化
 - Search 页面新增用户搜索标签页（`_UserSearchResults` / `_SearchUserCard`）

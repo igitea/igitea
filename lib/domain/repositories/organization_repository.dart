@@ -89,4 +89,42 @@ abstract class OrganizationRepository {
     int id,
     String username,
   );
+
+  /// List organization actions secrets.
+  Future<Either<Failure, List<Secret>>> listOrgActionsSecrets(String org);
+
+  /// Create or update an organization actions secret.
+  Future<Either<Failure, void>> createOrUpdateOrgActionsSecret(
+    String org,
+    String secretName,
+    Map<String, dynamic> body,
+  );
+
+  /// Delete an organization actions secret.
+  Future<Either<Failure, void>> deleteOrgActionsSecret(
+    String org,
+    String secretName,
+  );
+
+  /// List organization actions variables.
+  Future<Either<Failure, List<ActionVariable>>> listOrgActionsVariables(String org);
+
+  /// Get an organization actions variable.
+  Future<Either<Failure, ActionVariable>> getOrgActionsVariable(
+    String org,
+    String variableName,
+  );
+
+  /// Create or update an organization actions variable.
+  Future<Either<Failure, void>> createOrUpdateOrgActionsVariable(
+    String org,
+    String variableName,
+    Map<String, dynamic> body,
+  );
+
+  /// Delete an organization actions variable.
+  Future<Either<Failure, void>> deleteOrgActionsVariable(
+    String org,
+    String variableName,
+  );
 }

@@ -15,6 +15,12 @@
   - Shows client ID, redirect URI, and creation date
   - Accessible from Settings → OAuth Applications
 - Widget tests for 17 pages (35 test cases total, all passing)
+- Org/Repo Actions Secrets & Variables management
+  - Organization Actions Secrets: list, create, delete via `GET/PUT/DELETE /orgs/{org}/actions/secrets`
+  - Organization Actions Variables: list, view, create, delete via `GET/PUT/DELETE /orgs/{org}/actions/variables`
+  - Repository Actions Secrets: list, create, delete via `GET/PUT/DELETE /repos/{owner}/{repo}/actions/secrets`
+  - Repository Actions Variables: list, view, create, delete via `GET/PUT/DELETE /repos/{owner}/{repo}/actions/variables`
+  - Accessible from Organization detail page (toolbar icons) and Repository Settings page
   - `DashboardPage`, `EmailsPage`, `FollowPage`, `GpgKeysPage`, `IssueListPage`, `NotificationPage`, `OrganizationDetailPage`, `ProfilePage`, `RepoListPage`, `RepoStargazersPage`, `SearchPage`, `SettingsPage`, `StarredReposPage`, `TagProtectionsPage`, `UserProfilePage`, `UserReposPage`
   - All wrapped with `buildTestableWidget()` for l10n support
 - Search page user search tab (`_UserSearchResults` / `_SearchUserCard`)

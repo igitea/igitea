@@ -107,6 +107,21 @@ class MockOrganizationRepository implements OrganizationRepository {
     int id,
     String username,
   ) => throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, List<Secret>>> listOrgActionsSecrets(String org) async => const Right([]);
+  @override
+  Future<Either<Failure, void>> createOrUpdateOrgActionsSecret(String org, String secretName, Map<String, dynamic> body) async => const Right(null);
+  @override
+  Future<Either<Failure, void>> deleteOrgActionsSecret(String org, String secretName) async => const Right(null);
+  @override
+  Future<Either<Failure, List<ActionVariable>>> listOrgActionsVariables(String org) async => const Right([]);
+  @override
+  Future<Either<Failure, ActionVariable>> getOrgActionsVariable(String org, String variableName) async => Right(ActionVariable());
+  @override
+  Future<Either<Failure, void>> createOrUpdateOrgActionsVariable(String org, String variableName, Map<String, dynamic> body) async => const Right(null);
+  @override
+  Future<Either<Failure, void>> deleteOrgActionsVariable(String org, String variableName) async => const Right(null);
 }
 
 void main() {

@@ -43,7 +43,7 @@ class PullReview {
       official: json['official'] != null ? json['official'] as bool : null,
       pull_request_url: json['pull_request_url'] != null ? json['pull_request_url'] as String : null,
       stale: json['stale'] != null ? json['stale'] as bool : null,
-      state: json['state'] != null ? ReviewStateType.fromJson(json['state'] as Map<String, dynamic>) : null,
+      state: json['state'] != null ? ReviewStateType.fromJson(json['state']) : null,
       submitted_at: json['submitted_at'] != null ? DateTime.parse(json['submitted_at'] as String) : null,
       team: json['team'] != null ? Team.fromJson(json['team'] as Map<String, dynamic>) : null,
       updated_at: json['updated_at'] != null ? DateTime.parse(json['updated_at'] as String) : null,

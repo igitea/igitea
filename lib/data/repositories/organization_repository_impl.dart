@@ -150,4 +150,56 @@ class OrganizationRepositoryImpl implements OrganizationRepository {
   ) async {
     return execute(() => _apiService.orgRemoveTeamMember(id: id, username: username));
   }
+
+  @override
+  Future<Either<Failure, List<Secret>>> listOrgActionsSecrets(String org) async {
+    return execute(() => _apiService.orgListActionsSecrets(org));
+  }
+
+  @override
+  Future<Either<Failure, void>> createOrUpdateOrgActionsSecret(
+    String org,
+    String secretName,
+    Map<String, dynamic> body,
+  ) async {
+    return execute(() => _apiService.orgCreateOrUpdateActionsSecret(org, secretName, body));
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteOrgActionsSecret(
+    String org,
+    String secretName,
+  ) async {
+    return execute(() => _apiService.orgDeleteActionsSecret(org, secretName));
+  }
+
+  @override
+  Future<Either<Failure, List<ActionVariable>>> listOrgActionsVariables(String org) async {
+    return execute(() => _apiService.orgListActionsVariables(org));
+  }
+
+  @override
+  Future<Either<Failure, ActionVariable>> getOrgActionsVariable(
+    String org,
+    String variableName,
+  ) async {
+    return execute(() => _apiService.orgGetActionsVariable(org, variableName));
+  }
+
+  @override
+  Future<Either<Failure, void>> createOrUpdateOrgActionsVariable(
+    String org,
+    String variableName,
+    Map<String, dynamic> body,
+  ) async {
+    return execute(() => _apiService.orgCreateOrUpdateActionsVariable(org, variableName, body));
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteOrgActionsVariable(
+    String org,
+    String variableName,
+  ) async {
+    return execute(() => _apiService.orgDeleteActionsVariable(org, variableName));
+  }
 }
