@@ -57,6 +57,23 @@ class GiteaApiService {
     return User.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
   }
 
+  Future<List<User>> userSearch({
+    String? q,
+    int? uid,
+    int? page,
+    int? limit,
+  }) async {
+    final query = <String, String>{};
+    if (q != null) query['q'] = q;
+    if (uid != null) query['uid'] = uid.toString();
+    if (page != null) query['page'] = page.toString();
+    if (limit != null) query['limit'] = limit.toString();
+    final response = await _client.get('/users/search', queryParameters: query);
+    final json = jsonDecode(response.body) as Map<String, dynamic>;
+    final data = json['data'] as List<dynamic>?;
+    return data?.map((e) => User.fromJson(e as Map<String, dynamic>)).toList() ?? [];
+  }
+
   Future<List<Repository>> userListRepos({
     required String username,
     int? page,
@@ -89,6 +106,25 @@ class GiteaApiService {
     );
     final list = jsonDecode(response.body) as List<dynamic>;
     return list.map((e) => User.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<bool> userCheckFollow({required String username}) async {
+    final response = await _client.get(
+      '/user/following/${Uri.encodeComponent(username)}',
+    );
+    return response.statusCode == 204;
+  }
+
+  Future<void> userFollow({required String username}) async {
+    await _client.put(
+      '/user/following/${Uri.encodeComponent(username)}',
+    );
+  }
+
+  Future<void> userUnfollow({required String username}) async {
+    await _client.delete(
+      '/user/following/${Uri.encodeComponent(username)}',
+    );
   }
 
   Future<List<User>> userListFollowing({
@@ -192,6 +228,21 @@ class GiteaApiService {
 
   Future<void> userCurrentDeleteKey({required int id}) async {
     await _client.delete('/user/keys/${id.toString()}');
+  }
+
+  Future<List<GPGKey>> userCurrentListGPGKeys() async {
+    final response = await _client.get('/user/gpg_keys');
+    final list = jsonDecode(response.body) as List<dynamic>;
+    return list.map((e) => GPGKey.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<GPGKey> userCurrentPostGPGKey({required String armoredPublicKey}) async {
+    final response = await _client.post('/user/gpg_keys', body: {'armored_public_key': armoredPublicKey});
+    return GPGKey.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+  }
+
+  Future<void> userCurrentDeleteGPGKey({required int id}) async {
+    await _client.delete('/user/gpg_keys/${id.toString()}');
   }
 
   // Repository
@@ -1665,9 +1716,10 @@ class GiteaApiService {
     required String owner,
     required String repo,
     required int index,
+    required String user,
   }) async {
     await _client.put(
-      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues/${index.toString()}/subscriptions',
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues/${index.toString()}/subscriptions/${Uri.encodeComponent(user)}',
     );
   }
 
@@ -1685,6 +1737,59 @@ class GiteaApiService {
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
 
+  Future<List<TimelineComment>> issueGetTimeline({
+    required String owner,
+    required String repo,
+    required int index,
+    int? page,
+    int? limit,
+  }) async {
+    final query = <String, String>{};
+    if (page != null) query['page'] = page.toString();
+    if (limit != null) query['limit'] = limit.toString();
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues/${index.toString()}/timeline',
+      queryParameters: query.isEmpty ? null : query,
+    );
+    final list = jsonDecode(response.body) as List<dynamic>;
+    return list.map((e) => TimelineComment.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<List<Issue>> issueListDependencies({
+    required String owner,
+    required String repo,
+    required int index,
+  }) async {
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues/${index.toString()}/dependencies',
+    );
+    final list = jsonDecode(response.body) as List<dynamic>;
+    return list.map((e) => Issue.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<void> issueCreateDependency({
+    required String owner,
+    required String repo,
+    required int index,
+    required int dependencyIndex,
+  }) async {
+    await _client.post(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues/${index.toString()}/dependencies',
+      body: {'index': dependencyIndex.toString()},
+    );
+  }
+
+  Future<void> issueRemoveDependency({
+    required String owner,
+    required String repo,
+    required int index,
+    required int dependencyIndex,
+  }) async {
+    await _client.delete(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues/${index.toString()}/dependencies?index=${dependencyIndex.toString()}',
+    );
+  }
+
   /// List repository topics
   Future<List<String>> repoListTopics({
     required String owner,
@@ -1695,6 +1800,51 @@ class GiteaApiService {
     );
     final data = jsonDecode(response.body) as Map<String, dynamic>;
     return (data['topics'] as List<dynamic>?)?.cast<String>() ?? [];
+  }
+
+  Future<Map<String, int>> repoGetLanguages({
+    required String owner,
+    required String repo,
+  }) async {
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/languages',
+    );
+    final data = jsonDecode(response.body) as Map<String, dynamic>;
+    return data.map((k, v) => MapEntry(k, (v as num).toInt()));
+  }
+
+  Future<List<User>> repoListStargazers({
+    required String owner,
+    required String repo,
+    int? page,
+    int? limit,
+  }) async {
+    final query = <String, String>{};
+    if (page != null) query['page'] = page.toString();
+    if (limit != null) query['limit'] = limit.toString();
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/stargazers',
+      queryParameters: query.isEmpty ? null : query,
+    );
+    final list = jsonDecode(response.body) as List<dynamic>;
+    return list.map((e) => User.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<List<User>> repoListSubscribers({
+    required String owner,
+    required String repo,
+    int? page,
+    int? limit,
+  }) async {
+    final query = <String, String>{};
+    if (page != null) query['page'] = page.toString();
+    if (limit != null) query['limit'] = limit.toString();
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/subscribers',
+      queryParameters: query.isEmpty ? null : query,
+    );
+    final list = jsonDecode(response.body) as List<dynamic>;
+    return list.map((e) => User.fromJson(e as Map<String, dynamic>)).toList();
   }
 
   /// List branch protections
@@ -1752,6 +1902,39 @@ class GiteaApiService {
   }) async {
     await _client.delete(
       '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/branch_protections/${Uri.encodeComponent(name)}',
+    );
+  }
+
+  Future<List<TagProtection>> repoListTagProtections({
+    required String owner,
+    required String repo,
+  }) async {
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/tag_protections',
+    );
+    final list = jsonDecode(response.body) as List<dynamic>;
+    return list.map((e) => TagProtection.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<TagProtection> repoCreateTagProtection({
+    required String owner,
+    required String repo,
+    required String namePattern,
+  }) async {
+    final response = await _client.post(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/tag_protections',
+      body: {'name_pattern': namePattern},
+    );
+    return TagProtection.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+  }
+
+  Future<void> repoDeleteTagProtection({
+    required String owner,
+    required String repo,
+    required int id,
+  }) async {
+    await _client.delete(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/tag_protections/${id.toString()}',
     );
   }
 

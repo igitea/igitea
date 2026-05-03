@@ -590,4 +590,7 @@
   "active": "활성",
   "emails": "이메일",
   "addEmail": "이메일 추가"
+,
+  "follow": "Follow",
+  "unfollow": "Unfollow"
 }

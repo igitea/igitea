@@ -111,6 +111,17 @@ class MockUserRepository implements UserRepository {
     if (shouldFail) return Left(failure);
     return Right([Repository(id: 30, name: 'starred-repo', full_name: 'user/starred-repo')]);
   }
+
+  @override
+  Future<Either<Failure, List<User>>> searchUsers({
+    String? q,
+    int? uid,
+    int? page,
+    int? limit,
+  }) async {
+    if (shouldFail) return Left(failure);
+    return Right([User(id: 5, login: 'searchuser')]);
+  }
 }
 
 void main() {

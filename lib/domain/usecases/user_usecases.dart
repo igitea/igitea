@@ -162,3 +162,28 @@ class ListStarredReposUseCase {
     );
   }
 }
+
+class SearchPublicUsersParams {
+  final String? q;
+  final int? uid;
+  final int? page;
+  final int? limit;
+
+  const SearchPublicUsersParams({this.q, this.uid, this.page, this.limit});
+}
+
+class SearchPublicUsersUseCase {
+  final UserRepository _repository;
+
+  SearchPublicUsersUseCase({required UserRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, List<User>>> call(SearchPublicUsersParams params) async {
+    return _repository.searchUsers(
+      q: params.q,
+      uid: params.uid,
+      page: params.page,
+      limit: params.limit,
+    );
+  }
+}

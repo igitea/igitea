@@ -73,4 +73,12 @@ abstract class UserRepository {
     int? page,
     int? limit,
   });
+
+  /// Search for users.
+  Future<Either<Failure, List<User>>> searchUsers({
+    String? q,
+    int? uid,
+    int? page,
+    int? limit,
+  });
 }

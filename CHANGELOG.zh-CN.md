@@ -2,6 +2,49 @@
 
 ## [Unreleased]
 
+### Added
+- Search 页面新增用户搜索标签页（`_UserSearchResults` / `_SearchUserCard`）
+  - `SearchPage` 第三个标签页，与仓库、问题并列
+  - 通过 `GET /users/search` 调用，新增 `SearchPublicUsersUseCase`
+  - 点击用户可跳转到 `UserProfilePage`
+- 用户 GPG 密钥管理（`GpgKeysPage`）
+  - 通过 `GET/POST/DELETE /user/gpg_keys` 列出、添加、删除 GPG 密钥
+  - 显示密钥 ID、能力（签名/认证）、验证状态
+  - 公钥内容在可展开的 `ExpansionTile` 中展示
+- 标签保护（`TagProtectionsPage`）
+  - 通过 `/repos/{owner}/{repo}/tag_protections` 列出、创建、删除标签保护规则
+  - 从 `RepoSettingsPage` 进入
+- Issue 时间线与依赖（`_TimelineSection`、`_DependenciesSection`）
+  - 时间线：`GET /repos/{owner}/{repo}/issues/{index}/timeline`，按事件类型显示图标
+  - 依赖：`GET/POST/DELETE /repos/{owner}/{repo}/issues/{index}/dependencies`
+  - 两者均以可展开卡片形式展示在 `IssueDetailPage` 内
+- 仓库语言统计条形图（`_LanguageBar`）
+  - `GET /repos/{owner}/{repo}/languages` 渲染为彩色分段条 + 百分比图例
+  - 展示前 6 种语言，未知语言使用哈希 fallback 颜色
+- 仓库星标用户与订阅者（`RepoStargazersPage`）
+  - 双标签页页面，分别列出星标用户（`/stargazers`）和订阅者（`/subscribers`）
+  - `RepoDetailPage` 头部的统计卡片可点击跳转
+- 新增 `OrganizationsListPage`：组织列表全屏页面
+  - 每个列表项显示头像、组织名称和简介
+  - 使用 `PremiumCard` 和 `FadeInWrapper` 动画
+  - 点击可跳转到 `OrganizationDetailPage`
+
+### Changed
+- 重构 `UserProfilePage` 视觉风格，与 `ProfilePage` 保持一致
+  - 渐变背景 Header：大头像、用户名、@username、个人描述、管理员标识
+  - 统计卡片使用 `PremiumCard`，排版统一
+  - 信息卡片（邮箱、位置、网站、注册时间）聚合在 `PremiumCard` 中，使用 `_InfoTile`
+  - 组织列表支持水平滚动、逐入动画（`FadeInWrapper`）和悬停提示
+  - 仓库列表使用 `PremiumCard`，点击可跳转到 `RepoDetailPage`
+  - 新增 `location` 字段显示
+  - 邮箱和网站支持点击打开（邮件客户端 / 浏览器）
+- Follow 按钮移入 `_UserHeader`，放在 `@username` 右侧
+  - 紧凑的胶囊形状按钮（高度 28，圆角 100）
+  - Follow 状态使用 `FilledButton`，Unfollow 状态使用 `OutlinedButton`
+  - Loading 状态使用小型 `CircularProgressIndicator`
+- `ProfilePage` 和 `UserProfilePage` 的组织区块标题支持点击（带右箭头指示器）
+  - 点击可跳转到 `OrganizationsListPage`
+
 ## [0.26.0] - 2026-05-02
 
 ### Added

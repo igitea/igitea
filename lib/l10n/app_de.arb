@@ -590,4 +590,7 @@
   "active": "Aktiv",
   "emails": "E-Mails",
   "addEmail": "E-Mail hinzufügen"
+,
+  "follow": "Follow",
+  "unfollow": "Unfollow"
 }

@@ -35,6 +35,7 @@ import 'create_pr_page.dart';
 import 'webhook_list_page.dart';
 import 'label_list_page.dart';
 import 'actions_list_page.dart';
+import 'repo_stargazers_page.dart';
 
 const _languageColors = <String, Color>{
   'Dart': Color(0xFF00B4AB),
@@ -75,13 +76,26 @@ class RepoDetailPage extends StatefulWidget {
 }
 
 class _RepoDetailPageState extends State<RepoDetailPage> {
+  Map<String, int> _languages = {};
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Injection.repoNotifier.getRepo(widget.owner, widget.repo);
       Injection.repoNotifier.checkStarred(widget.owner, widget.repo);
+      _loadLanguages();
     });
+  }
+
+  Future<void> _loadLanguages() async {
+    try {
+      final langs = await Injection.apiService.repoGetLanguages(
+        owner: widget.owner,
+        repo: widget.repo,
+      );
+      if (mounted) setState(() => _languages = langs);
+    } catch (_) {}
   }
 
   @override
@@ -157,9 +171,16 @@ class _RepoDetailPageState extends State<RepoDetailPage> {
         SliverToBoxAdapter(
           child: FadeInWrapper(
             duration: AppAnimations.slow,
-            child: _RepoHeader(repo: repo, l10n: l10n),
+            child: _RepoHeader(repo: repo, l10n: l10n, owner: widget.owner, repoName: widget.repo),
           ),
         ),
+        if (_languages.isNotEmpty)
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: UIConstants.pagePadding.copyWith(top: UIConstants.sm, bottom: UIConstants.sm),
+              child: _LanguageBar(languages: _languages),
+            ),
+          ),
         SliverToBoxAdapter(
           child: Padding(
             padding: UIConstants.pagePadding.copyWith(top: UIConstants.md, bottom: UIConstants.sm),
@@ -327,8 +348,15 @@ class _ErrorView extends StatelessWidget {
 class _RepoHeader extends StatelessWidget {
   final Repository repo;
   final AppLocalizations l10n;
+  final String owner;
+  final String repoName;
 
-  const _RepoHeader({required this.repo, required this.l10n});
+  const _RepoHeader({
+    required this.repo,
+    required this.l10n,
+    required this.owner,
+    required this.repoName,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -420,7 +448,7 @@ class _RepoHeader extends StatelessWidget {
               ),
             ],
             const SizedBox(height: UIConstants.md),
-            _StatsGrid(repo: repo, l10n: l10n),
+            _StatsGrid(repo: repo, l10n: l10n, owner: owner, repoName: repoName),
             const SizedBox(height: UIConstants.sm),
             Wrap(
               spacing: UIConstants.sm,
@@ -467,8 +495,15 @@ class _RepoHeader extends StatelessWidget {
 class _StatsGrid extends StatelessWidget {
   final Repository repo;
   final AppLocalizations l10n;
+  final String owner;
+  final String repoName;
 
-  const _StatsGrid({required this.repo, required this.l10n});
+  const _StatsGrid({
+    required this.repo,
+    required this.l10n,
+    required this.owner,
+    required this.repoName,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -479,6 +514,9 @@ class _StatsGrid extends StatelessWidget {
             icon: Icons.star_outline,
             value: '${repo.stars_count ?? 0}',
             label: l10n.stars,
+            onTap: () => Navigator.of(context).push(MaterialPageRoute(
+              builder: (_) => RepoStargazersPage(owner: owner, repo: repoName),
+            )),
           ),
         ),
         const SizedBox(width: UIConstants.sm),
@@ -495,6 +533,9 @@ class _StatsGrid extends StatelessWidget {
             icon: Icons.visibility_outlined,
             value: '${repo.watchers_count ?? 0}',
             label: l10n.watchers,
+            onTap: () => Navigator.of(context).push(MaterialPageRoute(
+              builder: (_) => RepoStargazersPage(owner: owner, repo: repoName),
+            )),
           ),
         ),
         const SizedBox(width: UIConstants.sm),
@@ -514,13 +555,14 @@ class _StatCard extends StatelessWidget {
   final IconData icon;
   final String value;
   final String label;
+  final VoidCallback? onTap;
 
-  const _StatCard({required this.icon, required this.value, required this.label});
+  const _StatCard({required this.icon, required this.value, required this.label, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Container(
+    final child = Container(
       padding: const EdgeInsets.symmetric(vertical: UIConstants.sm, horizontal: UIConstants.xs),
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
@@ -543,6 +585,10 @@ class _StatCard extends StatelessWidget {
         ],
       ),
     );
+    if (onTap != null) {
+      return InkWell(onTap: onTap, borderRadius: BorderRadius.circular(UIConstants.badgeRadius), child: child);
+    }
+    return child;
   }
 }
 
@@ -2400,6 +2446,81 @@ class _TagsTabState extends State<_TagsTab> {
           _ => EmptyState(icon: Icons.label, title: widget.l10n.noTags),
         };
       },
+    );
+  }
+}
+
+class _LanguageBar extends StatelessWidget {
+  final Map<String, int> languages;
+
+  const _LanguageBar({required this.languages});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final total = languages.values.fold<int>(0, (sum, v) => sum + v);
+    if (total == 0) return const SizedBox.shrink();
+
+    final sorted = languages.entries.toList()
+      ..sort((a, b) => b.value.compareTo(a.value));
+    final top = sorted.take(6).toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(4),
+          child: SizedBox(
+            height: 8,
+            child: Row(
+              children: top.map((e) {
+                final ratio = e.value / total;
+                final color = _languageColors[e.key] ??
+                    Color((e.key.hashCode & 0xFFFFFF) + 0xFF000000);
+                return Expanded(
+                  flex: (ratio * 1000).round(),
+                  child: Container(color: color),
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Wrap(
+          spacing: 12,
+          runSpacing: 4,
+          children: top.map((e) {
+            final ratio = e.value / total;
+            final color = _languageColors[e.key] ??
+                Color((e.key.hashCode & 0xFFFFFF) + 0xFF000000);
+            return Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: BoxDecoration(
+                    color: color,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Text(
+                  e.key,
+                  style: theme.textTheme.labelSmall,
+                ),
+                const SizedBox(width: 2),
+                Text(
+                  '${(ratio * 100).toStringAsFixed(1)}%',
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ],
+            );
+          }).toList(),
+        ),
+      ],
     );
   }
 }

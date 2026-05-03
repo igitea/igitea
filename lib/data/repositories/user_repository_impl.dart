@@ -141,4 +141,16 @@ class UserRepositoryImpl implements UserRepository {
       () => _apiService.userCurrentListStarred(page: page, limit: limit),
     );
   }
+
+  @override
+  Future<Either<Failure, List<User>>> searchUsers({
+    String? q,
+    int? uid,
+    int? page,
+    int? limit,
+  }) async {
+    return execute(
+      () => _apiService.userSearch(q: q, uid: uid, page: page, limit: limit),
+    );
+  }
 }

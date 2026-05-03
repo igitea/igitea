@@ -12,6 +12,7 @@ import '../widgets/premium_card.dart';
 import '../widgets/user_avatar.dart';
 import 'issue_detail_page.dart';
 import 'repo_detail_page.dart';
+import 'user_profile_page.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -28,7 +29,7 @@ class _SearchPageState extends State<SearchPage>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
   }
 
   @override
@@ -43,6 +44,7 @@ class _SearchPageState extends State<SearchPage>
     if (query.isEmpty) return;
     Injection.repoNotifier.searchRepos(q: query);
     Injection.issueNotifier.searchIssues(query);
+    Injection.userNotifier.searchUsers(query);
   }
 
   @override
@@ -57,6 +59,7 @@ class _SearchPageState extends State<SearchPage>
           tabs: [
             Tab(icon: const Icon(Icons.source), text: l10n.repositories),
             Tab(icon: const Icon(Icons.bug_report), text: l10n.issues),
+            Tab(icon: const Icon(Icons.person), text: l10n.users),
           ],
         ),
       ),
@@ -77,6 +80,7 @@ class _SearchPageState extends State<SearchPage>
               children: [
                 _RepoSearchResults(),
                 _IssueSearchResults(),
+                _UserSearchResults(),
               ],
             ),
           ),
@@ -368,6 +372,107 @@ class _SearchIssueCard extends StatelessWidget {
               ),
             ),
           ],
+        ],
+      ),
+    );
+  }
+}
+
+class _UserSearchResults extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
+    return ListenableBuilder(
+      listenable: Injection.userNotifier,
+      builder: (context, _) {
+        final loading = Injection.userNotifier.searchUsersLoading;
+        final users = Injection.userNotifier.searchedUsers;
+        final error = Injection.userNotifier.searchUsersError;
+
+        if (loading) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        if (error != null) {
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('${l10n.error}: $error'),
+                const SizedBox(height: UIConstants.md),
+                FilledButton(
+                  onPressed: () {
+                    // retry handled by user
+                  },
+                  child: Text(l10n.retry),
+                ),
+              ],
+            ),
+          );
+        }
+        if (users.isEmpty) {
+          return EmptyState(icon: Icons.search, title: l10n.enterSearchQueryUsers);
+        }
+        return ListView.builder(
+          padding: UIConstants.pagePadding + const EdgeInsets.symmetric(vertical: UIConstants.sm),
+          itemCount: users.length,
+          itemBuilder: (context, index) {
+            final user = users[index];
+            return FadeInWrapper(
+              delay: Duration(milliseconds: index * 30),
+              child: _SearchUserCard(user: user),
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+class _SearchUserCard extends StatelessWidget {
+  final User user;
+
+  const _SearchUserCard({required this.user});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return PremiumListCard(
+      onTap: () {
+        final username = user.login ?? '';
+        if (username.isNotEmpty) {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (_) => UserProfilePage(username: username),
+          ));
+        }
+      },
+      child: Row(
+        children: [
+          UserAvatar(user: user, radius: UIConstants.avatarMd),
+          const SizedBox(width: UIConstants.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  user.full_name ?? user.login ?? '',
+                  style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                if (user.login != null) ...[
+                  const SizedBox(height: UIConstants.xs),
+                  Text(
+                    '@${user.login}',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          const Icon(Icons.chevron_right, size: 18),
         ],
       ),
     );

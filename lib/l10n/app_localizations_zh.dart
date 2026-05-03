@@ -99,6 +99,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get searchIssues => '搜索问题';
 
   @override
+  String get users => '用户';
+
+  @override
+  String get enterSearchQueryUsers => '输入搜索关键词查找用户';
+
+  @override
   String get noResults => '未找到结果';
 
   @override
@@ -597,6 +603,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get following => '正在关注';
+
+  @override
+  String get follow => '关注';
+
+  @override
+  String get unfollow => '取消关注';
 
   @override
   String get signOutConfirmMessage => '确定要退出登录吗？';
@@ -1842,6 +1854,132 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get addEmail => '添加邮箱';
+
+  @override
+  String get gpgKeys => 'GPG 密钥';
+
+  @override
+  String get addGpgKey => '添加 GPG 密钥';
+
+  @override
+  String get gpgKeyHint => '-----BEGIN PGP PUBLIC KEY BLOCK-----';
+
+  @override
+  String get gpgKeyAdded => 'GPG 密钥已添加';
+
+  @override
+  String get gpgKeyDeleted => 'GPG 密钥已删除';
+
+  @override
+  String get deleteGpgKey => '删除 GPG 密钥';
+
+  @override
+  String get deleteGpgKeyConfirm => '确定要删除此 GPG 密钥吗？';
+
+  @override
+  String get noGpgKeys => '暂无 GPG 密钥';
+
+  @override
+  String get sign => '签名';
+
+  @override
+  String get certify => '认证';
+
+  @override
+  String get verified => '已验证';
+
+  @override
+  String get tagProtections => '标签保护';
+
+  @override
+  String get manageTagProtections => '管理标签保护规则';
+
+  @override
+  String get createTagProtection => '创建标签保护';
+
+  @override
+  String get namePattern => '名称模式';
+
+  @override
+  String get tagProtectionCreated => '标签保护已创建';
+
+  @override
+  String get tagProtectionDeleted => '标签保护已删除';
+
+  @override
+  String get deleteTagProtection => '删除标签保护';
+
+  @override
+  String get deleteTagProtectionConfirm => '确定要删除此标签保护吗？';
+
+  @override
+  String get noTagProtections => '暂无标签保护';
+
+  @override
+  String get allowedUsers => '允许的用户';
+
+  @override
+  String get dependencies => '依赖';
+
+  @override
+  String get addDependency => '添加依赖';
+
+  @override
+  String get dependencyAdded => '依赖已添加';
+
+  @override
+  String get dependencyRemoved => '依赖已移除';
+
+  @override
+  String get removeDependency => '移除依赖';
+
+  @override
+  String get removeDependencyConfirm => '确定要移除此依赖吗？';
+
+  @override
+  String get noDependencies => '暂无依赖';
+
+  @override
+  String get blocks => '阻塞';
+
+  @override
+  String get dependsOn => '依赖于';
+
+  @override
+  String get issueNumberHint => '问题编号 #';
+
+  @override
+  String get events => '事件';
+
+  @override
+  String get items => '项';
+
+  @override
+  String get commented => '评论';
+
+  @override
+  String get labelUpdated => '标签已更新';
+
+  @override
+  String get milestoneUpdated => '里程碑已更新';
+
+  @override
+  String get assigneeUpdated => '负责人已更新';
+
+  @override
+  String get reopened => '已重新打开';
+
+  @override
+  String get stargazers => '星标用户';
+
+  @override
+  String get subscribers => '订阅者';
+
+  @override
+  String get noStargazers => '暂无星标用户';
+
+  @override
+  String get noSubscribers => '暂无订阅者';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -2437,6 +2575,12 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get following => '正在關注';
+
+  @override
+  String get follow => '關注';
+
+  @override
+  String get unfollow => '取消關注';
 
   @override
   String get signOutConfirmMessage => '确定要退出登录吗？';

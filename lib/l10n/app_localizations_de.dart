@@ -99,6 +99,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get searchIssues => 'Issues suchen';
 
   @override
+  String get users => 'Users';
+
+  @override
+  String get enterSearchQueryUsers => 'Enter a search query to find users';
+
+  @override
   String get noResults => 'Keine Ergebnisse gefunden';
 
   @override
@@ -601,6 +607,12 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get following => 'Folge ich';
+
+  @override
+  String get follow => 'Follow';
+
+  @override
+  String get unfollow => 'Unfollow';
 
   @override
   String get signOutConfirmMessage => 'Are you sure you want to sign out?';
@@ -1861,4 +1873,132 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get addEmail => 'E-Mail hinzufügen';
+
+  @override
+  String get gpgKeys => 'GPG Keys';
+
+  @override
+  String get addGpgKey => 'Add GPG Key';
+
+  @override
+  String get gpgKeyHint => '-----BEGIN PGP PUBLIC KEY BLOCK-----';
+
+  @override
+  String get gpgKeyAdded => 'GPG key added';
+
+  @override
+  String get gpgKeyDeleted => 'GPG key deleted';
+
+  @override
+  String get deleteGpgKey => 'Delete GPG Key';
+
+  @override
+  String get deleteGpgKeyConfirm =>
+      'Are you sure you want to delete this GPG key?';
+
+  @override
+  String get noGpgKeys => 'No GPG keys';
+
+  @override
+  String get sign => 'Sign';
+
+  @override
+  String get certify => 'Certify';
+
+  @override
+  String get verified => 'Verified';
+
+  @override
+  String get tagProtections => 'Tag Protections';
+
+  @override
+  String get manageTagProtections => 'Manage tag protection rules';
+
+  @override
+  String get createTagProtection => 'Create Tag Protection';
+
+  @override
+  String get namePattern => 'Name Pattern';
+
+  @override
+  String get tagProtectionCreated => 'Tag protection created';
+
+  @override
+  String get tagProtectionDeleted => 'Tag protection deleted';
+
+  @override
+  String get deleteTagProtection => 'Delete Tag Protection';
+
+  @override
+  String get deleteTagProtectionConfirm =>
+      'Are you sure you want to delete this tag protection?';
+
+  @override
+  String get noTagProtections => 'No tag protections';
+
+  @override
+  String get allowedUsers => 'Allowed users';
+
+  @override
+  String get dependencies => 'Dependencies';
+
+  @override
+  String get addDependency => 'Add Dependency';
+
+  @override
+  String get dependencyAdded => 'Dependency added';
+
+  @override
+  String get dependencyRemoved => 'Dependency removed';
+
+  @override
+  String get removeDependency => 'Remove Dependency';
+
+  @override
+  String get removeDependencyConfirm => 'Remove this dependency?';
+
+  @override
+  String get noDependencies => 'No dependencies';
+
+  @override
+  String get blocks => 'Blocks';
+
+  @override
+  String get dependsOn => 'Depends on';
+
+  @override
+  String get issueNumberHint => 'Issue #';
+
+  @override
+  String get events => 'events';
+
+  @override
+  String get items => 'items';
+
+  @override
+  String get commented => 'commented';
+
+  @override
+  String get labelUpdated => 'Label updated';
+
+  @override
+  String get milestoneUpdated => 'Milestone updated';
+
+  @override
+  String get assigneeUpdated => 'Assignee updated';
+
+  @override
+  String get reopened => 'Reopened';
+
+  @override
+  String get stargazers => 'Stargazers';
+
+  @override
+  String get subscribers => 'Subscribers';
+
+  @override
+  String get noStargazers => 'No stargazers yet';
+
+  @override
+  String get noSubscribers => 'No subscribers yet';
 }

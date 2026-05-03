@@ -17,9 +17,11 @@ import 'create_org_page.dart';
 import 'create_repo_page.dart';
 import 'emails_page.dart';
 import 'follow_page.dart';
+import 'gpg_keys_page.dart';
 import 'user_repos_page.dart';
 import 'package_list_page.dart';
 import 'organization_detail_page.dart';
+import 'organizations_list_page.dart';
 import 'settings_page.dart';
 import 'starred_repos_page.dart';
 
@@ -226,6 +228,19 @@ class _ProfileContent extends StatelessWidget {
           ),
           PremiumCard(
             onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(builder: (_) => const GpgKeysPage()));
+            },
+            child: Row(
+              children: [
+                Icon(Icons.vpn_key_outlined, color: Theme.of(context).colorScheme.primary),
+                const SizedBox(width: UIConstants.md),
+                Expanded(child: Text(l10n.gpgKeys)),
+                const Icon(Icons.chevron_right),
+              ],
+            ),
+          ),
+          PremiumCard(
+            onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
                 builder: (_) => const SettingsPage(),
               ));
@@ -331,11 +346,11 @@ class _StatsRow extends StatelessWidget {
           })),
           const SizedBox(width: UIConstants.sm),
           Expanded(child: _StatItem(label: l10n.followers, value: '${user.followers_count ?? 0}', onTap: () {
-            Navigator.of(context).push(MaterialPageRoute(builder: (_) => FollowPage(username: user.login ?? '')));
+            Navigator.of(context).push(MaterialPageRoute(builder: (_) => FollowPage(username: user.login ?? '', type: FollowType.followers)));
           })),
           const SizedBox(width: UIConstants.sm),
           Expanded(child: _StatItem(label: l10n.following, value: '${user.following_count ?? 0}', onTap: () {
-            Navigator.of(context).push(MaterialPageRoute(builder: (_) => FollowPage(username: user.login ?? '')));
+            Navigator.of(context).push(MaterialPageRoute(builder: (_) => FollowPage(username: user.login ?? '', type: FollowType.following)));
           })),
         ],
       ),
@@ -466,9 +481,29 @@ class _OrgsSection extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                l10n.organisations,
-                style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => OrganizationsListPage(orgs: orgs),
+                    ),
+                  );
+                },
+                child: Row(
+                  children: [
+                    Text(
+                      l10n.organisations,
+                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+                    ),
+                    const SizedBox(width: UIConstants.xs),
+                    Icon(
+                      Icons.chevron_right,
+                      size: 18,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ],
+                ),
               ),
               IconButton(
                 icon: const Icon(Icons.add),
@@ -497,14 +532,20 @@ class _OrgsSection extends StatelessWidget {
               return FadeInWrapper(
                 delay: Duration(milliseconds: index * 30),
                 child: Tooltip(
-                  message: org.full_name ?? org.username ?? '',
+                  message: [org.full_name, org.name, org.username]
+                    .whereType<String>()
+                    .where((s) => s.isNotEmpty)
+                    .firstOrNull ?? '',
                   child: GestureDetector(
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) => OrganizationDetailPage(
-                            orgName: org.username ?? '',
+                            orgName: [org.username, org.name]
+                              .whereType<String>()
+                              .where((s) => s.isNotEmpty)
+                              .firstOrNull ?? '',
                           ),
                         ),
                       );

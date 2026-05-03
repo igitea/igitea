@@ -102,6 +102,14 @@ class FakeUserRepository implements UserRepository {
     if (shouldFailListCurrentUserRepos) return Left(failure);
     return Right(repos);
   }
+
+  @override
+  Future<Either<Failure, List<User>>> searchUsers({
+    String? q,
+    int? uid,
+    int? page,
+    int? limit,
+  }) async => Right([currentUser]);
 }
 
 void main() {
@@ -118,6 +126,7 @@ void main() {
           repository: fakeRepo,
         ),
         listStarredReposUseCase: ListStarredReposUseCase(repository: fakeRepo),
+        searchPublicUsersUseCase: SearchPublicUsersUseCase(repository: fakeRepo),
       );
     });
 

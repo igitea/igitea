@@ -2,6 +2,48 @@
 
 ## [Unreleased]
 
+### Added
+- Search page user search tab (`_UserSearchResults` / `_SearchUserCard`)
+  - Third tab in `SearchPage` alongside Repositories and Issues
+  - Calls `GET /users/search` via new `SearchPublicUsersUseCase`
+  - Tapping a user navigates to `UserProfilePage`
+- User GPG Keys management (`GpgKeysPage`)
+  - List, add, and delete GPG keys via `GET/POST/DELETE /user/gpg_keys`
+  - Shows key ID, capabilities (sign/certify), verification status
+  - Public key shown in expandable `ExpansionTile`
+- Tag Protections (`TagProtectionsPage`)
+  - List, create, and delete tag protection rules via `/repos/{owner}/{repo}/tag_protections`
+  - Accessible from `RepoSettingsPage`
+- Issue Timeline & Dependencies (`_TimelineSection`, `_DependenciesSection`)
+  - Timeline: `GET /repos/{owner}/{repo}/issues/{index}/timeline` with event type icons
+  - Dependencies: `GET/POST/DELETE /repos/{owner}/{repo}/issues/{index}/dependencies`
+  - Both shown as expandable cards inside `IssueDetailPage`
+- Repository language statistics bar (`_LanguageBar`)
+  - `GET /repos/{owner}/{repo}/languages` rendered as colored segmented bar + percentage legend
+  - Top 6 languages shown with fallback hash-based colors
+- Repository Stargazers & Subscribers (`RepoStargazersPage`)
+  - Dual-tab page listing stargazers (`/stargazers`) and subscribers (`/subscribers`)
+  - Tappable stats cards in `RepoDetailPage` header navigate to this page
+- `OrganizationsListPage`: full-screen organization list with avatar, name, and description
+  - Each item uses `PremiumCard` with `FadeInWrapper` animation
+  - Tap navigates to `OrganizationDetailPage`
+
+### Changed
+- Refactored `UserProfilePage` to match `ProfilePage` visual style
+  - Gradient background header with large avatar, name, @username, description, admin badge
+  - Stats row uses `PremiumCard` with consistent typography
+  - Info cards (email, location, website, joined date) grouped in `PremiumCard` with `_InfoTile`
+  - Orgs section with horizontal scroll, `FadeInWrapper` animation, and tooltip
+  - Repository list uses `PremiumCard` with navigation to `RepoDetailPage`
+  - Added `location` field display
+  - Email and website are now tappable (opens mailto / browser)
+- Moved Follow button into `_UserHeader`, placed to the right of `@username`
+  - Compact pill-shaped button (height 28, radius 100)
+  - `FilledButton` for Follow, `OutlinedButton` for Unfollow
+  - Loading state uses small `CircularProgressIndicator`
+- `ProfilePage` and `UserProfilePage` org section title now tappable with chevron indicator
+  - Tap navigates to `OrganizationsListPage`
+
 ## [0.26.0] - 2026-05-02
 
 ### Added

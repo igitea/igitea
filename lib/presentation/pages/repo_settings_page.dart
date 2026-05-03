@@ -4,6 +4,7 @@ import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/repo_notifier.dart';
+import 'tag_protections_page.dart';
 
 class RepoSettingsPage extends StatefulWidget {
   final Repository repo;
@@ -136,6 +137,19 @@ class _RepoSettingsPageState extends State<RepoSettingsPage> {
                   );
                 }
               }
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.local_offer_outlined),
+            title: Text(l10n.tagProtections),
+            subtitle: Text(l10n.manageTagProtections),
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(
+                builder: (_) => TagProtectionsPage(
+                  owner: widget.repo.owner?.login ?? '',
+                  repo: widget.repo.name ?? '',
+                ),
+              ));
             },
           ),
           ListTile(

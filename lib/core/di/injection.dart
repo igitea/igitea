@@ -58,6 +58,7 @@ class Injection {
   static late ListFollowingUseCase listFollowingUseCase;
   static late GetUserActivitiesUseCase getUserActivitiesUseCase;
   static late ListStarredReposUseCase listStarredReposUseCase;
+  static late SearchPublicUsersUseCase searchPublicUsersUseCase;
   static late GetRepoUseCase getRepoUseCase;
   static late SearchReposUseCase searchReposUseCase;
   static late ListBranchesUseCase listBranchesUseCase;
@@ -274,6 +275,7 @@ class Injection {
     listFollowingUseCase = ListFollowingUseCase(repository: userRepository);
     getUserActivitiesUseCase = GetUserActivitiesUseCase(repository: userRepository);
     listStarredReposUseCase = ListStarredReposUseCase(repository: userRepository);
+    searchPublicUsersUseCase = SearchPublicUsersUseCase(repository: userRepository);
     getRepoUseCase = GetRepoUseCase(repository: repoRepository);
     searchReposUseCase = SearchReposUseCase(repository: repoRepository);
     listBranchesUseCase = ListBranchesUseCase(repository: repoRepository);
@@ -417,6 +419,7 @@ class Injection {
         listCurrentUserReposUseCase: listCurrentUserReposUseCase,
         getUserActivitiesUseCase: getUserActivitiesUseCase,
         listStarredReposUseCase: listStarredReposUseCase,
+        searchPublicUsersUseCase: searchPublicUsersUseCase,
       );
       repoNotifier.updateUseCases(
         getRepoUseCase: getRepoUseCase,
@@ -517,6 +520,7 @@ class Injection {
         listCurrentUserReposUseCase: listCurrentUserReposUseCase,
         getUserActivitiesUseCase: getUserActivitiesUseCase,
         listStarredReposUseCase: listStarredReposUseCase,
+        searchPublicUsersUseCase: searchPublicUsersUseCase,
       );
       repoNotifier = RepoNotifier(
         getRepoUseCase: getRepoUseCase,
@@ -639,6 +643,7 @@ class Injection {
       listCurrentUserReposUseCase: listCurrentUserReposUseCase,
       getUserActivitiesUseCase: getUserActivitiesUseCase,
       listStarredReposUseCase: listStarredReposUseCase,
+      searchPublicUsersUseCase: searchPublicUsersUseCase,
     );
     repoNotifier.updateUseCases(
       getRepoUseCase: getRepoUseCase,

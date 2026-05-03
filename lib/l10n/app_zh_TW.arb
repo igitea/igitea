@@ -183,6 +183,8 @@
   "repos": "倉庫",
   "followers": "關注者",
   "following": "正在關注",
+  "follow": "關注",
+  "unfollow": "取消關注",
   "signOutConfirmMessage": "确定要退出登录吗？",
   "chooseTheme": "选择主题",
   "loadingSettings": "正在加载設定...",

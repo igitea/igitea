@@ -6,6 +6,7 @@ import '../../core/di/injection.dart';
 import '../../core/errors/failures.dart';
 import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
+import '../../domain/entities/auth_state.dart';
 import '../../domain/entities/issue_state.dart';
 import '../../domain/usecases/issue_usecases.dart';
 import '../../l10n/app_localizations.dart';
@@ -224,8 +225,11 @@ class _IssueContent extends StatelessWidget {
                 avatar: const Icon(Icons.notifications_outlined, size: 16),
                 onPressed: () async {
                   try {
+                    final currentUser = Injection.authNotifier.state is AuthAuthenticated
+                        ? (Injection.authNotifier.state as AuthAuthenticated).user.login ?? ''
+                        : '';
                     await Injection.apiService.issueAddSubscription(
-                      owner: owner, repo: repo, index: index,
+                      owner: owner, repo: repo, index: index, user: currentUser,
                     );
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
@@ -315,6 +319,12 @@ class _IssueContent extends StatelessWidget {
                 fontStyle: FontStyle.italic,
               ),
             ),
+
+          const Divider(height: 32),
+
+          _DependenciesSection(owner: owner, repo: repo, index: index),
+          const SizedBox(height: 8),
+          _TimelineSection(owner: owner, repo: repo, index: index),
 
           const Divider(height: 32),
 
@@ -823,5 +833,340 @@ class _CommentItemState extends State<_CommentItem> {
     if (diff.inHours > 0) return l10n.ago('${diff.inHours}h');
     if (diff.inMinutes > 0) return l10n.ago('${diff.inMinutes}m');
     return l10n.justNow;
+  }
+}
+
+class _TimelineSection extends StatefulWidget {
+  final String owner;
+  final String repo;
+  final int index;
+
+  const _TimelineSection({required this.owner, required this.repo, required this.index});
+
+  @override
+  State<_TimelineSection> createState() => _TimelineSectionState();
+}
+
+class _TimelineSectionState extends State<_TimelineSection> {
+  List<TimelineComment> _timeline = [];
+  bool _loading = true;
+  bool _expanded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    try {
+      _timeline = await Injection.apiService.issueGetTimeline(
+        owner: widget.owner,
+        repo: widget.repo,
+        index: widget.index,
+      );
+    } catch (_) {}
+    if (mounted) setState(() => _loading = false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: theme.colorScheme.outlineVariant),
+      ),
+      child: ExpansionTile(
+        leading: Icon(Icons.timeline, color: theme.colorScheme.primary),
+        title: Text(l10n.timeline, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500)),
+        subtitle: Text('${_timeline.length} ${l10n.events}', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+        initiallyExpanded: _expanded,
+        onExpansionChanged: (v) => setState(() => _expanded = v),
+        children: [
+          if (_loading)
+            const Padding(
+              padding: EdgeInsets.all(16),
+              child: Center(child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))),
+            )
+          else if (_timeline.isEmpty)
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(l10n.noData, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+            )
+          else
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              child: Column(
+                children: _timeline.map((item) {
+                  return _TimelineItem(timeline: item);
+                }).toList(),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _TimelineItem extends StatelessWidget {
+  final TimelineComment timeline;
+
+  const _TimelineItem({required this.timeline});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final type = timeline.type ?? '';
+
+    IconData icon;
+    String text;
+    switch (type) {
+      case 'comment':
+        icon = Icons.chat_bubble_outline;
+        text = timeline.body ?? l10n.commented;
+      case 'label':
+        icon = Icons.label_outline;
+        text = timeline.label?.name ?? l10n.labelUpdated;
+      case 'milestone':
+        icon = Icons.flag_outlined;
+        text = timeline.milestone?.title ?? l10n.milestoneUpdated;
+      case 'assignee':
+        icon = Icons.person_outline;
+        text = timeline.assignee?.login ?? l10n.assigneeUpdated;
+      case 'close':
+        icon = Icons.check_circle_outline;
+        text = l10n.closed;
+      case 'reopen':
+        icon = Icons.refresh;
+        text = l10n.reopened;
+      case 'title':
+        icon = Icons.title;
+        text = '${timeline.old_title ?? ''} → ${timeline.new_title ?? ''}';
+      default:
+        icon = Icons.info_outline;
+        text = type;
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 16, color: theme.colorScheme.onSurfaceVariant),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  text,
+                  style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w500),
+                ),
+                if (timeline.user?.login != null)
+                  Text(
+                    '${timeline.user!.login} · ${_formatTime(timeline.created_at, l10n)}',
+                    style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatTime(DateTime? date, AppLocalizations l10n) {
+    if (date == null) return '';
+    final now = DateTime.now();
+    final diff = now.difference(date);
+    if (diff.inDays > 365) return l10n.ago('${diff.inDays ~/ 365}y');
+    if (diff.inDays > 30) return l10n.ago('${diff.inDays ~/ 30}mo');
+    if (diff.inDays > 0) return l10n.ago('${diff.inDays}d');
+    if (diff.inHours > 0) return l10n.ago('${diff.inHours}h');
+    if (diff.inMinutes > 0) return l10n.ago('${diff.inMinutes}m');
+    return l10n.justNow;
+  }
+}
+
+class _DependenciesSection extends StatefulWidget {
+  final String owner;
+  final String repo;
+  final int index;
+
+  const _DependenciesSection({required this.owner, required this.repo, required this.index});
+
+  @override
+  State<_DependenciesSection> createState() => _DependenciesSectionState();
+}
+
+class _DependenciesSectionState extends State<_DependenciesSection> {
+  List<Issue> _dependencies = [];
+  bool _loading = true;
+  bool _expanded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    try {
+      _dependencies = await Injection.apiService.issueListDependencies(
+        owner: widget.owner,
+        repo: widget.repo,
+        index: widget.index,
+      );
+    } catch (_) {}
+    if (mounted) setState(() => _loading = false);
+  }
+
+  Future<void> _add() async {
+    final l10n = AppLocalizations.of(context)!;
+    final ctrl = TextEditingController();
+    final number = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.addDependency),
+        content: TextField(
+          controller: ctrl,
+          decoration: InputDecoration(
+            labelText: l10n.issueNumberHint,
+            border: const OutlineInputBorder(),
+          ),
+          keyboardType: TextInputType.number,
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l10n.cancel)),
+          FilledButton(
+            onPressed: ctrl.text.trim().isEmpty ? null : () => Navigator.pop(ctx, ctrl.text.trim()),
+            child: Text(l10n.add),
+          ),
+        ],
+      ),
+    );
+    if (number != null && mounted) {
+      final depIndex = int.tryParse(number);
+      if (depIndex != null) {
+        try {
+          await Injection.apiService.issueCreateDependency(
+            owner: widget.owner,
+            repo: widget.repo,
+            index: widget.index,
+            dependencyIndex: depIndex,
+          );
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.dependencyAdded)));
+            _load();
+          }
+        } catch (_) {
+          if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
+        }
+      }
+    }
+  }
+
+  Future<void> _remove(Issue dep) async {
+    final l10n = AppLocalizations.of(context)!;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.removeDependency),
+        content: Text(l10n.removeDependencyConfirm),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
+          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(l10n.delete)),
+        ],
+      ),
+    );
+    if (ok == true && dep.number != null && mounted) {
+      try {
+        await Injection.apiService.issueRemoveDependency(
+          owner: widget.owner,
+          repo: widget.repo,
+          index: widget.index,
+          dependencyIndex: dep.number!,
+        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.dependencyRemoved)));
+          _load();
+        }
+      } catch (_) {
+        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: theme.colorScheme.outlineVariant),
+      ),
+      child: ExpansionTile(
+        leading: Icon(Icons.link, color: theme.colorScheme.primary),
+        title: Text(l10n.dependencies, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500)),
+        subtitle: Text('${_dependencies.length} ${l10n.items}', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+        initiallyExpanded: _expanded,
+        onExpansionChanged: (v) => setState(() => _expanded = v),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.add, size: 20),
+              onPressed: _add,
+            ),
+            const Icon(Icons.expand_more),
+          ],
+        ),
+        children: [
+          if (_loading)
+            const Padding(
+              padding: EdgeInsets.all(16),
+              child: Center(child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))),
+            )
+          else if (_dependencies.isEmpty)
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(l10n.noDependencies, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+            )
+          else
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              child: Column(
+                children: _dependencies.map((dep) {
+                  return ListTile(
+                    dense: true,
+                    contentPadding: EdgeInsets.zero,
+                    leading: Container(
+                      width: 8,
+                      height: 8,
+                      decoration: BoxDecoration(
+                        color: dep.state?.value == 'open' ? Colors.green : Colors.purple,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                    title: Text('#${dep.number} ${dep.title ?? ''}', style: theme.textTheme.bodySmall),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.link_off, size: 18),
+                      onPressed: () => _remove(dep),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ),
+        ],
+      ),
+    );
   }
 }

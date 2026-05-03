@@ -32,6 +32,7 @@ class UserNotifier extends ChangeNotifier {
   ListCurrentUserReposUseCase _listCurrentUserReposUseCase;
   GetUserActivitiesUseCase _getUserActivitiesUseCase;
   ListStarredReposUseCase _listStarredReposUseCase;
+  SearchPublicUsersUseCase _searchPublicUsersUseCase;
 
   UserState _state = const UserInitial();
   UserState get state => _state;
@@ -42,26 +43,39 @@ class UserNotifier extends ChangeNotifier {
   List<Repository> _starredRepos = [];
   List<Repository> get starredRepos => _starredRepos;
 
+  List<User> _searchedUsers = [];
+  List<User> get searchedUsers => _searchedUsers;
+
+  bool _searchUsersLoading = false;
+  bool get searchUsersLoading => _searchUsersLoading;
+
+  String? _searchUsersError;
+  String? get searchUsersError => _searchUsersError;
+
   UserNotifier({
     required GetCurrentUserUseCase getCurrentUserUseCase,
     required ListCurrentUserReposUseCase listCurrentUserReposUseCase,
     required GetUserActivitiesUseCase getUserActivitiesUseCase,
     required ListStarredReposUseCase listStarredReposUseCase,
+    required SearchPublicUsersUseCase searchPublicUsersUseCase,
   }) : _getCurrentUserUseCase = getCurrentUserUseCase,
        _listCurrentUserReposUseCase = listCurrentUserReposUseCase,
        _getUserActivitiesUseCase = getUserActivitiesUseCase,
-       _listStarredReposUseCase = listStarredReposUseCase;
+       _listStarredReposUseCase = listStarredReposUseCase,
+       _searchPublicUsersUseCase = searchPublicUsersUseCase;
 
   void updateUseCases({
     required GetCurrentUserUseCase getCurrentUserUseCase,
     required ListCurrentUserReposUseCase listCurrentUserReposUseCase,
     required GetUserActivitiesUseCase getUserActivitiesUseCase,
     required ListStarredReposUseCase listStarredReposUseCase,
+    required SearchPublicUsersUseCase searchPublicUsersUseCase,
   }) {
     _getCurrentUserUseCase = getCurrentUserUseCase;
     _listCurrentUserReposUseCase = listCurrentUserReposUseCase;
     _getUserActivitiesUseCase = getUserActivitiesUseCase;
     _listStarredReposUseCase = listStarredReposUseCase;
+    _searchPublicUsersUseCase = searchPublicUsersUseCase;
   }
 
   Future<void> loadCurrentUser() async {
@@ -122,5 +136,25 @@ class UserNotifier extends ChangeNotifier {
         _starredRepos = value;
         notifyListeners();
     }
+  }
+
+  Future<void> searchUsers(String query) async {
+    _searchUsersLoading = true;
+    _searchUsersError = null;
+    notifyListeners();
+
+    final result = await _searchPublicUsersUseCase.call(
+      SearchPublicUsersParams(q: query),
+    );
+    switch (result) {
+      case Left<Failure, List<User>>(:final value):
+        _searchUsersError = value.message;
+        _searchedUsers = [];
+      case Right<Failure, List<User>>(:final value):
+        _searchedUsers = value;
+        _searchUsersError = null;
+    }
+    _searchUsersLoading = false;
+    notifyListeners();
   }
 }

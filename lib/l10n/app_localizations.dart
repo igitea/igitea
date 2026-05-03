@@ -293,6 +293,18 @@ abstract class AppLocalizations {
   /// **'Search issues'**
   String get searchIssues;
 
+  /// No description provided for @users.
+  ///
+  /// In en, this message translates to:
+  /// **'Users'**
+  String get users;
+
+  /// No description provided for @enterSearchQueryUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a search query to find users'**
+  String get enterSearchQueryUsers;
+
   /// No description provided for @noResults.
   ///
   /// In en, this message translates to:
@@ -1216,6 +1228,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Following'**
   String get following;
+
+  /// No description provided for @follow.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow'**
+  String get follow;
+
+  /// No description provided for @unfollow.
+  ///
+  /// In en, this message translates to:
+  /// **'Unfollow'**
+  String get unfollow;
 
   /// No description provided for @signOutConfirmMessage.
   ///
@@ -3658,6 +3682,258 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add Email'**
   String get addEmail;
+
+  /// No description provided for @gpgKeys.
+  ///
+  /// In en, this message translates to:
+  /// **'GPG Keys'**
+  String get gpgKeys;
+
+  /// No description provided for @addGpgKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Add GPG Key'**
+  String get addGpgKey;
+
+  /// No description provided for @gpgKeyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'-----BEGIN PGP PUBLIC KEY BLOCK-----'**
+  String get gpgKeyHint;
+
+  /// No description provided for @gpgKeyAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'GPG key added'**
+  String get gpgKeyAdded;
+
+  /// No description provided for @gpgKeyDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'GPG key deleted'**
+  String get gpgKeyDeleted;
+
+  /// No description provided for @deleteGpgKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete GPG Key'**
+  String get deleteGpgKey;
+
+  /// No description provided for @deleteGpgKeyConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this GPG key?'**
+  String get deleteGpgKeyConfirm;
+
+  /// No description provided for @noGpgKeys.
+  ///
+  /// In en, this message translates to:
+  /// **'No GPG keys'**
+  String get noGpgKeys;
+
+  /// No description provided for @sign.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign'**
+  String get sign;
+
+  /// No description provided for @certify.
+  ///
+  /// In en, this message translates to:
+  /// **'Certify'**
+  String get certify;
+
+  /// No description provided for @verified.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified'**
+  String get verified;
+
+  /// No description provided for @tagProtections.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag Protections'**
+  String get tagProtections;
+
+  /// No description provided for @manageTagProtections.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage tag protection rules'**
+  String get manageTagProtections;
+
+  /// No description provided for @createTagProtection.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Tag Protection'**
+  String get createTagProtection;
+
+  /// No description provided for @namePattern.
+  ///
+  /// In en, this message translates to:
+  /// **'Name Pattern'**
+  String get namePattern;
+
+  /// No description provided for @tagProtectionCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag protection created'**
+  String get tagProtectionCreated;
+
+  /// No description provided for @tagProtectionDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Tag protection deleted'**
+  String get tagProtectionDeleted;
+
+  /// No description provided for @deleteTagProtection.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Tag Protection'**
+  String get deleteTagProtection;
+
+  /// No description provided for @deleteTagProtectionConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this tag protection?'**
+  String get deleteTagProtectionConfirm;
+
+  /// No description provided for @noTagProtections.
+  ///
+  /// In en, this message translates to:
+  /// **'No tag protections'**
+  String get noTagProtections;
+
+  /// No description provided for @allowedUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Allowed users'**
+  String get allowedUsers;
+
+  /// No description provided for @dependencies.
+  ///
+  /// In en, this message translates to:
+  /// **'Dependencies'**
+  String get dependencies;
+
+  /// No description provided for @addDependency.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Dependency'**
+  String get addDependency;
+
+  /// No description provided for @dependencyAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Dependency added'**
+  String get dependencyAdded;
+
+  /// No description provided for @dependencyRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Dependency removed'**
+  String get dependencyRemoved;
+
+  /// No description provided for @removeDependency.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Dependency'**
+  String get removeDependency;
+
+  /// No description provided for @removeDependencyConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove this dependency?'**
+  String get removeDependencyConfirm;
+
+  /// No description provided for @noDependencies.
+  ///
+  /// In en, this message translates to:
+  /// **'No dependencies'**
+  String get noDependencies;
+
+  /// No description provided for @blocks.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocks'**
+  String get blocks;
+
+  /// No description provided for @dependsOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Depends on'**
+  String get dependsOn;
+
+  /// No description provided for @issueNumberHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Issue #'**
+  String get issueNumberHint;
+
+  /// No description provided for @events.
+  ///
+  /// In en, this message translates to:
+  /// **'events'**
+  String get events;
+
+  /// No description provided for @items.
+  ///
+  /// In en, this message translates to:
+  /// **'items'**
+  String get items;
+
+  /// No description provided for @commented.
+  ///
+  /// In en, this message translates to:
+  /// **'commented'**
+  String get commented;
+
+  /// No description provided for @labelUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Label updated'**
+  String get labelUpdated;
+
+  /// No description provided for @milestoneUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Milestone updated'**
+  String get milestoneUpdated;
+
+  /// No description provided for @assigneeUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Assignee updated'**
+  String get assigneeUpdated;
+
+  /// No description provided for @reopened.
+  ///
+  /// In en, this message translates to:
+  /// **'Reopened'**
+  String get reopened;
+
+  /// No description provided for @stargazers.
+  ///
+  /// In en, this message translates to:
+  /// **'Stargazers'**
+  String get stargazers;
+
+  /// No description provided for @subscribers.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscribers'**
+  String get subscribers;
+
+  /// No description provided for @noStargazers.
+  ///
+  /// In en, this message translates to:
+  /// **'No stargazers yet'**
+  String get noStargazers;
+
+  /// No description provided for @noSubscribers.
+  ///
+  /// In en, this message translates to:
+  /// **'No subscribers yet'**
+  String get noSubscribers;
 }
 
 class _AppLocalizationsDelegate

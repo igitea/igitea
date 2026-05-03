@@ -590,4 +590,7 @@
   "active": "Активен",
   "emails": "Эл. почта",
   "addEmail": "Добавить"
+,
+  "follow": "Follow",
+  "unfollow": "Unfollow"
 }

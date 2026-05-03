@@ -90,6 +90,14 @@ class FakeUserRepository implements UserRepository {
     int? page,
     int? limit,
   }) => throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, List<User>>> searchUsers({
+    String? q,
+    int? uid,
+    int? page,
+    int? limit,
+  }) => throw UnimplementedError();
 }
 
 class FakeMiscRepository implements MiscRepository {
