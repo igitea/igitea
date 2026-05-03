@@ -18,9 +18,9 @@ class IssueFormField {
     return IssueFormField(
       attributes: json['attributes'] != null ? json['attributes'] as Map<String, dynamic> : null,
       id: json['id'] != null ? json['id'] as String : null,
-      type: json['type'] != null ? IssueFormFieldType.fromJson(json['type'] as Map<String, dynamic>) : null,
+      type: json['type'] != null ? IssueFormFieldType.fromJson(json['type']) : null,
       validations: json['validations'] != null ? json['validations'] as Map<String, dynamic> : null,
-      visible: json['visible'] != null ? (json['visible'] as List<dynamic>).map((e) => IssueFormFieldVisible.fromJson(e as Map<String, dynamic>)).toList() : null,
+      visible: json['visible'] != null ? (json['visible'] as List<dynamic>).map((e) => IssueFormFieldVisible.fromJson(e)).toList() : null,
     );
   }
   Map<String, dynamic> toJson() {

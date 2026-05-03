@@ -69,7 +69,7 @@ def swagger_type_to_dart(prop: dict, nullable: bool = True) -> str:
 def from_json_expr(prop_name: str, prop: dict) -> str:
     if "$ref" in prop:
         class_name = prop["$ref"].split("/")[-1]
-        if class_name in ("StateType", "ReviewStateType"):
+        if class_name in ("StateType", "ReviewStateType", "NotifySubjectType", "IssueFormFieldType", "IssueFormFieldVisible"):
             return f"{class_name}.fromJson(json['{prop_name}'])"
         return f"{class_name}.fromJson(json['{prop_name}'] as Map<String, dynamic>)"
 
@@ -90,7 +90,7 @@ def from_json_expr(prop_name: str, prop: dict) -> str:
         items = prop.get("items", {})
         if "$ref" in items:
             class_name = items["$ref"].split("/")[-1]
-            if class_name in ("StateType", "ReviewStateType", "NotifySubjectType"):
+            if class_name in ("StateType", "ReviewStateType", "NotifySubjectType", "IssueFormFieldType", "IssueFormFieldVisible"):
                 return (
                     f"(json['{prop_name}'] as List<dynamic>)"
                     f".map((e) => {class_name}.fromJson(e))"
