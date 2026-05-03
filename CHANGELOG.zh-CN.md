@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.27.0] - 2026-05-03
+
 ### Added
 - 管理后台：系统级管理仪表盘
   - 系统 Hooks：列出、查看、删除管理员 Webhook
@@ -9,19 +11,19 @@
   - Action Runners：列出自托管 Runner 并获取注册 Token
   - 邮件记录：浏览管理员邮件日志
   - 用户徽章：管理用户徽章（列出、创建、删除）
-  - 从设置 → 管理后台进入（仅管理员）
 - 用户 OAuth2 应用管理（`OAuthAppsPage`）
   - 通过 `GET/POST/DELETE /user/applications/oauth2` 列出、创建、删除 OAuth2 应用
   - 显示客户端 ID、重定向 URI 和创建时间
-  - 从设置 → OAuth 应用进入
 - 为 17 个页面新增 Widget 测试（共 35 个测试用例，全部通过）
 - 组织/仓库 Actions 密钥与变量管理
   - 组织 Actions 密钥：通过 `GET/PUT/DELETE /orgs/{org}/actions/secrets` 列出、创建、删除
   - 组织 Actions 变量：通过 `GET/PUT/DELETE /orgs/{org}/actions/variables` 列出、查看、创建、删除
   - 仓库 Actions 密钥：通过 `GET/PUT/DELETE /repos/{owner}/{repo}/actions/secrets` 列出、创建、删除
   - 仓库 Actions 变量：通过 `GET/PUT/DELETE /repos/{owner}/{repo}/actions/variables` 列出、查看、创建、删除
-  - 从组织详情页（工具栏图标）和仓库设置页进入
-  - `DashboardPage`、`EmailsPage`、`FollowPage`、`GpgKeysPage`、`IssueListPage`、`NotificationPage`、`OrganizationDetailPage`、`ProfilePage`、`RepoListPage`、`RepoStargazersPage`、`SearchPage`、`SettingsPage`、`StarredReposPage`、`TagProtectionsPage`、`UserProfilePage`、`UserReposPage`
+
+### Changed
+- 管理后台子项直接移至设置页，移除了中间的管理后台仪表盘页面
+- 替换内联 CronTasksPage 为已有 AdminCronPage（移除重复）
   - 全部使用 `buildTestableWidget()` 包装，支持国际化
 - Search 页面新增用户搜索标签页（`_UserSearchResults` / `_SearchUserCard`）
   - `SearchPage` 第三个标签页，与仓库、问题并列
