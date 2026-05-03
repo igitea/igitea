@@ -21,6 +21,7 @@ class IssueListPage extends StatefulWidget {
 class _IssueListPageState extends State<IssueListPage> {
   String _searchQuery = '';
   final _searchController = TextEditingController();
+  bool _isNavigating = false;
 
   @override
   void initState() {
@@ -45,6 +46,14 @@ class _IssueListPageState extends State<IssueListPage> {
       _searchQuery,
       state: notifier.issuesListFilter ?? 'open',
     );
+  }
+
+  void _navigateToIssue(String owner, String repo, int index) {
+    if (_isNavigating) return;
+    _isNavigating = true;
+    Navigator.of(context).push(MaterialPageRoute(
+      builder: (_) => IssueDetailPage(owner: owner, repo: repo, index: index),
+    )).then((_) => _isNavigating = false);
   }
 
   void _onSearch(String query) {
@@ -127,6 +136,7 @@ class _IssueListPageState extends State<IssueListPage> {
                     loadingMore: Injection.issueNotifier.loadingMore,
                     onRefresh: _forceReload,
                     onLoadMore: () => Injection.issueNotifier.loadMoreIssues(),
+                    onIssueTap: _navigateToIssue,
                     l10n: l10n,
                   ),
                   _ => const Center(
@@ -180,6 +190,7 @@ class _IssueList extends StatefulWidget {
   final bool loadingMore;
   final VoidCallback onRefresh;
   final VoidCallback onLoadMore;
+  final void Function(String owner, String repo, int index) onIssueTap;
   final AppLocalizations l10n;
 
   const _IssueList({
@@ -188,6 +199,7 @@ class _IssueList extends StatefulWidget {
     required this.loadingMore,
     required this.onRefresh,
     required this.onLoadMore,
+    required this.onIssueTap,
     required this.l10n,
   });
 
@@ -237,7 +249,14 @@ class _IssueListState extends State<_IssueList> {
           final issue = widget.issues[index];
           return FadeInWrapper(
             delay: Duration(milliseconds: (index * 40).clamp(0, 300)),
-            child: _IssueCard(issue: issue, l10n: widget.l10n),
+            child: _IssueCard(issue: issue, l10n: widget.l10n, onTap: () {
+              final repoFullName = issue.repository?.full_name ?? '';
+              final owner = issue.repository?.owner ?? '';
+              final repo = issue.repository?.name ?? '';
+              if (owner.isNotEmpty && repo.isNotEmpty && issue.number != null) {
+                widget.onIssueTap(owner, repo, issue.number!);
+              }
+            }),
           );
         },
       ),
@@ -266,8 +285,9 @@ class _LoadingIndicator extends StatelessWidget {
 class _IssueCard extends StatelessWidget {
   final Issue issue;
   final AppLocalizations l10n;
+  final VoidCallback onTap;
 
-  const _IssueCard({required this.issue, required this.l10n});
+  const _IssueCard({required this.issue, required this.l10n, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -282,17 +302,7 @@ class _IssueCard extends StatelessWidget {
     final canNavigate = owner.isNotEmpty && repo.isNotEmpty && issue.number != null;
 
     return PremiumListCard(
-      onTap: canNavigate
-          ? () {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (_) => IssueDetailPage(
-                  owner: owner,
-                  repo: repo,
-                  index: issue.number!,
-                ),
-              ));
-            }
-          : null,
+      onTap: canNavigate ? onTap : null,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

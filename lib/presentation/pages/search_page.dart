@@ -139,24 +139,34 @@ class _RepoSearchResults extends StatelessWidget {
   }
 }
 
-class _SearchRepoCard extends StatelessWidget {
+class _SearchRepoCard extends StatefulWidget {
   final Repository repo;
 
   const _SearchRepoCard({required this.repo});
 
   @override
+  State<_SearchRepoCard> createState() => _SearchRepoCardState();
+}
+
+class _SearchRepoCardState extends State<_SearchRepoCard> {
+  bool _navigating = false;
+
+  @override
   Widget build(BuildContext context) {
+    final repo = widget.repo;
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
 
     return PremiumListCard(
       onTap: () {
+        if (_navigating) return;
+        _navigating = true;
         Navigator.of(context).push(MaterialPageRoute(
           builder: (_) => RepoDetailPage(
             owner: repo.owner?.login ?? '',
             repo: repo.name ?? '',
           ),
-        ));
+        )).then((_) => _navigating = false);
       },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -291,31 +301,41 @@ class _IssueSearchResults extends StatelessWidget {
   }
 }
 
-class _SearchIssueCard extends StatelessWidget {
+class _SearchIssueCard extends StatefulWidget {
   final Issue issue;
 
   const _SearchIssueCard({required this.issue});
 
   @override
+  State<_SearchIssueCard> createState() => _SearchIssueCardState();
+}
+
+class _SearchIssueCardState extends State<_SearchIssueCard> {
+  bool _navigating = false;
+
+  @override
   Widget build(BuildContext context) {
+    final issue = widget.issue;
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final isOpen = issue.state?.isOpen == true;
 
     return PremiumListCard(
       onTap: () {
+        if (_navigating) return;
         final repoUrl = issue.repository?.full_name ?? '';
         final parts = repoUrl.split('/');
         final owner = parts.isNotEmpty ? parts.first : '';
         final repo = parts.length > 1 ? parts[1] : '';
         if (owner.isNotEmpty && repo.isNotEmpty && issue.number != null) {
+          _navigating = true;
           Navigator.of(context).push(MaterialPageRoute(
             builder: (_) => IssueDetailPage(
               owner: owner,
               repo: repo,
               index: issue.number!,
             ),
-          ));
+          )).then((_) => _navigating = false);
         }
       },
       child: Column(
@@ -429,22 +449,32 @@ class _UserSearchResults extends StatelessWidget {
   }
 }
 
-class _SearchUserCard extends StatelessWidget {
+class _SearchUserCard extends StatefulWidget {
   final User user;
 
   const _SearchUserCard({required this.user});
 
   @override
+  State<_SearchUserCard> createState() => _SearchUserCardState();
+}
+
+class _SearchUserCardState extends State<_SearchUserCard> {
+  bool _navigating = false;
+
+  @override
   Widget build(BuildContext context) {
+    final user = widget.user;
     final theme = Theme.of(context);
 
     return PremiumListCard(
       onTap: () {
+        if (_navigating) return;
         final username = user.login ?? '';
         if (username.isNotEmpty) {
+          _navigating = true;
           Navigator.of(context).push(MaterialPageRoute(
             builder: (_) => UserProfilePage(username: username),
-          ));
+          )).then((_) => _navigating = false);
         }
       },
       child: Row(
