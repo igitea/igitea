@@ -140,6 +140,7 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 - Language selection (10 supported)
 - Account info display
 - Admin Panel: user management, system hooks, cron tasks, action runners, email logs, user badges (admin only)
+- User OAuth2 applications: list, create, and delete OAuth apps
 
 ### Internationalization
 - English (en)

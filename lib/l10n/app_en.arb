@@ -655,5 +655,12 @@
   "adminNoEmails": "No emails",
   "adminNoBadges": "No badges",
   "adminBadgeUsername": "Username",
-  "adminBadgeDescription": "Description"
+  "adminBadgeDescription": "Description",
+  "oauthAppsTitle": "OAuth Applications",
+  "oauthNoApps": "No OAuth applications",
+  "oauthCreateApp": "Create OAuth App",
+  "oauthRedirectUri": "Redirect URI",
+  "oauthDeleteAppConfirm": "Delete OAuth application",
+  "name": "Name",
+  "confirmDelete": "Confirm Delete"
 }

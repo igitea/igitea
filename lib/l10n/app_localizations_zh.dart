@@ -2028,6 +2028,27 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get adminBadgeDescription => '描述';
+
+  @override
+  String get oauthAppsTitle => 'OAuth 应用';
+
+  @override
+  String get oauthNoApps => '无 OAuth 应用';
+
+  @override
+  String get oauthCreateApp => '创建 OAuth 应用';
+
+  @override
+  String get oauthRedirectUri => '重定向 URI';
+
+  @override
+  String get oauthDeleteAppConfirm => '删除 OAuth 应用';
+
+  @override
+  String get name => '名称';
+
+  @override
+  String get confirmDelete => '确认删除';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).

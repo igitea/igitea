@@ -4030,6 +4030,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Description'**
   String get adminBadgeDescription;
+
+  /// No description provided for @oauthAppsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'OAuth Applications'**
+  String get oauthAppsTitle;
+
+  /// No description provided for @oauthNoApps.
+  ///
+  /// In en, this message translates to:
+  /// **'No OAuth applications'**
+  String get oauthNoApps;
+
+  /// No description provided for @oauthCreateApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Create OAuth App'**
+  String get oauthCreateApp;
+
+  /// No description provided for @oauthRedirectUri.
+  ///
+  /// In en, this message translates to:
+  /// **'Redirect URI'**
+  String get oauthRedirectUri;
+
+  /// No description provided for @oauthDeleteAppConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete OAuth application'**
+  String get oauthDeleteAppConfirm;
+
+  /// No description provided for @name.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get name;
+
+  /// No description provided for @confirmDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Delete'**
+  String get confirmDelete;
 }
 
 class _AppLocalizationsDelegate

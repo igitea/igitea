@@ -10,6 +10,10 @@
   - Email Logs: browse admin email records
   - User Badges: manage user badges (list, create, delete)
   - Accessible from Settings → Admin Panel (admin users only)
+- User OAuth2 Applications management (`OAuthAppsPage`)
+  - List, create, and delete OAuth2 applications via `GET/POST/DELETE /user/applications/oauth2`
+  - Shows client ID, redirect URI, and creation date
+  - Accessible from Settings → OAuth Applications
 - Widget tests for 17 pages (35 test cases total, all passing)
   - `DashboardPage`, `EmailsPage`, `FollowPage`, `GpgKeysPage`, `IssueListPage`, `NotificationPage`, `OrganizationDetailPage`, `ProfilePage`, `RepoListPage`, `RepoStargazersPage`, `SearchPage`, `SettingsPage`, `StarredReposPage`, `TagProtectionsPage`, `UserProfilePage`, `UserReposPage`
   - All wrapped with `buildTestableWidget()` for l10n support

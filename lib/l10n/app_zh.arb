@@ -652,5 +652,12 @@
   "adminNoEmails": "无邮件记录",
   "adminNoBadges": "无徽章",
   "adminBadgeUsername": "用户名",
-  "adminBadgeDescription": "描述"
+  "adminBadgeDescription": "描述",
+  "oauthAppsTitle": "OAuth 应用",
+  "oauthNoApps": "无 OAuth 应用",
+  "oauthCreateApp": "创建 OAuth 应用",
+  "oauthRedirectUri": "重定向 URI",
+  "oauthDeleteAppConfirm": "删除 OAuth 应用",
+  "name": "名称",
+  "confirmDelete": "确认删除"
 }

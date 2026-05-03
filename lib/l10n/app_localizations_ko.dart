@@ -2036,4 +2036,25 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get adminBadgeDescription => 'Description';
+
+  @override
+  String get oauthAppsTitle => 'OAuth Applications';
+
+  @override
+  String get oauthNoApps => 'No OAuth applications';
+
+  @override
+  String get oauthCreateApp => 'Create OAuth App';
+
+  @override
+  String get oauthRedirectUri => 'Redirect URI';
+
+  @override
+  String get oauthDeleteAppConfirm => 'Delete OAuth application';
+
+  @override
+  String get name => 'Name';
+
+  @override
+  String get confirmDelete => 'Confirm Delete';
 }

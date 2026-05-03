@@ -7,6 +7,7 @@ import '../../data/repositories/notification_repository_impl.dart';
 import '../../data/repositories/organization_repository_impl.dart';
 import '../../data/repositories/package_repository_impl.dart';
 import '../../data/repositories/repo_repository_impl.dart';
+import '../../data/repositories/user_oauth_repository_impl.dart';
 import '../../data/repositories/user_repository_impl.dart';
 import '../../domain/repositories/admin_repository.dart';
 import '../../domain/repositories/issue_repository.dart';
@@ -15,6 +16,7 @@ import '../../domain/repositories/notification_repository.dart';
 import '../../domain/repositories/organization_repository.dart';
 import '../../domain/repositories/package_repository.dart';
 import '../../domain/repositories/repo_repository.dart';
+import '../../domain/repositories/user_oauth_repository.dart';
 import '../../domain/repositories/user_repository.dart';
 import '../../domain/usecases/admin_usecases.dart';
 import '../../domain/usecases/auth_usecases.dart';
@@ -24,8 +26,10 @@ import '../../domain/usecases/notification_usecases.dart';
 import '../../domain/usecases/organization_usecases.dart';
 import '../../domain/usecases/package_usecases.dart';
 import '../../domain/usecases/repo_usecases.dart';
+import '../../domain/usecases/user_oauth_usecases.dart';
 import '../../domain/usecases/user_usecases.dart';
 import '../../presentation/state/admin_notifier.dart';
+import '../../presentation/state/user_oauth_notifier.dart';
 import '../../presentation/state/auth_notifier.dart';
 import '../../presentation/state/issue_notifier.dart';
 import '../../presentation/state/notification_notifier.dart';
@@ -47,6 +51,7 @@ class Injection {
   static late PackageRepository packageRepository;
   static late AdminRepository adminRepository;
   static late MiscRepository miscRepository;
+  static late UserOAuthRepository userOAuthRepository;
 
   static late LoginUseCase loginUseCase;
   static late GetSettingsUseCase getSettingsUseCase;
@@ -158,6 +163,10 @@ class Injection {
   static late GetGeneralUISettingsUseCase getGeneralUISettingsUseCase;
   static late GetGeneralAttachmentSettingsUseCase getGeneralAttachmentSettingsUseCase;
   static late GetGeneralRepoSettingsUseCase getGeneralRepoSettingsUseCase;
+  static late ListOAuth2AppsUseCase listOAuth2AppsUseCase;
+  static late CreateOAuth2AppUseCase createOAuth2AppUseCase;
+  static late GetOAuth2AppUseCase getOAuth2AppUseCase;
+  static late DeleteOAuth2AppUseCase deleteOAuth2AppUseCase;
 
   static late AuthNotifier authNotifier;
   static late UserNotifier userNotifier;
@@ -168,6 +177,7 @@ class Injection {
   static late PackageNotifier packageNotifier;
   static late ThemeNotifier themeNotifier;
   static late AdminNotifier adminNotifier;
+  static late UserOAuthNotifier userOAuthNotifier;
 
   static bool _initialized = false;
 
@@ -269,6 +279,10 @@ class Injection {
     assert(getGeneralUISettingsUseCase != null);
     assert(getGeneralAttachmentSettingsUseCase != null);
     assert(getGeneralRepoSettingsUseCase != null);
+    assert(listOAuth2AppsUseCase != null);
+    assert(createOAuth2AppUseCase != null);
+    assert(getOAuth2AppUseCase != null);
+    assert(deleteOAuth2AppUseCase != null);
   }
 
   static void _initRepositories() {
@@ -280,6 +294,7 @@ class Injection {
     packageRepository = PackageRepositoryImpl(apiService: apiService);
     adminRepository = AdminRepositoryImpl(apiService: apiService);
     miscRepository = MiscRepositoryImpl(apiService: apiService);
+    userOAuthRepository = UserOAuthRepositoryImpl(apiService: apiService);
   }
 
   static void _initUseCases() {
@@ -407,6 +422,10 @@ class Injection {
     getGeneralUISettingsUseCase = GetGeneralUISettingsUseCase(repository: miscRepository);
     getGeneralAttachmentSettingsUseCase = GetGeneralAttachmentSettingsUseCase(repository: miscRepository);
     getGeneralRepoSettingsUseCase = GetGeneralRepoSettingsUseCase(repository: miscRepository);
+    listOAuth2AppsUseCase = ListOAuth2AppsUseCase(repository: userOAuthRepository);
+    createOAuth2AppUseCase = CreateOAuth2AppUseCase(repository: userOAuthRepository);
+    getOAuth2AppUseCase = GetOAuth2AppUseCase(repository: userOAuthRepository);
+    deleteOAuth2AppUseCase = DeleteOAuth2AppUseCase(repository: userOAuthRepository);
     editUserUseCase = EditUserUseCase(repository: adminRepository);
     runCronTaskUseCase = RunCronTaskUseCase(repository: adminRepository);
     listAdminHooksUseCase = ListAdminHooksUseCase(repository: adminRepository);
@@ -552,6 +571,12 @@ class Injection {
         createUserBadgeUseCase: createUserBadgeUseCase,
         deleteUserBadgeUseCase: deleteUserBadgeUseCase,
       );
+      userOAuthNotifier.updateUseCases(
+        listOAuth2AppsUseCase: listOAuth2AppsUseCase,
+        createOAuth2AppUseCase: createOAuth2AppUseCase,
+        getOAuth2AppUseCase: getOAuth2AppUseCase,
+        deleteOAuth2AppUseCase: deleteOAuth2AppUseCase,
+      );
     } else {
       authNotifier = AuthNotifier(
         loginUseCase: loginUseCase,
@@ -665,6 +690,12 @@ class Injection {
         listUserBadgesUseCase: listUserBadgesUseCase,
         createUserBadgeUseCase: createUserBadgeUseCase,
         deleteUserBadgeUseCase: deleteUserBadgeUseCase,
+      );
+      userOAuthNotifier = UserOAuthNotifier(
+        listOAuth2AppsUseCase: listOAuth2AppsUseCase,
+        createOAuth2AppUseCase: createOAuth2AppUseCase,
+        getOAuth2AppUseCase: getOAuth2AppUseCase,
+        deleteOAuth2AppUseCase: deleteOAuth2AppUseCase,
       );
       _initialized = true;
     }
@@ -799,6 +830,12 @@ class Injection {
       listUserBadgesUseCase: listUserBadgesUseCase,
       createUserBadgeUseCase: createUserBadgeUseCase,
       deleteUserBadgeUseCase: deleteUserBadgeUseCase,
+    );
+    userOAuthNotifier.updateUseCases(
+      listOAuth2AppsUseCase: listOAuth2AppsUseCase,
+      createOAuth2AppUseCase: createOAuth2AppUseCase,
+      getOAuth2AppUseCase: getOAuth2AppUseCase,
+      deleteOAuth2AppUseCase: deleteOAuth2AppUseCase,
     );
   }
 }

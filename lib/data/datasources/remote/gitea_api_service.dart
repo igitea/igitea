@@ -2213,4 +2213,29 @@ class GiteaApiService {
         .map((e) => Label.fromJson(e as Map<String, dynamic>))
         .toList();
   }
+
+  // User OAuth2 Applications
+
+  Future<List<OAuth2Application>> userListOAuth2Apps({int? page, int? limit}) async {
+    final query = <String, String>{};
+    if (page != null) query['page'] = page.toString();
+    if (limit != null) query['limit'] = limit.toString();
+    final response = await _client.get('/user/applications/oauth2', queryParameters: query);
+    final json = jsonDecode(response.body) as List<dynamic>;
+    return json.map((e) => OAuth2Application.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<OAuth2Application> userCreateOAuth2App(Map<String, dynamic> body) async {
+    final response = await _client.post('/user/applications/oauth2', body: body);
+    return OAuth2Application.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+  }
+
+  Future<OAuth2Application> userGetOAuth2App(int id) async {
+    final response = await _client.get('/user/applications/oauth2/$id');
+    return OAuth2Application.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+  }
+
+  Future<void> userDeleteOAuth2App(int id) async {
+    await _client.delete('/user/applications/oauth2/$id');
+  }
 }

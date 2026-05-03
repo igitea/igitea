@@ -9,6 +9,7 @@ import '../../domain/entities/auth_state.dart';
 import '../../l10n/app_localizations.dart';
 
 import 'admin_dashboard_page.dart';
+import 'oauth_apps_page.dart';
 import 'ssh_keys_page.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -156,6 +157,19 @@ class _SettingsPageState extends State<SettingsPage> {
                   context,
                   MaterialPageRoute(
                     builder: (_) => const AdminDashboardPage(),
+                  ),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.apps_outlined),
+              title: Text(l10n.oauthAppsTitle),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const OAuthAppsPage(),
                   ),
                 );
               },
