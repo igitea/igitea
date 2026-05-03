@@ -281,7 +281,7 @@ class _IssueContent extends StatelessWidget {
                 label: Text(l10n.edit),
                 avatar: const Icon(Icons.edit, size: 16),
                 onPressed: () async {
-                  await Navigator.of(context).push(
+                  final edited = await Navigator.of(context).push<bool>(
                     MaterialPageRoute(
                       builder: (_) => EditIssuePage(
                         owner: owner,
@@ -293,6 +293,9 @@ class _IssueContent extends StatelessWidget {
                   );
                   Injection.issueNotifier.getIssue(owner, repo, index);
                   Injection.issueNotifier.listComments(owner, repo, index);
+                  if (edited == true && context.mounted) {
+                    Navigator.pop(context, true);
+                  }
                 },
               ),
               ActionChip(

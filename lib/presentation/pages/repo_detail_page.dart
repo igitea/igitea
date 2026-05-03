@@ -1118,14 +1118,14 @@ class _IssueItem extends StatelessWidget {
 
     return PremiumListCard(
       onTap: () async {
-        await Navigator.of(context).push(MaterialPageRoute(
+        final changed = await Navigator.of(context).push<bool>(MaterialPageRoute(
           builder: (_) => IssueDetailPage(
             owner: owner,
             repo: repo,
             index: issue.number ?? 0,
           ),
         ));
-        onRefresh?.call();
+        if (changed == true) onRefresh?.call();
       },
       child: Row(
         children: [
@@ -1428,14 +1428,14 @@ class _PRItem extends StatelessWidget {
 
     return PremiumListCard(
       onTap: () async {
-        await Navigator.of(context).push(MaterialPageRoute(
+        final changed = await Navigator.of(context).push<bool>(MaterialPageRoute(
           builder: (_) => PRDetailPage(
             owner: owner,
             repo: repo,
             index: pr.number ?? 0,
           ),
         ));
-        onRefresh?.call();
+        if (changed == true) onRefresh?.call();
       },
       child: Row(
         children: [
