@@ -2,21 +2,6 @@
 
 ## [Unreleased]
 
-### Added
-- Notification navigation: tapping a notification navigates to the related page
-  - Issue notifications → IssueDetailPage
-  - Pull request notifications → PRDetailPage
-  - Commit notifications → CommitDetailPage
-  - Repository notifications → RepoDetailPage
-  - User follow notifications → UserProfilePage
-  - Auto-marks notification as read on tap
-
-### Fixed
-- NotifySubjectType type cast error (String → Map) in notificationsubject.dart
-- IssueFormFieldType / IssueFormFieldVisible type cast errors in issueformfield.dart
-- Codegen: added NotifySubjectType, IssueFormFieldType, IssueFormFieldVisible to string-type exclusion list
-- Issue list: filter order changed to open → closed → all; "all" now sends `state=all` instead of null (defaults to open)
-
 ## [0.27.0] - 2026-05-03
 
 ### Added
@@ -80,6 +65,19 @@
 - Accessible from Settings → OAuth Applications
 - Accessible from Organization detail page (toolbar icons) and Repository Settings page
 - All wrapped with `buildTestableWidget()` for l10n support
+- Notification navigation: tapping a notification navigates to the related page
+  - Issue notifications → IssueDetailPage
+  - Pull request notifications → PRDetailPage
+  - Commit notifications → CommitDetailPage
+  - Repository notifications → RepoDetailPage
+  - User follow notifications → UserProfilePage
+  - Auto-marks notification as read on tap
+
+### Fixed
+- NotifySubjectType type cast error (String → Map) in notificationsubject.dart
+- IssueFormFieldType / IssueFormFieldVisible type cast errors in issueformfield.dart
+- Codegen: added NotifySubjectType, IssueFormFieldType, IssueFormFieldVisible to string-type exclusion list
+- Issue list: filter order changed to open → closed → all; "all" now sends `state=all` instead of null (defaults to open)
 
 ### Changed
 - Admin sub-items moved directly into SettingsPage, removed intermediate AdminDashboardPage

@@ -2,21 +2,6 @@
 
 ## [Unreleased]
 
-### Added
-- 通知导航：点击通知可跳转到相关页面
-  - Issue 通知 → IssueDetailPage
-  - PR 通知 → PRDetailPage
-  - Commit 通知 → CommitDetailPage
-  - 仓库通知 → RepoDetailPage
-  - 用户关注通知 → UserProfilePage
-  - 点击时自动标记为已读
-
-### Fixed
-- NotifySubjectType 类型转换错误（String → Map）in notificationsubject.dart
-- IssueFormFieldType / IssueFormFieldVisible 类型转换错误 in issueformfield.dart
-- 代码生成器：添加 NotifySubjectType、IssueFormFieldType、IssueFormFieldVisible 到字符串类型白名单
-- Issue 列表：filter 顺序改为 open → closed → all；"all" 现在发送 `state=all` 而非 null（原本默认为 open）
-
 ## [0.27.0] - 2026-05-03
 
 ### Added
@@ -81,6 +66,19 @@
 - 从设置 → OAuth 应用进入
 - 从组织详情页（工具栏图标）和仓库设置页进入
 - 全部使用 `buildTestableWidget()` 包装，支持国际化
+- 通知导航：点击通知可跳转到相关页面
+  - Issue 通知 → IssueDetailPage
+  - PR 通知 → PRDetailPage
+  - Commit 通知 → CommitDetailPage
+  - 仓库通知 → RepoDetailPage
+  - 用户关注通知 → UserProfilePage
+  - 点击时自动标记为已读
+
+### Fixed
+- NotifySubjectType 类型转换错误（String → Map）in notificationsubject.dart
+- IssueFormFieldType / IssueFormFieldVisible 类型转换错误 in issueformfield.dart
+- 代码生成器：添加 NotifySubjectType、IssueFormFieldType、IssueFormFieldVisible 到字符串类型白名单
+- Issue 列表：filter 顺序改为 open → closed → all；"all" 现在发送 `state=all` 而非 null（原本默认为 open）
 
 ### Changed
 - 管理后台子项直接移至设置页，移除了中间的管理后台仪表盘页面
