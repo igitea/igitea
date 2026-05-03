@@ -1560,6 +1560,12 @@ class AppLocalizationsJa extends AppLocalizations {
   String get unsubscribe => '購読解除';
 
   @override
+  String get subscribed => 'Subscribed';
+
+  @override
+  String get unsubscribed => 'Unsubscribed';
+
+  @override
   String get setDueDate => '期限を設定';
 
   @override

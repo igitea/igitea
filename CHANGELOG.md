@@ -27,6 +27,10 @@
 - `OrganizationsListPage`: full-screen organization list with avatar, name, and description
   - Each item uses `PremiumCard` with `FadeInWrapper` animation
   - Tap navigates to `OrganizationDetailPage`
+- Issue Detail Page subscribe/unsubscribe toggle
+  - `ActionChip` shows "Subscribe" / "Unsubscribe" based on current subscription state
+  - State fetched from `GET /repos/{owner}/{repo}/issues/{index}/subscriptions/check`
+  - Toggle uses `PUT /subscriptions/{user}` (subscribe) or `DELETE /subscriptions/{user}` (unsubscribe)
 
 ### Changed
 - Refactored `UserProfilePage` to match `ProfilePage` visual style

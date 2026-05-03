@@ -497,6 +497,8 @@
   "addReviewerHint": "Enter reviewer username",
   "subscribe": "Subscribe",
   "unsubscribe": "Unsubscribe",
+  "subscribed": "Subscribed",
+  "unsubscribed": "Unsubscribed",
   "setDueDate": "Set Due Date",
   "removeDueDate": "Remove Due Date",
   "topics": "Topics",

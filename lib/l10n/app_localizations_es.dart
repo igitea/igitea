@@ -1571,6 +1571,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get unsubscribe => 'Cancelar suscripción';
 
   @override
+  String get subscribed => 'Subscribed';
+
+  @override
+  String get unsubscribed => 'Unsubscribed';
+
+  @override
   String get setDueDate => 'Set Due Date';
 
   @override

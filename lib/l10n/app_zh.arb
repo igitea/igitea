@@ -497,6 +497,8 @@
   "addReviewerHint": "输入审查者用户名",
   "subscribe": "订阅",
   "unsubscribe": "取消订阅",
+  "subscribed": "已订阅",
+  "unsubscribed": "已取消订阅",
   "setDueDate": "设置截止日期",
   "removeDueDate": "移除截止日期",
   "topics": "主题标签",

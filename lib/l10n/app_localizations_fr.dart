@@ -1572,6 +1572,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get unsubscribe => 'Se désabonner';
 
   @override
+  String get subscribed => 'Subscribed';
+
+  @override
+  String get unsubscribed => 'Unsubscribed';
+
+  @override
   String get setDueDate => 'Set Due Date';
 
   @override

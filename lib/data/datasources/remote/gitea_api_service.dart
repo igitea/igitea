@@ -1723,6 +1723,28 @@ class GiteaApiService {
     );
   }
 
+  Future<void> issueDeleteSubscription({
+    required String owner,
+    required String repo,
+    required int index,
+    required String user,
+  }) async {
+    await _client.delete(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues/${index.toString()}/subscriptions/${Uri.encodeComponent(user)}',
+    );
+  }
+
+  Future<Map<String, dynamic>> issueCheckSubscription({
+    required String owner,
+    required String repo,
+    required int index,
+  }) async {
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues/${index.toString()}/subscriptions/check',
+    );
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
   /// Set issue due date
   Future<Map<String, dynamic>> issueEditDeadline({
     required String owner,

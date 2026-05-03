@@ -33,6 +33,8 @@ class IssueDetailPage extends StatefulWidget {
 
 class _IssueDetailPageState extends State<IssueDetailPage> {
   final _commentController = TextEditingController();
+  bool _isSubscribed = false;
+  bool _subscriptionLoading = false;
 
   @override
   void initState() {
@@ -40,7 +42,71 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Injection.issueNotifier.getIssue(widget.owner, widget.repo, widget.index);
       Injection.issueNotifier.listComments(widget.owner, widget.repo, widget.index);
+      _checkSubscription();
     });
+  }
+
+  Future<void> _checkSubscription() async {
+    try {
+      final result = await Injection.apiService.issueCheckSubscription(
+        owner: widget.owner,
+        repo: widget.repo,
+        index: widget.index,
+      );
+      if (mounted) {
+        setState(() {
+          _isSubscribed = result['subscribed'] == true;
+        });
+      }
+    } catch (_) {
+      // Silently fail; default to not subscribed
+    }
+  }
+
+  Future<void> _toggleSubscription() async {
+    if (_subscriptionLoading) return;
+
+    final l10n = AppLocalizations.of(context)!;
+    final currentUser = Injection.authNotifier.state is AuthAuthenticated
+        ? (Injection.authNotifier.state as AuthAuthenticated).user.login ?? ''
+        : '';
+    if (currentUser.isEmpty) return;
+
+    setState(() => _subscriptionLoading = true);
+
+    try {
+      if (_isSubscribed) {
+        await Injection.apiService.issueDeleteSubscription(
+          owner: widget.owner,
+          repo: widget.repo,
+          index: widget.index,
+          user: currentUser,
+        );
+      } else {
+        await Injection.apiService.issueAddSubscription(
+          owner: widget.owner,
+          repo: widget.repo,
+          index: widget.index,
+          user: currentUser,
+        );
+      }
+      if (mounted) {
+        setState(() {
+          _isSubscribed = !_isSubscribed;
+          _subscriptionLoading = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(_isSubscribed ? l10n.subscribed : l10n.unsubscribed)),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _subscriptionLoading = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${l10n.error}: $e')),
+        );
+      }
+    }
   }
 
   @override
@@ -100,6 +166,9 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
               repo: widget.repo,
               index: widget.index,
               commentController: _commentController,
+              isSubscribed: _isSubscribed,
+              subscriptionLoading: _subscriptionLoading,
+              onToggleSubscription: _toggleSubscription,
             ),
             _ => const Center(child: CircularProgressIndicator()),
           };
@@ -115,6 +184,9 @@ class _IssueContent extends StatelessWidget {
   final String repo;
   final int index;
   final TextEditingController commentController;
+  final bool isSubscribed;
+  final bool subscriptionLoading;
+  final VoidCallback onToggleSubscription;
 
   const _IssueContent({
     required this.issue,
@@ -122,6 +194,9 @@ class _IssueContent extends StatelessWidget {
     required this.repo,
     required this.index,
     required this.commentController,
+    required this.isSubscribed,
+    required this.subscriptionLoading,
+    required this.onToggleSubscription,
   });
 
   @override
@@ -221,29 +296,12 @@ class _IssueContent extends StatelessWidget {
                 },
               ),
               ActionChip(
-                label: Text(l10n.subscribe),
-                avatar: const Icon(Icons.notifications_outlined, size: 16),
-                onPressed: () async {
-                  try {
-                    final currentUser = Injection.authNotifier.state is AuthAuthenticated
-                        ? (Injection.authNotifier.state as AuthAuthenticated).user.login ?? ''
-                        : '';
-                    await Injection.apiService.issueAddSubscription(
-                      owner: owner, repo: repo, index: index, user: currentUser,
-                    );
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(AppLocalizations.of(context)!.subscribe)),
-                      );
-                    }
-                  } catch (e) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('${AppLocalizations.of(context)!.error}: $e')),
-                      );
-                    }
-                  }
-                },
+                label: Text(isSubscribed ? l10n.unsubscribe : l10n.subscribe),
+                avatar: Icon(
+                  isSubscribed ? Icons.notifications_off_outlined : Icons.notifications_outlined,
+                  size: 16,
+                ),
+                onPressed: subscriptionLoading ? null : onToggleSubscription,
               ),
             ],
           ),
@@ -320,13 +378,13 @@ class _IssueContent extends StatelessWidget {
               ),
             ),
 
-          const Divider(height: 32),
+          const SizedBox(height: 16),
 
           _DependenciesSection(owner: owner, repo: repo, index: index),
-          const SizedBox(height: 8),
+          const SizedBox(height: 16),
           _TimelineSection(owner: owner, repo: repo, index: index),
 
-          const Divider(height: 32),
+          const SizedBox(height: 16),
 
           ListenableBuilder(
             listenable: Injection.issueNotifier,
@@ -899,7 +957,7 @@ class _TimelineSectionState extends State<_TimelineSection> {
             )
           else
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
               child: Column(
                 children: _timeline.map((item) {
                   return _TimelineItem(timeline: item);
@@ -1142,7 +1200,7 @@ class _DependenciesSectionState extends State<_DependenciesSection> {
             )
           else
             Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
               child: Column(
                 children: _dependencies.map((dep) {
                   return ListTile(

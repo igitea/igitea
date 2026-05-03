@@ -1571,6 +1571,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get unsubscribe => 'Abo kündigen';
 
   @override
+  String get subscribed => 'Subscribed';
+
+  @override
+  String get unsubscribed => 'Unsubscribed';
+
+  @override
   String get setDueDate => 'Fälligkeitsdatum setzen';
 
   @override

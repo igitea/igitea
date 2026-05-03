@@ -1560,6 +1560,12 @@ class AppLocalizationsKo extends AppLocalizations {
   String get unsubscribe => '구독 취소';
 
   @override
+  String get subscribed => 'Subscribed';
+
+  @override
+  String get unsubscribed => 'Unsubscribed';
+
+  @override
   String get setDueDate => '마감일 설정';
 
   @override

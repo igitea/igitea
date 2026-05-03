@@ -28,6 +28,10 @@
   - 每个列表项显示头像、组织名称和简介
   - 使用 `PremiumCard` 和 `FadeInWrapper` 动画
   - 点击可跳转到 `OrganizationDetailPage`
+- Issue 详情页订阅/取消订阅切换
+  - `ActionChip` 根据当前订阅状态显示「订阅」或「取消订阅」
+  - 通过 `GET /repos/{owner}/{repo}/issues/{index}/subscriptions/check` 获取状态
+  - 切换使用 `PUT /subscriptions/{user}`（订阅）或 `DELETE /subscriptions/{user}`（取消订阅）
 
 ### Changed
 - 重构 `UserProfilePage` 视觉风格，与 `ProfilePage` 保持一致

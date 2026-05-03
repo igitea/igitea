@@ -3101,6 +3101,18 @@ abstract class AppLocalizations {
   /// **'Unsubscribe'**
   String get unsubscribe;
 
+  /// No description provided for @subscribed.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscribed'**
+  String get subscribed;
+
+  /// No description provided for @unsubscribed.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsubscribed'**
+  String get unsubscribed;
+
   /// No description provided for @setDueDate.
   ///
   /// In en, this message translates to:

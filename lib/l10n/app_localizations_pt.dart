@@ -1571,6 +1571,12 @@ class AppLocalizationsPt extends AppLocalizations {
   String get unsubscribe => 'Unsubscribe';
 
   @override
+  String get subscribed => 'Subscribed';
+
+  @override
+  String get unsubscribed => 'Unsubscribed';
+
+  @override
   String get setDueDate => 'Set Due Date';
 
   @override

@@ -1555,6 +1555,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get unsubscribe => '取消订阅';
 
   @override
+  String get subscribed => '已订阅';
+
+  @override
+  String get unsubscribed => '已取消订阅';
+
+  @override
   String get setDueDate => '设置截止日期';
 
   @override
