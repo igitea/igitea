@@ -21,10 +21,7 @@
   - 仓库 Actions 密钥：通过 `GET/PUT/DELETE /repos/{owner}/{repo}/actions/secrets` 列出、创建、删除
   - 仓库 Actions 变量：通过 `GET/PUT/DELETE /repos/{owner}/{repo}/actions/variables` 列出、查看、创建、删除
 
-### Changed
-- 管理后台子项直接移至设置页，移除了中间的管理后台仪表盘页面
-- 替换内联 CronTasksPage 为已有 AdminCronPage（移除重复）
-  - 全部使用 `buildTestableWidget()` 包装，支持国际化
+### Added
 - Search 页面新增用户搜索标签页（`_UserSearchResults` / `_SearchUserCard`）
   - `SearchPage` 第三个标签页，与仓库、问题并列
   - 通过 `GET /users/search` 调用，新增 `SearchPublicUsersUseCase`
@@ -65,8 +62,14 @@
   - GET 请求失败时自动重试（最多 2 次，递进延迟）
   - 内存响应缓存，支持可配置 TTL（`getCachedBody` / `setCached`）
   - `clearCache()` 支持缓存失效
+- 从设置 → 管理后台进入（仅管理员）
+- 从设置 → OAuth 应用进入
+- 从组织详情页（工具栏图标）和仓库设置页进入
+- 全部使用 `buildTestableWidget()` 包装，支持国际化
 
 ### Changed
+- 管理后台子项直接移至设置页，移除了中间的管理后台仪表盘页面
+- 替换内联 CronTasksPage 为已有 AdminCronPage（移除重复）
 - 重构 `UserProfilePage` 视觉风格，与 `ProfilePage` 保持一致
   - 渐变背景 Header：大头像、用户名、@username、个人描述、管理员标识
   - 统计卡片使用 `PremiumCard`，排版统一

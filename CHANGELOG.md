@@ -21,10 +21,7 @@
   - Repository Actions Secrets: list, create, delete via `GET/PUT/DELETE /repos/{owner}/{repo}/actions/secrets`
   - Repository Actions Variables: list, view, create, delete via `GET/PUT/DELETE /repos/{owner}/{repo}/actions/variables`
 
-### Changed
-- Admin sub-items moved directly into SettingsPage, removed intermediate AdminDashboardPage
-- Replaced inline CronTasksPage with existing AdminCronPage (removed duplicate)
-  - All wrapped with `buildTestableWidget()` for l10n support
+### Added
 - Search page user search tab (`_UserSearchResults` / `_SearchUserCard`)
   - Third tab in `SearchPage` alongside Repositories and Issues
   - Calls `GET /users/search` via new `SearchPublicUsersUseCase`
@@ -64,8 +61,14 @@
   - Automatic retry (2 retries with exponential backoff) for failed GET requests
   - In-memory response cache with configurable TTL (`getCachedBody` / `setCached`)
   - `clearCache()` for cache invalidation
+- Accessible from Settings → Admin Panel (admin users only)
+- Accessible from Settings → OAuth Applications
+- Accessible from Organization detail page (toolbar icons) and Repository Settings page
+- All wrapped with `buildTestableWidget()` for l10n support
 
 ### Changed
+- Admin sub-items moved directly into SettingsPage, removed intermediate AdminDashboardPage
+- Replaced inline CronTasksPage with existing AdminCronPage (removed duplicate)
 - Refactored `UserProfilePage` to match `ProfilePage` visual style
   - Gradient background header with large avatar, name, @username, description, admin badge
   - Stats row uses `PremiumCard` with consistent typography
