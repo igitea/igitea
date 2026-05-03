@@ -8,9 +8,14 @@ import '../../data/models/generated/generated_models.dart';
 import '../../domain/entities/auth_state.dart';
 import '../../l10n/app_localizations.dart';
 
-import 'admin_dashboard_page.dart';
+import 'admin_badges_page.dart';
+import 'admin_cron_page.dart';
+import 'admin_emails_page.dart';
+import 'admin_hooks_page.dart';
+import 'admin_runners_page.dart';
 import 'oauth_apps_page.dart';
 import 'ssh_keys_page.dart';
+import 'user_management_page.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -24,7 +29,6 @@ class _SettingsPageState extends State<SettingsPage> {
   GeneralUISettings? _uiSettings;
   GeneralAttachmentSettings? _attachmentSettings;
   GeneralRepoSettings? _repoSettings;
-  List<Cron>? _cronTasks;
   bool _settingsLoading = false;
 
   @override
@@ -49,7 +53,6 @@ class _SettingsPageState extends State<SettingsPage> {
       Injection.getGeneralUISettingsUseCase(),
       Injection.getGeneralAttachmentSettingsUseCase(),
       Injection.getGeneralRepoSettingsUseCase(),
-      Injection.listCronTasksUseCase(),
     ]);
 
     if (!mounted) return;
@@ -59,7 +62,6 @@ class _SettingsPageState extends State<SettingsPage> {
       _uiSettings = (results[1] as Right<Failure, GeneralUISettings>).value;
       _attachmentSettings = (results[2] as Right<Failure, GeneralAttachmentSettings>).value;
       _repoSettings = (results[3] as Right<Failure, GeneralRepoSettings>).value;
-      _cronTasks = (results[4] as Right<Failure, List<Cron>>).value;
       _settingsLoading = false;
     });
   }
@@ -149,15 +151,57 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             const SizedBox(height: 8),
             ListTile(
-              leading: const Icon(Icons.dashboard_outlined),
-              title: Text(l10n.adminPanel),
+              leading: const Icon(Icons.webhook),
+              title: Text(l10n.adminHooksTitle),
               trailing: const Icon(Icons.chevron_right),
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) => const AdminDashboardPage(),
-                  ),
+                  MaterialPageRoute(builder: (_) => const AdminHooksPage()),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.schedule),
+              title: Text(l10n.adminCronTitle),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AdminCronPage()),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.directions_run),
+              title: Text(l10n.adminRunnersTitle),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AdminRunnersPage()),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.email),
+              title: Text(l10n.adminEmailsTitle),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AdminEmailsPage()),
+                );
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.badge),
+              title: Text(l10n.adminBadgesTitle),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AdminBadgesPage()),
                 );
               },
             ),
@@ -168,9 +212,7 @@ class _SettingsPageState extends State<SettingsPage> {
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) => const OAuthAppsPage(),
-                  ),
+                  MaterialPageRoute(builder: (_) => const OAuthAppsPage()),
                 );
               },
             ),
@@ -185,12 +227,6 @@ class _SettingsPageState extends State<SettingsPage> {
               title: Text(l10n.serverSettings),
               trailing: const Icon(Icons.chevron_right),
               onTap: () => _showServerSettings(context),
-            ),
-            ListTile(
-              leading: const Icon(Icons.schedule_outlined),
-              title: Text(l10n.cronTasks),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => _showCronTasks(context),
             ),
           ],
           const SizedBox(height: 24),
@@ -389,27 +425,6 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
     ));
   }
-
-  void _showCronTasks(BuildContext context) {
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (_) => CronTasksPage(cronTasks: _cronTasks),
-    ));
-  }
-}
-
-class UserManagementPage extends StatelessWidget {
-  const UserManagementPage({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.userManagement)),
-      body: Center(
-        child: Text(l10n.userManagementComingSoon, style: Theme.of(context).textTheme.bodyLarge),
-      ),
-    );
-  }
 }
 
 class ServerSettingsPage extends StatelessWidget {
@@ -507,70 +522,4 @@ class _SettingsTile extends StatelessWidget {
   }
 }
 
-class CronTasksPage extends StatelessWidget {
-  final List<Cron>? cronTasks;
 
-  const CronTasksPage({super.key, this.cronTasks});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.cronTasks)),
-      body: cronTasks == null
-          ? Center(child: Text(l10n.failedToLoadCronTasks))
-          : cronTasks!.isEmpty
-              ? Center(child: Text(l10n.noCronTasksFound))
-              : ListView.builder(
-                  itemCount: cronTasks!.length,
-                  itemBuilder: (context, index) {
-                    final cron = cronTasks![index];
-                    return Card(
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                      child: ListTile(
-                        leading: const Icon(Icons.schedule),
-                        title: Text(cron.name ?? l10n.unknown),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (cron.schedule != null)
-                              Text('${l10n.schedule}: ${cron.schedule}'),
-                            if (cron.next != null)
-                              Text('${l10n.next}: ${_formatDate(cron.next!)}'),
-                            if (cron.exec_times != null)
-                              Text('${l10n.executions}: ${cron.exec_times}'),
-                          ],
-                        ),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.play_arrow),
-                          tooltip: l10n.runNow,
-                          onPressed: () async {
-                            if (cron.name != null) {
-                              final result = await Injection.runCronTaskUseCase(cron.name!);
-                              if (context.mounted) {
-                                switch (result) {
-                                  case Right<Failure, void>():
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text(l10n.cronTriggeredParams(cron.name!))),
-                                    );
-                                  case Left<Failure, void>(:final value):
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('${l10n.error}: ${value.message}')),
-                                    );
-                                }
-                              }
-                            }
-                          },
-                        ),
-                      ),
-                    );
-                  },
-                ),
-    );
-  }
-
-  String _formatDate(DateTime date) {
-    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')} '
-        '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
-  }
-}
