@@ -6,12 +6,18 @@ import 'package:http/http.dart' as http;
 import '../../../core/constants/api_constants.dart';
 import '../../../core/errors/exceptions.dart';
 
+const _maxRetries = 2;
+const _retryDelay = Duration(seconds: 1);
+
 class ApiClient {
   final http.Client _client;
   final String baseUrl;
   String? _token;
   String? _username;
   String? _password;
+
+  /// Simple in-memory response cache keyed by URL.
+  final Map<String, _CachedResponse> _cache = {};
 
   ApiClient({
     required this.baseUrl,
@@ -31,22 +37,51 @@ class ApiClient {
     _password = password;
   }
 
+  Future<http.Response> _retryGet(Uri uri) async {
+    Object lastError = const NetworkException('Request failed');
+    for (var i = 0; i <= _maxRetries; i++) {
+      try {
+        final response = await _client
+            .get(uri, headers: _headers)
+            .timeout(const Duration(seconds: defaultTimeoutSeconds));
+        if (response.statusCode >= 500 && i < _maxRetries) {
+          lastError = response;
+          await Future.delayed(_retryDelay * (i + 1));
+          continue;
+        }
+        return _processResponse(response);
+      } on NetworkException catch (e) {
+        lastError = e;
+        if (i < _maxRetries) {
+          await Future.delayed(_retryDelay * (i + 1));
+          continue;
+        }
+      } on http.ClientException catch (e) {
+        lastError = NetworkException(e.message.isNotEmpty ? e.message : 'Network error');
+        if (i < _maxRetries) {
+          await Future.delayed(_retryDelay * (i + 1));
+          continue;
+        }
+      } on TimeoutException catch (_) {
+        lastError = const NetworkException('Request timed out');
+        if (i < _maxRetries) {
+          await Future.delayed(_retryDelay * (i + 1));
+          continue;
+        }
+      }
+    }
+    if (lastError is http.Response) throw ServerException('Server error: HTTP ${lastError.statusCode}');
+    if (lastError is NetworkException) throw lastError;
+    throw NetworkException('$lastError');
+  }
+
   Future<http.Response> get(
     String path, {
     Map<String, String>? queryParameters,
   }) async {
     final uri = _buildUri(path, queryParameters);
     try {
-      final response = await _client
-          .get(uri, headers: _headers)
-          .timeout(const Duration(seconds: defaultTimeoutSeconds));
-      return _processResponse(response);
-    } on http.ClientException catch (e) {
-      throw NetworkException(
-        e.message.isNotEmpty ? e.message : 'Network error',
-      );
-    } on TimeoutException catch (_) {
-      throw const NetworkException('Request timed out');
+      return await _retryGet(uri);
     } on FormatException catch (e) {
       throw NetworkException(e.message);
     }
@@ -250,6 +285,21 @@ class ApiClient {
     return headers;
   }
 
+  /// Get from cache if available and not expired.
+  String? getCachedBody(String cacheKey) {
+    final cached = _cache[cacheKey];
+    if (cached != null && !cached.isExpired) return cached.body;
+    _cache.remove(cacheKey);
+    return null;
+  }
+
+  /// Store response body in cache.
+  void setCached(String cacheKey, String body, {Duration maxAge = const Duration(minutes: 5)}) {
+    _cache[cacheKey] = _CachedResponse(body: body, expiry: DateTime.now().add(maxAge));
+  }
+
+  void clearCache() => _cache.clear();
+
   http.Response _processResponse(http.Response response) {
     final status = response.statusCode;
     if (status >= 200 && status < 300) {
@@ -272,4 +322,13 @@ class ApiClient {
     }
     throw ServerException(message);
   }
+}
+
+class _CachedResponse {
+  final String body;
+  final DateTime expiry;
+
+  const _CachedResponse({required this.body, required this.expiry});
+
+  bool get isExpired => DateTime.now().isAfter(expiry);
 }

@@ -26,32 +26,16 @@ class Milestone {
   });
   factory Milestone.fromJson(Map<String, dynamic> json) {
     return Milestone(
-      closed_at: json['closed_at'] != null
-          ? DateTime.parse(json['closed_at'] as String)
-          : null,
-      closed_issues: json['closed_issues'] != null
-          ? (json['closed_issues'] as num).toInt()
-          : null,
-      created_at: json['created_at'] != null
-          ? DateTime.parse(json['created_at'] as String)
-          : null,
-      description: json['description'] != null
-          ? json['description'] as String
-          : null,
-      due_on: json['due_on'] != null
-          ? DateTime.parse(json['due_on'] as String)
-          : null,
+      closed_at: json['closed_at'] != null ? DateTime.parse(json['closed_at'] as String) : null,
+      closed_issues: json['closed_issues'] != null ? (json['closed_issues'] as num).toInt() : null,
+      created_at: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
+      description: json['description'] != null ? json['description'] as String : null,
+      due_on: json['due_on'] != null ? DateTime.parse(json['due_on'] as String) : null,
       id: json['id'] != null ? (json['id'] as num).toInt() : null,
-      open_issues: json['open_issues'] != null
-          ? (json['open_issues'] as num).toInt()
-          : null,
-      state: json['state'] != null
-          ? StateType.fromJson(json['state'])
-          : null,
+      open_issues: json['open_issues'] != null ? (json['open_issues'] as num).toInt() : null,
+      state: json['state'] != null ? StateType.fromJson(json['state'] as Map<String, dynamic>) : null,
       title: json['title'] != null ? json['title'] as String : null,
-      updated_at: json['updated_at'] != null
-          ? DateTime.parse(json['updated_at'] as String)
-          : null,
+      updated_at: json['updated_at'] != null ? DateTime.parse(json['updated_at'] as String) : null,
     );
   }
   Map<String, dynamic> toJson() {
@@ -68,7 +52,6 @@ class Milestone {
     if (updated_at != null) map['updated_at'] = updated_at!.toIso8601String();
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -84,19 +67,7 @@ class Milestone {
           title == other.title &&
           updated_at == other.updated_at;
   @override
-  int get hashCode => Object.hash(
-    closed_at,
-    closed_issues,
-    created_at,
-    description,
-    due_on,
-    id,
-    open_issues,
-    state,
-    title,
-    updated_at,
-  );
+  int get hashCode => Object.hash(closed_at, closed_issues, created_at, description, due_on, id, open_issues, state, title, updated_at);
   @override
-  String toString() =>
-      'Milestone(closed_at: $closed_at, closed_issues: $closed_issues, created_at: $created_at, description: $description, due_on: $due_on, id: $id, open_issues: $open_issues, state: $state, title: $title, updated_at: $updated_at)';
+  String toString() => 'Milestone(closed_at: $closed_at, closed_issues: $closed_issues, created_at: $created_at, description: $description, due_on: $due_on, id: $id, open_issues: $open_issues, state: $state, title: $title, updated_at: $updated_at)';
 }

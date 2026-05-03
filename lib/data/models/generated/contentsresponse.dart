@@ -46,39 +46,23 @@ class ContentsResponse {
   });
   factory ContentsResponse.fromJson(Map<String, dynamic> json) {
     return ContentsResponse(
-      links: json['_links'] != null
-          ? FileLinksResponse.fromJson(json['_links'] as Map<String, dynamic>)
-          : null,
+      links: json['_links'] != null ? FileLinksResponse.fromJson(json['_links'] as Map<String, dynamic>) : null,
       content: json['content'] != null ? json['content'] as String : null,
-      download_url: json['download_url'] != null
-          ? json['download_url'] as String
-          : null,
+      download_url: json['download_url'] != null ? json['download_url'] as String : null,
       encoding: json['encoding'] != null ? json['encoding'] as String : null,
       git_url: json['git_url'] != null ? json['git_url'] as String : null,
       html_url: json['html_url'] != null ? json['html_url'] as String : null,
-      last_author_date: json['last_author_date'] != null
-          ? DateTime.parse(json['last_author_date'] as String)
-          : null,
-      last_commit_message: json['last_commit_message'] != null
-          ? json['last_commit_message'] as String
-          : null,
-      last_commit_sha: json['last_commit_sha'] != null
-          ? json['last_commit_sha'] as String
-          : null,
-      last_committer_date: json['last_committer_date'] != null
-          ? DateTime.parse(json['last_committer_date'] as String)
-          : null,
+      last_author_date: json['last_author_date'] != null ? DateTime.parse(json['last_author_date'] as String) : null,
+      last_commit_message: json['last_commit_message'] != null ? json['last_commit_message'] as String : null,
+      last_commit_sha: json['last_commit_sha'] != null ? json['last_commit_sha'] as String : null,
+      last_committer_date: json['last_committer_date'] != null ? DateTime.parse(json['last_committer_date'] as String) : null,
       lfs_oid: json['lfs_oid'] != null ? json['lfs_oid'] as String : null,
-      lfs_size: json['lfs_size'] != null
-          ? (json['lfs_size'] as num).toInt()
-          : null,
+      lfs_size: json['lfs_size'] != null ? (json['lfs_size'] as num).toInt() : null,
       name: json['name'] != null ? json['name'] as String : null,
       path: json['path'] != null ? json['path'] as String : null,
       sha: json['sha'] != null ? json['sha'] as String : null,
       size: json['size'] != null ? (json['size'] as num).toInt() : null,
-      submodule_git_url: json['submodule_git_url'] != null
-          ? json['submodule_git_url'] as String
-          : null,
+      submodule_git_url: json['submodule_git_url'] != null ? json['submodule_git_url'] as String : null,
       target: json['target'] != null ? json['target'] as String : null,
       type: json['type'] != null ? json['type'] as String : null,
       url: json['url'] != null ? json['url'] as String : null,
@@ -92,27 +76,22 @@ class ContentsResponse {
     if (encoding != null) map['encoding'] = encoding!;
     if (git_url != null) map['git_url'] = git_url!;
     if (html_url != null) map['html_url'] = html_url!;
-    if (last_author_date != null)
-      map['last_author_date'] = last_author_date!.toIso8601String();
-    if (last_commit_message != null)
-      map['last_commit_message'] = last_commit_message!;
+    if (last_author_date != null) map['last_author_date'] = last_author_date!.toIso8601String();
+    if (last_commit_message != null) map['last_commit_message'] = last_commit_message!;
     if (last_commit_sha != null) map['last_commit_sha'] = last_commit_sha!;
-    if (last_committer_date != null)
-      map['last_committer_date'] = last_committer_date!.toIso8601String();
+    if (last_committer_date != null) map['last_committer_date'] = last_committer_date!.toIso8601String();
     if (lfs_oid != null) map['lfs_oid'] = lfs_oid!;
     if (lfs_size != null) map['lfs_size'] = lfs_size!;
     if (name != null) map['name'] = name!;
     if (path != null) map['path'] = path!;
     if (sha != null) map['sha'] = sha!;
     if (size != null) map['size'] = size!;
-    if (submodule_git_url != null)
-      map['submodule_git_url'] = submodule_git_url!;
+    if (submodule_git_url != null) map['submodule_git_url'] = submodule_git_url!;
     if (target != null) map['target'] = target!;
     if (type != null) map['type'] = type!;
     if (url != null) map['url'] = url!;
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -138,29 +117,7 @@ class ContentsResponse {
           type == other.type &&
           url == other.url;
   @override
-  int get hashCode => Object.hash(
-    links,
-    content,
-    download_url,
-    encoding,
-    git_url,
-    html_url,
-    last_author_date,
-    last_commit_message,
-    last_commit_sha,
-    last_committer_date,
-    lfs_oid,
-    lfs_size,
-    name,
-    path,
-    sha,
-    size,
-    submodule_git_url,
-    target,
-    type,
-    url,
-  );
+  int get hashCode => Object.hash(links, content, download_url, encoding, git_url, html_url, last_author_date, last_commit_message, last_commit_sha, last_committer_date, lfs_oid, lfs_size, name, path, sha, size, submodule_git_url, target, type, url);
   @override
-  String toString() =>
-      'ContentsResponse(links: $links, content: $content, download_url: $download_url, encoding: $encoding, git_url: $git_url, html_url: $html_url, last_author_date: $last_author_date, last_commit_message: $last_commit_message, last_commit_sha: $last_commit_sha, last_committer_date: $last_committer_date, lfs_oid: $lfs_oid, lfs_size: $lfs_size, name: $name, path: $path, sha: $sha, size: $size, submodule_git_url: $submodule_git_url, target: $target, type: $type, url: $url)';
+  String toString() => 'ContentsResponse(links: $links, content: $content, download_url: $download_url, encoding: $encoding, git_url: $git_url, html_url: $html_url, last_author_date: $last_author_date, last_commit_message: $last_commit_message, last_commit_sha: $last_commit_sha, last_committer_date: $last_committer_date, lfs_oid: $lfs_oid, lfs_size: $lfs_size, name: $name, path: $path, sha: $sha, size: $size, submodule_git_url: $submodule_git_url, target: $target, type: $type, url: $url)';
 }

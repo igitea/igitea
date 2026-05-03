@@ -35,6 +35,17 @@
   - `ActionChip` 根据当前订阅状态显示「订阅」或「取消订阅」
   - 通过 `GET /repos/{owner}/{repo}/issues/{index}/subscriptions/check` 获取状态
   - 切换使用 `PUT /subscriptions/{user}`（订阅）或 `DELETE /subscriptions/{user}`（取消订阅）
+- `app.dart` 中添加 Deep Link 路由
+  - `/explore` → SearchPage、`/notifications` → NotificationPage、`/settings` → SettingsPage、`/stars` → StarredReposPage
+  - `/org/{org}` → OrganizationDetailPage、`/user/{username}` → UserProfilePage
+  - Android：`igitea://` scheme intent filter；iOS：`CFBundleURLTypes` 自定义 URL scheme
+  - 保留现有仓库/Issue/PR 路由（`/{owner}/{repo}`、`/{owner}/{repo}/issues/{n}`）
+- 错误边界：`main.dart` 中通过 `ErrorWidget.builder` 设置自定义错误 UI
+  - 替代默认的红屏错误，显示友好的提示信息
+- API 客户端改进（`api_client.dart`）
+  - GET 请求失败时自动重试（最多 2 次，递进延迟）
+  - 内存响应缓存，支持可配置 TTL（`getCachedBody` / `setCached`）
+  - `clearCache()` 支持缓存失效
 
 ### Changed
 - 重构 `UserProfilePage` 视觉风格，与 `ProfilePage` 保持一致

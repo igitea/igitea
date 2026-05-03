@@ -80,111 +80,51 @@ class PullRequest {
   });
   factory PullRequest.fromJson(Map<String, dynamic> json) {
     return PullRequest(
-      additions: json['additions'] != null
-          ? (json['additions'] as num).toInt()
-          : null,
-      allow_maintainer_edit: json['allow_maintainer_edit'] != null
-          ? json['allow_maintainer_edit'] as bool
-          : null,
-      assignee: json['assignee'] != null
-          ? User.fromJson(json['assignee'] as Map<String, dynamic>)
-          : null,
-      assignees: json['assignees'] != null
-          ? (json['assignees'] as List<dynamic>)
-                .map((e) => User.fromJson(e as Map<String, dynamic>))
-                .toList()
-          : null,
-      base_: json['base'] != null
-          ? PRBranchInfo.fromJson(json['base'] as Map<String, dynamic>)
-          : null,
+      additions: json['additions'] != null ? (json['additions'] as num).toInt() : null,
+      allow_maintainer_edit: json['allow_maintainer_edit'] != null ? json['allow_maintainer_edit'] as bool : null,
+      assignee: json['assignee'] != null ? User.fromJson(json['assignee'] as Map<String, dynamic>) : null,
+      assignees: json['assignees'] != null ? (json['assignees'] as List<dynamic>).map((e) => User.fromJson(e as Map<String, dynamic>)).toList() : null,
+      base_: json['base'] != null ? PRBranchInfo.fromJson(json['base'] as Map<String, dynamic>) : null,
       body: json['body'] != null ? json['body'] as String : null,
-      changed_files: json['changed_files'] != null
-          ? (json['changed_files'] as num).toInt()
-          : null,
-      closed_at: json['closed_at'] != null
-          ? DateTime.parse(json['closed_at'] as String)
-          : null,
-      comments: json['comments'] != null
-          ? (json['comments'] as num).toInt()
-          : null,
-      created_at: json['created_at'] != null
-          ? DateTime.parse(json['created_at'] as String)
-          : null,
-      deletions: json['deletions'] != null
-          ? (json['deletions'] as num).toInt()
-          : null,
+      changed_files: json['changed_files'] != null ? (json['changed_files'] as num).toInt() : null,
+      closed_at: json['closed_at'] != null ? DateTime.parse(json['closed_at'] as String) : null,
+      comments: json['comments'] != null ? (json['comments'] as num).toInt() : null,
+      created_at: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
+      deletions: json['deletions'] != null ? (json['deletions'] as num).toInt() : null,
       diff_url: json['diff_url'] != null ? json['diff_url'] as String : null,
       draft: json['draft'] != null ? json['draft'] as bool : null,
-      due_date: json['due_date'] != null
-          ? DateTime.parse(json['due_date'] as String)
-          : null,
-      head: json['head'] != null
-          ? PRBranchInfo.fromJson(json['head'] as Map<String, dynamic>)
-          : null,
+      due_date: json['due_date'] != null ? DateTime.parse(json['due_date'] as String) : null,
+      head: json['head'] != null ? PRBranchInfo.fromJson(json['head'] as Map<String, dynamic>) : null,
       html_url: json['html_url'] != null ? json['html_url'] as String : null,
       id: json['id'] != null ? (json['id'] as num).toInt() : null,
       is_locked: json['is_locked'] != null ? json['is_locked'] as bool : null,
-      labels: json['labels'] != null
-          ? (json['labels'] as List<dynamic>)
-                .map((e) => Label.fromJson(e as Map<String, dynamic>))
-                .toList()
-          : null,
-      merge_base: json['merge_base'] != null
-          ? json['merge_base'] as String
-          : null,
-      merge_commit_sha: json['merge_commit_sha'] != null
-          ? json['merge_commit_sha'] as String
-          : null,
+      labels: json['labels'] != null ? (json['labels'] as List<dynamic>).map((e) => Label.fromJson(e as Map<String, dynamic>)).toList() : null,
+      merge_base: json['merge_base'] != null ? json['merge_base'] as String : null,
+      merge_commit_sha: json['merge_commit_sha'] != null ? json['merge_commit_sha'] as String : null,
       mergeable: json['mergeable'] != null ? json['mergeable'] as bool : null,
       merged: json['merged'] != null ? json['merged'] as bool : null,
-      merged_at: json['merged_at'] != null
-          ? DateTime.parse(json['merged_at'] as String)
-          : null,
-      merged_by: json['merged_by'] != null
-          ? User.fromJson(json['merged_by'] as Map<String, dynamic>)
-          : null,
-      milestone: json['milestone'] != null
-          ? Milestone.fromJson(json['milestone'] as Map<String, dynamic>)
-          : null,
+      merged_at: json['merged_at'] != null ? DateTime.parse(json['merged_at'] as String) : null,
+      merged_by: json['merged_by'] != null ? User.fromJson(json['merged_by'] as Map<String, dynamic>) : null,
+      milestone: json['milestone'] != null ? Milestone.fromJson(json['milestone'] as Map<String, dynamic>) : null,
       number: json['number'] != null ? (json['number'] as num).toInt() : null,
       patch_url: json['patch_url'] != null ? json['patch_url'] as String : null,
-      pin_order: json['pin_order'] != null
-          ? (json['pin_order'] as num).toInt()
-          : null,
-      requested_reviewers: json['requested_reviewers'] != null
-          ? (json['requested_reviewers'] as List<dynamic>)
-                .map((e) => User.fromJson(e as Map<String, dynamic>))
-                .toList()
-          : null,
-      requested_reviewers_teams: json['requested_reviewers_teams'] != null
-          ? (json['requested_reviewers_teams'] as List<dynamic>)
-                .map((e) => Team.fromJson(e as Map<String, dynamic>))
-                .toList()
-          : null,
-      review_comments: json['review_comments'] != null
-          ? (json['review_comments'] as num).toInt()
-          : null,
-      state: json['state'] != null
-          ? StateType.fromJson(json['state'])
-          : null,
+      pin_order: json['pin_order'] != null ? (json['pin_order'] as num).toInt() : null,
+      requested_reviewers: json['requested_reviewers'] != null ? (json['requested_reviewers'] as List<dynamic>).map((e) => User.fromJson(e as Map<String, dynamic>)).toList() : null,
+      requested_reviewers_teams: json['requested_reviewers_teams'] != null ? (json['requested_reviewers_teams'] as List<dynamic>).map((e) => Team.fromJson(e as Map<String, dynamic>)).toList() : null,
+      review_comments: json['review_comments'] != null ? (json['review_comments'] as num).toInt() : null,
+      state: json['state'] != null ? StateType.fromJson(json['state'] as Map<String, dynamic>) : null,
       title: json['title'] != null ? json['title'] as String : null,
-      updated_at: json['updated_at'] != null
-          ? DateTime.parse(json['updated_at'] as String)
-          : null,
+      updated_at: json['updated_at'] != null ? DateTime.parse(json['updated_at'] as String) : null,
       url: json['url'] != null ? json['url'] as String : null,
-      user: json['user'] != null
-          ? User.fromJson(json['user'] as Map<String, dynamic>)
-          : null,
+      user: json['user'] != null ? User.fromJson(json['user'] as Map<String, dynamic>) : null,
     );
   }
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     if (additions != null) map['additions'] = additions!;
-    if (allow_maintainer_edit != null)
-      map['allow_maintainer_edit'] = allow_maintainer_edit!;
+    if (allow_maintainer_edit != null) map['allow_maintainer_edit'] = allow_maintainer_edit!;
     if (assignee != null) map['assignee'] = assignee!.toJson();
-    if (assignees != null)
-      map['assignees'] = assignees!.map((e) => e.toJson()).toList();
+    if (assignees != null) map['assignees'] = assignees!.map((e) => e.toJson()).toList();
     if (base_ != null) map['base'] = base_!.toJson();
     if (body != null) map['body'] = body!;
     if (changed_files != null) map['changed_files'] = changed_files!;
@@ -210,14 +150,8 @@ class PullRequest {
     if (number != null) map['number'] = number!;
     if (patch_url != null) map['patch_url'] = patch_url!;
     if (pin_order != null) map['pin_order'] = pin_order!;
-    if (requested_reviewers != null)
-      map['requested_reviewers'] = requested_reviewers!
-          .map((e) => e.toJson())
-          .toList();
-    if (requested_reviewers_teams != null)
-      map['requested_reviewers_teams'] = requested_reviewers_teams!
-          .map((e) => e.toJson())
-          .toList();
+    if (requested_reviewers != null) map['requested_reviewers'] = requested_reviewers!.map((e) => e.toJson()).toList();
+    if (requested_reviewers_teams != null) map['requested_reviewers_teams'] = requested_reviewers_teams!.map((e) => e.toJson()).toList();
     if (review_comments != null) map['review_comments'] = review_comments!;
     if (state != null) map['state'] = state!.toJson();
     if (title != null) map['title'] = title!;
@@ -226,7 +160,6 @@ class PullRequest {
     if (user != null) map['user'] = user!.toJson();
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -269,46 +202,7 @@ class PullRequest {
           url == other.url &&
           user == other.user;
   @override
-  int get hashCode => Object.hashAll([
-    additions,
-    allow_maintainer_edit,
-    assignee,
-    assignees,
-    base_,
-    body,
-    changed_files,
-    closed_at,
-    comments,
-    created_at,
-    deletions,
-    diff_url,
-    draft,
-    due_date,
-    head,
-    html_url,
-    id,
-    is_locked,
-    labels,
-    merge_base,
-    merge_commit_sha,
-    mergeable,
-    merged,
-    merged_at,
-    merged_by,
-    milestone,
-    number,
-    patch_url,
-    pin_order,
-    requested_reviewers,
-    requested_reviewers_teams,
-    review_comments,
-    state,
-    title,
-    updated_at,
-    url,
-    user,
-  ]);
+  int get hashCode => Object.hashAll([additions, allow_maintainer_edit, assignee, assignees, base_, body, changed_files, closed_at, comments, created_at, deletions, diff_url, draft, due_date, head, html_url, id, is_locked, labels, merge_base, merge_commit_sha, mergeable, merged, merged_at, merged_by, milestone, number, patch_url, pin_order, requested_reviewers, requested_reviewers_teams, review_comments, state, title, updated_at, url, user]);
   @override
-  String toString() =>
-      'PullRequest(additions: $additions, allow_maintainer_edit: $allow_maintainer_edit, assignee: $assignee, assignees: $assignees, base_: $base_, body: $body, changed_files: $changed_files, closed_at: $closed_at, comments: $comments, created_at: $created_at, deletions: $deletions, diff_url: $diff_url, draft: $draft, due_date: $due_date, head: $head, html_url: $html_url, id: $id, is_locked: $is_locked, labels: $labels, merge_base: $merge_base, merge_commit_sha: $merge_commit_sha, mergeable: $mergeable, merged: $merged, merged_at: $merged_at, merged_by: $merged_by, milestone: $milestone, number: $number, patch_url: $patch_url, pin_order: $pin_order, requested_reviewers: $requested_reviewers, requested_reviewers_teams: $requested_reviewers_teams, review_comments: $review_comments, state: $state, title: $title, updated_at: $updated_at, url: $url, user: $user)';
+  String toString() => 'PullRequest(additions: $additions, allow_maintainer_edit: $allow_maintainer_edit, assignee: $assignee, assignees: $assignees, base_: $base_, body: $body, changed_files: $changed_files, closed_at: $closed_at, comments: $comments, created_at: $created_at, deletions: $deletions, diff_url: $diff_url, draft: $draft, due_date: $due_date, head: $head, html_url: $html_url, id: $id, is_locked: $is_locked, labels: $labels, merge_base: $merge_base, merge_commit_sha: $merge_commit_sha, mergeable: $mergeable, merged: $merged, merged_at: $merged_at, merged_by: $merged_by, milestone: $milestone, number: $number, patch_url: $patch_url, pin_order: $pin_order, requested_reviewers: $requested_reviewers, requested_reviewers_teams: $requested_reviewers_teams, review_comments: $review_comments, state: $state, title: $title, updated_at: $updated_at, url: $url, user: $user)';
 }

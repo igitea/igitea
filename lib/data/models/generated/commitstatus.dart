@@ -25,23 +25,13 @@ class CommitStatus {
   factory CommitStatus.fromJson(Map<String, dynamic> json) {
     return CommitStatus(
       context: json['context'] != null ? json['context'] as String : null,
-      created_at: json['created_at'] != null
-          ? DateTime.parse(json['created_at'] as String)
-          : null,
-      creator: json['creator'] != null
-          ? User.fromJson(json['creator'] as Map<String, dynamic>)
-          : null,
-      description: json['description'] != null
-          ? json['description'] as String
-          : null,
+      created_at: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
+      creator: json['creator'] != null ? User.fromJson(json['creator'] as Map<String, dynamic>) : null,
+      description: json['description'] != null ? json['description'] as String : null,
       id: json['id'] != null ? (json['id'] as num).toInt() : null,
       status: json['status'] != null ? json['status'] as String : null,
-      target_url: json['target_url'] != null
-          ? json['target_url'] as String
-          : null,
-      updated_at: json['updated_at'] != null
-          ? DateTime.parse(json['updated_at'] as String)
-          : null,
+      target_url: json['target_url'] != null ? json['target_url'] as String : null,
+      updated_at: json['updated_at'] != null ? DateTime.parse(json['updated_at'] as String) : null,
       url: json['url'] != null ? json['url'] as String : null,
     );
   }
@@ -58,7 +48,6 @@ class CommitStatus {
     if (url != null) map['url'] = url!;
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -73,18 +62,7 @@ class CommitStatus {
           updated_at == other.updated_at &&
           url == other.url;
   @override
-  int get hashCode => Object.hash(
-    context,
-    created_at,
-    creator,
-    description,
-    id,
-    status,
-    target_url,
-    updated_at,
-    url,
-  );
+  int get hashCode => Object.hash(context, created_at, creator, description, id, status, target_url, updated_at, url);
   @override
-  String toString() =>
-      'CommitStatus(context: $context, created_at: $created_at, creator: $creator, description: $description, id: $id, status: $status, target_url: $target_url, updated_at: $updated_at, url: $url)';
+  String toString() => 'CommitStatus(context: $context, created_at: $created_at, creator: $creator, description: $description, id: $id, status: $status, target_url: $target_url, updated_at: $updated_at, url: $url)';
 }

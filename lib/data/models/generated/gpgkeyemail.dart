@@ -4,7 +4,10 @@ part of 'generated_models.dart';
 class GPGKeyEmail {
   final String? email;
   final bool? verified;
-  const GPGKeyEmail({this.email, this.verified});
+  const GPGKeyEmail({
+    this.email,
+    this.verified,
+  });
   factory GPGKeyEmail.fromJson(Map<String, dynamic> json) {
     return GPGKeyEmail(
       email: json['email'] != null ? json['email'] as String : null,
@@ -17,7 +20,6 @@ class GPGKeyEmail {
     if (verified != null) map['verified'] = verified!;
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

@@ -5,12 +5,14 @@ class Reference {
   final GitObject? object;
   final String? ref;
   final String? url;
-  const Reference({this.object, this.ref, this.url});
+  const Reference({
+    this.object,
+    this.ref,
+    this.url,
+  });
   factory Reference.fromJson(Map<String, dynamic> json) {
     return Reference(
-      object: json['object'] != null
-          ? GitObject.fromJson(json['object'] as Map<String, dynamic>)
-          : null,
+      object: json['object'] != null ? GitObject.fromJson(json['object'] as Map<String, dynamic>) : null,
       ref: json['ref'] != null ? json['ref'] as String : null,
       url: json['url'] != null ? json['url'] as String : null,
     );
@@ -22,7 +24,6 @@ class Reference {
     if (url != null) map['url'] = url!;
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

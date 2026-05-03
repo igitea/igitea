@@ -22,20 +22,12 @@ class DeleteFileOptions {
   });
   factory DeleteFileOptions.fromJson(Map<String, dynamic> json) {
     return DeleteFileOptions(
-      author: json['author'] != null
-          ? Identity.fromJson(json['author'] as Map<String, dynamic>)
-          : null,
+      author: json['author'] != null ? Identity.fromJson(json['author'] as Map<String, dynamic>) : null,
       branch: json['branch'] != null ? json['branch'] as String : null,
-      committer: json['committer'] != null
-          ? Identity.fromJson(json['committer'] as Map<String, dynamic>)
-          : null,
-      dates: json['dates'] != null
-          ? CommitDateOptions.fromJson(json['dates'] as Map<String, dynamic>)
-          : null,
+      committer: json['committer'] != null ? Identity.fromJson(json['committer'] as Map<String, dynamic>) : null,
+      dates: json['dates'] != null ? CommitDateOptions.fromJson(json['dates'] as Map<String, dynamic>) : null,
       message: json['message'] != null ? json['message'] as String : null,
-      new_branch: json['new_branch'] != null
-          ? json['new_branch'] as String
-          : null,
+      new_branch: json['new_branch'] != null ? json['new_branch'] as String : null,
       sha: json['sha'] != null ? json['sha'] as String : null,
       signoff: json['signoff'] != null ? json['signoff'] as bool : null,
     );
@@ -52,7 +44,6 @@ class DeleteFileOptions {
     if (signoff != null) map['signoff'] = signoff!;
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -66,17 +57,7 @@ class DeleteFileOptions {
           sha == other.sha &&
           signoff == other.signoff;
   @override
-  int get hashCode => Object.hash(
-    author,
-    branch,
-    committer,
-    dates,
-    message,
-    new_branch,
-    sha,
-    signoff,
-  );
+  int get hashCode => Object.hash(author, branch, committer, dates, message, new_branch, sha, signoff);
   @override
-  String toString() =>
-      'DeleteFileOptions(author: $author, branch: $branch, committer: $committer, dates: $dates, message: $message, new_branch: $new_branch, sha: $sha, signoff: $signoff)';
+  String toString() => 'DeleteFileOptions(author: $author, branch: $branch, committer: $committer, dates: $dates, message: $message, new_branch: $new_branch, sha: $sha, signoff: $signoff)';
 }

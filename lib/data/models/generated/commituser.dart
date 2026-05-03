@@ -5,7 +5,11 @@ class CommitUser {
   final String? date;
   final String? email;
   final String? name;
-  const CommitUser({this.date, this.email, this.name});
+  const CommitUser({
+    this.date,
+    this.email,
+    this.name,
+  });
   factory CommitUser.fromJson(Map<String, dynamic> json) {
     return CommitUser(
       date: json['date'] != null ? json['date'] as String : null,
@@ -20,7 +24,6 @@ class CommitUser {
     if (name != null) map['name'] = name!;
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||

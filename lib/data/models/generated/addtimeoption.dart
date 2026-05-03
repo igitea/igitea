@@ -5,12 +5,14 @@ class AddTimeOption {
   final DateTime? created;
   final int? time;
   final String? user_name;
-  const AddTimeOption({this.created, this.time, this.user_name});
+  const AddTimeOption({
+    this.created,
+    this.time,
+    this.user_name,
+  });
   factory AddTimeOption.fromJson(Map<String, dynamic> json) {
     return AddTimeOption(
-      created: json['created'] != null
-          ? DateTime.parse(json['created'] as String)
-          : null,
+      created: json['created'] != null ? DateTime.parse(json['created'] as String) : null,
       time: json['time'] != null ? (json['time'] as num).toInt() : null,
       user_name: json['user_name'] != null ? json['user_name'] as String : null,
     );
@@ -22,7 +24,6 @@ class AddTimeOption {
     if (user_name != null) map['user_name'] = user_name!;
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -33,6 +34,5 @@ class AddTimeOption {
   @override
   int get hashCode => Object.hash(created, time, user_name);
   @override
-  String toString() =>
-      'AddTimeOption(created: $created, time: $time, user_name: $user_name)';
+  String toString() => 'AddTimeOption(created: $created, time: $time, user_name: $user_name)';
 }

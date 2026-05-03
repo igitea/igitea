@@ -42,54 +42,29 @@ class ActionWorkflowJob {
   });
   factory ActionWorkflowJob.fromJson(Map<String, dynamic> json) {
     return ActionWorkflowJob(
-      completed_at: json['completed_at'] != null
-          ? DateTime.parse(json['completed_at'] as String)
-          : null,
-      conclusion: json['conclusion'] != null
-          ? json['conclusion'] as String
-          : null,
-      created_at: json['created_at'] != null
-          ? DateTime.parse(json['created_at'] as String)
-          : null,
-      head_branch: json['head_branch'] != null
-          ? json['head_branch'] as String
-          : null,
+      completed_at: json['completed_at'] != null ? DateTime.parse(json['completed_at'] as String) : null,
+      conclusion: json['conclusion'] != null ? json['conclusion'] as String : null,
+      created_at: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
+      head_branch: json['head_branch'] != null ? json['head_branch'] as String : null,
       head_sha: json['head_sha'] != null ? json['head_sha'] as String : null,
       html_url: json['html_url'] != null ? json['html_url'] as String : null,
       id: json['id'] != null ? (json['id'] as num).toInt() : null,
-      labels: json['labels'] != null
-          ? (json['labels'] as List<dynamic>).cast<String>()
-          : null,
+      labels: json['labels'] != null ? (json['labels'] as List<dynamic>).cast<String>() : null,
       name: json['name'] != null ? json['name'] as String : null,
-      run_attempt: json['run_attempt'] != null
-          ? (json['run_attempt'] as num).toInt()
-          : null,
+      run_attempt: json['run_attempt'] != null ? (json['run_attempt'] as num).toInt() : null,
       run_id: json['run_id'] != null ? (json['run_id'] as num).toInt() : null,
       run_url: json['run_url'] != null ? json['run_url'] as String : null,
-      runner_id: json['runner_id'] != null
-          ? (json['runner_id'] as num).toInt()
-          : null,
-      runner_name: json['runner_name'] != null
-          ? json['runner_name'] as String
-          : null,
-      started_at: json['started_at'] != null
-          ? DateTime.parse(json['started_at'] as String)
-          : null,
+      runner_id: json['runner_id'] != null ? (json['runner_id'] as num).toInt() : null,
+      runner_name: json['runner_name'] != null ? json['runner_name'] as String : null,
+      started_at: json['started_at'] != null ? DateTime.parse(json['started_at'] as String) : null,
       status: json['status'] != null ? json['status'] as String : null,
-      steps: json['steps'] != null
-          ? (json['steps'] as List<dynamic>)
-                .map(
-                  (e) => ActionWorkflowStep.fromJson(e as Map<String, dynamic>),
-                )
-                .toList()
-          : null,
+      steps: json['steps'] != null ? (json['steps'] as List<dynamic>).map((e) => ActionWorkflowStep.fromJson(e as Map<String, dynamic>)).toList() : null,
       url: json['url'] != null ? json['url'] as String : null,
     );
   }
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    if (completed_at != null)
-      map['completed_at'] = completed_at!.toIso8601String();
+    if (completed_at != null) map['completed_at'] = completed_at!.toIso8601String();
     if (conclusion != null) map['conclusion'] = conclusion!;
     if (created_at != null) map['created_at'] = created_at!.toIso8601String();
     if (head_branch != null) map['head_branch'] = head_branch!;
@@ -109,7 +84,6 @@ class ActionWorkflowJob {
     if (url != null) map['url'] = url!;
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -133,27 +107,7 @@ class ActionWorkflowJob {
           steps == other.steps &&
           url == other.url;
   @override
-  int get hashCode => Object.hash(
-    completed_at,
-    conclusion,
-    created_at,
-    head_branch,
-    head_sha,
-    html_url,
-    id,
-    labels,
-    name,
-    run_attempt,
-    run_id,
-    run_url,
-    runner_id,
-    runner_name,
-    started_at,
-    status,
-    steps,
-    url,
-  );
+  int get hashCode => Object.hash(completed_at, conclusion, created_at, head_branch, head_sha, html_url, id, labels, name, run_attempt, run_id, run_url, runner_id, runner_name, started_at, status, steps, url);
   @override
-  String toString() =>
-      'ActionWorkflowJob(completed_at: $completed_at, conclusion: $conclusion, created_at: $created_at, head_branch: $head_branch, head_sha: $head_sha, html_url: $html_url, id: $id, labels: $labels, name: $name, run_attempt: $run_attempt, run_id: $run_id, run_url: $run_url, runner_id: $runner_id, runner_name: $runner_name, started_at: $started_at, status: $status, steps: $steps, url: $url)';
+  String toString() => 'ActionWorkflowJob(completed_at: $completed_at, conclusion: $conclusion, created_at: $created_at, head_branch: $head_branch, head_sha: $head_sha, html_url: $html_url, id: $id, labels: $labels, name: $name, run_attempt: $run_attempt, run_id: $run_id, run_url: $run_url, runner_id: $runner_id, runner_name: $runner_name, started_at: $started_at, status: $status, steps: $steps, url: $url)';
 }

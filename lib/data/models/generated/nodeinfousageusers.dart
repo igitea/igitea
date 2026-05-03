@@ -5,15 +5,15 @@ class NodeInfoUsageUsers {
   final int? activeHalfyear;
   final int? activeMonth;
   final int? total;
-  const NodeInfoUsageUsers({this.activeHalfyear, this.activeMonth, this.total});
+  const NodeInfoUsageUsers({
+    this.activeHalfyear,
+    this.activeMonth,
+    this.total,
+  });
   factory NodeInfoUsageUsers.fromJson(Map<String, dynamic> json) {
     return NodeInfoUsageUsers(
-      activeHalfyear: json['activeHalfyear'] != null
-          ? (json['activeHalfyear'] as num).toInt()
-          : null,
-      activeMonth: json['activeMonth'] != null
-          ? (json['activeMonth'] as num).toInt()
-          : null,
+      activeHalfyear: json['activeHalfyear'] != null ? (json['activeHalfyear'] as num).toInt() : null,
+      activeMonth: json['activeMonth'] != null ? (json['activeMonth'] as num).toInt() : null,
       total: json['total'] != null ? (json['total'] as num).toInt() : null,
     );
   }
@@ -24,7 +24,6 @@ class NodeInfoUsageUsers {
     if (total != null) map['total'] = total!;
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -35,6 +34,5 @@ class NodeInfoUsageUsers {
   @override
   int get hashCode => Object.hash(activeHalfyear, activeMonth, total);
   @override
-  String toString() =>
-      'NodeInfoUsageUsers(activeHalfyear: $activeHalfyear, activeMonth: $activeMonth, total: $total)';
+  String toString() => 'NodeInfoUsageUsers(activeHalfyear: $activeHalfyear, activeMonth: $activeMonth, total: $total)';
 }

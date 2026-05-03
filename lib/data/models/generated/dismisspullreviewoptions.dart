@@ -4,7 +4,10 @@ part of 'generated_models.dart';
 class DismissPullReviewOptions {
   final String? message;
   final bool? priors;
-  const DismissPullReviewOptions({this.message, this.priors});
+  const DismissPullReviewOptions({
+    this.message,
+    this.priors,
+  });
   factory DismissPullReviewOptions.fromJson(Map<String, dynamic> json) {
     return DismissPullReviewOptions(
       message: json['message'] != null ? json['message'] as String : null,
@@ -17,7 +20,6 @@ class DismissPullReviewOptions {
     if (priors != null) map['priors'] = priors!;
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -27,6 +29,5 @@ class DismissPullReviewOptions {
   @override
   int get hashCode => Object.hash(message, priors);
   @override
-  String toString() =>
-      'DismissPullReviewOptions(message: $message, priors: $priors)';
+  String toString() => 'DismissPullReviewOptions(message: $message, priors: $priors)';
 }

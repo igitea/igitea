@@ -22,28 +22,13 @@ class ChangeFilesOptions {
   });
   factory ChangeFilesOptions.fromJson(Map<String, dynamic> json) {
     return ChangeFilesOptions(
-      author: json['author'] != null
-          ? Identity.fromJson(json['author'] as Map<String, dynamic>)
-          : null,
+      author: json['author'] != null ? Identity.fromJson(json['author'] as Map<String, dynamic>) : null,
       branch: json['branch'] != null ? json['branch'] as String : null,
-      committer: json['committer'] != null
-          ? Identity.fromJson(json['committer'] as Map<String, dynamic>)
-          : null,
-      dates: json['dates'] != null
-          ? CommitDateOptions.fromJson(json['dates'] as Map<String, dynamic>)
-          : null,
-      files: json['files'] != null
-          ? (json['files'] as List<dynamic>)
-                .map(
-                  (e) =>
-                      ChangeFileOperation.fromJson(e as Map<String, dynamic>),
-                )
-                .toList()
-          : null,
+      committer: json['committer'] != null ? Identity.fromJson(json['committer'] as Map<String, dynamic>) : null,
+      dates: json['dates'] != null ? CommitDateOptions.fromJson(json['dates'] as Map<String, dynamic>) : null,
+      files: json['files'] != null ? (json['files'] as List<dynamic>).map((e) => ChangeFileOperation.fromJson(e as Map<String, dynamic>)).toList() : null,
       message: json['message'] != null ? json['message'] as String : null,
-      new_branch: json['new_branch'] != null
-          ? json['new_branch'] as String
-          : null,
+      new_branch: json['new_branch'] != null ? json['new_branch'] as String : null,
       signoff: json['signoff'] != null ? json['signoff'] as bool : null,
     );
   }
@@ -59,7 +44,6 @@ class ChangeFilesOptions {
     if (signoff != null) map['signoff'] = signoff!;
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -73,17 +57,7 @@ class ChangeFilesOptions {
           new_branch == other.new_branch &&
           signoff == other.signoff;
   @override
-  int get hashCode => Object.hash(
-    author,
-    branch,
-    committer,
-    dates,
-    files,
-    message,
-    new_branch,
-    signoff,
-  );
+  int get hashCode => Object.hash(author, branch, committer, dates, files, message, new_branch, signoff);
   @override
-  String toString() =>
-      'ChangeFilesOptions(author: $author, branch: $branch, committer: $committer, dates: $dates, files: $files, message: $message, new_branch: $new_branch, signoff: $signoff)';
+  String toString() => 'ChangeFilesOptions(author: $author, branch: $branch, committer: $committer, dates: $dates, files: $files, message: $message, new_branch: $new_branch, signoff: $signoff)';
 }

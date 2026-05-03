@@ -14,12 +14,8 @@ class EditMilestoneOption {
   });
   factory EditMilestoneOption.fromJson(Map<String, dynamic> json) {
     return EditMilestoneOption(
-      description: json['description'] != null
-          ? json['description'] as String
-          : null,
-      due_on: json['due_on'] != null
-          ? DateTime.parse(json['due_on'] as String)
-          : null,
+      description: json['description'] != null ? json['description'] as String : null,
+      due_on: json['due_on'] != null ? DateTime.parse(json['due_on'] as String) : null,
       state: json['state'] != null ? json['state'] as String : null,
       title: json['title'] != null ? json['title'] as String : null,
     );
@@ -32,7 +28,6 @@ class EditMilestoneOption {
     if (title != null) map['title'] = title!;
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -44,6 +39,5 @@ class EditMilestoneOption {
   @override
   int get hashCode => Object.hash(description, due_on, state, title);
   @override
-  String toString() =>
-      'EditMilestoneOption(description: $description, due_on: $due_on, state: $state, title: $title)';
+  String toString() => 'EditMilestoneOption(description: $description, due_on: $due_on, state: $state, title: $title)';
 }

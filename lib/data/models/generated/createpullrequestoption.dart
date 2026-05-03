@@ -29,29 +29,15 @@ class CreatePullRequestOption {
   factory CreatePullRequestOption.fromJson(Map<String, dynamic> json) {
     return CreatePullRequestOption(
       assignee: json['assignee'] != null ? json['assignee'] as String : null,
-      assignees: json['assignees'] != null
-          ? (json['assignees'] as List<dynamic>).cast<String>()
-          : null,
+      assignees: json['assignees'] != null ? (json['assignees'] as List<dynamic>).cast<String>() : null,
       base_: json['base'] != null ? json['base'] as String : null,
       body: json['body'] != null ? json['body'] as String : null,
-      due_date: json['due_date'] != null
-          ? DateTime.parse(json['due_date'] as String)
-          : null,
+      due_date: json['due_date'] != null ? DateTime.parse(json['due_date'] as String) : null,
       head: json['head'] != null ? json['head'] as String : null,
-      labels: json['labels'] != null
-          ? (json['labels'] as List<dynamic>)
-                .map((e) => (e as num).toInt())
-                .toList()
-          : null,
-      milestone: json['milestone'] != null
-          ? (json['milestone'] as num).toInt()
-          : null,
-      reviewers: json['reviewers'] != null
-          ? (json['reviewers'] as List<dynamic>).cast<String>()
-          : null,
-      team_reviewers: json['team_reviewers'] != null
-          ? (json['team_reviewers'] as List<dynamic>).cast<String>()
-          : null,
+      labels: json['labels'] != null ? (json['labels'] as List<dynamic>).map((e) => (e as num).toInt()).toList() : null,
+      milestone: json['milestone'] != null ? (json['milestone'] as num).toInt() : null,
+      reviewers: json['reviewers'] != null ? (json['reviewers'] as List<dynamic>).cast<String>() : null,
+      team_reviewers: json['team_reviewers'] != null ? (json['team_reviewers'] as List<dynamic>).cast<String>() : null,
       title: json['title'] != null ? json['title'] as String : null,
     );
   }
@@ -70,7 +56,6 @@ class CreatePullRequestOption {
     if (title != null) map['title'] = title!;
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -87,20 +72,7 @@ class CreatePullRequestOption {
           team_reviewers == other.team_reviewers &&
           title == other.title;
   @override
-  int get hashCode => Object.hash(
-    assignee,
-    assignees,
-    base_,
-    body,
-    due_date,
-    head,
-    labels,
-    milestone,
-    reviewers,
-    team_reviewers,
-    title,
-  );
+  int get hashCode => Object.hash(assignee, assignees, base_, body, due_date, head, labels, milestone, reviewers, team_reviewers, title);
   @override
-  String toString() =>
-      'CreatePullRequestOption(assignee: $assignee, assignees: $assignees, base_: $base_, body: $body, due_date: $due_date, head: $head, labels: $labels, milestone: $milestone, reviewers: $reviewers, team_reviewers: $team_reviewers, title: $title)';
+  String toString() => 'CreatePullRequestOption(assignee: $assignee, assignees: $assignees, base_: $base_, body: $body, due_date: $due_date, head: $head, labels: $labels, milestone: $milestone, reviewers: $reviewers, team_reviewers: $team_reviewers, title: $title)';
 }

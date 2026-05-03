@@ -7,17 +7,19 @@ class PRBranchInfo {
   final Repository? repo;
   final int? repo_id;
   final String? sha;
-  const PRBranchInfo({this.label, this.ref, this.repo, this.repo_id, this.sha});
+  const PRBranchInfo({
+    this.label,
+    this.ref,
+    this.repo,
+    this.repo_id,
+    this.sha,
+  });
   factory PRBranchInfo.fromJson(Map<String, dynamic> json) {
     return PRBranchInfo(
       label: json['label'] != null ? json['label'] as String : null,
       ref: json['ref'] != null ? json['ref'] as String : null,
-      repo: json['repo'] != null
-          ? Repository.fromJson(json['repo'] as Map<String, dynamic>)
-          : null,
-      repo_id: json['repo_id'] != null
-          ? (json['repo_id'] as num).toInt()
-          : null,
+      repo: json['repo'] != null ? Repository.fromJson(json['repo'] as Map<String, dynamic>) : null,
+      repo_id: json['repo_id'] != null ? (json['repo_id'] as num).toInt() : null,
       sha: json['sha'] != null ? json['sha'] as String : null,
     );
   }
@@ -30,7 +32,6 @@ class PRBranchInfo {
     if (sha != null) map['sha'] = sha!;
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -43,6 +44,5 @@ class PRBranchInfo {
   @override
   int get hashCode => Object.hash(label, ref, repo, repo_id, sha);
   @override
-  String toString() =>
-      'PRBranchInfo(label: $label, ref: $ref, repo: $repo, repo_id: $repo_id, sha: $sha)';
+  String toString() => 'PRBranchInfo(label: $label, ref: $ref, repo: $repo, repo_id: $repo_id, sha: $sha)';
 }

@@ -20,14 +20,8 @@ class GitTreeResponse {
     return GitTreeResponse(
       page: json['page'] != null ? (json['page'] as num).toInt() : null,
       sha: json['sha'] != null ? json['sha'] as String : null,
-      total_count: json['total_count'] != null
-          ? (json['total_count'] as num).toInt()
-          : null,
-      tree: json['tree'] != null
-          ? (json['tree'] as List<dynamic>)
-                .map((e) => GitEntry.fromJson(e as Map<String, dynamic>))
-                .toList()
-          : null,
+      total_count: json['total_count'] != null ? (json['total_count'] as num).toInt() : null,
+      tree: json['tree'] != null ? (json['tree'] as List<dynamic>).map((e) => GitEntry.fromJson(e as Map<String, dynamic>)).toList() : null,
       truncated: json['truncated'] != null ? json['truncated'] as bool : null,
       url: json['url'] != null ? json['url'] as String : null,
     );
@@ -42,7 +36,6 @@ class GitTreeResponse {
     if (url != null) map['url'] = url!;
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -56,6 +49,5 @@ class GitTreeResponse {
   @override
   int get hashCode => Object.hash(page, sha, total_count, tree, truncated, url);
   @override
-  String toString() =>
-      'GitTreeResponse(page: $page, sha: $sha, total_count: $total_count, tree: $tree, truncated: $truncated, url: $url)';
+  String toString() => 'GitTreeResponse(page: $page, sha: $sha, total_count: $total_count, tree: $tree, truncated: $truncated, url: $url)';
 }

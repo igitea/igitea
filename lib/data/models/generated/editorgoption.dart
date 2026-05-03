@@ -20,19 +20,12 @@ class EditOrgOption {
   });
   factory EditOrgOption.fromJson(Map<String, dynamic> json) {
     return EditOrgOption(
-      description: json['description'] != null
-          ? json['description'] as String
-          : null,
+      description: json['description'] != null ? json['description'] as String : null,
       email: json['email'] != null ? json['email'] as String : null,
       full_name: json['full_name'] != null ? json['full_name'] as String : null,
       location: json['location'] != null ? json['location'] as String : null,
-      repo_admin_change_team_access:
-          json['repo_admin_change_team_access'] != null
-          ? json['repo_admin_change_team_access'] as bool
-          : null,
-      visibility: json['visibility'] != null
-          ? json['visibility'] as String
-          : null,
+      repo_admin_change_team_access: json['repo_admin_change_team_access'] != null ? json['repo_admin_change_team_access'] as bool : null,
+      visibility: json['visibility'] != null ? json['visibility'] as String : null,
       website: json['website'] != null ? json['website'] as String : null,
     );
   }
@@ -42,13 +35,11 @@ class EditOrgOption {
     if (email != null) map['email'] = email!;
     if (full_name != null) map['full_name'] = full_name!;
     if (location != null) map['location'] = location!;
-    if (repo_admin_change_team_access != null)
-      map['repo_admin_change_team_access'] = repo_admin_change_team_access!;
+    if (repo_admin_change_team_access != null) map['repo_admin_change_team_access'] = repo_admin_change_team_access!;
     if (visibility != null) map['visibility'] = visibility!;
     if (website != null) map['website'] = website!;
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -57,21 +48,11 @@ class EditOrgOption {
           email == other.email &&
           full_name == other.full_name &&
           location == other.location &&
-          repo_admin_change_team_access ==
-              other.repo_admin_change_team_access &&
+          repo_admin_change_team_access == other.repo_admin_change_team_access &&
           visibility == other.visibility &&
           website == other.website;
   @override
-  int get hashCode => Object.hash(
-    description,
-    email,
-    full_name,
-    location,
-    repo_admin_change_team_access,
-    visibility,
-    website,
-  );
+  int get hashCode => Object.hash(description, email, full_name, location, repo_admin_change_team_access, visibility, website);
   @override
-  String toString() =>
-      'EditOrgOption(description: $description, email: $email, full_name: $full_name, location: $location, repo_admin_change_team_access: $repo_admin_change_team_access, visibility: $visibility, website: $website)';
+  String toString() => 'EditOrgOption(description: $description, email: $email, full_name: $full_name, location: $location, repo_admin_change_team_access: $repo_admin_change_team_access, visibility: $visibility, website: $website)';
 }

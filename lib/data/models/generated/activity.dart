@@ -31,37 +31,19 @@ class Activity {
   });
   factory Activity.fromJson(Map<String, dynamic> json) {
     return Activity(
-      act_user: json['act_user'] != null
-          ? User.fromJson(json['act_user'] as Map<String, dynamic>)
-          : null,
-      act_user_id: json['act_user_id'] != null
-          ? (json['act_user_id'] as num).toInt()
-          : null,
-      comment: json['comment'] != null
-          ? Comment.fromJson(json['comment'] as Map<String, dynamic>)
-          : null,
-      comment_id: json['comment_id'] != null
-          ? (json['comment_id'] as num).toInt()
-          : null,
+      act_user: json['act_user'] != null ? User.fromJson(json['act_user'] as Map<String, dynamic>) : null,
+      act_user_id: json['act_user_id'] != null ? (json['act_user_id'] as num).toInt() : null,
+      comment: json['comment'] != null ? Comment.fromJson(json['comment'] as Map<String, dynamic>) : null,
+      comment_id: json['comment_id'] != null ? (json['comment_id'] as num).toInt() : null,
       content: json['content'] != null ? json['content'] as String : null,
-      created: json['created'] != null
-          ? DateTime.parse(json['created'] as String)
-          : null,
+      created: json['created'] != null ? DateTime.parse(json['created'] as String) : null,
       id: json['id'] != null ? (json['id'] as num).toInt() : null,
-      is_private: json['is_private'] != null
-          ? json['is_private'] as bool
-          : null,
+      is_private: json['is_private'] != null ? json['is_private'] as bool : null,
       op_type: json['op_type'] != null ? json['op_type'] as String : null,
       ref_name: json['ref_name'] != null ? json['ref_name'] as String : null,
-      repo: json['repo'] != null
-          ? Repository.fromJson(json['repo'] as Map<String, dynamic>)
-          : null,
-      repo_id: json['repo_id'] != null
-          ? (json['repo_id'] as num).toInt()
-          : null,
-      user_id: json['user_id'] != null
-          ? (json['user_id'] as num).toInt()
-          : null,
+      repo: json['repo'] != null ? Repository.fromJson(json['repo'] as Map<String, dynamic>) : null,
+      repo_id: json['repo_id'] != null ? (json['repo_id'] as num).toInt() : null,
+      user_id: json['user_id'] != null ? (json['user_id'] as num).toInt() : null,
     );
   }
   Map<String, dynamic> toJson() {
@@ -81,7 +63,6 @@ class Activity {
     if (user_id != null) map['user_id'] = user_id!;
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -100,22 +81,7 @@ class Activity {
           repo_id == other.repo_id &&
           user_id == other.user_id;
   @override
-  int get hashCode => Object.hash(
-    act_user,
-    act_user_id,
-    comment,
-    comment_id,
-    content,
-    created,
-    id,
-    is_private,
-    op_type,
-    ref_name,
-    repo,
-    repo_id,
-    user_id,
-  );
+  int get hashCode => Object.hash(act_user, act_user_id, comment, comment_id, content, created, id, is_private, op_type, ref_name, repo, repo_id, user_id);
   @override
-  String toString() =>
-      'Activity(act_user: $act_user, act_user_id: $act_user_id, comment: $comment, comment_id: $comment_id, content: $content, created: $created, id: $id, is_private: $is_private, op_type: $op_type, ref_name: $ref_name, repo: $repo, repo_id: $repo_id, user_id: $user_id)';
+  String toString() => 'Activity(act_user: $act_user, act_user_id: $act_user_id, comment: $comment, comment_id: $comment_id, content: $content, created: $created, id: $id, is_private: $is_private, op_type: $op_type, ref_name: $ref_name, repo: $repo, repo_id: $repo_id, user_id: $user_id)';
 }

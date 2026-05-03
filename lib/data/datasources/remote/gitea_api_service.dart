@@ -1496,6 +1496,65 @@ class GiteaApiService {
     await _client.delete('/admin/hooks/${id.toString()}');
   }
 
+  // Admin - Runners
+
+  Future<List<ActionRunner>> adminGetRunners({int? page, int? limit}) async {
+    final query = <String, String>{};
+    if (page != null) query['page'] = page.toString();
+    if (limit != null) query['limit'] = limit.toString();
+    final response = await _client.get(
+      '/admin/actions/runners',
+      queryParameters: query,
+    );
+    final json = jsonDecode(response.body) as List<dynamic>;
+    return json.map((e) => ActionRunner.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<ActionRunner> adminGetRunner({required int runnerId}) async {
+    final response = await _client.get('/admin/actions/runners/$runnerId');
+    return ActionRunner.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+  }
+
+  Future<String> adminGetRunnerRegistrationToken() async {
+    final response = await _client.post('/admin/actions/runners/registration-token');
+    final json = jsonDecode(response.body) as Map<String, dynamic>;
+    return json['token'] as String;
+  }
+
+  // Admin - Badges
+
+  Future<List<Badge>> adminListUserBadges({required String username}) async {
+    final response = await _client.get('/admin/users/$username/badges');
+    final json = jsonDecode(response.body) as List<dynamic>;
+    return json.map((e) => Badge.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<Badge> adminCreateUserBadge({
+    required String username,
+    required Map<String, dynamic> body,
+  }) async {
+    final response = await _client.post('/admin/users/$username/badges', body: body);
+    return Badge.fromJson(jsonDecode(response.body) as Map<String, dynamic>);
+  }
+
+  Future<void> adminDeleteUserBadge({
+    required String username,
+    required int badgeId,
+  }) async {
+    await _client.delete('/admin/users/$username/badges/$badgeId');
+  }
+
+  // Admin - Emails
+
+  Future<List<Email>> adminListEmails({int? page, int? limit}) async {
+    final query = <String, String>{};
+    if (page != null) query['page'] = page.toString();
+    if (limit != null) query['limit'] = limit.toString();
+    final response = await _client.get('/admin/emails', queryParameters: query);
+    final json = jsonDecode(response.body) as List<dynamic>;
+    return json.map((e) => Email.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
   // Miscellaneous
 
   Future<List<String>> listGitignoresTemplates() async {

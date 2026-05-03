@@ -26,32 +26,16 @@ class PayloadCommit {
   });
   factory PayloadCommit.fromJson(Map<String, dynamic> json) {
     return PayloadCommit(
-      added: json['added'] != null
-          ? (json['added'] as List<dynamic>).cast<String>()
-          : null,
-      author: json['author'] != null
-          ? PayloadUser.fromJson(json['author'] as Map<String, dynamic>)
-          : null,
-      committer: json['committer'] != null
-          ? PayloadUser.fromJson(json['committer'] as Map<String, dynamic>)
-          : null,
+      added: json['added'] != null ? (json['added'] as List<dynamic>).cast<String>() : null,
+      author: json['author'] != null ? PayloadUser.fromJson(json['author'] as Map<String, dynamic>) : null,
+      committer: json['committer'] != null ? PayloadUser.fromJson(json['committer'] as Map<String, dynamic>) : null,
       id: json['id'] != null ? json['id'] as String : null,
       message: json['message'] != null ? json['message'] as String : null,
-      modified: json['modified'] != null
-          ? (json['modified'] as List<dynamic>).cast<String>()
-          : null,
-      removed: json['removed'] != null
-          ? (json['removed'] as List<dynamic>).cast<String>()
-          : null,
-      timestamp: json['timestamp'] != null
-          ? DateTime.parse(json['timestamp'] as String)
-          : null,
+      modified: json['modified'] != null ? (json['modified'] as List<dynamic>).cast<String>() : null,
+      removed: json['removed'] != null ? (json['removed'] as List<dynamic>).cast<String>() : null,
+      timestamp: json['timestamp'] != null ? DateTime.parse(json['timestamp'] as String) : null,
       url: json['url'] != null ? json['url'] as String : null,
-      verification: json['verification'] != null
-          ? PayloadCommitVerification.fromJson(
-              json['verification'] as Map<String, dynamic>,
-            )
-          : null,
+      verification: json['verification'] != null ? PayloadCommitVerification.fromJson(json['verification'] as Map<String, dynamic>) : null,
     );
   }
   Map<String, dynamic> toJson() {
@@ -68,7 +52,6 @@ class PayloadCommit {
     if (verification != null) map['verification'] = verification!.toJson();
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -84,19 +67,7 @@ class PayloadCommit {
           url == other.url &&
           verification == other.verification;
   @override
-  int get hashCode => Object.hash(
-    added,
-    author,
-    committer,
-    id,
-    message,
-    modified,
-    removed,
-    timestamp,
-    url,
-    verification,
-  );
+  int get hashCode => Object.hash(added, author, committer, id, message, modified, removed, timestamp, url, verification);
   @override
-  String toString() =>
-      'PayloadCommit(added: $added, author: $author, committer: $committer, id: $id, message: $message, modified: $modified, removed: $removed, timestamp: $timestamp, url: $url, verification: $verification)';
+  String toString() => 'PayloadCommit(added: $added, author: $author, committer: $committer, id: $id, message: $message, modified: $modified, removed: $removed, timestamp: $timestamp, url: $url, verification: $verification)';
 }

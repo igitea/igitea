@@ -14,29 +14,20 @@ class CreateOAuth2ApplicationOptions {
   });
   factory CreateOAuth2ApplicationOptions.fromJson(Map<String, dynamic> json) {
     return CreateOAuth2ApplicationOptions(
-      confidential_client: json['confidential_client'] != null
-          ? json['confidential_client'] as bool
-          : null,
+      confidential_client: json['confidential_client'] != null ? json['confidential_client'] as bool : null,
       name: json['name'] != null ? json['name'] as String : null,
-      redirect_uris: json['redirect_uris'] != null
-          ? (json['redirect_uris'] as List<dynamic>).cast<String>()
-          : null,
-      skip_secondary_authorization: json['skip_secondary_authorization'] != null
-          ? json['skip_secondary_authorization'] as bool
-          : null,
+      redirect_uris: json['redirect_uris'] != null ? (json['redirect_uris'] as List<dynamic>).cast<String>() : null,
+      skip_secondary_authorization: json['skip_secondary_authorization'] != null ? json['skip_secondary_authorization'] as bool : null,
     );
   }
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    if (confidential_client != null)
-      map['confidential_client'] = confidential_client!;
+    if (confidential_client != null) map['confidential_client'] = confidential_client!;
     if (name != null) map['name'] = name!;
     if (redirect_uris != null) map['redirect_uris'] = redirect_uris!;
-    if (skip_secondary_authorization != null)
-      map['skip_secondary_authorization'] = skip_secondary_authorization!;
+    if (skip_secondary_authorization != null) map['skip_secondary_authorization'] = skip_secondary_authorization!;
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -46,13 +37,7 @@ class CreateOAuth2ApplicationOptions {
           redirect_uris == other.redirect_uris &&
           skip_secondary_authorization == other.skip_secondary_authorization;
   @override
-  int get hashCode => Object.hash(
-    confidential_client,
-    name,
-    redirect_uris,
-    skip_secondary_authorization,
-  );
+  int get hashCode => Object.hash(confidential_client, name, redirect_uris, skip_secondary_authorization);
   @override
-  String toString() =>
-      'CreateOAuth2ApplicationOptions(confidential_client: $confidential_client, name: $name, redirect_uris: $redirect_uris, skip_secondary_authorization: $skip_secondary_authorization)';
+  String toString() => 'CreateOAuth2ApplicationOptions(confidential_client: $confidential_client, name: $name, redirect_uris: $redirect_uris, skip_secondary_authorization: $skip_secondary_authorization)';
 }

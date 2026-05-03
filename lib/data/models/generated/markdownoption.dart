@@ -6,7 +6,12 @@ class MarkdownOption {
   final String? Mode;
   final String? Text;
   final bool? Wiki;
-  const MarkdownOption({this.Context, this.Mode, this.Text, this.Wiki});
+  const MarkdownOption({
+    this.Context,
+    this.Mode,
+    this.Text,
+    this.Wiki,
+  });
   factory MarkdownOption.fromJson(Map<String, dynamic> json) {
     return MarkdownOption(
       Context: json['Context'] != null ? json['Context'] as String : null,
@@ -23,7 +28,6 @@ class MarkdownOption {
     if (Wiki != null) map['Wiki'] = Wiki!;
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -35,6 +39,5 @@ class MarkdownOption {
   @override
   int get hashCode => Object.hash(Context, Mode, Text, Wiki);
   @override
-  String toString() =>
-      'MarkdownOption(Context: $Context, Mode: $Mode, Text: $Text, Wiki: $Wiki)';
+  String toString() => 'MarkdownOption(Context: $Context, Mode: $Mode, Text: $Text, Wiki: $Wiki)';
 }

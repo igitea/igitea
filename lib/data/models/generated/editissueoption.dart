@@ -25,22 +25,14 @@ class EditIssueOption {
   factory EditIssueOption.fromJson(Map<String, dynamic> json) {
     return EditIssueOption(
       assignee: json['assignee'] != null ? json['assignee'] as String : null,
-      assignees: json['assignees'] != null
-          ? (json['assignees'] as List<dynamic>).cast<String>()
-          : null,
+      assignees: json['assignees'] != null ? (json['assignees'] as List<dynamic>).cast<String>() : null,
       body: json['body'] != null ? json['body'] as String : null,
-      due_date: json['due_date'] != null
-          ? DateTime.parse(json['due_date'] as String)
-          : null,
-      milestone: json['milestone'] != null
-          ? (json['milestone'] as num).toInt()
-          : null,
+      due_date: json['due_date'] != null ? DateTime.parse(json['due_date'] as String) : null,
+      milestone: json['milestone'] != null ? (json['milestone'] as num).toInt() : null,
       ref: json['ref'] != null ? json['ref'] as String : null,
       state: json['state'] != null ? json['state'] as String : null,
       title: json['title'] != null ? json['title'] as String : null,
-      unset_due_date: json['unset_due_date'] != null
-          ? json['unset_due_date'] as bool
-          : null,
+      unset_due_date: json['unset_due_date'] != null ? json['unset_due_date'] as bool : null,
     );
   }
   Map<String, dynamic> toJson() {
@@ -56,7 +48,6 @@ class EditIssueOption {
     if (unset_due_date != null) map['unset_due_date'] = unset_due_date!;
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -71,18 +62,7 @@ class EditIssueOption {
           title == other.title &&
           unset_due_date == other.unset_due_date;
   @override
-  int get hashCode => Object.hash(
-    assignee,
-    assignees,
-    body,
-    due_date,
-    milestone,
-    ref,
-    state,
-    title,
-    unset_due_date,
-  );
+  int get hashCode => Object.hash(assignee, assignees, body, due_date, milestone, ref, state, title, unset_due_date);
   @override
-  String toString() =>
-      'EditIssueOption(assignee: $assignee, assignees: $assignees, body: $body, due_date: $due_date, milestone: $milestone, ref: $ref, state: $state, title: $title, unset_due_date: $unset_due_date)';
+  String toString() => 'EditIssueOption(assignee: $assignee, assignees: $assignees, body: $body, due_date: $due_date, milestone: $milestone, ref: $ref, state: $state, title: $title, unset_due_date: $unset_due_date)';
 }

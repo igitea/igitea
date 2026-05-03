@@ -4,15 +4,14 @@ part of 'generated_models.dart';
 class CommitDateOptions {
   final DateTime? author;
   final DateTime? committer;
-  const CommitDateOptions({this.author, this.committer});
+  const CommitDateOptions({
+    this.author,
+    this.committer,
+  });
   factory CommitDateOptions.fromJson(Map<String, dynamic> json) {
     return CommitDateOptions(
-      author: json['author'] != null
-          ? DateTime.parse(json['author'] as String)
-          : null,
-      committer: json['committer'] != null
-          ? DateTime.parse(json['committer'] as String)
-          : null,
+      author: json['author'] != null ? DateTime.parse(json['author'] as String) : null,
+      committer: json['committer'] != null ? DateTime.parse(json['committer'] as String) : null,
     );
   }
   Map<String, dynamic> toJson() {
@@ -21,7 +20,6 @@ class CommitDateOptions {
     if (committer != null) map['committer'] = committer!.toIso8601String();
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -31,6 +29,5 @@ class CommitDateOptions {
   @override
   int get hashCode => Object.hash(author, committer);
   @override
-  String toString() =>
-      'CommitDateOptions(author: $author, committer: $committer)';
+  String toString() => 'CommitDateOptions(author: $author, committer: $committer)';
 }

@@ -18,18 +18,12 @@ class Tag {
   });
   factory Tag.fromJson(Map<String, dynamic> json) {
     return Tag(
-      commit: json['commit'] != null
-          ? CommitMeta.fromJson(json['commit'] as Map<String, dynamic>)
-          : null,
+      commit: json['commit'] != null ? CommitMeta.fromJson(json['commit'] as Map<String, dynamic>) : null,
       id: json['id'] != null ? json['id'] as String : null,
       message: json['message'] != null ? json['message'] as String : null,
       name: json['name'] != null ? json['name'] as String : null,
-      tarball_url: json['tarball_url'] != null
-          ? json['tarball_url'] as String
-          : null,
-      zipball_url: json['zipball_url'] != null
-          ? json['zipball_url'] as String
-          : null,
+      tarball_url: json['tarball_url'] != null ? json['tarball_url'] as String : null,
+      zipball_url: json['zipball_url'] != null ? json['zipball_url'] as String : null,
     );
   }
   Map<String, dynamic> toJson() {
@@ -42,7 +36,6 @@ class Tag {
     if (zipball_url != null) map['zipball_url'] = zipball_url!;
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -54,9 +47,7 @@ class Tag {
           tarball_url == other.tarball_url &&
           zipball_url == other.zipball_url;
   @override
-  int get hashCode =>
-      Object.hash(commit, id, message, name, tarball_url, zipball_url);
+  int get hashCode => Object.hash(commit, id, message, name, tarball_url, zipball_url);
   @override
-  String toString() =>
-      'Tag(commit: $commit, id: $id, message: $message, name: $name, tarball_url: $tarball_url, zipball_url: $zipball_url)';
+  String toString() => 'Tag(commit: $commit, id: $id, message: $message, name: $name, tarball_url: $tarball_url, zipball_url: $zipball_url)';
 }

@@ -2,6 +2,7 @@ part of 'generated_models.dart';
 
 /// IssueFormFieldType defines issue form field type, can be "markdown", "textarea", "input", "dropdown" or "checkboxes"
 class IssueFormFieldType {
+
   const IssueFormFieldType();
   factory IssueFormFieldType.fromJson(Map<String, dynamic> json) {
     return IssueFormFieldType();
@@ -11,9 +12,9 @@ class IssueFormFieldType {
 
     return map;
   }
-
   @override
-  bool operator ==(Object other) => identical(this, other);
+  bool operator ==(Object other) =>
+      identical(this, other);
   @override
   int get hashCode => 0;
   @override

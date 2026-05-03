@@ -18,9 +18,7 @@ class Email {
     return Email(
       email: json['email'] != null ? json['email'] as String : null,
       primary: json['primary'] != null ? json['primary'] as bool : null,
-      user_id: json['user_id'] != null
-          ? (json['user_id'] as num).toInt()
-          : null,
+      user_id: json['user_id'] != null ? (json['user_id'] as num).toInt() : null,
       username: json['username'] != null ? json['username'] as String : null,
       verified: json['verified'] != null ? json['verified'] as bool : null,
     );
@@ -34,7 +32,6 @@ class Email {
     if (verified != null) map['verified'] = verified!;
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -47,6 +44,5 @@ class Email {
   @override
   int get hashCode => Object.hash(email, primary, user_id, username, verified);
   @override
-  String toString() =>
-      'Email(email: $email, primary: $primary, user_id: $user_id, username: $username, verified: $verified)';
+  String toString() => 'Email(email: $email, primary: $primary, user_id: $user_id, username: $username, verified: $verified)';
 }

@@ -211,10 +211,12 @@ class _ActionsListPageState extends State<ActionsListPage> with AutomaticKeepAli
           if (groupIdx == 0) return _buildOrphanGroup(orphanRuns);
           groupIdx--;
         }
-        if (_loadingMore) return const Padding(
+        if (_loadingMore) {
+          return const Padding(
           padding: EdgeInsets.all(16),
           child: Center(child: CircularProgressIndicator()),
         );
+        }
         return const SizedBox.shrink();
       },
     );

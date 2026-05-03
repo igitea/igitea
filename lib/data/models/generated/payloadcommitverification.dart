@@ -19,9 +19,7 @@ class PayloadCommitVerification {
       payload: json['payload'] != null ? json['payload'] as String : null,
       reason: json['reason'] != null ? json['reason'] as String : null,
       signature: json['signature'] != null ? json['signature'] as String : null,
-      signer: json['signer'] != null
-          ? PayloadUser.fromJson(json['signer'] as Map<String, dynamic>)
-          : null,
+      signer: json['signer'] != null ? PayloadUser.fromJson(json['signer'] as Map<String, dynamic>) : null,
       verified: json['verified'] != null ? json['verified'] as bool : null,
     );
   }
@@ -34,7 +32,6 @@ class PayloadCommitVerification {
     if (verified != null) map['verified'] = verified!;
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -47,6 +44,5 @@ class PayloadCommitVerification {
   @override
   int get hashCode => Object.hash(payload, reason, signature, signer, verified);
   @override
-  String toString() =>
-      'PayloadCommitVerification(payload: $payload, reason: $reason, signature: $signature, signer: $signer, verified: $verified)';
+  String toString() => 'PayloadCommitVerification(payload: $payload, reason: $reason, signature: $signature, signer: $signer, verified: $verified)';
 }

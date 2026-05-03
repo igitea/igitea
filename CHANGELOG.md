@@ -34,6 +34,17 @@
   - `ActionChip` shows "Subscribe" / "Unsubscribe" based on current subscription state
   - State fetched from `GET /repos/{owner}/{repo}/issues/{index}/subscriptions/check`
   - Toggle uses `PUT /subscriptions/{user}` (subscribe) or `DELETE /subscriptions/{user}` (unsubscribe)
+- Deep link routing in `app.dart` with named routes
+  - `/explore` → SearchPage, `/notifications` → NotificationPage, `/settings` → SettingsPage, `/stars` → StarredReposPage
+  - `/org/{org}` → OrganizationDetailPage, `/user/{username}` → UserProfilePage
+  - Android: `igitea://` scheme intent filter; iOS: `CFBundleURLTypes` for custom URL scheme
+  - Existing repo/issue/PR routes (`/{owner}/{repo}`, `/{owner}/{repo}/issues/{n}`) preserved
+- Error boundary via `ErrorWidget.builder` in `main.dart`
+  - Custom friendly error UI replacing default red screen of death
+- API client improvements (`api_client.dart`)
+  - Automatic retry (2 retries with exponential backoff) for failed GET requests
+  - In-memory response cache with configurable TTL (`getCachedBody` / `setCached`)
+  - `clearCache()` for cache invalidation
 
 ### Changed
 - Refactored `UserProfilePage` to match `ProfilePage` visual style

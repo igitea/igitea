@@ -4,7 +4,10 @@ part of 'generated_models.dart';
 class CommitAffectedFiles {
   final String? filename;
   final String? status;
-  const CommitAffectedFiles({this.filename, this.status});
+  const CommitAffectedFiles({
+    this.filename,
+    this.status,
+  });
   factory CommitAffectedFiles.fromJson(Map<String, dynamic> json) {
     return CommitAffectedFiles(
       filename: json['filename'] != null ? json['filename'] as String : null,
@@ -17,7 +20,6 @@ class CommitAffectedFiles {
     if (status != null) map['status'] = status!;
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -27,6 +29,5 @@ class CommitAffectedFiles {
   @override
   int get hashCode => Object.hash(filename, status);
   @override
-  String toString() =>
-      'CommitAffectedFiles(filename: $filename, status: $status)';
+  String toString() => 'CommitAffectedFiles(filename: $filename, status: $status)';
 }

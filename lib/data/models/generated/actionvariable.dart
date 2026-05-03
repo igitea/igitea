@@ -17,16 +17,10 @@ class ActionVariable {
   factory ActionVariable.fromJson(Map<String, dynamic> json) {
     return ActionVariable(
       data: json['data'] != null ? json['data'] as String : null,
-      description: json['description'] != null
-          ? json['description'] as String
-          : null,
+      description: json['description'] != null ? json['description'] as String : null,
       name: json['name'] != null ? json['name'] as String : null,
-      owner_id: json['owner_id'] != null
-          ? (json['owner_id'] as num).toInt()
-          : null,
-      repo_id: json['repo_id'] != null
-          ? (json['repo_id'] as num).toInt()
-          : null,
+      owner_id: json['owner_id'] != null ? (json['owner_id'] as num).toInt() : null,
+      repo_id: json['repo_id'] != null ? (json['repo_id'] as num).toInt() : null,
     );
   }
   Map<String, dynamic> toJson() {
@@ -38,7 +32,6 @@ class ActionVariable {
     if (repo_id != null) map['repo_id'] = repo_id!;
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -51,6 +44,5 @@ class ActionVariable {
   @override
   int get hashCode => Object.hash(data, description, name, owner_id, repo_id);
   @override
-  String toString() =>
-      'ActionVariable(data: $data, description: $description, name: $name, owner_id: $owner_id, repo_id: $repo_id)';
+  String toString() => 'ActionVariable(data: $data, description: $description, name: $name, owner_id: $owner_id, repo_id: $repo_id)';
 }

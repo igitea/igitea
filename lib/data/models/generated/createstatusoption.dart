@@ -15,13 +15,9 @@ class CreateStatusOption {
   factory CreateStatusOption.fromJson(Map<String, dynamic> json) {
     return CreateStatusOption(
       context: json['context'] != null ? json['context'] as String : null,
-      description: json['description'] != null
-          ? json['description'] as String
-          : null,
+      description: json['description'] != null ? json['description'] as String : null,
       state: json['state'] != null ? json['state'] as String : null,
-      target_url: json['target_url'] != null
-          ? json['target_url'] as String
-          : null,
+      target_url: json['target_url'] != null ? json['target_url'] as String : null,
     );
   }
   Map<String, dynamic> toJson() {
@@ -32,7 +28,6 @@ class CreateStatusOption {
     if (target_url != null) map['target_url'] = target_url!;
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -44,6 +39,5 @@ class CreateStatusOption {
   @override
   int get hashCode => Object.hash(context, description, state, target_url);
   @override
-  String toString() =>
-      'CreateStatusOption(context: $context, description: $description, state: $state, target_url: $target_url)';
+  String toString() => 'CreateStatusOption(context: $context, description: $description, state: $state, target_url: $target_url)';
 }

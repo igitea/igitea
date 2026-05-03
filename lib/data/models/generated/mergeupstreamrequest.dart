@@ -3,7 +3,10 @@ part of 'generated_models.dart';
 class MergeUpstreamRequest {
   final String? branch;
   final bool? ff_only;
-  const MergeUpstreamRequest({this.branch, this.ff_only});
+  const MergeUpstreamRequest({
+    this.branch,
+    this.ff_only,
+  });
   factory MergeUpstreamRequest.fromJson(Map<String, dynamic> json) {
     return MergeUpstreamRequest(
       branch: json['branch'] != null ? json['branch'] as String : null,
@@ -16,7 +19,6 @@ class MergeUpstreamRequest {
     if (ff_only != null) map['ff_only'] = ff_only!;
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -26,6 +28,5 @@ class MergeUpstreamRequest {
   @override
   int get hashCode => Object.hash(branch, ff_only);
   @override
-  String toString() =>
-      'MergeUpstreamRequest(branch: $branch, ff_only: $ff_only)';
+  String toString() => 'MergeUpstreamRequest(branch: $branch, ff_only: $ff_only)';
 }

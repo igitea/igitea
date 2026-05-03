@@ -20,36 +20,26 @@ class AccessToken {
   });
   factory AccessToken.fromJson(Map<String, dynamic> json) {
     return AccessToken(
-      created_at: json['created_at'] != null
-          ? DateTime.parse(json['created_at'] as String)
-          : null,
+      created_at: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
       id: json['id'] != null ? (json['id'] as num).toInt() : null,
-      last_used_at: json['last_used_at'] != null
-          ? DateTime.parse(json['last_used_at'] as String)
-          : null,
+      last_used_at: json['last_used_at'] != null ? DateTime.parse(json['last_used_at'] as String) : null,
       name: json['name'] != null ? json['name'] as String : null,
-      scopes: json['scopes'] != null
-          ? (json['scopes'] as List<dynamic>).cast<String>()
-          : null,
+      scopes: json['scopes'] != null ? (json['scopes'] as List<dynamic>).cast<String>() : null,
       sha1: json['sha1'] != null ? json['sha1'] as String : null,
-      token_last_eight: json['token_last_eight'] != null
-          ? json['token_last_eight'] as String
-          : null,
+      token_last_eight: json['token_last_eight'] != null ? json['token_last_eight'] as String : null,
     );
   }
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
     if (created_at != null) map['created_at'] = created_at!.toIso8601String();
     if (id != null) map['id'] = id!;
-    if (last_used_at != null)
-      map['last_used_at'] = last_used_at!.toIso8601String();
+    if (last_used_at != null) map['last_used_at'] = last_used_at!.toIso8601String();
     if (name != null) map['name'] = name!;
     if (scopes != null) map['scopes'] = scopes!;
     if (sha1 != null) map['sha1'] = sha1!;
     if (token_last_eight != null) map['token_last_eight'] = token_last_eight!;
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -62,16 +52,7 @@ class AccessToken {
           sha1 == other.sha1 &&
           token_last_eight == other.token_last_eight;
   @override
-  int get hashCode => Object.hash(
-    created_at,
-    id,
-    last_used_at,
-    name,
-    scopes,
-    sha1,
-    token_last_eight,
-  );
+  int get hashCode => Object.hash(created_at, id, last_used_at, name, scopes, sha1, token_last_eight);
   @override
-  String toString() =>
-      'AccessToken(created_at: $created_at, id: $id, last_used_at: $last_used_at, name: $name, scopes: $scopes, sha1: $sha1, token_last_eight: $token_last_eight)';
+  String toString() => 'AccessToken(created_at: $created_at, id: $id, last_used_at: $last_used_at, name: $name, scopes: $scopes, sha1: $sha1, token_last_eight: $token_last_eight)';
 }

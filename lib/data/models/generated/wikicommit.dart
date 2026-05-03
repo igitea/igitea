@@ -6,15 +6,16 @@ class WikiCommit {
   final CommitUser? commiter;
   final String? message;
   final String? sha;
-  const WikiCommit({this.author, this.commiter, this.message, this.sha});
+  const WikiCommit({
+    this.author,
+    this.commiter,
+    this.message,
+    this.sha,
+  });
   factory WikiCommit.fromJson(Map<String, dynamic> json) {
     return WikiCommit(
-      author: json['author'] != null
-          ? CommitUser.fromJson(json['author'] as Map<String, dynamic>)
-          : null,
-      commiter: json['commiter'] != null
-          ? CommitUser.fromJson(json['commiter'] as Map<String, dynamic>)
-          : null,
+      author: json['author'] != null ? CommitUser.fromJson(json['author'] as Map<String, dynamic>) : null,
+      commiter: json['commiter'] != null ? CommitUser.fromJson(json['commiter'] as Map<String, dynamic>) : null,
       message: json['message'] != null ? json['message'] as String : null,
       sha: json['sha'] != null ? json['sha'] as String : null,
     );
@@ -27,7 +28,6 @@ class WikiCommit {
     if (sha != null) map['sha'] = sha!;
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -39,6 +39,5 @@ class WikiCommit {
   @override
   int get hashCode => Object.hash(author, commiter, message, sha);
   @override
-  String toString() =>
-      'WikiCommit(author: $author, commiter: $commiter, message: $message, sha: $sha)';
+  String toString() => 'WikiCommit(author: $author, commiter: $commiter, message: $message, sha: $sha)';
 }

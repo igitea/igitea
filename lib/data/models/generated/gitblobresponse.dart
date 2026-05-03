@@ -23,9 +23,7 @@ class GitBlobResponse {
       content: json['content'] != null ? json['content'] as String : null,
       encoding: json['encoding'] != null ? json['encoding'] as String : null,
       lfs_oid: json['lfs_oid'] != null ? json['lfs_oid'] as String : null,
-      lfs_size: json['lfs_size'] != null
-          ? (json['lfs_size'] as num).toInt()
-          : null,
+      lfs_size: json['lfs_size'] != null ? (json['lfs_size'] as num).toInt() : null,
       sha: json['sha'] != null ? json['sha'] as String : null,
       size: json['size'] != null ? (json['size'] as num).toInt() : null,
       url: json['url'] != null ? json['url'] as String : null,
@@ -42,7 +40,6 @@ class GitBlobResponse {
     if (url != null) map['url'] = url!;
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -55,9 +52,7 @@ class GitBlobResponse {
           size == other.size &&
           url == other.url;
   @override
-  int get hashCode =>
-      Object.hash(content, encoding, lfs_oid, lfs_size, sha, size, url);
+  int get hashCode => Object.hash(content, encoding, lfs_oid, lfs_size, sha, size, url);
   @override
-  String toString() =>
-      'GitBlobResponse(content: $content, encoding: $encoding, lfs_oid: $lfs_oid, lfs_size: $lfs_size, sha: $sha, size: $size, url: $url)';
+  String toString() => 'GitBlobResponse(content: $content, encoding: $encoding, lfs_oid: $lfs_oid, lfs_size: $lfs_size, sha: $sha, size: $size, url: $url)';
 }

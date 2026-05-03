@@ -4,13 +4,14 @@ part of 'generated_models.dart';
 class NewIssuePinsAllowed {
   final bool? issues;
   final bool? pull_requests;
-  const NewIssuePinsAllowed({this.issues, this.pull_requests});
+  const NewIssuePinsAllowed({
+    this.issues,
+    this.pull_requests,
+  });
   factory NewIssuePinsAllowed.fromJson(Map<String, dynamic> json) {
     return NewIssuePinsAllowed(
       issues: json['issues'] != null ? json['issues'] as bool : null,
-      pull_requests: json['pull_requests'] != null
-          ? json['pull_requests'] as bool
-          : null,
+      pull_requests: json['pull_requests'] != null ? json['pull_requests'] as bool : null,
     );
   }
   Map<String, dynamic> toJson() {
@@ -19,7 +20,6 @@ class NewIssuePinsAllowed {
     if (pull_requests != null) map['pull_requests'] = pull_requests!;
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -29,6 +29,5 @@ class NewIssuePinsAllowed {
   @override
   int get hashCode => Object.hash(issues, pull_requests);
   @override
-  String toString() =>
-      'NewIssuePinsAllowed(issues: $issues, pull_requests: $pull_requests)';
+  String toString() => 'NewIssuePinsAllowed(issues: $issues, pull_requests: $pull_requests)';
 }

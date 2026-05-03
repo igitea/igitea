@@ -25,23 +25,11 @@ class IssueTemplate {
   factory IssueTemplate.fromJson(Map<String, dynamic> json) {
     return IssueTemplate(
       about: json['about'] != null ? json['about'] as String : null,
-      assignees: json['assignees'] != null
-          ? IssueTemplateStringSlice.fromJson(
-              json['assignees'] as Map<String, dynamic>,
-            )
-          : null,
-      body: json['body'] != null
-          ? (json['body'] as List<dynamic>)
-                .map((e) => IssueFormField.fromJson(e as Map<String, dynamic>))
-                .toList()
-          : null,
+      assignees: json['assignees'] != null ? IssueTemplateStringSlice.fromJson(json['assignees'] as Map<String, dynamic>) : null,
+      body: json['body'] != null ? (json['body'] as List<dynamic>).map((e) => IssueFormField.fromJson(e as Map<String, dynamic>)).toList() : null,
       content: json['content'] != null ? json['content'] as String : null,
       file_name: json['file_name'] != null ? json['file_name'] as String : null,
-      labels: json['labels'] != null
-          ? IssueTemplateStringSlice.fromJson(
-              json['labels'] as Map<String, dynamic>,
-            )
-          : null,
+      labels: json['labels'] != null ? IssueTemplateStringSlice.fromJson(json['labels'] as Map<String, dynamic>) : null,
       name: json['name'] != null ? json['name'] as String : null,
       ref: json['ref'] != null ? json['ref'] as String : null,
       title: json['title'] != null ? json['title'] as String : null,
@@ -60,7 +48,6 @@ class IssueTemplate {
     if (title != null) map['title'] = title!;
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -75,18 +62,7 @@ class IssueTemplate {
           ref == other.ref &&
           title == other.title;
   @override
-  int get hashCode => Object.hash(
-    about,
-    assignees,
-    body,
-    content,
-    file_name,
-    labels,
-    name,
-    ref,
-    title,
-  );
+  int get hashCode => Object.hash(about, assignees, body, content, file_name, labels, name, ref, title);
   @override
-  String toString() =>
-      'IssueTemplate(about: $about, assignees: $assignees, body: $body, content: $content, file_name: $file_name, labels: $labels, name: $name, ref: $ref, title: $title)';
+  String toString() => 'IssueTemplate(about: $about, assignees: $assignees, body: $body, content: $content, file_name: $file_name, labels: $labels, name: $name, ref: $ref, title: $title)';
 }

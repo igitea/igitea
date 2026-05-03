@@ -6,12 +6,15 @@ class Badge {
   final int? id;
   final String? image_url;
   final String? slug;
-  const Badge({this.description, this.id, this.image_url, this.slug});
+  const Badge({
+    this.description,
+    this.id,
+    this.image_url,
+    this.slug,
+  });
   factory Badge.fromJson(Map<String, dynamic> json) {
     return Badge(
-      description: json['description'] != null
-          ? json['description'] as String
-          : null,
+      description: json['description'] != null ? json['description'] as String : null,
       id: json['id'] != null ? (json['id'] as num).toInt() : null,
       image_url: json['image_url'] != null ? json['image_url'] as String : null,
       slug: json['slug'] != null ? json['slug'] as String : null,
@@ -25,7 +28,6 @@ class Badge {
     if (slug != null) map['slug'] = slug!;
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -37,6 +39,5 @@ class Badge {
   @override
   int get hashCode => Object.hash(description, id, image_url, slug);
   @override
-  String toString() =>
-      'Badge(description: $description, id: $id, image_url: $image_url, slug: $slug)';
+  String toString() => 'Badge(description: $description, id: $id, image_url: $image_url, slug: $slug)';
 }

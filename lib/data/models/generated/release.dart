@@ -38,42 +38,22 @@ class Release {
   });
   factory Release.fromJson(Map<String, dynamic> json) {
     return Release(
-      assets: json['assets'] != null
-          ? (json['assets'] as List<dynamic>)
-                .map((e) => Attachment.fromJson(e as Map<String, dynamic>))
-                .toList()
-          : null,
-      author: json['author'] != null
-          ? User.fromJson(json['author'] as Map<String, dynamic>)
-          : null,
+      assets: json['assets'] != null ? (json['assets'] as List<dynamic>).map((e) => Attachment.fromJson(e as Map<String, dynamic>)).toList() : null,
+      author: json['author'] != null ? User.fromJson(json['author'] as Map<String, dynamic>) : null,
       body: json['body'] != null ? json['body'] as String : null,
-      created_at: json['created_at'] != null
-          ? DateTime.parse(json['created_at'] as String)
-          : null,
+      created_at: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
       draft: json['draft'] != null ? json['draft'] as bool : null,
       html_url: json['html_url'] != null ? json['html_url'] as String : null,
       id: json['id'] != null ? (json['id'] as num).toInt() : null,
       name: json['name'] != null ? json['name'] as String : null,
-      prerelease: json['prerelease'] != null
-          ? json['prerelease'] as bool
-          : null,
-      published_at: json['published_at'] != null
-          ? DateTime.parse(json['published_at'] as String)
-          : null,
+      prerelease: json['prerelease'] != null ? json['prerelease'] as bool : null,
+      published_at: json['published_at'] != null ? DateTime.parse(json['published_at'] as String) : null,
       tag_name: json['tag_name'] != null ? json['tag_name'] as String : null,
-      tarball_url: json['tarball_url'] != null
-          ? json['tarball_url'] as String
-          : null,
-      target_commitish: json['target_commitish'] != null
-          ? json['target_commitish'] as String
-          : null,
-      upload_url: json['upload_url'] != null
-          ? json['upload_url'] as String
-          : null,
+      tarball_url: json['tarball_url'] != null ? json['tarball_url'] as String : null,
+      target_commitish: json['target_commitish'] != null ? json['target_commitish'] as String : null,
+      upload_url: json['upload_url'] != null ? json['upload_url'] as String : null,
       url: json['url'] != null ? json['url'] as String : null,
-      zipball_url: json['zipball_url'] != null
-          ? json['zipball_url'] as String
-          : null,
+      zipball_url: json['zipball_url'] != null ? json['zipball_url'] as String : null,
     );
   }
   Map<String, dynamic> toJson() {
@@ -87,8 +67,7 @@ class Release {
     if (id != null) map['id'] = id!;
     if (name != null) map['name'] = name!;
     if (prerelease != null) map['prerelease'] = prerelease!;
-    if (published_at != null)
-      map['published_at'] = published_at!.toIso8601String();
+    if (published_at != null) map['published_at'] = published_at!.toIso8601String();
     if (tag_name != null) map['tag_name'] = tag_name!;
     if (tarball_url != null) map['tarball_url'] = tarball_url!;
     if (target_commitish != null) map['target_commitish'] = target_commitish!;
@@ -97,7 +76,6 @@ class Release {
     if (zipball_url != null) map['zipball_url'] = zipball_url!;
     return map;
   }
-
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -119,25 +97,7 @@ class Release {
           url == other.url &&
           zipball_url == other.zipball_url;
   @override
-  int get hashCode => Object.hash(
-    assets,
-    author,
-    body,
-    created_at,
-    draft,
-    html_url,
-    id,
-    name,
-    prerelease,
-    published_at,
-    tag_name,
-    tarball_url,
-    target_commitish,
-    upload_url,
-    url,
-    zipball_url,
-  );
+  int get hashCode => Object.hash(assets, author, body, created_at, draft, html_url, id, name, prerelease, published_at, tag_name, tarball_url, target_commitish, upload_url, url, zipball_url);
   @override
-  String toString() =>
-      'Release(assets: $assets, author: $author, body: $body, created_at: $created_at, draft: $draft, html_url: $html_url, id: $id, name: $name, prerelease: $prerelease, published_at: $published_at, tag_name: $tag_name, tarball_url: $tarball_url, target_commitish: $target_commitish, upload_url: $upload_url, url: $url, zipball_url: $zipball_url)';
+  String toString() => 'Release(assets: $assets, author: $author, body: $body, created_at: $created_at, draft: $draft, html_url: $html_url, id: $id, name: $name, prerelease: $prerelease, published_at: $published_at, tag_name: $tag_name, tarball_url: $tarball_url, target_commitish: $target_commitish, upload_url: $upload_url, url: $url, zipball_url: $zipball_url)';
 }
