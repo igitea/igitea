@@ -73,6 +73,10 @@
   - 仓库通知 → RepoDetailPage
   - 用户关注通知 → UserProfilePage
   - 点击时自动标记为已读
+- 仪表盘活动动态：点击动态可跳转到对应的详情页面
+  - Issue 动态 → IssueDetailPage
+  - PR 动态 → PRDetailPage
+  - 仓库动态 → RepoDetailPage
 
 ### Fixed
 - NotifySubjectType 类型转换错误（String → Map）in notificationsubject.dart

@@ -72,6 +72,10 @@
   - Repository notifications → RepoDetailPage
   - User follow notifications → UserProfilePage
   - Auto-marks notification as read on tap
+- Dashboard activity feed: tapping an entry navigates to the relevant detail page
+  - Issue activity → IssueDetailPage
+  - PR activity → PRDetailPage
+  - Repo activity → RepoDetailPage
 
 ### Fixed
 - NotifySubjectType type cast error (String → Map) in notificationsubject.dart
