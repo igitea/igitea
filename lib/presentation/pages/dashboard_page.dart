@@ -14,6 +14,7 @@ import 'notification_page.dart';
 import 'pr_detail_page.dart';
 import 'repo_detail_page.dart';
 import 'repo_list_page.dart';
+import 'user_profile_page.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -551,47 +552,64 @@ class _ActivityFeedState extends State<_ActivityFeed> {
 
   void _navigateToActivity(Activity activity, BuildContext context) {
     final repo = activity.repo;
-    if (repo?.owner == null || repo?.name == null) return;
+    final owner = repo?.owner?.login ?? repo?.full_name?.split('/').firstOrNull ?? '';
+    final repoName = repo?.name ?? repo?.full_name?.split('/').lastOrNull ?? '';
 
-    final owner = repo!.owner!.login!;
-    final repoName = repo.name!;
     final opType = activity.op_type ?? '';
-    final index = int.tryParse(activity.content ?? '');
+    final content = activity.content ?? '';
 
-    switch (opType) {
-      // Issue-related: navigate to issue detail
-      case 'create_issue':
-      case 'close_issue':
-      case 'reopen_issue':
-      case 'comment_issue':
-      case 'approve_pull_request':
-      case 'reject_pull_request':
-        if (index != null) {
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (_) => IssueDetailPage(owner: owner, repo: repoName, index: index),
-          ));
-          return;
-        }
-      // PR-related: navigate to PR detail
-      case 'create_pull_request':
-      case 'merge_pull_request':
-      case 'close_pull_request':
-      case 'reopen_pull_request':
-      case 'comment_pull':
-      case 'pull_request_ready_for_review':
-      case 'auto_merge_pull_request':
-      case 'pull_review_dismissed':
-        if (index != null) {
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (_) => PRDetailPage(owner: owner, repo: repoName, index: index),
-          ));
-          return;
-        }
-      // Repo-level: navigate to repo
-      default:
+    // Try to extract issue/PR number from content (handles plain "3" or "issue #3" formats)
+    final parsedIndex = int.tryParse(content);
+    final index = parsedIndex ?? (() { final m = RegExp(r'#?(\d+)').firstMatch(content); return m != null ? int.tryParse(m.group(1)!) : null; })();
+
+    // User-related: navigate to user profile
+    if (opType == 'follow' || opType == 'follow_user') {
+      final username = activity.ref_name ?? content;
+      if (username.isNotEmpty) {
         Navigator.of(context).push(MaterialPageRoute(
-          builder: (_) => RepoDetailPage(owner: owner, repo: repoName),
+          builder: (_) => UserProfilePage(username: username),
         ));
+        return;
+      }
+    }
+
+    // Issue-related: navigate to issue detail
+    if (opType == 'create_issue' ||
+        opType == 'close_issue' ||
+        opType == 'reopen_issue' ||
+        opType == 'comment_issue' ||
+        opType == 'approve_pull_request' ||
+        opType == 'reject_pull_request') {
+      if (index != null && owner.isNotEmpty && repoName.isNotEmpty) {
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (_) => IssueDetailPage(owner: owner, repo: repoName, index: index),
+        ));
+        return;
+      }
+    }
+
+    // PR-related: navigate to PR detail
+    if (opType == 'create_pull_request' ||
+        opType == 'merge_pull_request' ||
+        opType == 'close_pull_request' ||
+        opType == 'reopen_pull_request' ||
+        opType == 'comment_pull' ||
+        opType == 'pull_request_ready_for_review' ||
+        opType == 'auto_merge_pull_request' ||
+        opType == 'pull_review_dismissed') {
+      if (index != null && owner.isNotEmpty && repoName.isNotEmpty) {
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (_) => PRDetailPage(owner: owner, repo: repoName, index: index),
+        ));
+        return;
+      }
+    }
+
+    // Fallback: navigate to repo (requires owner+repoName)
+    if (owner.isNotEmpty && repoName.isNotEmpty) {
+      Navigator.of(context).push(MaterialPageRoute(
+        builder: (_) => RepoDetailPage(owner: owner, repo: repoName),
+      ));
     }
   }
 }

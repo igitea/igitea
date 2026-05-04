@@ -77,6 +77,8 @@
   - Issue 动态 → IssueDetailPage
   - PR 动态 → PRDetailPage
   - 仓库动态 → RepoDetailPage
+  - 用户关注事件 → UserProfilePage
+  - 内容解析改进（支持纯数字和 "issue #3" 格式）
 
 ### Fixed
 - NotifySubjectType 类型转换错误（String → Map）in notificationsubject.dart

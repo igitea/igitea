@@ -76,6 +76,8 @@
   - Issue activity → IssueDetailPage
   - PR activity → PRDetailPage
   - Repo activity → RepoDetailPage
+  - User follow events → UserProfilePage
+  - Content parsing improved (handles plain "3" and "issue #3" formats)
 
 ### Fixed
 - NotifySubjectType type cast error (String → Map) in notificationsubject.dart
