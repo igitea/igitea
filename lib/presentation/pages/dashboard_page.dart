@@ -9,7 +9,9 @@ import '../widgets/empty_state.dart';
 import '../widgets/premium_card.dart';
 import '../widgets/user_avatar.dart';
 import 'issue_list_page.dart';
+import 'issue_detail_page.dart';
 import 'notification_page.dart';
+import 'pr_detail_page.dart';
 import 'repo_detail_page.dart';
 import 'repo_list_page.dart';
 
@@ -548,13 +550,48 @@ class _ActivityFeedState extends State<_ActivityFeed> {
   }
 
   void _navigateToActivity(Activity activity, BuildContext context) {
-    if (activity.repo?.owner == null || activity.repo?.name == null) return;
+    final repo = activity.repo;
+    if (repo?.owner == null || repo?.name == null) return;
 
-    final owner = activity.repo!.owner!.login!;
-    final repo = activity.repo!.name!;
+    final owner = repo!.owner!.login!;
+    final repoName = repo.name!;
+    final opType = activity.op_type ?? '';
+    final index = int.tryParse(activity.content ?? '');
 
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (_) => RepoDetailPage(owner: owner, repo: repo),
-    ));
+    switch (opType) {
+      // Issue-related: navigate to issue detail
+      case 'create_issue':
+      case 'close_issue':
+      case 'reopen_issue':
+      case 'comment_issue':
+      case 'approve_pull_request':
+      case 'reject_pull_request':
+        if (index != null) {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (_) => IssueDetailPage(owner: owner, repo: repoName, index: index),
+          ));
+          return;
+        }
+      // PR-related: navigate to PR detail
+      case 'create_pull_request':
+      case 'merge_pull_request':
+      case 'close_pull_request':
+      case 'reopen_pull_request':
+      case 'comment_pull':
+      case 'pull_request_ready_for_review':
+      case 'auto_merge_pull_request':
+      case 'pull_review_dismissed':
+        if (index != null) {
+          Navigator.of(context).push(MaterialPageRoute(
+            builder: (_) => PRDetailPage(owner: owner, repo: repoName, index: index),
+          ));
+          return;
+        }
+      // Repo-level: navigate to repo
+      default:
+        Navigator.of(context).push(MaterialPageRoute(
+          builder: (_) => RepoDetailPage(owner: owner, repo: repoName),
+        ));
+    }
   }
 }
