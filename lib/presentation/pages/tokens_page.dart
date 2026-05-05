@@ -21,10 +21,6 @@ const _scopeGroups = [
     _ScopeItem('read:issue', 'Read'),
     _ScopeItem('write:issue', 'Write'),
   ]),
-  _ScopeGroup('Pull Request', [
-    _ScopeItem('read:pull_request', 'Read'),
-    _ScopeItem('write:pull_request', 'Write'),
-  ]),
   _ScopeGroup('Organization', [
     _ScopeItem('read:organization', 'Read'),
     _ScopeItem('write:organization', 'Write'),
@@ -44,14 +40,6 @@ const _scopeGroups = [
   _ScopeGroup('Package', [
     _ScopeItem('read:package', 'Read'),
     _ScopeItem('write:package', 'Write'),
-  ]),
-  _ScopeGroup('GPG Key', [
-    _ScopeItem('read:gpg_key', 'Read'),
-    _ScopeItem('write:gpg_key', 'Write'),
-  ]),
-  _ScopeGroup('Public Key', [
-    _ScopeItem('read:public_key', 'Read'),
-    _ScopeItem('write:public_key', 'Write'),
   ]),
 ];
 
@@ -137,7 +125,7 @@ class _TokensPageState extends State<TokensPage> {
       builder: (ctx) => AlertDialog(
         title: Row(
           children: [
-            Icon(Icons.check_circle, color: Theme.of(ctx).colorScheme.primary),
+            Icon(Icons.check_circle_rounded, color: Theme.of(ctx).colorScheme.primary),
             const SizedBox(width: 8),
             Text(l10n.tokenCreated),
           ],
@@ -147,23 +135,50 @@ class _TokensPageState extends State<TokensPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text('${l10n.tokenName}: ${token.name ?? ''}'),
-            const SizedBox(height: 8),
-            if (token.sha1 != null) ...[
-              Text(
-                l10n.tokenValueWarning,
-                style: Theme.of(ctx).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(ctx).colorScheme.error,
-                ),
+            const SizedBox(height: 12),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Theme.of(ctx).colorScheme.errorContainer.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(8),
               ),
-              const SizedBox(height: 8),
-              SelectableText(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.warning_amber_rounded,
+                    size: 18,
+                    color: Theme.of(ctx).colorScheme.error,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      l10n.tokenValueWarning,
+                      style: Theme.of(ctx).textTheme.bodySmall?.copyWith(
+                        color: Theme.of(ctx).colorScheme.error,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Theme.of(ctx).colorScheme.surfaceContainerHighest,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: SelectableText(
                 token.sha1!,
                 style: Theme.of(ctx).textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                   fontFamily: 'monospace',
                 ),
               ),
-            ],
+            ),
           ],
         ),
         actions: [
@@ -232,21 +247,92 @@ class _TokensPageState extends State<TokensPage> {
         builder: (context, _) {
           final state = Injection.tokenNotifier.state;
           return switch (state) {
-            TokenInitial() || TokenLoading() => const Center(child: CircularProgressIndicator()),
-            TokenError(:final message) => Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text('${l10n.error}: $message'),
-                  const SizedBox(height: 16),
-                  FilledButton(onPressed: _loadTokens, child: Text(l10n.retry)),
-                ],
-              ),
-            ),
+            TokenInitial() => const SizedBox.shrink(),
+            TokenLoading() => _buildLoadingSkeleton(),
+            TokenError(:final message) => _buildErrorState(message, l10n),
             TokenListLoaded(:final tokens) => _buildTokenList(tokens, l10n),
             _ => _buildTokenList([], l10n),
           };
         },
+      ),
+    );
+  }
+
+  Widget _buildLoadingSkeleton() {
+    final theme = Theme.of(context);
+    return ListView.separated(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      itemCount: 5,
+      separatorBuilder: (_, __) => const SizedBox(height: 8),
+      itemBuilder: (context, index) => Card(
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(color: theme.colorScheme.outlineVariant),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            children: [
+              CircleAvatar(
+                backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                radius: 20,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 120,
+                      height: 14,
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      width: 80,
+                      height: 10,
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildErrorState(String message, AppLocalizations l10n) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.error_outline_rounded,
+            size: 64,
+            color: Theme.of(context).colorScheme.error,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            message,
+            style: Theme.of(context).textTheme.bodyLarge,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 16),
+          FilledButton.tonalIcon(
+            onPressed: _loadTokens,
+            icon: const Icon(Icons.refresh_rounded, size: 18),
+            label: Text(l10n.retry),
+          ),
+        ],
       ),
     );
   }
@@ -258,19 +344,21 @@ class _TokensPageState extends State<TokensPage> {
           mainAxisSize: MainAxisSize.min,
           children: [
             Icon(
-              Icons.key,
+              Icons.vpn_key_rounded,
               size: 64,
               color: Theme.of(context).colorScheme.onSurfaceVariant,
             ),
             const SizedBox(height: 16),
             Text(
               l10n.noTokens,
-              style: Theme.of(context).textTheme.titleMedium,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
+              ),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: 24),
             FilledButton.icon(
               onPressed: _createToken,
-              icon: const Icon(Icons.add, size: 18),
+              icon: const Icon(Icons.add_rounded, size: 18),
               label: Text(l10n.createToken),
             ),
           ],
@@ -280,41 +368,66 @@ class _TokensPageState extends State<TokensPage> {
 
     return RefreshIndicator(
       onRefresh: _loadTokens,
-      child: ListView.separated(
+      child: ListView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         itemCount: tokens.length,
-        separatorBuilder: (_, __) => const Divider(height: 1),
         itemBuilder: (context, index) {
           final token = tokens[index];
           final theme = Theme.of(context);
-          return ListTile(
-            leading: CircleAvatar(
-              backgroundColor: theme.colorScheme.primaryContainer,
-              child: Icon(Icons.key, color: theme.colorScheme.onPrimaryContainer),
+          return Card(
+            elevation: 0,
+            margin: const EdgeInsets.only(bottom: 8),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: BorderSide(color: theme.colorScheme.outlineVariant),
             ),
-            title: Text(token.name ?? ''),
-            subtitle: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (token.token_last_eight != null)
-                  Text(
-                    '...${token.token_last_eight}',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      fontFamily: 'monospace',
-                      color: theme.colorScheme.onSurfaceVariant,
+            child: InkWell(
+              borderRadius: BorderRadius.circular(12),
+              onTap: null,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: Row(
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: theme.colorScheme.primaryContainer,
+                      child: Icon(Icons.vpn_key_rounded, color: theme.colorScheme.onPrimaryContainer, size: 20),
                     ),
-                  ),
-                if (token.created_at != null)
-                  Text(
-                    '${l10n.createdAt}: ${token.created_at!.toLocal().toString().split(' ')[0]}',
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            token.name ?? '',
+                            style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                          ),
+                          const SizedBox(height: 2),
+                          if (token.token_last_eight != null)
+                            Text(
+                              '...${token.token_last_eight}',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                fontFamily: 'monospace',
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          if (token.created_at != null)
+                            Text(
+                              '${l10n.createdAt}: ${token.created_at!.toLocal().toString().split(' ')[0]}',
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
-                  ),
-              ],
-            ),
-            trailing: IconButton(
-              icon: const Icon(Icons.delete_outline),
-              onPressed: () => _deleteToken(token),
+                    IconButton(
+                      icon: Icon(Icons.delete_outline_rounded, color: theme.colorScheme.error),
+                      onPressed: () => _deleteToken(token),
+                      tooltip: l10n.deleteToken,
+                    ),
+                  ],
+                ),
+              ),
             ),
           );
         },
@@ -344,6 +457,7 @@ class _CreateTokenDialog extends StatefulWidget {
 
 class _CreateTokenDialogState extends State<_CreateTokenDialog> {
   final _expandedGroups = <String>{};
+  final _nameFocusNode = FocusNode();
   bool _selectAll = false;
 
   @override
@@ -351,11 +465,15 @@ class _CreateTokenDialogState extends State<_CreateTokenDialog> {
     super.initState();
     _expandedGroups.addAll(_scopeGroups.map((g) => g.name));
     widget.nameController.addListener(_onNameChanged);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _nameFocusNode.requestFocus();
+    });
   }
 
   @override
   void dispose() {
     widget.nameController.removeListener(_onNameChanged);
+    _nameFocusNode.dispose();
     super.dispose();
   }
 
@@ -373,19 +491,20 @@ class _CreateTokenDialogState extends State<_CreateTokenDialog> {
       content: SizedBox(
         width: double.maxFinite,
         child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              TextField(
-                controller: widget.nameController,
-                decoration: InputDecoration(
-                  labelText: l10n.tokenName,
-                  border: const OutlineInputBorder(),
-                ),
-                autofocus: true,
-              ),
-              const SizedBox(height: 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 8),
+                  TextField(
+                    controller: widget.nameController,
+                    focusNode: _nameFocusNode,
+                    decoration: InputDecoration(
+                      labelText: l10n.tokenName,
+                      border: const OutlineInputBorder(),
+                    ),
+                  ),
+              const SizedBox(height: 8),
               Row(
                 children: [
                   Text(
