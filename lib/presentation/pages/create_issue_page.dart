@@ -20,7 +20,7 @@ class _CreateIssuePageState extends State<CreateIssuePage> {
   final _titleController = TextEditingController();
   final _bodyController = TextEditingController();
   bool _isLoading = false;
-  Set<int> _selectedLabels = {};
+  final Set<int> _selectedLabels = {};
   int? _selectedMilestoneId;
   List<Label> _labels = [];
   List<Milestone> _milestones = [];

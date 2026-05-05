@@ -91,15 +91,19 @@ class _ActionsListPageState extends State<ActionsListPage> with AutomaticKeepAli
 
   List<Map<String, dynamic>> get _filteredRuns {
     var runs = _allRuns;
-    if (_statusFilter != null) runs = runs.where((r) {
-      final s = (r['status'] as String? ?? '').toLowerCase();
-      final c = (r['conclusion'] as String? ?? '').toLowerCase();
-      return (c.isNotEmpty && c != 'null' ? c : s) == _statusFilter;
-    }).toList();
-    if (_actorFilter != null) runs = runs.where((r) {
-      final actor = r['actor'] as Map<String, dynamic>?;
-      return actor?['login'] == _actorFilter;
-    }).toList();
+    if (_statusFilter != null) {
+      runs = runs.where((r) {
+        final s = (r['status'] as String? ?? '').toLowerCase();
+        final c = (r['conclusion'] as String? ?? '').toLowerCase();
+        return (c.isNotEmpty && c != 'null' ? c : s) == _statusFilter;
+      }).toList();
+    }
+    if (_actorFilter != null) {
+      runs = runs.where((r) {
+        final actor = r['actor'] as Map<String, dynamic>?;
+        return actor?['login'] == _actorFilter;
+      }).toList();
+    }
     return runs;
   }
 
@@ -188,11 +192,12 @@ class _ActionsListPageState extends State<ActionsListPage> with AutomaticKeepAli
 
   Widget _buildGroupedView() {
     final groups = _groupedRuns;
-    final wfMap = {for (final w in _workflows) _toInt(w['id']): w};
+    final wfById = {for (final w in _workflows) _toInt(w['id']): w};
+    final wfByPath = {for (final w in _workflows) (w['path']?.toString() ?? '') : w};
     // Also collect runs with no matching workflow
     final orphanRuns = _filteredRuns.where((r) {
       final wfId = _toInt(r['workflow_id']);
-      return !wfMap.containsKey(wfId) || wfId == 0;
+      return !wfById.containsKey(wfId) || wfId == 0;
     }).toList();
 
     final totalItems = groups.length + (orphanRuns.isNotEmpty ? 1 : 0) + (_loadingMore ? 1 : 0);
@@ -203,7 +208,7 @@ class _ActionsListPageState extends State<ActionsListPage> with AutomaticKeepAli
         int groupIdx = index;
         if (groupIdx < groups.length) {
           final entry = groups.entries.elementAt(groupIdx);
-          final wf = wfMap[entry.key];
+          final wf = wfByPath[entry.key];
           return _buildWorkflowGroup(wf, entry.value);
         }
         groupIdx -= groups.length;

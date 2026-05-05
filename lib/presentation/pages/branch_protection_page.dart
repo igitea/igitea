@@ -87,13 +87,15 @@ class _BranchProtectionPageState extends State<BranchProtectionPage> {
         ],
       ),
     );
-    if (ok == true && mounted) {
+    if (ok == true) {
       try {
         await Injection.apiService.repoDeleteBranchProtection(owner: widget.owner, repo: widget.repo, name: name);
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.labelDeleted)));
         _load();
       } catch (_) {
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
       }
     }
   }

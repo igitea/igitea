@@ -236,7 +236,7 @@ class _EditReleasePageState extends State<EditReleasePage> {
 
   Widget _buildBranchDropdown(AppLocalizations l10n) {
     return DropdownButtonFormField<String>(
-      value: _validBranchValue(),
+      initialValue: _validBranchValue(),
       decoration: InputDecoration(
         labelText: l10n.targetCommitish,
         border: const OutlineInputBorder(),

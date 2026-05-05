@@ -258,7 +258,7 @@ class FakeRepoRepository implements RepoRepository {
     CreateForkOption? body,
   }) async {
     if (shouldFail) return Left(failure);
-    return Right(Repository(id: 2, name: '${repo}-fork'));
+    return Right(Repository(id: 2, name: '$repo-fork'));
   }
 
   @override

@@ -116,7 +116,7 @@ class _CreateTeamPageState extends State<CreateTeamPage> {
             ),
             const SizedBox(height: UIConstants.md),
             DropdownButtonFormField<String>(
-              value: _permission,
+              initialValue: _permission,
               decoration: InputDecoration(
                 labelText: l10n.teamPermission,
                 border: const OutlineInputBorder(),

@@ -482,6 +482,29 @@ class DeleteMilestoneParams {
   });
 }
 
+class DeleteIssueUseCase {
+  final IssueRepository _repository;
+
+  DeleteIssueUseCase({required IssueRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, void>> call(DeleteIssueParams params) async {
+    return _repository.deleteIssue(params.owner, params.repo, params.index);
+  }
+}
+
+class DeleteIssueParams {
+  final String owner;
+  final String repo;
+  final int index;
+
+  DeleteIssueParams({
+    required this.owner,
+    required this.repo,
+    required this.index,
+  });
+}
+
 class SearchIssuesUseCase {
   final IssueRepository _repository;
 

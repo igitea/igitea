@@ -87,6 +87,7 @@ class IssueNotifier extends ChangeNotifier {
   GetIssueUseCase _getIssueUseCase;
   CreateIssueUseCase _createIssueUseCase;
   EditIssueUseCase _editIssueUseCase;
+  DeleteIssueUseCase _deleteIssueUseCase;
   ListCommentsUseCase _listCommentsUseCase;
   CreateCommentUseCase _createCommentUseCase;
   SearchIssuesUseCase _searchIssuesUseCase;
@@ -123,6 +124,7 @@ class IssueNotifier extends ChangeNotifier {
     required GetIssueUseCase getIssueUseCase,
     required CreateIssueUseCase createIssueUseCase,
     required EditIssueUseCase editIssueUseCase,
+    required DeleteIssueUseCase deleteIssueUseCase,
     required ListCommentsUseCase listCommentsUseCase,
     required CreateCommentUseCase createCommentUseCase,
     required SearchIssuesUseCase searchIssuesUseCase,
@@ -139,6 +141,7 @@ class IssueNotifier extends ChangeNotifier {
        _getIssueUseCase = getIssueUseCase,
        _createIssueUseCase = createIssueUseCase,
        _editIssueUseCase = editIssueUseCase,
+       _deleteIssueUseCase = deleteIssueUseCase,
        _listCommentsUseCase = listCommentsUseCase,
        _createCommentUseCase = createCommentUseCase,
        _searchIssuesUseCase = searchIssuesUseCase,
@@ -157,6 +160,7 @@ class IssueNotifier extends ChangeNotifier {
     required GetIssueUseCase getIssueUseCase,
     required CreateIssueUseCase createIssueUseCase,
     required EditIssueUseCase editIssueUseCase,
+    required DeleteIssueUseCase deleteIssueUseCase,
     required ListCommentsUseCase listCommentsUseCase,
     required CreateCommentUseCase createCommentUseCase,
     required SearchIssuesUseCase searchIssuesUseCase,
@@ -174,6 +178,7 @@ class IssueNotifier extends ChangeNotifier {
     _getIssueUseCase = getIssueUseCase;
     _createIssueUseCase = createIssueUseCase;
     _editIssueUseCase = editIssueUseCase;
+    _deleteIssueUseCase = deleteIssueUseCase;
     _listCommentsUseCase = listCommentsUseCase;
     _createCommentUseCase = createCommentUseCase;
     _searchIssuesUseCase = searchIssuesUseCase;
@@ -423,6 +428,12 @@ _listMilestonesUseCase = listMilestonesUseCase;
         _state = IssueDetailLoaded(value);
         notifyListeners();
     }
+  }
+
+  Future<Either<Failure, void>> deleteIssue(String owner, String repo, int index) async {
+    return _deleteIssueUseCase.call(
+      DeleteIssueParams(owner: owner, repo: repo, index: index),
+    );
   }
 
   Future<void> searchIssues(

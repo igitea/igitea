@@ -99,6 +99,7 @@ class _NotificationPageState extends State<NotificationPage> {
       await Injection.notificationNotifier.markThreadRead(notification.id.toString());
     }
 
+    if (!context.mounted) return;
     final subject = notification.subject;
     final subjectUrl = subject?.url ?? '';
     final typeValue = subject?.type?.value?.toLowerCase() ?? '';

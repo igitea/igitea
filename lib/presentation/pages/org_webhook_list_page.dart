@@ -61,7 +61,7 @@ class _OrgWebhookListPageState extends State<OrgWebhookListPage> {
                   TextField(controller: secretCtrl, decoration: InputDecoration(labelText: l10n.webhookSecret, border: const OutlineInputBorder())),
                   const SizedBox(height: 12),
                   DropdownButtonFormField<String>(
-                    value: contentType,
+                    initialValue: contentType,
                     items: [
                       DropdownMenuItem(value: 'json', child: const Text('JSON')),
                       DropdownMenuItem(value: 'form', child: const Text('Form')),
@@ -77,16 +77,21 @@ class _OrgWebhookListPageState extends State<OrgWebhookListPage> {
             actions: [
               TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
               FilledButton(
-                onPressed: urlCtrl.text.trim().isEmpty ? null : () {
-                  Injection.apiService.orgCreateHook(
-                    org: widget.org,
-                    body: {
-                      'type': 'gitea',
-                      'config': {'url': urlCtrl.text.trim(), 'content_type': contentType, 'secret': secretCtrl.text.trim()},
-                      'active': active,
-                      'events': ['push'],
-                    },
-                  ).then((_) => Navigator.pop(ctx, true)).catchError((_) => Navigator.pop(ctx, false));
+                onPressed: urlCtrl.text.trim().isEmpty ? null : () async {
+                  try {
+                    await Injection.apiService.orgCreateHook(
+                      org: widget.org,
+                      body: {
+                        'type': 'gitea',
+                        'config': {'url': urlCtrl.text.trim(), 'content_type': contentType, 'secret': secretCtrl.text.trim()},
+                        'active': active,
+                        'events': ['push'],
+                      },
+                    );
+                    if (ctx.mounted) Navigator.pop(ctx, true);
+                  } catch (_) {
+                    if (ctx.mounted) Navigator.pop(ctx, false);
+                  }
                 },
                 child: Text(l10n.create),
               ),
@@ -115,13 +120,15 @@ class _OrgWebhookListPageState extends State<OrgWebhookListPage> {
         ],
       ),
     );
-    if (ok == true && mounted) {
+    if (ok == true) {
       try {
         await Injection.apiService.orgDeleteHook(org: widget.org, id: id);
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.labelDeleted)));
         _load();
       } catch (_) {
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
       }
     }
   }
@@ -160,7 +167,7 @@ class _OrgWebhookListPageState extends State<OrgWebhookListPage> {
               child: ListTile(
                 leading: Icon(hook.active == true ? Icons.webhook : Icons.webhook_outlined, color: hook.active == true ? Theme.of(context).colorScheme.primary : null),
                 title: Text(hook.config?['url']?.toString() ?? '?'),
-                subtitle: Text('${hook.type ?? ''}'),
+                subtitle: Text(hook.type ?? ''),
                 trailing: IconButton(icon: const Icon(Icons.delete_outline), onPressed: () => _delete(hook.id!), tooltip: l10n.delete),
               ),
             ),

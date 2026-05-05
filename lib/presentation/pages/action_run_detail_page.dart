@@ -34,8 +34,8 @@ class ActionRunDetailPage extends StatefulWidget {
 class _ActionRunDetailPageState extends State<ActionRunDetailPage> {
   List<Map<String, dynamic>> _jobs = [];
   List<Map<String, dynamic>> _artifacts = [];
-  Map<int, String> _logs = {};
-  Set<int> _expandedJobs = {};
+  final Map<int, String> _logs = {};
+  final Set<int> _expandedJobs = {};
   bool _loadingJobs = false;
   Timer? _pollTimer;
   bool _hasIncompleteJobs = true;

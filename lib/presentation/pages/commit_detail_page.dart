@@ -29,7 +29,7 @@ class CommitDetailPage extends StatefulWidget {
 
 class _CommitDetailPageState extends State<CommitDetailPage> {
   Map<String, List<DiffFile>> _fileDiffs = {};
-  Set<String> _expandedFiles = {};
+  final Set<String> _expandedFiles = {};
   bool _diffLoading = false;
 
   @override

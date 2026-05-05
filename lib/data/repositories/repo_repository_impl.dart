@@ -476,7 +476,7 @@ class RepoRepositoryImpl implements RepoRepository {
         body: {
           'title': title,
           'content_base64': base64Encode(utf8.encode(content)),
-          if (message != null) 'message': message,
+          ?'message': message,
         },
       ),
     );
@@ -498,7 +498,7 @@ class RepoRepositoryImpl implements RepoRepository {
         body: {
           'title': title,
           'content_base64': base64Encode(utf8.encode(content)),
-          if (message != null) 'message': message,
+          ?'message': message,
         },
       ),
     );

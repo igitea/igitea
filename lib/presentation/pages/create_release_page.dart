@@ -222,7 +222,7 @@ class _CreateReleasePageState extends State<CreateReleasePage> {
         const SizedBox(height: UIConstants.sm),
         if (_useExistingTag)
           DropdownButtonFormField<String>(
-            value: _validTagValue(),
+            initialValue: _validTagValue(),
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
               contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
@@ -248,7 +248,7 @@ class _CreateReleasePageState extends State<CreateReleasePage> {
 
   Widget _buildBranchDropdown(AppLocalizations l10n) {
     return DropdownButtonFormField<String>(
-      value: _validBranchValue(),
+      initialValue: _validBranchValue(),
       decoration: InputDecoration(
         labelText: l10n.targetCommitish,
         border: const OutlineInputBorder(),
