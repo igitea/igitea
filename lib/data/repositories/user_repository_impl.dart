@@ -78,10 +78,14 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<Either<Failure, AccessToken>> createToken(String name, {List<String>? scopes}) async {
+  Future<Either<Failure, AccessToken>> createToken(
+    String username, {
+    required String name,
+    List<String>? scopes,
+  }) async {
     return execute(
       () => _apiService.userCreateToken(
-        username: name,
+        username: username,
         body: {'name': name, if (scopes != null) 'scopes': scopes},
       ),
     );

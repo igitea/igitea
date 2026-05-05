@@ -76,8 +76,12 @@ class TokenNotifier extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<Either<Failure, AccessToken>> createToken(String name, {List<String>? scopes}) async {
-    return _createTokenUseCase(name, scopes: scopes);
+  Future<Either<Failure, AccessToken>> createToken(
+    String username, {
+    required String name,
+    List<String>? scopes,
+  }) async {
+    return _createTokenUseCase(username, name: name, scopes: scopes);
   }
 
   Future<bool> deleteToken({

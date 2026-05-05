@@ -54,7 +54,7 @@ class FakeUserRepository implements UserRepository {
   }) => throw UnimplementedError();
 
   @override
-  Future<Either<Failure, AccessToken>> createToken(String name, {List<String>? scopes}) =>
+  Future<Either<Failure, AccessToken>> createToken(String username, {required String name, List<String>? scopes}) =>
       throw UnimplementedError();
 
   @override

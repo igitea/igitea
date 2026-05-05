@@ -112,7 +112,8 @@ class _TokensPageState extends State<TokensPage> {
     if (result == null || !mounted) return;
 
     final createResult = await Injection.tokenNotifier.createToken(
-      result.name,
+      _getUsername(),
+      name: result.name,
       scopes: result.scopes.isEmpty ? null : result.scopes.toList(),
     );
     if (!mounted) return;
@@ -156,9 +157,7 @@ class _TokensPageState extends State<TokensPage> {
               ),
               const SizedBox(height: 8),
               SelectableText(
-                token.token_last_eight != null
-                    ? '...${token.token_last_eight}'
-                    : token.sha1!,
+                token.sha1!,
                 style: Theme.of(ctx).textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                   fontFamily: 'monospace',
@@ -351,6 +350,17 @@ class _CreateTokenDialogState extends State<_CreateTokenDialog> {
   void initState() {
     super.initState();
     _expandedGroups.addAll(_scopeGroups.map((g) => g.name));
+    widget.nameController.addListener(_onNameChanged);
+  }
+
+  @override
+  void dispose() {
+    widget.nameController.removeListener(_onNameChanged);
+    super.dispose();
+  }
+
+  void _onNameChanged() {
+    setState(() {});
   }
 
   @override

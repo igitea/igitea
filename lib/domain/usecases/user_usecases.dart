@@ -205,8 +205,16 @@ class CreateTokenUseCase {
   CreateTokenUseCase({required UserRepository repository})
     : _repository = repository;
 
-  Future<Either<Failure, AccessToken>> call(String name, {List<String>? scopes}) async {
-    return _repository.createToken(name, scopes: scopes);
+  Future<Either<Failure, AccessToken>> call(
+    String username, {
+    required String name,
+    List<String>? scopes,
+  }) async {
+    return _repository.createToken(
+      username,
+      name: name,
+      scopes: scopes,
+    );
   }
 }
 

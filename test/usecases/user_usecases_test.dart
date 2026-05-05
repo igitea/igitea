@@ -63,7 +63,7 @@ class MockUserRepository implements UserRepository {
   }
 
   @override
-  Future<Either<Failure, AccessToken>> createToken(String name, {List<String>? scopes}) =>
+  Future<Either<Failure, AccessToken>> createToken(String username, {required String name, List<String>? scopes}) =>
       throw UnimplementedError();
 
   @override

@@ -38,7 +38,11 @@ abstract class UserRepository {
   });
 
   /// Create a new access token.
-  Future<Either<Failure, AccessToken>> createToken(String name, {List<String>? scopes});
+  Future<Either<Failure, AccessToken>> createToken(
+    String username, {
+    required String name,
+    List<String>? scopes,
+  });
 
   /// List access tokens for a user.
   Future<Either<Failure, List<AccessToken>>> listTokens(String username);
