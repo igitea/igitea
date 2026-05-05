@@ -109,6 +109,40 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
     }
   }
 
+  Future<void> _confirmDeleteIssue() async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.deleteIssue),
+        content: Text(l10n.deleteIssueConfirm),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
+            child: Text(l10n.delete),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    final result = await Injection.issueNotifier.deleteIssue(widget.owner, widget.repo, widget.index);
+    if (!mounted) return;
+    switch (result) {
+      case Left<Failure, void>(:final value):
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${l10n.error}: ${value.message}')),
+        );
+      case Right<Failure, void>():
+        Navigator.of(context).pop();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.issueDeleted)),
+        );
+    }
+  }
+
   @override
   void dispose() {
     _commentController.dispose();
@@ -134,6 +168,11 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
                   );
                 }
               },
+            ),
+          if (Injection.issueNotifier.state is IssueDetailLoaded)
+            IconButton(
+              icon: const Icon(Icons.delete_outline),
+              onPressed: _confirmDeleteIssue,
             ),
         ],
       ),
@@ -343,6 +382,33 @@ class _IssueContent extends StatelessWidget {
               ),
             ),
 
+          if (issue.due_date != null)
+            _buildInfoRow(
+              context,
+              icon: Icons.calendar_today,
+              label: l10n.dueDate,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    '${issue.due_date!.toLocal().toString().split(' ')[0]}',
+                    style: _isOverdue(issue)
+                        ? TextStyle(color: theme.colorScheme.error, fontWeight: FontWeight.w600)
+                        : null,
+                  ),
+                  if (_isOverdue(issue)) ...[
+                    const SizedBox(width: 4),
+                    Icon(Icons.warning_amber_rounded, size: 14, color: theme.colorScheme.error),
+                    const SizedBox(width: 2),
+                    Text(
+                      l10n.overdue,
+                      style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.error),
+                    ),
+                  ],
+                ],
+              ),
+            ),
+
           const SizedBox(height: 8),
           Row(
             children: [
@@ -537,6 +603,11 @@ class _IssueContent extends StatelessWidget {
     if (diff.inHours > 0) return l10n.ago('${diff.inHours}h');
     if (diff.inMinutes > 0) return l10n.ago('${diff.inMinutes}m');
     return l10n.justNow;
+  }
+
+  bool _isOverdue(Issue issue) {
+    if (issue.due_date == null) return false;
+    return issue.state?.isOpen == true && issue.due_date!.isBefore(DateTime.now());
   }
 
   Color? _parseColor(String? colorStr) {
@@ -1218,6 +1289,17 @@ class _DependenciesSectionState extends State<_DependenciesSection> {
                       ),
                     ),
                     title: Text('#${dep.number} ${dep.title ?? ''}', style: theme.textTheme.bodySmall),
+                    onTap: dep.number != null
+                        ? () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => IssueDetailPage(
+                                  owner: dep.repository?.owner ?? widget.owner,
+                                  repo: dep.repository?.name ?? widget.repo,
+                                  index: dep.number!,
+                                ),
+                              ),
+                            )
+                        : null,
                     trailing: IconButton(
                       icon: const Icon(Icons.link_off, size: 18),
                       onPressed: () => _remove(dep),

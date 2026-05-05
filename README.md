@@ -19,7 +19,7 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 - Consistent 4px spacing grid and typography hierarchy across all pages
 - 120+ data models auto-generated from OpenAPI spec
 - 49+ domain use cases with `Either<Failure, T>` pattern
-- 270 tests passing, `flutter analyze` clean
+- 270+ tests passing, `flutter analyze` clean
 
 ### Authentication
 - Username/password login (primary)
@@ -41,8 +41,11 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 - Detail pages with Markdown body, state badges, author avatars, labels
 - Comments with Markdown rendering
 - Create issues: title, body, label selection, milestone selection
-- Edit issues: title, body, state toggle, label selection, milestone selection
+- Edit issues: title, body, state toggle, label selection, milestone selection, **due date**
 - Close/reopen issues, merge PRs with confirmation
+- **Issue dependencies**: add/remove dependencies with navigation to linked issues
+- **Issue subscriptions**: subscribe/unsubscribe toggle with status indicator
+- **Due date display**: visual overdue warning for past-due open issues
 
 ### Milestones
 - List milestones with progress bars and open/closed counts
@@ -139,6 +142,8 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 - Theme: Light / Dark / System
 - Language selection (10 supported)
 - Account info display
+- **Personal Access Tokens**: list, create, and delete tokens
+- SSH Keys, GPG Keys, Emails management
 - Admin Panel: user management, system hooks, cron tasks, action runners, email logs, user badges (admin only)
 - User OAuth2 applications: list, create, and delete OAuth apps
 

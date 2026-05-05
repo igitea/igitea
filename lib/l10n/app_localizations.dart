@@ -1619,6 +1619,24 @@ abstract class AppLocalizations {
   /// **'Edit User'**
   String get editUser;
 
+  /// No description provided for @deleteIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Issue'**
+  String get deleteIssue;
+
+  /// No description provided for @deleteIssueConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this issue? This action cannot be undone.'**
+  String get deleteIssueConfirm;
+
+  /// No description provided for @issueDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Issue deleted'**
+  String get issueDeleted;
+
   /// No description provided for @deleteUser.
   ///
   /// In en, this message translates to:
@@ -4150,6 +4168,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Deleted'**
   String get deleted;
+
+  /// No description provided for @overdue.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue'**
+  String get overdue;
+
+  /// No description provided for @accessTokens.
+  ///
+  /// In en, this message translates to:
+  /// **'Access Tokens'**
+  String get accessTokens;
+
+  /// No description provided for @createToken.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Token'**
+  String get createToken;
+
+  /// No description provided for @tokenName.
+  ///
+  /// In en, this message translates to:
+  /// **'Token Name'**
+  String get tokenName;
+
+  /// No description provided for @tokenCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Token Created'**
+  String get tokenCreated;
+
+  /// No description provided for @tokenValueWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Make sure to copy this token now. You won\'t be able to see it again.'**
+  String get tokenValueWarning;
+
+  /// No description provided for @failedToCreateToken.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to create token'**
+  String get failedToCreateToken;
+
+  /// No description provided for @deleteToken.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Token'**
+  String get deleteToken;
+
+  /// No description provided for @deleteTokenConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete'**
+  String get deleteTokenConfirm;
+
+  /// No description provided for @tokenDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Token deleted'**
+  String get tokenDeleted;
+
+  /// No description provided for @noTokens.
+  ///
+  /// In en, this message translates to:
+  /// **'No access tokens'**
+  String get noTokens;
+
+  /// No description provided for @scopes.
+  ///
+  /// In en, this message translates to:
+  /// **'Scopes'**
+  String get scopes;
+
+  /// No description provided for @selectAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Select All'**
+  String get selectAll;
+
+  /// No description provided for @deselectAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Deselect All'**
+  String get deselectAll;
 }
 
 class _AppLocalizationsDelegate

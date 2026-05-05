@@ -187,3 +187,39 @@ class SearchPublicUsersUseCase {
     );
   }
 }
+
+class ListTokensUseCase {
+  final UserRepository _repository;
+
+  ListTokensUseCase({required UserRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, List<AccessToken>>> call(String username) async {
+    return _repository.listTokens(username);
+  }
+}
+
+class CreateTokenUseCase {
+  final UserRepository _repository;
+
+  CreateTokenUseCase({required UserRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, AccessToken>> call(String name, {List<String>? scopes}) async {
+    return _repository.createToken(name, scopes: scopes);
+  }
+}
+
+class DeleteTokenUseCase {
+  final UserRepository _repository;
+
+  DeleteTokenUseCase({required UserRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, void>> call({
+    required String username,
+    required int tokenId,
+  }) async {
+    return _repository.deleteToken(username, tokenId);
+  }
+}

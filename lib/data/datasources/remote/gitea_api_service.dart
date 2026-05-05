@@ -171,6 +171,33 @@ class GiteaApiService {
     );
   }
 
+  Future<List<AccessToken>> userListTokens({
+    required String username,
+    int? page,
+    int? limit,
+  }) async {
+    final query = <String, String>{};
+    if (page != null) query['page'] = page.toString();
+    if (limit != null) query['limit'] = limit.toString();
+    final response = await _client.get(
+      '/users/${Uri.encodeComponent(username)}/tokens',
+      queryParameters: query.isEmpty ? null : query,
+    );
+    final list = jsonDecode(response.body) as List<dynamic>;
+    return list
+        .map((e) => AccessToken.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<void> userDeleteToken({
+    required String username,
+    required int tokenId,
+  }) async {
+    await _client.delete(
+      '/users/${Uri.encodeComponent(username)}/tokens/$tokenId',
+    );
+  }
+
   Future<List<Email>> userListEmails() async {
     final response = await _client.get('/user/emails');
     final list = jsonDecode(response.body) as List<dynamic>;

@@ -15,6 +15,7 @@ import 'admin_hooks_page.dart';
 import 'admin_runners_page.dart';
 import 'oauth_apps_page.dart';
 import 'ssh_keys_page.dart';
+import 'tokens_page.dart';
 import 'user_management_page.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -122,6 +123,19 @@ class _SettingsPageState extends State<SettingsPage> {
                           context,
                           MaterialPageRoute(
                             builder: (_) => const SshKeysPage(),
+                          ),
+                        );
+                      },
+                    ),
+                    ListTile(
+                      leading: const Icon(Icons.vpn_key_outlined),
+                      title: Text(l10n.accessTokens),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const TokensPage(),
                           ),
                         );
                       },

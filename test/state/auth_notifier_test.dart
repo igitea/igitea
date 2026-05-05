@@ -54,7 +54,7 @@ class FakeUserRepository implements UserRepository {
   }) => throw UnimplementedError();
 
   @override
-  Future<Either<Failure, AccessToken>> createToken(String name) =>
+  Future<Either<Failure, AccessToken>> createToken(String name, {List<String>? scopes}) =>
       throw UnimplementedError();
 
   @override
@@ -104,6 +104,14 @@ class FakeUserRepository implements UserRepository {
     int? page,
     int? limit,
   }) => throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, List<AccessToken>>> listTokens(String username) =>
+      throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, void>> deleteToken(String username, int tokenId) =>
+      throw UnimplementedError();
 }
 
 class FakeMiscRepository implements MiscRepository {

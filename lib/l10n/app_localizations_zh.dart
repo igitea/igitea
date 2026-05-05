@@ -810,6 +810,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get editUser => '编辑用户';
 
   @override
+  String get deleteIssue => '删除 Issue';
+
+  @override
+  String get deleteIssueConfirm => '确定要删除这个 Issue 吗？此操作不可撤销。';
+
+  @override
+  String get issueDeleted => 'Issue 已删除';
+
+  @override
   String get deleteUser => '删除用户';
 
   @override
@@ -2088,6 +2097,48 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get deleted => '已删除';
+
+  @override
+  String get overdue => '已逾期';
+
+  @override
+  String get accessTokens => '访问令牌';
+
+  @override
+  String get createToken => '创建令牌';
+
+  @override
+  String get tokenName => '令牌名称';
+
+  @override
+  String get tokenCreated => '令牌已创建';
+
+  @override
+  String get tokenValueWarning => '请立即复制此令牌，关闭后将无法再次查看。';
+
+  @override
+  String get failedToCreateToken => '创建令牌失败';
+
+  @override
+  String get deleteToken => '删除令牌';
+
+  @override
+  String get deleteTokenConfirm => '确定要删除';
+
+  @override
+  String get tokenDeleted => '令牌已删除';
+
+  @override
+  String get noTokens => '暂无访问令牌';
+
+  @override
+  String get scopes => '权限范围';
+
+  @override
+  String get selectAll => '全选';
+
+  @override
+  String get deselectAll => '取消全选';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).

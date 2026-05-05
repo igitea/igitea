@@ -63,7 +63,7 @@ class MockUserRepository implements UserRepository {
   }
 
   @override
-  Future<Either<Failure, AccessToken>> createToken(String name) =>
+  Future<Either<Failure, AccessToken>> createToken(String name, {List<String>? scopes}) =>
       throw UnimplementedError();
 
   @override
@@ -121,6 +121,18 @@ class MockUserRepository implements UserRepository {
   }) async {
     if (shouldFail) return Left(failure);
     return Right([User(id: 5, login: 'searchuser')]);
+  }
+
+  @override
+  Future<Either<Failure, List<AccessToken>>> listTokens(String username) async {
+    if (shouldFail) return Left(failure);
+    return Right([]);
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteToken(String username, int tokenId) async {
+    if (shouldFail) return Left(failure);
+    return Right(null);
   }
 }
 

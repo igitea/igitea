@@ -38,7 +38,13 @@ abstract class UserRepository {
   });
 
   /// Create a new access token.
-  Future<Either<Failure, AccessToken>> createToken(String name);
+  Future<Either<Failure, AccessToken>> createToken(String name, {List<String>? scopes});
+
+  /// List access tokens for a user.
+  Future<Either<Failure, List<AccessToken>>> listTokens(String username);
+
+  /// Delete an access token.
+  Future<Either<Failure, void>> deleteToken(String username, int tokenId);
 
   /// List current user's emails.
   Future<Either<Failure, List<Email>>> listEmails();

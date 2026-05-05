@@ -810,6 +810,16 @@ class AppLocalizationsJa extends AppLocalizations {
   String get editUser => 'Edit User';
 
   @override
+  String get deleteIssue => 'Delete Issue';
+
+  @override
+  String get deleteIssueConfirm =>
+      'Are you sure you want to delete this issue? This action cannot be undone.';
+
+  @override
+  String get issueDeleted => 'Issue deleted';
+
+  @override
   String get deleteUser => 'Delete User';
 
   @override
@@ -2096,4 +2106,47 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get deleted => 'Deleted';
+
+  @override
+  String get overdue => 'Overdue';
+
+  @override
+  String get accessTokens => 'Access Tokens';
+
+  @override
+  String get createToken => 'Create Token';
+
+  @override
+  String get tokenName => 'Token Name';
+
+  @override
+  String get tokenCreated => 'Token Created';
+
+  @override
+  String get tokenValueWarning =>
+      'Make sure to copy this token now. You won\'t be able to see it again.';
+
+  @override
+  String get failedToCreateToken => 'Failed to create token';
+
+  @override
+  String get deleteToken => 'Delete Token';
+
+  @override
+  String get deleteTokenConfirm => 'Are you sure you want to delete';
+
+  @override
+  String get tokenDeleted => 'Token deleted';
+
+  @override
+  String get noTokens => 'No access tokens';
+
+  @override
+  String get scopes => 'Scopes';
+
+  @override
+  String get selectAll => 'Select All';
+
+  @override
+  String get deselectAll => 'Deselect All';
 }

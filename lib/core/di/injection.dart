@@ -30,6 +30,7 @@ import '../../domain/usecases/user_oauth_usecases.dart';
 import '../../domain/usecases/user_usecases.dart';
 import '../../presentation/state/admin_notifier.dart';
 import '../../presentation/state/user_oauth_notifier.dart';
+import '../../presentation/state/token_notifier.dart';
 import '../../presentation/state/org_actions_notifier.dart';
 import '../../presentation/state/repo_actions_notifier.dart';
 import '../../presentation/state/auth_notifier.dart';
@@ -105,6 +106,7 @@ class Injection {
   static late GetIssueUseCase getIssueUseCase;
   static late CreateIssueUseCase createIssueUseCase;
   static late EditIssueUseCase editIssueUseCase;
+  static late DeleteIssueUseCase deleteIssueUseCase;
   static late ListCommentsUseCase listCommentsUseCase;
   static late CreateCommentUseCase createCommentUseCase;
   static late SearchIssuesUseCase searchIssuesUseCase;
@@ -170,6 +172,10 @@ class Injection {
   static late GetOAuth2AppUseCase getOAuth2AppUseCase;
   static late DeleteOAuth2AppUseCase deleteOAuth2AppUseCase;
 
+  static late ListTokensUseCase listTokensUseCase;
+  static late CreateTokenUseCase createTokenUseCase;
+  static late DeleteTokenUseCase deleteTokenUseCase;
+
   static late ListOrgActionsSecretsUseCase listOrgActionsSecretsUseCase;
   static late CreateOrUpdateOrgActionsSecretUseCase createOrUpdateOrgActionsSecretUseCase;
   static late DeleteOrgActionsSecretUseCase deleteOrgActionsSecretUseCase;
@@ -196,6 +202,7 @@ class Injection {
   static late ThemeNotifier themeNotifier;
   static late AdminNotifier adminNotifier;
   static late UserOAuthNotifier userOAuthNotifier;
+  static late TokenNotifier tokenNotifier;
   static late OrgActionsNotifier orgActionsNotifier;
   static late RepoActionsNotifier repoActionsNotifier;
 
@@ -239,6 +246,7 @@ class Injection {
     assert(getIssueUseCase != null);
     assert(createIssueUseCase != null);
     assert(editIssueUseCase != null);
+    assert(deleteIssueUseCase != null);
     assert(listCommentsUseCase != null);
     assert(createCommentUseCase != null);
     assert(searchIssuesUseCase != null);
@@ -303,6 +311,9 @@ class Injection {
     assert(createOAuth2AppUseCase != null);
     assert(getOAuth2AppUseCase != null);
     assert(deleteOAuth2AppUseCase != null);
+    assert(listTokensUseCase != null);
+    assert(createTokenUseCase != null);
+    assert(deleteTokenUseCase != null);
   }
 
   static void _initRepositories() {
@@ -370,6 +381,7 @@ class Injection {
     getIssueUseCase = GetIssueUseCase(repository: issueRepository);
     createIssueUseCase = CreateIssueUseCase(repository: issueRepository);
     editIssueUseCase = EditIssueUseCase(repository: issueRepository);
+    deleteIssueUseCase = DeleteIssueUseCase(repository: issueRepository);
     listCommentsUseCase = ListCommentsUseCase(repository: issueRepository);
     createCommentUseCase = CreateCommentUseCase(repository: issueRepository);
     searchIssuesUseCase = SearchIssuesUseCase(repository: issueRepository);
@@ -446,6 +458,9 @@ class Injection {
     createOAuth2AppUseCase = CreateOAuth2AppUseCase(repository: userOAuthRepository);
     getOAuth2AppUseCase = GetOAuth2AppUseCase(repository: userOAuthRepository);
     deleteOAuth2AppUseCase = DeleteOAuth2AppUseCase(repository: userOAuthRepository);
+    listTokensUseCase = ListTokensUseCase(repository: userRepository);
+    createTokenUseCase = CreateTokenUseCase(repository: userRepository);
+    deleteTokenUseCase = DeleteTokenUseCase(repository: userRepository);
     editUserUseCase = EditUserUseCase(repository: adminRepository);
     runCronTaskUseCase = RunCronTaskUseCase(repository: adminRepository);
     listAdminHooksUseCase = ListAdminHooksUseCase(repository: adminRepository);
@@ -545,6 +560,7 @@ class Injection {
         getIssueUseCase: getIssueUseCase,
         createIssueUseCase: createIssueUseCase,
         editIssueUseCase: editIssueUseCase,
+        deleteIssueUseCase: deleteIssueUseCase,
         listCommentsUseCase: listCommentsUseCase,
         createCommentUseCase: createCommentUseCase,
         searchIssuesUseCase: searchIssuesUseCase,
@@ -610,6 +626,11 @@ class Injection {
         createOAuth2AppUseCase: createOAuth2AppUseCase,
         getOAuth2AppUseCase: getOAuth2AppUseCase,
         deleteOAuth2AppUseCase: deleteOAuth2AppUseCase,
+      );
+      tokenNotifier.updateUseCases(
+        listTokensUseCase: listTokensUseCase,
+        createTokenUseCase: createTokenUseCase,
+        deleteTokenUseCase: deleteTokenUseCase,
       );
       orgActionsNotifier.updateUseCases(
         listOrgActionsSecretsUseCase: listOrgActionsSecretsUseCase,
@@ -682,6 +703,7 @@ class Injection {
         getIssueUseCase: getIssueUseCase,
         createIssueUseCase: createIssueUseCase,
         editIssueUseCase: editIssueUseCase,
+        deleteIssueUseCase: deleteIssueUseCase,
         listCommentsUseCase: listCommentsUseCase,
         createCommentUseCase: createCommentUseCase,
         searchIssuesUseCase: searchIssuesUseCase,
@@ -748,6 +770,11 @@ class Injection {
         createOAuth2AppUseCase: createOAuth2AppUseCase,
         getOAuth2AppUseCase: getOAuth2AppUseCase,
         deleteOAuth2AppUseCase: deleteOAuth2AppUseCase,
+      );
+      tokenNotifier = TokenNotifier(
+        listTokensUseCase: listTokensUseCase,
+        createTokenUseCase: createTokenUseCase,
+        deleteTokenUseCase: deleteTokenUseCase,
       );
       orgActionsNotifier = OrgActionsNotifier(
         listOrgActionsSecretsUseCase: listOrgActionsSecretsUseCase,
@@ -841,6 +868,7 @@ class Injection {
       getIssueUseCase: getIssueUseCase,
       createIssueUseCase: createIssueUseCase,
       editIssueUseCase: editIssueUseCase,
+      deleteIssueUseCase: deleteIssueUseCase,
       listCommentsUseCase: listCommentsUseCase,
       createCommentUseCase: createCommentUseCase,
       searchIssuesUseCase: searchIssuesUseCase,
@@ -906,6 +934,11 @@ class Injection {
       createOAuth2AppUseCase: createOAuth2AppUseCase,
       getOAuth2AppUseCase: getOAuth2AppUseCase,
       deleteOAuth2AppUseCase: deleteOAuth2AppUseCase,
+    );
+    tokenNotifier.updateUseCases(
+      listTokensUseCase: listTokensUseCase,
+      createTokenUseCase: createTokenUseCase,
+      deleteTokenUseCase: deleteTokenUseCase,
     );
     orgActionsNotifier.updateUseCases(
       listOrgActionsSecretsUseCase: listOrgActionsSecretsUseCase,
