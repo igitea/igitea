@@ -1,17 +1,25 @@
 # Changelog
 
-## [Unreleased]
+## [0.28.0] - 2026-05-05
 
 ### Added
 - Issue Detail: display due date with overdue warning indicator
 - Issue Dependencies: tap to navigate to dependency issue detail page
 - i18n: add "overdue" translation key (en, zh)
 - **Personal Access Tokens management**: list, create, and delete tokens from Settings (`TokensPage`)
-  - Create dialog with scope permission selection (11 categories × read/write)
+  - Create dialog with scope permission selection (8 categories × read/write)
   - Proper error messages on creation failure
 
 ### Changed
 - Issue Detail: subscription button uses Material 3 ActionChip with loading state
+- Polish tokens page: M3 cards, skeleton loading, empty/error state styling
+
+### Fixed
+- Token creation: pass correct username to API (was using token name)
+- Token creation: show full sha1 token value on creation dialog
+- Token scopes: remove invalid scopes (pull_request, gpg_key, public_key)
+- Create dialog: button disabled state now responds to text input
+- Create dialog: use FocusNode instead of autofocus to avoid Flutter keyboard assertion crash
 
 ## [0.27.0] - 2026-05-03
 
