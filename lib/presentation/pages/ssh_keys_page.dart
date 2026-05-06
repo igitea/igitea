@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../core/animations/animated_wrapper.dart';
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
+import '../../core/errors/failures.dart';
+import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -30,12 +32,14 @@ class _SshKeysPageState extends State<SshKeysPage> {
     });
 
     try {
-      final result = await Injection.apiService.userCurrentListKeys();
+      final result = await Injection.listCurrentUserKeysUseCase();
       if (mounted) {
-        setState(() {
-          _keys = result;
-          _loading = false;
-        });
+        switch (result) {
+          case Right<Failure, List<PublicKey>>(:final value):
+            setState(() { _keys = value; _loading = false; });
+          case Left<Failure, List<PublicKey>>():
+            setState(() { _error = 'Load failed'; _loading = false; });
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -73,12 +77,17 @@ class _SshKeysPageState extends State<SshKeysPage> {
     if (confirmed != true) return;
 
     try {
-      await Injection.apiService.userCurrentDeleteKey(id: id);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.keyDeleted)),
-        );
-        _loadKeys();
+      final result = await Injection.deleteKeyUseCase(id);
+      switch (result) {
+        case Right<Failure, void>():
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(l10n.keyDeleted)),
+            );
+            _loadKeys();
+          }
+        case Left<Failure, void>(:final value):
+          if (mounted) setState(() => _error = value.message);
       }
     } catch (e) {
       if (mounted) {
@@ -261,15 +270,17 @@ class _SshKeysPageState extends State<SshKeysPage> {
 
     if (result != null) {
       try {
-        await Injection.apiService.userCurrentPostKey(body: {
-          'title': result['title'],
-          'key': result['key'],
-        });
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.keyAdded)),
-          );
-          _loadKeys();
+        final addResult = await Injection.addKeyUseCase(result['title'] ?? '', result['key'] ?? '');
+        switch (addResult) {
+          case Right<Failure, PublicKey>():
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(l10n.keyAdded)),
+              );
+              _loadKeys();
+            }
+          case Left<Failure, PublicKey>(:final value):
+            if (mounted) setState(() => _error = value.message);
         }
       } catch (e) {
         if (mounted) {

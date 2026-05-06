@@ -178,6 +178,16 @@ class Injection {
   static late CreateTokenUseCase createTokenUseCase;
   static late DeleteTokenUseCase deleteTokenUseCase;
 
+  static late ListEmailsUseCase listEmailsUseCase;
+  static late AddEmailUseCase addEmailUseCase;
+  static late DeleteEmailUseCase deleteEmailUseCase;
+  static late ListCurrentUserKeysUseCase listCurrentUserKeysUseCase;
+  static late AddKeyUseCase addKeyUseCase;
+  static late DeleteKeyUseCase deleteKeyUseCase;
+  static late ListGPGKeysUseCase listGPGKeysUseCase;
+  static late AddGPGKeyUseCase addGPGKeyUseCase;
+  static late DeleteGPGKeyUseCase deleteGPGKeyUseCase;
+
   static late ListOrgActionsSecretsUseCase listOrgActionsSecretsUseCase;
   static late CreateOrUpdateOrgActionsSecretUseCase createOrUpdateOrgActionsSecretUseCase;
   static late DeleteOrgActionsSecretUseCase deleteOrgActionsSecretUseCase;
@@ -203,6 +213,12 @@ class Injection {
   static late DownloadActionArtifactUseCase downloadActionArtifactUseCase;
 
   static late MigrateRepoUseCase migrateRepoUseCase;
+  static late ListBranchProtectionsUseCase listBranchProtectionsUseCase;
+  static late CreateBranchProtectionUseCase createBranchProtectionUseCase;
+  static late DeleteBranchProtectionUseCase deleteBranchProtectionUseCase;
+  static late ListTagProtectionsUseCase listTagProtectionsUseCase;
+  static late CreateTagProtectionUseCase createTagProtectionUseCase;
+  static late DeleteTagProtectionUseCase deleteTagProtectionUseCase;
 
   static late AuthNotifier authNotifier;
   static late UserNotifier userNotifier;
@@ -335,6 +351,21 @@ class Injection {
     assert(listActionArtifactsByRunUseCase != null);
     assert(downloadActionArtifactUseCase != null);
     assert(migrateRepoUseCase != null);
+    assert(listBranchProtectionsUseCase != null);
+    assert(createBranchProtectionUseCase != null);
+    assert(deleteBranchProtectionUseCase != null);
+    assert(listTagProtectionsUseCase != null);
+    assert(createTagProtectionUseCase != null);
+    assert(deleteTagProtectionUseCase != null);
+    assert(listEmailsUseCase != null);
+    assert(addEmailUseCase != null);
+    assert(deleteEmailUseCase != null);
+    assert(listCurrentUserKeysUseCase != null);
+    assert(addKeyUseCase != null);
+    assert(deleteKeyUseCase != null);
+    assert(listGPGKeysUseCase != null);
+    assert(addGPGKeyUseCase != null);
+    assert(deleteGPGKeyUseCase != null);
   }
 
   static void _initRepositories() {
@@ -483,6 +514,15 @@ class Injection {
     listTokensUseCase = ListTokensUseCase(repository: userRepository);
     createTokenUseCase = CreateTokenUseCase(repository: userRepository);
     deleteTokenUseCase = DeleteTokenUseCase(repository: userRepository);
+    listEmailsUseCase = ListEmailsUseCase(repository: userRepository);
+    addEmailUseCase = AddEmailUseCase(repository: userRepository);
+    deleteEmailUseCase = DeleteEmailUseCase(repository: userRepository);
+    listCurrentUserKeysUseCase = ListCurrentUserKeysUseCase(repository: userRepository);
+    addKeyUseCase = AddKeyUseCase(repository: userRepository);
+    deleteKeyUseCase = DeleteKeyUseCase(repository: userRepository);
+    listGPGKeysUseCase = ListGPGKeysUseCase(repository: userRepository);
+    addGPGKeyUseCase = AddGPGKeyUseCase(repository: userRepository);
+    deleteGPGKeyUseCase = DeleteGPGKeyUseCase(repository: userRepository);
     editUserUseCase = EditUserUseCase(repository: adminRepository);
     runCronTaskUseCase = RunCronTaskUseCase(repository: adminRepository);
     listAdminHooksUseCase = ListAdminHooksUseCase(repository: adminRepository);
@@ -517,6 +557,12 @@ class Injection {
     listActionArtifactsByRunUseCase = ListActionArtifactsByRunUseCase(repository: repoRepository);
     downloadActionArtifactUseCase = DownloadActionArtifactUseCase(repository: repoRepository);
     migrateRepoUseCase = MigrateRepoUseCase(repository: repoRepository);
+    listBranchProtectionsUseCase = ListBranchProtectionsUseCase(repository: repoRepository);
+    createBranchProtectionUseCase = CreateBranchProtectionUseCase(repository: repoRepository);
+    deleteBranchProtectionUseCase = DeleteBranchProtectionUseCase(repository: repoRepository);
+    listTagProtectionsUseCase = ListTagProtectionsUseCase(repository: repoRepository);
+    createTagProtectionUseCase = CreateTagProtectionUseCase(repository: repoRepository);
+    deleteTagProtectionUseCase = DeleteTagProtectionUseCase(repository: repoRepository);
   }
 
   static void initialize({

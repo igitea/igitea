@@ -134,6 +134,24 @@ class MockUserRepository implements UserRepository {
     if (shouldFail) return Left(failure);
     return Right(null);
   }
+
+  @override
+  Future<Either<Failure, List<GPGKey>>> listGPGKeys() async {
+    if (shouldFail) return Left(failure);
+    return Right([]);
+  }
+
+  @override
+  Future<Either<Failure, GPGKey>> addGPGKey(String armoredPublicKey) async {
+    if (shouldFail) return Left(failure);
+    return Right(GPGKey());
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteGPGKey(int id) async {
+    if (shouldFail) return Left(failure);
+    return Right(null);
+  }
 }
 
 void main() {

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
+import '../../core/errors/failures.dart';
+import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../widgets/empty_state.dart';
@@ -25,10 +27,14 @@ class _GpgKeysPageState extends State<GpgKeysPage> {
 
   Future<void> _load() async {
     setState(() => _loading = true);
-    try {
-      _keys = await Injection.apiService.userCurrentListGPGKeys();
-    } catch (_) {}
-    if (mounted) setState(() => _loading = false);
+    final result = await Injection.listGPGKeysUseCase();
+    if (!mounted) return;
+    switch (result) {
+      case Right<Failure, List<GPGKey>>(:final value):
+        setState(() { _keys = value; _loading = false; });
+      case Left<Failure, List<GPGKey>>():
+        if (mounted) setState(() => _loading = false);
+    }
   }
 
   Future<void> _add() async {
@@ -55,16 +61,16 @@ class _GpgKeysPageState extends State<GpgKeysPage> {
         ],
       ),
     );
-    if (key != null && mounted) {
-      try {
-        await Injection.apiService.userCurrentPostGPGKey(armoredPublicKey: key);
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.gpgKeyAdded)));
-          _load();
-        }
-      } catch (_) {
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
-      }
+    if (key == null || key.isEmpty || !mounted) return;
+
+    final result = await Injection.addGPGKeyUseCase(key);
+    if (!mounted) return;
+    switch (result) {
+      case Right<Failure, GPGKey>():
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.gpgKeyAdded)));
+        _load();
+      case Left<Failure, GPGKey>():
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
     }
   }
 
@@ -81,16 +87,17 @@ class _GpgKeysPageState extends State<GpgKeysPage> {
         ],
       ),
     );
-    if (ok == true && gpgKey.id != null && mounted) {
-      try {
-        await Injection.apiService.userCurrentDeleteGPGKey(id: gpgKey.id!);
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.gpgKeyDeleted)));
-          _load();
-        }
-      } catch (_) {
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
-      }
+    final id = gpgKey.id;
+    if (ok != true || id == null || !mounted) return;
+
+    final result = await Injection.deleteGPGKeyUseCase(id);
+    if (!mounted) return;
+    switch (result) {
+      case Right<Failure, void>():
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.gpgKeyDeleted)));
+        _load();
+      case Left<Failure, void>():
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
     }
   }
 

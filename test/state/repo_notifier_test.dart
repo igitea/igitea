@@ -368,6 +368,18 @@ class FakeRepoRepository implements RepoRepository {
   @override
   Future<Either<Failure, void>> deleteTopic(String owner, String repo, String topic) async => const Right(null);
   @override
+  Future<Either<Failure, List<BranchProtection>>> listBranchProtections(String owner, String repo) async => const Right([]);
+  @override
+  Future<Either<Failure, void>> createBranchProtection(String owner, String repo, Map<String, dynamic> body) async => const Right(null);
+  @override
+  Future<Either<Failure, void>> deleteBranchProtection(String owner, String repo, String name) async => const Right(null);
+  @override
+  Future<Either<Failure, List<TagProtection>>> listTagProtections(String owner, String repo) async => const Right([]);
+  @override
+  Future<Either<Failure, TagProtection>> createTagProtection(String owner, String repo, String namePattern) async => Right(TagProtection());
+  @override
+  Future<Either<Failure, void>> deleteTagProtection(String owner, String repo, int id) async => const Right(null);
+  @override
   Future<Either<Failure, ActionArtifactsResponse>> listActionArtifactsByRun(String owner, String repo, int runId) async =>
       Right(ActionArtifactsResponse(artifacts: [], total_count: 0));
   @override

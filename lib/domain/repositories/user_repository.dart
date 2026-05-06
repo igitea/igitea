@@ -91,4 +91,13 @@ abstract class UserRepository {
     int? page,
     int? limit,
   });
+
+  /// List current user's GPG keys.
+  Future<Either<Failure, List<GPGKey>>> listGPGKeys();
+
+  /// Add a GPG key for the current user.
+  Future<Either<Failure, GPGKey>> addGPGKey(String armoredPublicKey);
+
+  /// Delete a GPG key for the current user.
+  Future<Either<Failure, void>> deleteGPGKey(int id);
 }

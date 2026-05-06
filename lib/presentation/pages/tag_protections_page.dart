@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
+import '../../core/errors/failures.dart';
+import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../widgets/empty_state.dart';
@@ -28,24 +30,25 @@ class _TagProtectionsPageState extends State<TagProtectionsPage> {
 
   Future<void> _load() async {
     setState(() => _loading = true);
-    try {
-      _protections = await Injection.apiService.repoListTagProtections(
-        owner: widget.owner,
-        repo: widget.repo,
-      );
-    } catch (_) {}
-    if (mounted) setState(() => _loading = false);
+    final result = await Injection.listTagProtectionsUseCase(widget.owner, widget.repo);
+    if (!mounted) return;
+    switch (result) {
+      case Right<Failure, List<TagProtection>>(:final value):
+        setState(() { _protections = value; _loading = false; });
+      case Left<Failure, List<TagProtection>>():
+        if (mounted) setState(() => _loading = false);
+    }
   }
 
-  Future<void> _add() async {
+  Future<void> _create() async {
     final l10n = AppLocalizations.of(context)!;
-    final ctrl = TextEditingController();
+    final nameController = TextEditingController();
     final pattern = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(l10n.createTagProtection),
         content: TextField(
-          controller: ctrl,
+          controller: nameController,
           decoration: InputDecoration(
             labelText: l10n.namePattern,
             hintText: 'v*',
@@ -55,26 +58,61 @@ class _TagProtectionsPageState extends State<TagProtectionsPage> {
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l10n.cancel)),
           FilledButton(
-            onPressed: ctrl.text.trim().isEmpty ? null : () => Navigator.pop(ctx, ctrl.text.trim()),
+            onPressed: () => Navigator.pop(ctx, nameController.text.trim()),
             child: Text(l10n.create),
           ),
         ],
       ),
     );
-    if (pattern != null && mounted) {
-      try {
-        await Injection.apiService.repoCreateTagProtection(
-          owner: widget.owner,
-          repo: widget.repo,
-          namePattern: pattern,
-        );
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tagProtectionCreated)));
-          _load();
-        }
-      } catch (_) {
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
-      }
+
+    if (pattern == null || pattern.isEmpty || !mounted) return;
+
+    final result = await Injection.createTagProtectionUseCase(widget.owner, widget.repo, pattern);
+    if (!mounted) return;
+    switch (result) {
+      case Right<Failure, TagProtection>():
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tagProtectionCreated)));
+        _load();
+      case Left<Failure, TagProtection>():
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
+    }
+  }
+
+  Future<void> _add() async {
+    final l10n = AppLocalizations.of(context)!;
+    final nameController = TextEditingController();
+    final pattern = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.createTagProtection),
+        content: TextField(
+          controller: nameController,
+          decoration: InputDecoration(
+            labelText: l10n.namePattern,
+            hintText: 'v*',
+            border: const OutlineInputBorder(),
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l10n.cancel)),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, nameController.text.trim()),
+            child: Text(l10n.create),
+          ),
+        ],
+      ),
+    );
+
+    if (pattern == null || pattern.isEmpty || !mounted) return;
+
+    final result = await Injection.createTagProtectionUseCase(widget.owner, widget.repo, pattern);
+    if (!mounted) return;
+    switch (result) {
+      case Right<Failure, TagProtection>():
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tagProtectionCreated)));
+        _load();
+      case Left<Failure, TagProtection>():
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
     }
   }
 
@@ -91,20 +129,17 @@ class _TagProtectionsPageState extends State<TagProtectionsPage> {
         ],
       ),
     );
-    if (ok == true && protection.id != null && mounted) {
-      try {
-        await Injection.apiService.repoDeleteTagProtection(
-          owner: widget.owner,
-          repo: widget.repo,
-          id: protection.id!,
-        );
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tagProtectionDeleted)));
-          _load();
-        }
-      } catch (_) {
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
-      }
+    final id = protection.id;
+    if (ok != true || id == null || !mounted) return;
+
+    final result = await Injection.deleteTagProtectionUseCase(widget.owner, widget.repo, id);
+    if (!mounted) return;
+    switch (result) {
+      case Right<Failure, void>():
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tagProtectionDeleted)));
+        _load();
+      case Left<Failure, void>():
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
     }
   }
 

@@ -339,4 +339,34 @@ abstract class RepoRepository {
     String repo,
     int artifactId,
   );
+
+  /// List branch protections for a repository.
+  Future<Either<Failure, List<BranchProtection>>> listBranchProtections(
+    String owner, String repo,
+  );
+
+  /// Create a branch protection for a repository.
+  Future<Either<Failure, void>> createBranchProtection(
+    String owner, String repo, Map<String, dynamic> body,
+  );
+
+  /// Delete a branch protection for a repository.
+  Future<Either<Failure, void>> deleteBranchProtection(
+    String owner, String repo, String name,
+  );
+
+  /// List tag protections for a repository.
+  Future<Either<Failure, List<TagProtection>>> listTagProtections(
+    String owner, String repo,
+  );
+
+  /// Create a tag protection for a repository.
+  Future<Either<Failure, TagProtection>> createTagProtection(
+    String owner, String repo, String namePattern,
+  );
+
+  /// Delete a tag protection for a repository.
+  Future<Either<Failure, void>> deleteTagProtection(
+    String owner, String repo, int id,
+  );
 }

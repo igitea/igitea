@@ -231,3 +231,59 @@ class DeleteTokenUseCase {
     return _repository.deleteToken(username, tokenId);
   }
 }
+
+class ListEmailsUseCase {
+  final UserRepository _repository;
+  ListEmailsUseCase({required UserRepository repository}) : _repository = repository;
+  Future<Either<Failure, List<Email>>> call() async => _repository.listEmails();
+}
+
+class AddEmailUseCase {
+  final UserRepository _repository;
+  AddEmailUseCase({required UserRepository repository}) : _repository = repository;
+  Future<Either<Failure, void>> call(List<String> emails) async => _repository.addEmail(emails);
+}
+
+class DeleteEmailUseCase {
+  final UserRepository _repository;
+  DeleteEmailUseCase({required UserRepository repository}) : _repository = repository;
+  Future<Either<Failure, void>> call(List<String> emails) async => _repository.deleteEmail(emails);
+}
+
+class ListCurrentUserKeysUseCase {
+  final UserRepository _repository;
+  ListCurrentUserKeysUseCase({required UserRepository repository}) : _repository = repository;
+  Future<Either<Failure, List<PublicKey>>> call() async => _repository.listCurrentUserKeys();
+}
+
+class AddKeyUseCase {
+  final UserRepository _repository;
+  AddKeyUseCase({required UserRepository repository}) : _repository = repository;
+  Future<Either<Failure, PublicKey>> call(String title, String key) async =>
+      _repository.addKey(title, key);
+}
+
+class DeleteKeyUseCase {
+  final UserRepository _repository;
+  DeleteKeyUseCase({required UserRepository repository}) : _repository = repository;
+  Future<Either<Failure, void>> call(int id) async => _repository.deleteKey(id);
+}
+
+class ListGPGKeysUseCase {
+  final UserRepository _repository;
+  ListGPGKeysUseCase({required UserRepository repository}) : _repository = repository;
+  Future<Either<Failure, List<GPGKey>>> call() async => _repository.listGPGKeys();
+}
+
+class AddGPGKeyUseCase {
+  final UserRepository _repository;
+  AddGPGKeyUseCase({required UserRepository repository}) : _repository = repository;
+  Future<Either<Failure, GPGKey>> call(String armoredPublicKey) async =>
+      _repository.addGPGKey(armoredPublicKey);
+}
+
+class DeleteGPGKeyUseCase {
+  final UserRepository _repository;
+  DeleteGPGKeyUseCase({required UserRepository repository}) : _repository = repository;
+  Future<Either<Failure, void>> call(int id) async => _repository.deleteGPGKey(id);
+}

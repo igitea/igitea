@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import '../../core/animations/animated_wrapper.dart';
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
+import '../../core/errors/failures.dart';
+import '../../core/utils/either.dart';
+import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../widgets/empty_state.dart';
 
@@ -17,7 +20,7 @@ class BranchProtectionPage extends StatefulWidget {
 }
 
 class _BranchProtectionPageState extends State<BranchProtectionPage> {
-  List<Map<String, dynamic>> _protections = [];
+  List<BranchProtection> _protections = [];
   bool _loading = true;
 
   @override
@@ -28,18 +31,20 @@ class _BranchProtectionPageState extends State<BranchProtectionPage> {
 
   Future<void> _load() async {
     setState(() => _loading = true);
-    try {
-      final result = await Injection.apiService.repoListBranchProtections(owner: widget.owner, repo: widget.repo);
-      if (mounted) setState(() { _protections = result.cast<Map<String, dynamic>>(); _loading = false; });
-    } catch (_) {
-      if (mounted) setState(() => _loading = false);
+    final result = await Injection.listBranchProtectionsUseCase(widget.owner, widget.repo);
+    if (!mounted) return;
+    switch (result) {
+      case Right<Failure, List<BranchProtection>>(:final value):
+        setState(() { _protections = value; _loading = false; });
+      case Left<Failure, List<BranchProtection>>():
+        if (mounted) setState(() => _loading = false);
     }
   }
 
   Future<void> _create() async {
     final l10n = AppLocalizations.of(context)!;
     final nameController = TextEditingController();
-    final result = await showDialog<Map<String, dynamic>>(
+    final branchName = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
         title: Text(l10n.protectBranch),
@@ -54,23 +59,25 @@ class _BranchProtectionPageState extends State<BranchProtectionPage> {
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l10n.cancel)),
           FilledButton(
-            onPressed: () => Navigator.pop(ctx, {'branch_name': nameController.text.trim()}),
+            onPressed: () => Navigator.pop(ctx, nameController.text.trim()),
             child: Text(l10n.create),
           ),
         ],
       ),
     );
 
-    if (result != null && mounted) {
-      try {
-        await Injection.apiService.repoCreateBranchProtection(owner: widget.owner, repo: widget.repo, body: result);
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.created)));
-          _load();
-        }
-      } catch (_) {
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
-      }
+    if (branchName == null || branchName.isEmpty || !mounted) return;
+
+    final result = await Injection.createBranchProtectionUseCase(
+      widget.owner, widget.repo, {'branch_name': branchName},
+    );
+    if (!mounted) return;
+    switch (result) {
+      case Right<Failure, void>():
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.created)));
+        _load();
+      case Left<Failure, void>():
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
     }
   }
 
@@ -87,16 +94,16 @@ class _BranchProtectionPageState extends State<BranchProtectionPage> {
         ],
       ),
     );
-    if (ok == true) {
-      try {
-        await Injection.apiService.repoDeleteBranchProtection(owner: widget.owner, repo: widget.repo, name: name);
-        if (!mounted) return;
+    if (ok != true) return;
+
+    final result = await Injection.deleteBranchProtectionUseCase(widget.owner, widget.repo, name);
+    if (!mounted) return;
+    switch (result) {
+      case Right<Failure, void>():
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.labelDeleted)));
         _load();
-      } catch (_) {
-        if (!mounted) return;
+      case Left<Failure, void>():
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
-      }
     }
   }
 
@@ -121,8 +128,8 @@ class _BranchProtectionPageState extends State<BranchProtectionPage> {
                     itemCount: _protections.length,
                     itemBuilder: (context, index) {
                       final p = _protections[index];
-                      final name = p['branch_name']?.toString() ?? p['rule_name']?.toString() ?? '?';
-                      final created = p['created_at']?.toString();
+                      final name = p.branch_name ?? '?';
+                      final created = p.created_at?.toString();
                       return FadeInWrapper(
                         delay: Duration(milliseconds: index * 30),
                         child: Card(

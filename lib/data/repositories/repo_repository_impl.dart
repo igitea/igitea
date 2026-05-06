@@ -621,4 +621,49 @@ class RepoRepositoryImpl implements RepoRepository {
       () => _apiService.repoDownloadArtifact(owner: owner, repo: repo, artifactId: artifactId),
     );
   }
+
+  @override
+  Future<Either<Failure, List<BranchProtection>>> listBranchProtections(
+    String owner, String repo,
+  ) async {
+    return execute(() async {
+      final result = await _apiService.repoListBranchProtections(owner: owner, repo: repo);
+      return result.map((e) => BranchProtection.fromJson(e as Map<String, dynamic>)).toList();
+    });
+  }
+
+  @override
+  Future<Either<Failure, void>> createBranchProtection(
+    String owner, String repo, Map<String, dynamic> body,
+  ) async {
+    return execute(() => _apiService.repoCreateBranchProtection(owner: owner, repo: repo, body: body));
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteBranchProtection(
+    String owner, String repo, String name,
+  ) async {
+    return execute(() => _apiService.repoDeleteBranchProtection(owner: owner, repo: repo, name: name));
+  }
+
+  @override
+  Future<Either<Failure, List<TagProtection>>> listTagProtections(
+    String owner, String repo,
+  ) async {
+    return execute(() => _apiService.repoListTagProtections(owner: owner, repo: repo));
+  }
+
+  @override
+  Future<Either<Failure, TagProtection>> createTagProtection(
+    String owner, String repo, String namePattern,
+  ) async {
+    return execute(() => _apiService.repoCreateTagProtection(owner: owner, repo: repo, namePattern: namePattern));
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteTagProtection(
+    String owner, String repo, int id,
+  ) async {
+    return execute(() => _apiService.repoDeleteTagProtection(owner: owner, repo: repo, id: id));
+  }
 }

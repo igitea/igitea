@@ -1094,3 +1094,45 @@ class MigrateRepoUseCase {
     });
   }
 }
+
+class ListBranchProtectionsUseCase {
+  final RepoRepository _repository;
+  ListBranchProtectionsUseCase({required RepoRepository repository}) : _repository = repository;
+  Future<Either<Failure, List<BranchProtection>>> call(String owner, String repo) async =>
+      _repository.listBranchProtections(owner, repo);
+}
+
+class CreateBranchProtectionUseCase {
+  final RepoRepository _repository;
+  CreateBranchProtectionUseCase({required RepoRepository repository}) : _repository = repository;
+  Future<Either<Failure, void>> call(String owner, String repo, Map<String, dynamic> body) async =>
+      _repository.createBranchProtection(owner, repo, body);
+}
+
+class DeleteBranchProtectionUseCase {
+  final RepoRepository _repository;
+  DeleteBranchProtectionUseCase({required RepoRepository repository}) : _repository = repository;
+  Future<Either<Failure, void>> call(String owner, String repo, String name) async =>
+      _repository.deleteBranchProtection(owner, repo, name);
+}
+
+class ListTagProtectionsUseCase {
+  final RepoRepository _repository;
+  ListTagProtectionsUseCase({required RepoRepository repository}) : _repository = repository;
+  Future<Either<Failure, List<TagProtection>>> call(String owner, String repo) async =>
+      _repository.listTagProtections(owner, repo);
+}
+
+class CreateTagProtectionUseCase {
+  final RepoRepository _repository;
+  CreateTagProtectionUseCase({required RepoRepository repository}) : _repository = repository;
+  Future<Either<Failure, TagProtection>> call(String owner, String repo, String namePattern) async =>
+      _repository.createTagProtection(owner, repo, namePattern);
+}
+
+class DeleteTagProtectionUseCase {
+  final RepoRepository _repository;
+  DeleteTagProtectionUseCase({required RepoRepository repository}) : _repository = repository;
+  Future<Either<Failure, void>> call(String owner, String repo, int id) async =>
+      _repository.deleteTagProtection(owner, repo, id);
+}

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
+import '../../core/errors/failures.dart';
+import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../widgets/empty_state.dart';
@@ -25,10 +27,14 @@ class _EmailsPageState extends State<EmailsPage> {
 
   Future<void> _load() async {
     setState(() => _loading = true);
-    try {
-      _emails = await Injection.apiService.userListEmails();
-    } catch (_) {}
-    if (mounted) setState(() => _loading = false);
+    final result = await Injection.listEmailsUseCase();
+    if (!mounted) return;
+    switch (result) {
+      case Right<Failure, List<Email>>(:final value):
+        setState(() { _emails = value; _loading = false; });
+      case Left<Failure, List<Email>>():
+        if (mounted) setState(() => _loading = false);
+    }
   }
 
   Future<void> _add() async {
@@ -55,16 +61,16 @@ class _EmailsPageState extends State<EmailsPage> {
         ],
       ),
     );
-    if (email != null && mounted) {
-      try {
-        await Injection.apiService.userAddEmail(body: {'emails': [email]});
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.created)));
-          _load();
-        }
-      } catch (_) {
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
-      }
+    if (email == null || email.isEmpty || !mounted) return;
+
+    final result = await Injection.addEmailUseCase([email]);
+    if (!mounted) return;
+    switch (result) {
+      case Right<Failure, void>():
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.created)));
+        _load();
+      case Left<Failure, void>():
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
     }
   }
 
@@ -81,16 +87,16 @@ class _EmailsPageState extends State<EmailsPage> {
         ],
       ),
     );
-    if (ok == true && mounted) {
-      try {
-        await Injection.apiService.userDeleteEmail(body: {'emails': [email.email]});
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.labelDeleted)));
-          _load();
-        }
-      } catch (_) {
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
-      }
+    if (ok != true || !mounted) return;
+
+    final result = await Injection.deleteEmailUseCase([email.email!]);
+    if (!mounted) return;
+    switch (result) {
+      case Right<Failure, void>():
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.labelDeleted)));
+        _load();
+      case Left<Failure, void>():
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
     }
   }
 

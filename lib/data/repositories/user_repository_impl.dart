@@ -172,4 +172,19 @@ class UserRepositoryImpl implements UserRepository {
       () => _apiService.userSearch(q: q, uid: uid, page: page, limit: limit),
     );
   }
+
+  @override
+  Future<Either<Failure, List<GPGKey>>> listGPGKeys() async {
+    return execute(() => _apiService.userCurrentListGPGKeys());
+  }
+
+  @override
+  Future<Either<Failure, GPGKey>> addGPGKey(String armoredPublicKey) async {
+    return execute(() => _apiService.userCurrentPostGPGKey(armoredPublicKey: armoredPublicKey));
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteGPGKey(int id) async {
+    return execute(() => _apiService.userCurrentDeleteGPGKey(id: id));
+  }
 }

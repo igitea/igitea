@@ -25,6 +25,13 @@
 - **Issue 截止日期快捷编辑** — 在 Issue 详情页直接设置/清除截止日期
   - 编辑按钮打开日期选择器，清除按钮直接移除截止日期
   - 无需跳转到编辑页
+- **架构清理** — 为 5 个直接调用 `Injection.apiService` 的功能添加 use case 层
+  - 分支保护：`ListBranchProtectionsUseCase` 等 + 类型化 `BranchProtection` 模型
+  - 标签保护：`ListTagProtectionsUseCase` 等
+  - 邮箱：`ListEmailsUseCase`、`AddEmailUseCase`、`DeleteEmailUseCase`
+  - SSH 密钥：`ListCurrentUserKeysUseCase`、`AddKeyUseCase`、`DeleteKeyUseCase`
+  - GPG 密钥：`ListGPGKeysUseCase`、`AddGPGKeyUseCase`、`DeleteGPGKeyUseCase`（新增仓库方法）
+  - 5 个页面重构，16 个新 use case，7 个测试文件 mock 更新
 
 ## [0.28.0] - 2026-05-05
 

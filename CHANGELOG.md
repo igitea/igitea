@@ -25,6 +25,14 @@
 - **Issue Due Date Quick Edit** — set/clear due date directly from issue detail page
   - Edit button opens date picker, clear button removes deadline
   - No need to navigate to edit page
+- **Architecture Cleanup** — add use case layers for 5 features that called `Injection.apiService` directly
+  - Branch protections: `ListBranchProtectionsUseCase` et al. + typed `BranchProtection` model
+  - Tag protections: `ListTagProtectionsUseCase` et al.
+  - Emails: `ListEmailsUseCase`, `AddEmailUseCase`, `DeleteEmailUseCase`
+  - SSH Keys: `ListCurrentUserKeysUseCase`, `AddKeyUseCase`, `DeleteKeyUseCase`
+  - GPG Keys: `ListGPGKeysUseCase`, `AddGPGKeyUseCase`, `DeleteGPGKeyUseCase` (added repo methods too)
+  - 5 pages refactored (branch_protection, tag_protections, emails, ssh_keys, gpg_keys)
+  - 16 new use cases, 7 test mock updates
 
 ## [0.28.0] - 2026-05-05
 
