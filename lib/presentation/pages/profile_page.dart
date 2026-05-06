@@ -15,6 +15,7 @@ import '../widgets/premium_card.dart';
 import '../widgets/user_avatar.dart';
 import 'create_org_page.dart';
 import 'create_repo_page.dart';
+import 'migrate_repo_page.dart';
 import 'emails_page.dart';
 import 'follow_page.dart';
 import 'gpg_keys_page.dart';
@@ -179,6 +180,24 @@ class _ProfileContent extends StatelessWidget {
                 Icon(Icons.add, color: Theme.of(context).colorScheme.primary),
                 const SizedBox(width: UIConstants.md),
                 Expanded(child: Text(l10n.createRepository)),
+                const Icon(Icons.chevron_right),
+              ],
+            ),
+          ),
+          PremiumCard(
+            onTap: () async {
+              final result = await Navigator.of(context).push<bool>(
+                MaterialPageRoute(builder: (_) => const MigrateRepoPage()),
+              );
+              if (result == true && context.mounted) {
+                await Injection.userNotifier.listCurrentUserRepos();
+              }
+            },
+            child: Row(
+              children: [
+                Icon(Icons.input, color: Theme.of(context).colorScheme.primary),
+                const SizedBox(width: UIConstants.md),
+                Expanded(child: Text(l10n.importRepository)),
                 const Icon(Icons.chevron_right),
               ],
             ),

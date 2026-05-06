@@ -1028,3 +1028,69 @@ class DownloadActionArtifactUseCase {
   Future<Either<Failure, List<int>>> call(String owner, String repo, int artifactId) async =>
       _repository.downloadActionArtifact(owner, repo, artifactId);
 }
+
+class MigrateRepoParams {
+  final String cloneAddr;
+  final String repoName;
+  final String? repoOwner;
+  final String? service;
+  final String? authUsername;
+  final String? authPassword;
+  final String? authToken;
+  final String? description;
+  final bool? issues;
+  final bool? labels;
+  final bool? milestones;
+  final bool? pullRequests;
+  final bool? releases;
+  final bool? wiki;
+  final bool? mirror;
+  final bool? private;
+  final bool? lfs;
+
+  const MigrateRepoParams({
+    required this.cloneAddr,
+    required this.repoName,
+    this.repoOwner,
+    this.service,
+    this.authUsername,
+    this.authPassword,
+    this.authToken,
+    this.description,
+    this.issues,
+    this.labels,
+    this.milestones,
+    this.pullRequests,
+    this.releases,
+    this.wiki,
+    this.mirror,
+    this.private,
+    this.lfs,
+  });
+}
+
+class MigrateRepoUseCase {
+  final RepoRepository _repository;
+  MigrateRepoUseCase({required RepoRepository repository}) : _repository = repository;
+  Future<Either<Failure, Repository>> call(MigrateRepoParams params) async {
+    return _repository.migrateRepo({
+      'clone_addr': params.cloneAddr,
+      'repo_name': params.repoName,
+      if (params.repoOwner != null) 'repo_owner': params.repoOwner,
+      if (params.service != null) 'service': params.service,
+      if (params.authUsername != null) 'auth_username': params.authUsername,
+      if (params.authPassword != null) 'auth_password': params.authPassword,
+      if (params.authToken != null) 'auth_token': params.authToken,
+      if (params.description != null) 'description': params.description,
+      if (params.issues != null) 'issues': params.issues,
+      if (params.labels != null) 'labels': params.labels,
+      if (params.milestones != null) 'milestones': params.milestones,
+      if (params.pullRequests != null) 'pull_requests': params.pullRequests,
+      if (params.releases != null) 'releases': params.releases,
+      if (params.wiki != null) 'wiki': params.wiki,
+      if (params.mirror != null) 'mirror': params.mirror,
+      if (params.private != null) 'private': params.private,
+      if (params.lfs != null) 'lfs': params.lfs,
+    });
+  }
+}

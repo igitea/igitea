@@ -382,32 +382,57 @@ class _IssueContent extends StatelessWidget {
               ),
             ),
 
-          if (issue.due_date != null)
-            _buildInfoRow(
-              context,
-              icon: Icons.calendar_today,
-              label: l10n.dueDate,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    '${issue.due_date!.toLocal().toString().split(' ')[0]}',
-                    style: _isOverdue(issue)
-                        ? TextStyle(color: theme.colorScheme.error, fontWeight: FontWeight.w600)
-                        : null,
-                  ),
-                  if (_isOverdue(issue)) ...[
-                    const SizedBox(width: 4),
-                    Icon(Icons.warning_amber_rounded, size: 14, color: theme.colorScheme.error),
-                    const SizedBox(width: 2),
-                    Text(
-                      l10n.overdue,
-                      style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.error),
+          _buildInfoRow(
+            context,
+            icon: Icons.calendar_today,
+            label: l10n.dueDate,
+            child: issue.due_date != null
+                ? Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '${issue.due_date!.toLocal().toString().split(' ')[0]}',
+                        style: _isOverdue(issue)
+                            ? TextStyle(color: theme.colorScheme.error, fontWeight: FontWeight.w600)
+                            : null,
+                      ),
+                      if (_isOverdue(issue)) ...[
+                        const SizedBox(width: 4),
+                        Icon(Icons.warning_amber_rounded, size: 14, color: theme.colorScheme.error),
+                        const SizedBox(width: 2),
+                        Text(
+                          l10n.overdue,
+                          style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.error),
+                        ),
+                      ],
+                      const SizedBox(width: 8),
+                      InkWell(
+                        onTap: () => _editDueDate(context, issue),
+                        child: Icon(Icons.edit, size: 16, color: theme.colorScheme.primary),
+                      ),
+                      const SizedBox(width: 4),
+                      InkWell(
+                        onTap: () => _clearDueDate(issue),
+                        child: Icon(Icons.clear, size: 16, color: theme.colorScheme.error),
+                      ),
+                    ],
+                  )
+                : InkWell(
+                    onTap: () => _editDueDate(context, issue),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          l10n.setDueDate,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.primary,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
-                ],
-              ),
-            ),
+                  ),
+          ),
 
           const SizedBox(height: 8),
           Row(
@@ -686,6 +711,34 @@ class _IssueContent extends StatelessWidget {
     );
   }
 
+  Future<void> _editDueDate(BuildContext context, Issue issue) async {
+    final date = await showDatePicker(
+      context: context,
+      initialDate: issue.due_date ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime.now().add(const Duration(days: 365 * 5)),
+    );
+
+    if (date != null && context.mounted) {
+      await Injection.apiService.issueEditDeadline(
+        owner: owner,
+        repo: repo,
+        index: index,
+        body: {'due_date': date.toIso8601String()},
+      );
+      Injection.issueNotifier.getIssue(owner, repo, index);
+    }
+  }
+
+  Future<void> _clearDueDate(Issue issue) async {
+    await Injection.apiService.issueEditDeadline(
+      owner: owner,
+      repo: repo,
+      index: index,
+      body: {'due_date': null},
+    );
+    Injection.issueNotifier.getIssue(owner, repo, index);
+  }
 }
 
 class _CommentItem extends StatefulWidget {

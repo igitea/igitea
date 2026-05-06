@@ -18,6 +18,13 @@
   - API：`repoListActionArtifactsByRun` 返回 `ActionArtifactsResponse`
   - Use Cases：`ListActionArtifactsByRunUseCase`、`DownloadActionArtifactUseCase`
   - 页面：改用类型化 `ActionArtifact` 模型代替 raw map
+- **仓库迁移** — 从外部服务导入仓库（`MigrateRepoPage`）
+  - 克隆地址、服务选择、认证字段、迁移选项
+  - Use Case：`MigrateRepoUseCase` + `MigrateRepoParams`
+  - 入口：个人资料页"导入仓库"卡片
+- **Issue 截止日期快捷编辑** — 在 Issue 详情页直接设置/清除截止日期
+  - 编辑按钮打开日期选择器，清除按钮直接移除截止日期
+  - 无需跳转到编辑页
 
 ## [0.28.0] - 2026-05-05
 

@@ -2105,6 +2105,54 @@ class AppLocalizationsZh extends AppLocalizations {
   String get addTopic => '添加主题';
 
   @override
+  String get importRepository => '导入仓库';
+
+  @override
+  String get import => '导入';
+
+  @override
+  String get repoImported => '仓库导入成功';
+
+  @override
+  String get cloneUrl => '克隆地址';
+
+  @override
+  String get repoOwner => '所有者';
+
+  @override
+  String get gitService => '代码托管服务';
+
+  @override
+  String get authentication => '身份验证';
+
+  @override
+  String get authUsername => '认证用户名';
+
+  @override
+  String get authPassword => '认证密码';
+
+  @override
+  String get authToken => '认证令牌';
+
+  @override
+  String get migrationOptions => '选项';
+
+  @override
+  String get migrateData => '要导入的数据';
+
+  @override
+  String get mirror => '镜像';
+
+  @override
+  String get mirrorInterval => '镜像间隔';
+
+  @override
+  String get requiredField => '此字段为必填';
+
+  @override
+  String get personal => '个人';
+
+  @override
   String get deleteOrganization => '删除组织';
 
   @override

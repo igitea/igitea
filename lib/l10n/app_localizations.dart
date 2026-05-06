@@ -4181,6 +4181,102 @@ abstract class AppLocalizations {
   /// **'Add topic'**
   String get addTopic;
 
+  /// No description provided for @importRepository.
+  ///
+  /// In en, this message translates to:
+  /// **'Import Repository'**
+  String get importRepository;
+
+  /// No description provided for @import.
+  ///
+  /// In en, this message translates to:
+  /// **'Import'**
+  String get import;
+
+  /// No description provided for @repoImported.
+  ///
+  /// In en, this message translates to:
+  /// **'Repository imported'**
+  String get repoImported;
+
+  /// No description provided for @cloneUrl.
+  ///
+  /// In en, this message translates to:
+  /// **'Clone URL'**
+  String get cloneUrl;
+
+  /// No description provided for @repoOwner.
+  ///
+  /// In en, this message translates to:
+  /// **'Owner'**
+  String get repoOwner;
+
+  /// No description provided for @gitService.
+  ///
+  /// In en, this message translates to:
+  /// **'Git Service'**
+  String get gitService;
+
+  /// No description provided for @authentication.
+  ///
+  /// In en, this message translates to:
+  /// **'Authentication'**
+  String get authentication;
+
+  /// No description provided for @authUsername.
+  ///
+  /// In en, this message translates to:
+  /// **'Auth Username'**
+  String get authUsername;
+
+  /// No description provided for @authPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Auth Password'**
+  String get authPassword;
+
+  /// No description provided for @authToken.
+  ///
+  /// In en, this message translates to:
+  /// **'Auth Token'**
+  String get authToken;
+
+  /// No description provided for @migrationOptions.
+  ///
+  /// In en, this message translates to:
+  /// **'Options'**
+  String get migrationOptions;
+
+  /// No description provided for @migrateData.
+  ///
+  /// In en, this message translates to:
+  /// **'Data to Import'**
+  String get migrateData;
+
+  /// No description provided for @mirror.
+  ///
+  /// In en, this message translates to:
+  /// **'Mirror'**
+  String get mirror;
+
+  /// No description provided for @mirrorInterval.
+  ///
+  /// In en, this message translates to:
+  /// **'Mirror Interval'**
+  String get mirrorInterval;
+
+  /// No description provided for @requiredField.
+  ///
+  /// In en, this message translates to:
+  /// **'This field is required'**
+  String get requiredField;
+
+  /// No description provided for @personal.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal'**
+  String get personal;
+
   /// No description provided for @deleteOrganization.
   ///
   /// In en, this message translates to:

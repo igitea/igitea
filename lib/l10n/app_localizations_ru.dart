@@ -2127,6 +2127,54 @@ class AppLocalizationsRu extends AppLocalizations {
   String get addTopic => 'Add topic';
 
   @override
+  String get importRepository => 'Import Repository';
+
+  @override
+  String get import => 'Import';
+
+  @override
+  String get repoImported => 'Repository imported';
+
+  @override
+  String get cloneUrl => 'Clone URL';
+
+  @override
+  String get repoOwner => 'Owner';
+
+  @override
+  String get gitService => 'Git Service';
+
+  @override
+  String get authentication => 'Authentication';
+
+  @override
+  String get authUsername => 'Auth Username';
+
+  @override
+  String get authPassword => 'Auth Password';
+
+  @override
+  String get authToken => 'Auth Token';
+
+  @override
+  String get migrationOptions => 'Options';
+
+  @override
+  String get migrateData => 'Data to Import';
+
+  @override
+  String get mirror => 'Mirror';
+
+  @override
+  String get mirrorInterval => 'Mirror Interval';
+
+  @override
+  String get requiredField => 'This field is required';
+
+  @override
+  String get personal => 'Personal';
+
+  @override
   String get deleteOrganization => 'Delete Organization';
 
   @override

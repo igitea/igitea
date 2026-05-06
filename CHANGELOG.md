@@ -18,6 +18,13 @@
   - API: `repoListActionArtifactsByRun` returns `ActionArtifactsResponse`
   - Use cases: `ListActionArtifactsByRunUseCase`, `DownloadActionArtifactUseCase`
   - Page: refactored to use typed `ActionArtifact` model instead of raw maps
+- **Repository Migration** — import repos from external services (`MigrateRepoPage`)
+  - Clone URL, service selection, auth fields, migration toggles (issues/labels/etc.)
+  - Use case: `MigrateRepoUseCase` + `MigrateRepoParams`
+  - Entry: "Import Repository" card on profile page
+- **Issue Due Date Quick Edit** — set/clear due date directly from issue detail page
+  - Edit button opens date picker, clear button removes deadline
+  - No need to navigate to edit page
 
 ## [0.28.0] - 2026-05-05
 

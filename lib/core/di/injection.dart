@@ -202,6 +202,8 @@ class Injection {
   static late ListActionArtifactsByRunUseCase listActionArtifactsByRunUseCase;
   static late DownloadActionArtifactUseCase downloadActionArtifactUseCase;
 
+  static late MigrateRepoUseCase migrateRepoUseCase;
+
   static late AuthNotifier authNotifier;
   static late UserNotifier userNotifier;
   static late RepoNotifier repoNotifier;
@@ -332,6 +334,7 @@ class Injection {
     assert(deleteTopicUseCase != null);
     assert(listActionArtifactsByRunUseCase != null);
     assert(downloadActionArtifactUseCase != null);
+    assert(migrateRepoUseCase != null);
   }
 
   static void _initRepositories() {
@@ -513,6 +516,7 @@ class Injection {
     deleteTopicUseCase = DeleteTopicUseCase(repository: repoRepository);
     listActionArtifactsByRunUseCase = ListActionArtifactsByRunUseCase(repository: repoRepository);
     downloadActionArtifactUseCase = DownloadActionArtifactUseCase(repository: repoRepository);
+    migrateRepoUseCase = MigrateRepoUseCase(repository: repoRepository);
   }
 
   static void initialize({
