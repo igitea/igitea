@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-
 import '../../core/animations/animated_wrapper.dart';
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
+import '../../core/errors/failures.dart';
+import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
+import '../../domain/usecases/user_usecases.dart';
 import '../../l10n/app_localizations.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/user_avatar.dart';
@@ -33,15 +35,15 @@ class _FollowPageState extends State<FollowPage> {
 
   Future<void> _load() async {
     setState(() => _loading = true);
-    try {
-      final users = widget.type == FollowType.followers
-          ? await Injection.apiService.userListFollowers(username: widget.username)
-          : await Injection.apiService.userListFollowing(username: widget.username);
+    final result = widget.type == FollowType.followers
+        ? await Injection.listFollowersUseCase(ListFollowersParams(username: widget.username))
+        : await Injection.listFollowingUseCase(ListFollowingParams(username: widget.username));
+    if (mounted) {
       _users
         ..clear()
-        ..addAll(users);
-    } catch (_) {}
-    if (mounted) setState(() => _loading = false);
+        ..addAll(result is Right<Failure, List<User>> ? result.value : []);
+      setState(() => _loading = false);
+    }
   }
 
   @override

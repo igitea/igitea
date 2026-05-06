@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 import '../../core/animations/animated_wrapper.dart';
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
+import '../../core/errors/failures.dart';
+import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
+import '../../domain/usecases/user_usecases.dart';
 import '../../l10n/app_localizations.dart';
 import '../widgets/empty_state.dart';
 import 'repo_detail_page.dart';
@@ -29,13 +32,17 @@ class _UserReposPageState extends State<UserReposPage> {
 
   Future<void> _load() async {
     setState(() => _loading = true);
-    try {
-      final all = await Injection.apiService.userListRepos(username: widget.username);
-      _repos = all.where((r) => r.owner?.login == widget.username).toList();
-    } catch (_) {
-      _repos = [];
+    final result = await Injection.listUserReposUseCase(
+      ListUserReposParams(username: widget.username),
+    );
+    if (mounted) {
+      if (result is Right<Failure, List<Repository>>) {
+        _repos = result.value.where((r) => r.owner?.login == widget.username).toList();
+      } else {
+        _repos = [];
+      }
+      setState(() => _loading = false);
     }
-    if (mounted) setState(() => _loading = false);
   }
 
   @override
