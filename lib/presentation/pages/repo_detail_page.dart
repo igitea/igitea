@@ -1564,6 +1564,15 @@ class _ReleasesTabState extends State<_ReleasesTab> {
     });
   }
 
+  bool _canCreateRelease() {
+    final state = Injection.repoNotifier.state;
+    if (state is RepoLoaded) {
+      final p = state.repo.permissions;
+      return (p?.push == true || p?.admin == true) && state.repo.has_releases != false;
+    }
+    return false;
+  }
+
   void _createRelease() async {
     final result = await Navigator.push<bool>(
       context,
@@ -1629,11 +1638,13 @@ class _ReleasesTabState extends State<_ReleasesTab> {
         Positioned(
           right: UIConstants.md,
           bottom: UIConstants.md,
-          child: FloatingActionButton.extended(
-            onPressed: _createRelease,
-            icon: const Icon(Icons.add),
-            label: Text(widget.l10n.createRelease),
-          ),
+          child: _canCreateRelease()
+              ? FloatingActionButton.extended(
+                  onPressed: _createRelease,
+                  icon: const Icon(Icons.add),
+                  label: Text(widget.l10n.createRelease),
+                )
+              : const SizedBox.shrink(),
         ),
       ],
     );

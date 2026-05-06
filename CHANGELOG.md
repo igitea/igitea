@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Changed
+- Releases tab: "Create Release" FAB now respects repo permissions (requires push/admin access)
+
 ## [0.29.0] - 2026-05-05
 
 ### Added

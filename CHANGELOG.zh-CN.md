@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Changed
+- Release 标签页："创建 Release" 按钮现在遵循仓库权限（需 push/admin 权限）
+
 ## [0.29.0] - 2026-05-05
 
 ### Added
