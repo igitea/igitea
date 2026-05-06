@@ -2,7 +2,7 @@
 const String appName = 'iGitea';
 
 /// Current application version — kept in sync with pubspec.yaml.
-const String appVersion = '0.28.0';
+const String appVersion = '0.29.0';
 
 /// Display string combining name and version.
 const String igiteaVersion = '$appName v$appVersion';

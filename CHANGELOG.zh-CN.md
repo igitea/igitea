@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.29.0] - 2026-05-05
+
 ### Added
 - 仓库主题管理：通过对话框编辑主题，支持添加/删除标签并批量保存
   - API 层：`repoReplaceTopics`、`repoAddTopic`、`repoDeleteTopic`

@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.29.0] - 2026-05-05
+
 ### Added
 - Repository Topics management: edit topics via dialog with add/remove chips, then bulk save
   - API layer: `repoReplaceTopics`, `repoAddTopic`, `repoDeleteTopic`
