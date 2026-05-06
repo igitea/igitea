@@ -14,6 +14,10 @@
 - **Organization Deletion** — delete org with confirmation dialog from org detail page
   - Use case: `DeleteOrgUseCase`, Notifier: `deleteOrg(org)`
   - i18n: `deleteOrganization`, `deleteOrganizationConfirm`, `organizationDeleted`
+- **Actions Artifacts** — typed artifact list per run, download via clean architecture layers
+  - API: `repoListActionArtifactsByRun` returns `ActionArtifactsResponse`
+  - Use cases: `ListActionArtifactsByRunUseCase`, `DownloadActionArtifactUseCase`
+  - Page: refactored to use typed `ActionArtifact` model instead of raw maps
 
 ## [0.28.0] - 2026-05-05
 

@@ -325,4 +325,18 @@ abstract class RepoRepository {
     String repo,
     String topic,
   );
+
+  /// List action artifacts for a workflow run.
+  Future<Either<Failure, ActionArtifactsResponse>> listActionArtifactsByRun(
+    String owner,
+    String repo,
+    int runId,
+  );
+
+  /// Download an action artifact.
+  Future<Either<Failure, List<int>>> downloadActionArtifact(
+    String owner,
+    String repo,
+    int artifactId,
+  );
 }

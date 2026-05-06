@@ -2186,6 +2186,19 @@ class GiteaApiService {
     return jsonDecode(response.body) as Map<String, dynamic>;
   }
 
+  Future<ActionArtifactsResponse> repoListActionArtifactsByRun({
+    required String owner,
+    required String repo,
+    required int runId,
+  }) async {
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/actions/runs/$runId/artifacts',
+    );
+    return ActionArtifactsResponse.fromJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
+  }
+
   /// Download an artifact as raw bytes.
   Future<List<int>> repoDownloadArtifact({
     required String owner,

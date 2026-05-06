@@ -603,4 +603,22 @@ class RepoRepositoryImpl implements RepoRepository {
   Future<Either<Failure, void>> deleteTopic(String owner, String repo, String topic) async {
     return execute(() => _apiService.repoDeleteTopic(owner: owner, repo: repo, topic: topic));
   }
+
+  @override
+  Future<Either<Failure, ActionArtifactsResponse>> listActionArtifactsByRun(
+    String owner, String repo, int runId,
+  ) async {
+    return execute(
+      () => _apiService.repoListActionArtifactsByRun(owner: owner, repo: repo, runId: runId),
+    );
+  }
+
+  @override
+  Future<Either<Failure, List<int>>> downloadActionArtifact(
+    String owner, String repo, int artifactId,
+  ) async {
+    return execute(
+      () => _apiService.repoDownloadArtifact(owner: owner, repo: repo, artifactId: artifactId),
+    );
+  }
 }

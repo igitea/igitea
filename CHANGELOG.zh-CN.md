@@ -14,6 +14,10 @@
 - **组织删除** — 组织详情页增加删除按钮，确认后删除并返回
   - Use Case：`DeleteOrgUseCase`，Notifier：`deleteOrg(org)`
   - i18n：`deleteOrganization`、`deleteOrganizationConfirm`、`organizationDeleted`
+- **Actions 构件** — 按运行获取类型化构件列表，通过干净架构层下载
+  - API：`repoListActionArtifactsByRun` 返回 `ActionArtifactsResponse`
+  - Use Cases：`ListActionArtifactsByRunUseCase`、`DownloadActionArtifactUseCase`
+  - 页面：改用类型化 `ActionArtifact` 模型代替 raw map
 
 ## [0.28.0] - 2026-05-05
 

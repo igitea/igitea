@@ -8,6 +8,9 @@ import 'package:path_provider/path_provider.dart';
 import '../../core/animations/animated_wrapper.dart';
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
+import '../../core/errors/failures.dart';
+import '../../core/utils/either.dart';
+import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../widgets/empty_state.dart';
 
@@ -33,7 +36,7 @@ class ActionRunDetailPage extends StatefulWidget {
 
 class _ActionRunDetailPageState extends State<ActionRunDetailPage> {
   List<Map<String, dynamic>> _jobs = [];
-  List<Map<String, dynamic>> _artifacts = [];
+  List<ActionArtifact> _artifacts = [];
   final Map<int, String> _logs = {};
   final Set<int> _expandedJobs = {};
   bool _loadingJobs = false;
@@ -147,14 +150,11 @@ class _ActionRunDetailPageState extends State<ActionRunDetailPage> {
 
   Future<void> _loadArtifacts() async {
     try {
-      final result = await Injection.apiService.repoListActionArtifacts(
-        owner: widget.owner,
-        repo: widget.repo,
+      final result = await Injection.listActionArtifactsByRunUseCase(
+        widget.owner, widget.repo, widget.runId,
       );
-      if (mounted) {
-        final all = (result['artifacts'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
-        final filtered = all.where((a) => _toInt(a['run_id']) == widget.runId).toList();
-        setState(() { _artifacts = filtered; });
+      if (mounted && result is Right<Failure, ActionArtifactsResponse>) {
+        setState(() { _artifacts = result.value.artifacts ?? []; });
       }
     } catch (_) {}
   }
@@ -264,11 +264,11 @@ class _ActionRunDetailPageState extends State<ActionRunDetailPage> {
               margin: const EdgeInsets.only(bottom: UIConstants.sm),
               child: ListTile(
                 leading: const Icon(Icons.archive_outlined),
-                title: Text(a['name'] as String? ?? ''),
+                title: Text(a.name ?? ''),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(_formatSize((a['size'] as num?)?.toInt() ?? 0),
+                    Text(_formatSize(a.size_in_bytes ?? 0),
                       style: theme.textTheme.bodySmall),
                     IconButton(
                       icon: const Icon(Icons.download, size: UIConstants.iconMd),
@@ -407,15 +407,17 @@ class _ActionRunDetailPageState extends State<ActionRunDetailPage> {
     return '${diff.inSeconds}s';
   }
 
-  Future<void> _downloadArtifact(Map<String, dynamic> artifact) async {
+  Future<void> _downloadArtifact(ActionArtifact artifact) async {
     final l10n = AppLocalizations.of(context)!;
-    final name = artifact['name'] as String? ?? 'artifact.zip';
+    final name = artifact.name ?? 'artifact';
+    final id = artifact.id;
+    if (id == null) return;
     try {
-      final bytes = await Injection.apiService.repoDownloadArtifact(
-        owner: widget.owner, repo: widget.repo,
-        artifactId: _toInt(artifact['id']),
+      final result = await Injection.downloadActionArtifactUseCase(
+        widget.owner, widget.repo, id,
       );
-      // Use path_provider to save to downloads
+      if (result is! Right<Failure, List<int>>) return;
+      final bytes = result.value;
       final dir = await getApplicationDocumentsDirectory();
       final file = File('${dir.path}/$name.zip');
       await file.writeAsBytes(bytes);

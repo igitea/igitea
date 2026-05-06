@@ -1014,3 +1014,17 @@ class DeleteTopicUseCase {
   Future<Either<Failure, void>> call(String owner, String repo, String topic) async =>
       _repository.deleteTopic(owner, repo, topic);
 }
+
+class ListActionArtifactsByRunUseCase {
+  final RepoRepository _repository;
+  ListActionArtifactsByRunUseCase({required RepoRepository repository}) : _repository = repository;
+  Future<Either<Failure, ActionArtifactsResponse>> call(String owner, String repo, int runId) async =>
+      _repository.listActionArtifactsByRun(owner, repo, runId);
+}
+
+class DownloadActionArtifactUseCase {
+  final RepoRepository _repository;
+  DownloadActionArtifactUseCase({required RepoRepository repository}) : _repository = repository;
+  Future<Either<Failure, List<int>>> call(String owner, String repo, int artifactId) async =>
+      _repository.downloadActionArtifact(owner, repo, artifactId);
+}

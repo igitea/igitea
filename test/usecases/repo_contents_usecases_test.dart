@@ -309,6 +309,11 @@ class MockRepoRepository implements RepoRepository {
   Future<Either<Failure, void>> addTopic(String owner, String repo, String topic) async => const Right(null);
   @override
   Future<Either<Failure, void>> deleteTopic(String owner, String repo, String topic) async => const Right(null);
+  @override
+  Future<Either<Failure, ActionArtifactsResponse>> listActionArtifactsByRun(String owner, String repo, int runId) async =>
+      Right(ActionArtifactsResponse(artifacts: [], total_count: 0));
+  @override
+  Future<Either<Failure, List<int>>> downloadActionArtifact(String owner, String repo, int artifactId) async => const Right([]);
 }
 
 void main() {
