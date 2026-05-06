@@ -2125,6 +2125,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get overdue => 'Overdue';
 
   @override
+  String get addTopic => 'Add topic';
+
+  @override
   String get accessTokens => 'Access Tokens';
 
   @override

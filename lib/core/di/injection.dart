@@ -192,6 +192,11 @@ class Injection {
   static late CreateOrUpdateRepoActionsVariableUseCase createOrUpdateRepoActionsVariableUseCase;
   static late DeleteRepoActionsVariableUseCase deleteRepoActionsVariableUseCase;
 
+  static late ListTopicsUseCase listTopicsUseCase;
+  static late ReplaceTopicsUseCase replaceTopicsUseCase;
+  static late AddTopicUseCase addTopicUseCase;
+  static late DeleteTopicUseCase deleteTopicUseCase;
+
   static late AuthNotifier authNotifier;
   static late UserNotifier userNotifier;
   static late RepoNotifier repoNotifier;
@@ -314,6 +319,10 @@ class Injection {
     assert(listTokensUseCase != null);
     assert(createTokenUseCase != null);
     assert(deleteTokenUseCase != null);
+    assert(listTopicsUseCase != null);
+    assert(replaceTopicsUseCase != null);
+    assert(addTopicUseCase != null);
+    assert(deleteTopicUseCase != null);
   }
 
   static void _initRepositories() {
@@ -487,6 +496,10 @@ class Injection {
     getRepoActionsVariableUseCase = GetRepoActionsVariableUseCase(repository: repoRepository);
     createOrUpdateRepoActionsVariableUseCase = CreateOrUpdateRepoActionsVariableUseCase(repository: repoRepository);
     deleteRepoActionsVariableUseCase = DeleteRepoActionsVariableUseCase(repository: repoRepository);
+    listTopicsUseCase = ListTopicsUseCase(repository: repoRepository);
+    replaceTopicsUseCase = ReplaceTopicsUseCase(repository: repoRepository);
+    addTopicUseCase = AddTopicUseCase(repository: repoRepository);
+    deleteTopicUseCase = DeleteTopicUseCase(repository: repoRepository);
   }
 
   static void initialize({

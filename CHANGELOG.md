@@ -1,5 +1,14 @@
 # Changelog
 
+## [Unreleased]
+
+### Added
+- Repository Topics management: edit topics via dialog with add/remove chips, then bulk save
+  - API layer: `repoReplaceTopics`, `repoAddTopic`, `repoDeleteTopic`
+  - Use cases: `ListTopicsUseCase`, `ReplaceTopicsUseCase`, `AddTopicUseCase`, `DeleteTopicUseCase`
+  - UI: edit button on repo header, dialog with add/remove topic chips
+  - i18n: `addTopic` key (en/zh)
+
 ## [0.28.0] - 2026-05-05
 
 ### Added

@@ -1,5 +1,14 @@
 # 更新日志
 
+## [Unreleased]
+
+### Added
+- 仓库主题管理：通过对话框编辑主题，支持添加/删除标签并批量保存
+  - API 层：`repoReplaceTopics`、`repoAddTopic`、`repoDeleteTopic`
+  - Use Cases：`ListTopicsUseCase`、`ReplaceTopicsUseCase`、`AddTopicUseCase`、`DeleteTopicUseCase`
+  - UI：仓库头部主题编辑按钮，对话框内可添加/删除主题标签
+  - i18n：新增 `addTopic` 键
+
 ## [0.28.0] - 2026-05-05
 
 ### Added

@@ -301,4 +301,28 @@ abstract class RepoRepository {
     String repo,
     String variableName,
   );
+
+  /// List topics for a repository.
+  Future<Either<Failure, List<String>>> listTopics(String owner, String repo);
+
+  /// Replace all topics for a repository.
+  Future<Either<Failure, void>> replaceTopics(
+    String owner,
+    String repo,
+    List<String> topics,
+  );
+
+  /// Add a topic to a repository.
+  Future<Either<Failure, void>> addTopic(
+    String owner,
+    String repo,
+    String topic,
+  );
+
+  /// Delete a topic from a repository.
+  Future<Either<Failure, void>> deleteTopic(
+    String owner,
+    String repo,
+    String topic,
+  );
 }

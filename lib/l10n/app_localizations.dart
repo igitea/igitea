@@ -4175,6 +4175,12 @@ abstract class AppLocalizations {
   /// **'Overdue'**
   String get overdue;
 
+  /// No description provided for @addTopic.
+  ///
+  /// In en, this message translates to:
+  /// **'Add topic'**
+  String get addTopic;
+
   /// No description provided for @accessTokens.
   ///
   /// In en, this message translates to:

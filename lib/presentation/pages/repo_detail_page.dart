@@ -9,6 +9,7 @@ import '../../core/errors/failures.dart';
 import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../domain/usecases/issue_usecases.dart';
+import '../../domain/usecases/repo_usecases.dart';
 import '../../domain/entities/issue_state.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/repo_notifier.dart';
@@ -465,12 +466,26 @@ class _RepoHeader extends StatelessWidget {
                   ),
               ],
             ),
-            if (repo.topics != null && repo.topics!.isNotEmpty) ...[
-              const SizedBox(height: UIConstants.sm),
-              Text(l10n.topics, style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              )),
-              const SizedBox(height: UIConstants.xs),
+            const SizedBox(height: UIConstants.sm),
+            Row(
+              children: [
+                Text(l10n.topics, style: theme.textTheme.labelSmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                )),
+                const Spacer(),
+                InkWell(
+                  onTap: () => showTopicEditDialog(
+                    context, owner, repoName, repo.topics ?? [],
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(4),
+                    child: Icon(Icons.edit, size: 14, color: theme.colorScheme.primary),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: UIConstants.xs),
+            if (repo.topics != null && repo.topics!.isNotEmpty)
               Wrap(
                 spacing: UIConstants.xs,
                 runSpacing: UIConstants.xs,
@@ -479,8 +494,15 @@ class _RepoHeader extends StatelessWidget {
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   visualDensity: VisualDensity.compact,
                 )).toList(),
+              )
+            else
+              Text(
+                l10n.noTopics,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                  fontStyle: FontStyle.italic,
+                ),
               ),
-            ],
             if (repo.clone_url != null || repo.ssh_url != null) ...[
               const SizedBox(height: UIConstants.sm),
               _CloneUrls(repo: repo, l10n: l10n),
@@ -2519,6 +2541,164 @@ class _LanguageBar extends StatelessWidget {
               ],
             );
           }).toList(),
+        ),
+      ],
+    );
+  }
+}
+
+Future<void> showTopicEditDialog(
+  BuildContext context,
+  String owner,
+  String repo,
+  List<String> currentTopics,
+) async {
+  final topics = List<String>.from(currentTopics);
+  final controller = TextEditingController();
+  final l10n = AppLocalizations.of(context)!;
+  final saved = await showDialog<bool>(
+    context: context,
+    builder: (ctx) => _TopicEditDialog(
+      topics: topics,
+      controller: controller,
+      l10n: l10n,
+    ),
+  );
+
+  if (saved != true || context.mounted == false) return;
+
+  final result = await Injection.replaceTopicsUseCase.call(owner, repo, topics);
+  if (!context.mounted) return;
+
+  switch (result) {
+    case Left<Failure, void>(:final value):
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${l10n.error}: ${value.message}')),
+      );
+    case Right<Failure, void>():
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.saved)),
+      );
+      Injection.repoNotifier.getRepo(owner, repo);
+  }
+}
+
+class _TopicEditDialog extends StatefulWidget {
+  final List<String> topics;
+  final TextEditingController controller;
+  final AppLocalizations l10n;
+
+  const _TopicEditDialog({
+    required this.topics,
+    required this.controller,
+    required this.l10n,
+  });
+
+  @override
+  State<_TopicEditDialog> createState() => _TopicEditDialogState();
+}
+
+class _TopicEditDialogState extends State<_TopicEditDialog> {
+  late List<String> _topics;
+
+  @override
+  void initState() {
+    super.initState();
+    _topics = List.from(widget.topics);
+    widget.controller.addListener(_onChanged);
+  }
+
+  @override
+  void dispose() {
+    widget.controller.removeListener(_onChanged);
+    widget.controller.dispose();
+    super.dispose();
+  }
+
+  void _onChanged() => setState(() {});
+
+  void _addTopic() {
+    final text = widget.controller.text.trim();
+    if (text.isEmpty || _topics.contains(text)) return;
+    setState(() {
+      _topics.add(text);
+      widget.controller.clear();
+    });
+  }
+
+  void _removeTopic(String topic) {
+    setState(() => _topics.remove(topic));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return AlertDialog(
+      title: Text(widget.l10n.topics),
+      content: SizedBox(
+        width: double.maxFinite,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    controller: widget.controller,
+                    decoration: InputDecoration(
+                      hintText: widget.l10n.addTopic,
+                      border: const OutlineInputBorder(),
+                      isDense: true,
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    ),
+                    onSubmitted: (_) => _addTopic(),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                FilledButton(
+                  onPressed: widget.controller.text.trim().isEmpty ? null : _addTopic,
+                  child: Text(widget.l10n.add),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            if (_topics.isEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24),
+                child: Center(
+                  child: Text(
+                    widget.l10n.noTopics,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+              )
+            else
+              Flexible(
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: _topics.map((t) => Chip(
+                    label: Text(t),
+                    onDeleted: () => _removeTopic(t),
+                    deleteIcon: Icon(Icons.close, size: 16, color: theme.colorScheme.error),
+                  )).toList(),
+                ),
+              ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          child: Text(widget.l10n.cancel),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.pop(context, true),
+          child: Text(widget.l10n.save),
         ),
       ],
     );

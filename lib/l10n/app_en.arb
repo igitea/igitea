@@ -680,6 +680,7 @@
   "actionsDeleteVariableConfirm": "Delete this variable?",
   "deleted": "Deleted",
   "overdue": "Overdue",
+  "addTopic": "Add topic",
   "accessTokens": "Access Tokens",
   "createToken": "Create Token",
   "tokenName": "Token Name",

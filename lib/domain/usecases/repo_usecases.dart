@@ -986,3 +986,31 @@ class DeleteRepoActionsVariableParams {
   final String owner; final String repo; final String variableName;
   DeleteRepoActionsVariableParams({required this.owner, required this.repo, required this.variableName});
 }
+
+class ListTopicsUseCase {
+  final RepoRepository _repository;
+  ListTopicsUseCase({required RepoRepository repository}) : _repository = repository;
+  Future<Either<Failure, List<String>>> call(String owner, String repo) async =>
+      _repository.listTopics(owner, repo);
+}
+
+class ReplaceTopicsUseCase {
+  final RepoRepository _repository;
+  ReplaceTopicsUseCase({required RepoRepository repository}) : _repository = repository;
+  Future<Either<Failure, void>> call(String owner, String repo, List<String> topics) async =>
+      _repository.replaceTopics(owner, repo, topics);
+}
+
+class AddTopicUseCase {
+  final RepoRepository _repository;
+  AddTopicUseCase({required RepoRepository repository}) : _repository = repository;
+  Future<Either<Failure, void>> call(String owner, String repo, String topic) async =>
+      _repository.addTopic(owner, repo, topic);
+}
+
+class DeleteTopicUseCase {
+  final RepoRepository _repository;
+  DeleteTopicUseCase({required RepoRepository repository}) : _repository = repository;
+  Future<Either<Failure, void>> call(String owner, String repo, String topic) async =>
+      _repository.deleteTopic(owner, repo, topic);
+}

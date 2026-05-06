@@ -301,6 +301,14 @@ class MockRepoRepository implements RepoRepository {
   Future<Either<Failure, void>> createOrUpdateRepoActionsVariable(String owner, String repo, String variableName, Map<String, dynamic> body) async => const Right(null);
   @override
   Future<Either<Failure, void>> deleteRepoActionsVariable(String owner, String repo, String variableName) async => const Right(null);
+  @override
+  Future<Either<Failure, List<String>>> listTopics(String owner, String repo) async => const Right([]);
+  @override
+  Future<Either<Failure, void>> replaceTopics(String owner, String repo, List<String> topics) async => const Right(null);
+  @override
+  Future<Either<Failure, void>> addTopic(String owner, String repo, String topic) async => const Right(null);
+  @override
+  Future<Either<Failure, void>> deleteTopic(String owner, String repo, String topic) async => const Right(null);
 }
 
 void main() {

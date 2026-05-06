@@ -677,6 +677,7 @@
   "actionsDeleteVariableConfirm": "删除此 Variable？",
   "deleted": "已删除",
   "overdue": "已逾期",
+  "addTopic": "添加主题",
   "accessTokens": "访问令牌",
   "createToken": "创建令牌",
   "tokenName": "令牌名称",

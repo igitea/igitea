@@ -35,6 +35,7 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 - File viewer with Markdown rendering, images, and syntax highlighting
 - Edit files with commit message dialog
 - Repository settings: edit description, visibility, features, or delete
+- **Repository topics**: view and edit topics via dialog
 
 ### Issues & Pull Requests
 - List, search, filter issues and PRs

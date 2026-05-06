@@ -581,4 +581,26 @@ class RepoRepositoryImpl implements RepoRepository {
   ) async {
     return execute(() => _apiService.repoDeleteActionsVariable(owner, repo, variableName));
   }
+
+  @override
+  Future<Either<Failure, List<String>>> listTopics(String owner, String repo) async {
+    return execute(() => _apiService.repoListTopics(owner: owner, repo: repo));
+  }
+
+  @override
+  Future<Either<Failure, void>> replaceTopics(
+    String owner, String repo, List<String> topics,
+  ) async {
+    return execute(() => _apiService.repoReplaceTopics(owner: owner, repo: repo, topics: topics));
+  }
+
+  @override
+  Future<Either<Failure, void>> addTopic(String owner, String repo, String topic) async {
+    return execute(() => _apiService.repoAddTopic(owner: owner, repo: repo, topic: topic));
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteTopic(String owner, String repo, String topic) async {
+    return execute(() => _apiService.repoDeleteTopic(owner: owner, repo: repo, topic: topic));
+  }
 }

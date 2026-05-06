@@ -2102,6 +2102,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get overdue => '已逾期';
 
   @override
+  String get addTopic => '添加主题';
+
+  @override
   String get accessTokens => '访问令牌';
 
   @override

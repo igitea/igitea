@@ -1914,6 +1914,60 @@ class GiteaApiService {
     return (data['topics'] as List<dynamic>?)?.cast<String>() ?? [];
   }
 
+  /// Replace all topics for a repository
+  Future<void> repoReplaceTopics({
+    required String owner,
+    required String repo,
+    required List<String> topics,
+  }) async {
+    await _client.put(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/topics',
+      body: {'topics': topics},
+    );
+  }
+
+  /// Add a topic to a repository
+  Future<void> repoAddTopic({
+    required String owner,
+    required String repo,
+    required String topic,
+  }) async {
+    await _client.put(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/topics/${Uri.encodeComponent(topic)}',
+    );
+  }
+
+  /// Delete a topic from a repository
+  Future<void> repoDeleteTopic({
+    required String owner,
+    required String repo,
+    required String topic,
+  }) async {
+    await _client.delete(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/topics/${Uri.encodeComponent(topic)}',
+    );
+  }
+
+  /// Search topics by keyword
+  Future<List<Map<String, dynamic>>> topicSearch({
+    required String q,
+    int? page,
+    int? limit,
+  }) async {
+    final query = <String, String>{'q': q};
+    if (page != null) query['page'] = page.toString();
+    if (limit != null) query['limit'] = limit.toString();
+    final response = await _client.get(
+      '/topics/search',
+      queryParameters: query,
+    );
+    final data = jsonDecode(response.body) as Map<String, dynamic>;
+    return (data['topics'] as List<dynamic>?)
+            ?.map((e) => e as Map<String, dynamic>)
+            .toList() ??
+        [];
+  }
+
   Future<Map<String, int>> repoGetLanguages({
     required String owner,
     required String repo,
