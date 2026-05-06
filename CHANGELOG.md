@@ -3,7 +3,10 @@
 ## [Unreleased]
 
 ### Changed
-- Releases tab: "Create Release" FAB now respects repo permissions (requires push/admin access)
+- Releases/Issues/PRs tabs: FABs now respect repo permissions (requires push/admin access)
+- Releases: also checks `has_releases` flag
+- Issues: also checks `has_issues` flag
+- PRs: also checks `has_pull_requests` flag
 
 ## [0.29.0] - 2026-05-05
 

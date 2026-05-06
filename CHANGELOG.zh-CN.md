@@ -3,7 +3,10 @@
 ## [Unreleased]
 
 ### Changed
-- Release 标签页："创建 Release" 按钮现在遵循仓库权限（需 push/admin 权限）
+- Release/Issue/PR 标签页：创建按钮现在遵循仓库权限（需 push/admin 权限）
+- Release：同时检查 `has_releases` 标志
+- Issue：同时检查 `has_issues` 标志
+- PR：同时检查 `has_pull_requests` 标志
 
 ## [0.29.0] - 2026-05-05
 

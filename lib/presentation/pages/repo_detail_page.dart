@@ -1003,6 +1003,15 @@ class _IssuesTabState extends State<_IssuesTab> {
     );
   }
 
+  bool _canCreateIssue() {
+    final state = Injection.repoNotifier.state;
+    if (state is RepoLoaded) {
+      final p = state.repo.permissions;
+      return (p?.push == true || p?.admin == true) && state.repo.has_issues != false;
+    }
+    return false;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -1100,20 +1109,22 @@ class _IssuesTabState extends State<_IssuesTab> {
             Positioned(
               right: UIConstants.md,
               bottom: UIConstants.md,
-              child: FloatingActionButton(
-                onPressed: () async {
-                  final result = await Navigator.of(context).push<Issue>(
-                    MaterialPageRoute(
-                      builder: (_) => CreateIssuePage(owner: widget.owner, repo: widget.repo),
-                    ),
-                  );
-                  if (result != null && context.mounted) {
-                    _selectedFilter = 'open';
-                    _loadIssues();
-                  }
-                },
-                child: const Icon(Icons.add),
-              ),
+              child: _canCreateIssue()
+                  ? FloatingActionButton(
+                      onPressed: () async {
+                        final result = await Navigator.of(context).push<Issue>(
+                          MaterialPageRoute(
+                            builder: (_) => CreateIssuePage(owner: widget.owner, repo: widget.repo),
+                          ),
+                        );
+                        if (result != null && context.mounted) {
+                          _selectedFilter = 'open';
+                          _loadIssues();
+                        }
+                      },
+                      child: const Icon(Icons.add),
+                    )
+                  : const SizedBox.shrink(),
             ),
           ],
         );
@@ -1306,6 +1317,15 @@ class _PullRequestsTabState extends State<_PullRequestsTab> {
     Injection.repoNotifier.listPullRequests(widget.owner, widget.repo, state: _selectedFilter);
   }
 
+  bool _canCreatePR() {
+    final state = Injection.repoNotifier.state;
+    if (state is RepoLoaded) {
+      final p = state.repo.permissions;
+      return (p?.push == true || p?.admin == true) && state.repo.has_pull_requests != false;
+    }
+    return false;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -1401,20 +1421,22 @@ class _PullRequestsTabState extends State<_PullRequestsTab> {
             Positioned(
               right: UIConstants.md,
               bottom: UIConstants.md,
-              child: FloatingActionButton(
-                onPressed: () async {
-                  final result = await Navigator.of(context).push<PullRequest>(
-                    MaterialPageRoute(
-                      builder: (_) => CreatePRPage(owner: widget.owner, repo: widget.repo),
-                    ),
-                  );
-                  if (result != null && context.mounted) {
-                    _selectedFilter = 'open';
-                    _loadPullRequests();
-                  }
-                },
-                child: const Icon(Icons.add),
-              ),
+              child: _canCreatePR()
+                  ? FloatingActionButton(
+                      onPressed: () async {
+                        final result = await Navigator.of(context).push<PullRequest>(
+                          MaterialPageRoute(
+                            builder: (_) => CreatePRPage(owner: widget.owner, repo: widget.repo),
+                          ),
+                        );
+                        if (result != null && context.mounted) {
+                          _selectedFilter = 'open';
+                          _loadPullRequests();
+                        }
+                      },
+                      child: const Icon(Icons.add),
+                    )
+                  : const SizedBox.shrink(),
             ),
           ],
         );
