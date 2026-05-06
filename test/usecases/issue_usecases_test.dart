@@ -211,6 +211,54 @@ class MockIssueRepository implements IssueRepository {
     if (shouldFail) return Left(failure);
     return Right([const Issue(id: 1, title: 'Bug', number: 1)]);
   }
+
+  @override
+  Future<Either<Failure, bool>> checkIssueSubscription(String owner, String repo, int index) async {
+    if (shouldFail) return Left(failure);
+    return const Right(true);
+  }
+
+  @override
+  Future<Either<Failure, void>> addIssueSubscription(String owner, String repo, int index, String user) async {
+    if (shouldFail) return Left(failure);
+    return const Right(null);
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteIssueSubscription(String owner, String repo, int index, String user) async {
+    if (shouldFail) return Left(failure);
+    return const Right(null);
+  }
+
+  @override
+  Future<Either<Failure, List<Issue>>> listIssueDependencies(String owner, String repo, int index) async {
+    if (shouldFail) return Left(failure);
+    return const Right([]);
+  }
+
+  @override
+  Future<Either<Failure, void>> createIssueDependency(String owner, String repo, int index, int dependencyIndex) async {
+    if (shouldFail) return Left(failure);
+    return const Right(null);
+  }
+
+  @override
+  Future<Either<Failure, void>> removeIssueDependency(String owner, String repo, int index, int dependencyIndex) async {
+    if (shouldFail) return Left(failure);
+    return const Right(null);
+  }
+
+  @override
+  Future<Either<Failure, void>> editIssueDeadline(String owner, String repo, int index, Map<String, dynamic> body) async {
+    if (shouldFail) return Left(failure);
+    return const Right(null);
+  }
+
+  @override
+  Future<Either<Failure, List<TimelineComment>>> getIssueTimeline(String owner, String repo, int index) async {
+    if (shouldFail) return Left(failure);
+    return const Right([]);
+  }
 }
 
 void main() {

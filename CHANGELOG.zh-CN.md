@@ -7,6 +7,7 @@
 - Release：同时检查 `has_releases` 标志
 - Issue：同时检查 `has_issues` 标志
 - PR：同时检查 `has_pull_requests` 标志
+- **Use case 层**：为 issue 订阅、依赖、时间线、截止日期、评论编辑/删除添加仓库方法和 use case（10 个新 use case）
 
 ## [0.29.0] - 2026-05-05
 

@@ -365,4 +365,63 @@ class IssueRepositoryImpl implements IssueRepository {
       ),
     );
   }
+
+  @override
+  Future<Either<Failure, bool>> checkIssueSubscription(
+    String owner, String repo, int index,
+  ) async {
+    return execute(() async {
+      final result = await _apiService.issueCheckSubscription(owner: owner, repo: repo, index: index);
+      return result['subscribed'] == true;
+    });
+  }
+
+  @override
+  Future<Either<Failure, void>> addIssueSubscription(
+    String owner, String repo, int index, String user,
+  ) async {
+    return execute(() => _apiService.issueAddSubscription(owner: owner, repo: repo, index: index, user: user));
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteIssueSubscription(
+    String owner, String repo, int index, String user,
+  ) async {
+    return execute(() => _apiService.issueDeleteSubscription(owner: owner, repo: repo, index: index, user: user));
+  }
+
+  @override
+  Future<Either<Failure, List<Issue>>> listIssueDependencies(
+    String owner, String repo, int index,
+  ) async {
+    return execute(() => _apiService.issueListDependencies(owner: owner, repo: repo, index: index));
+  }
+
+  @override
+  Future<Either<Failure, void>> createIssueDependency(
+    String owner, String repo, int index, int dependencyIndex,
+  ) async {
+    return execute(() => _apiService.issueCreateDependency(owner: owner, repo: repo, index: index, dependencyIndex: dependencyIndex));
+  }
+
+  @override
+  Future<Either<Failure, void>> removeIssueDependency(
+    String owner, String repo, int index, int dependencyIndex,
+  ) async {
+    return execute(() => _apiService.issueRemoveDependency(owner: owner, repo: repo, index: index, dependencyIndex: dependencyIndex));
+  }
+
+  @override
+  Future<Either<Failure, void>> editIssueDeadline(
+    String owner, String repo, int index, Map<String, dynamic> body,
+  ) async {
+    return execute(() => _apiService.issueEditDeadline(owner: owner, repo: repo, index: index, body: body));
+  }
+
+  @override
+  Future<Either<Failure, List<TimelineComment>>> getIssueTimeline(
+    String owner, String repo, int index,
+  ) async {
+    return execute(() => _apiService.issueGetTimeline(owner: owner, repo: repo, index: index));
+  }
 }

@@ -573,3 +573,73 @@ class SearchIssuesParams {
     this.limit,
   });
 }
+
+class EditCommentUseCase {
+  final IssueRepository _repository;
+  EditCommentUseCase({required IssueRepository repository}) : _repository = repository;
+  Future<Either<Failure, Comment>> call(String owner, String repo, int id, Map<String, dynamic> body) async =>
+      _repository.editComment(owner, repo, id, body);
+}
+
+class DeleteCommentUseCase {
+  final IssueRepository _repository;
+  DeleteCommentUseCase({required IssueRepository repository}) : _repository = repository;
+  Future<Either<Failure, void>> call(String owner, String repo, int id) async =>
+      _repository.deleteComment(owner, repo, id);
+}
+
+class CheckIssueSubscriptionUseCase {
+  final IssueRepository _repository;
+  CheckIssueSubscriptionUseCase({required IssueRepository repository}) : _repository = repository;
+  Future<Either<Failure, bool>> call(String owner, String repo, int index) async =>
+      _repository.checkIssueSubscription(owner, repo, index);
+}
+
+class AddIssueSubscriptionUseCase {
+  final IssueRepository _repository;
+  AddIssueSubscriptionUseCase({required IssueRepository repository}) : _repository = repository;
+  Future<Either<Failure, void>> call(String owner, String repo, int index, String user) async =>
+      _repository.addIssueSubscription(owner, repo, index, user);
+}
+
+class DeleteIssueSubscriptionUseCase {
+  final IssueRepository _repository;
+  DeleteIssueSubscriptionUseCase({required IssueRepository repository}) : _repository = repository;
+  Future<Either<Failure, void>> call(String owner, String repo, int index, String user) async =>
+      _repository.deleteIssueSubscription(owner, repo, index, user);
+}
+
+class ListIssueDependenciesUseCase {
+  final IssueRepository _repository;
+  ListIssueDependenciesUseCase({required IssueRepository repository}) : _repository = repository;
+  Future<Either<Failure, List<Issue>>> call(String owner, String repo, int index) async =>
+      _repository.listIssueDependencies(owner, repo, index);
+}
+
+class CreateIssueDependencyUseCase {
+  final IssueRepository _repository;
+  CreateIssueDependencyUseCase({required IssueRepository repository}) : _repository = repository;
+  Future<Either<Failure, void>> call(String owner, String repo, int index, int dependencyIndex) async =>
+      _repository.createIssueDependency(owner, repo, index, dependencyIndex);
+}
+
+class RemoveIssueDependencyUseCase {
+  final IssueRepository _repository;
+  RemoveIssueDependencyUseCase({required IssueRepository repository}) : _repository = repository;
+  Future<Either<Failure, void>> call(String owner, String repo, int index, int dependencyIndex) async =>
+      _repository.removeIssueDependency(owner, repo, index, dependencyIndex);
+}
+
+class EditIssueDeadlineUseCase {
+  final IssueRepository _repository;
+  EditIssueDeadlineUseCase({required IssueRepository repository}) : _repository = repository;
+  Future<Either<Failure, void>> call(String owner, String repo, int index, Map<String, dynamic> body) async =>
+      _repository.editIssueDeadline(owner, repo, index, body);
+}
+
+class GetIssueTimelineUseCase {
+  final IssueRepository _repository;
+  GetIssueTimelineUseCase({required IssueRepository repository}) : _repository = repository;
+  Future<Either<Failure, List<TimelineComment>>> call(String owner, String repo, int index) async =>
+      _repository.getIssueTimeline(owner, repo, index);
+}

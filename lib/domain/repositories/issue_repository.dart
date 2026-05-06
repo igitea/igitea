@@ -176,4 +176,44 @@ abstract class IssueRepository {
     int? page,
     int? limit,
   });
+
+  /// Check if user is subscribed to an issue.
+  Future<Either<Failure, bool>> checkIssueSubscription(
+    String owner, String repo, int index,
+  );
+
+  /// Subscribe to an issue.
+  Future<Either<Failure, void>> addIssueSubscription(
+    String owner, String repo, int index, String user,
+  );
+
+  /// Unsubscribe from an issue.
+  Future<Either<Failure, void>> deleteIssueSubscription(
+    String owner, String repo, int index, String user,
+  );
+
+  /// List dependencies of an issue.
+  Future<Either<Failure, List<Issue>>> listIssueDependencies(
+    String owner, String repo, int index,
+  );
+
+  /// Add a dependency to an issue.
+  Future<Either<Failure, void>> createIssueDependency(
+    String owner, String repo, int index, int dependencyIndex,
+  );
+
+  /// Remove a dependency from an issue.
+  Future<Either<Failure, void>> removeIssueDependency(
+    String owner, String repo, int index, int dependencyIndex,
+  );
+
+  /// Set or clear an issue's due date.
+  Future<Either<Failure, void>> editIssueDeadline(
+    String owner, String repo, int index, Map<String, dynamic> body,
+  );
+
+  /// Get the timeline of an issue.
+  Future<Either<Failure, List<TimelineComment>>> getIssueTimeline(
+    String owner, String repo, int index,
+  );
 }
