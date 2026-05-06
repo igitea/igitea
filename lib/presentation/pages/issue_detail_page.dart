@@ -47,19 +47,13 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
   }
 
   Future<void> _checkSubscription() async {
-    try {
-      final result = await Injection.apiService.issueCheckSubscription(
-        owner: widget.owner,
-        repo: widget.repo,
-        index: widget.index,
-      );
-      if (mounted) {
-        setState(() {
-          _isSubscribed = result['subscribed'] == true;
-        });
-      }
-    } catch (_) {
-      // Silently fail; default to not subscribed
+    final result = await Injection.checkIssueSubscriptionUseCase(
+      widget.owner, widget.repo, widget.index,
+    );
+    if (mounted) {
+      setState(() {
+        _isSubscribed = result is Right<Failure, bool> && result.value;
+      });
     }
   }
 
@@ -76,18 +70,12 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
 
     try {
       if (_isSubscribed) {
-        await Injection.apiService.issueDeleteSubscription(
-          owner: widget.owner,
-          repo: widget.repo,
-          index: widget.index,
-          user: currentUser,
+        await Injection.deleteIssueSubscriptionUseCase(
+          widget.owner, widget.repo, widget.index, currentUser,
         );
       } else {
-        await Injection.apiService.issueAddSubscription(
-          owner: widget.owner,
-          repo: widget.repo,
-          index: widget.index,
-          user: currentUser,
+        await Injection.addIssueSubscriptionUseCase(
+          widget.owner, widget.repo, widget.index, currentUser,
         );
       }
       if (mounted) {
@@ -720,22 +708,16 @@ class _IssueContent extends StatelessWidget {
     );
 
     if (date != null && context.mounted) {
-      await Injection.apiService.issueEditDeadline(
-        owner: owner,
-        repo: repo,
-        index: index,
-        body: {'due_date': date.toIso8601String()},
+      await Injection.editIssueDeadlineUseCase(
+        owner, repo, index, {'due_date': date.toIso8601String()},
       );
       Injection.issueNotifier.getIssue(owner, repo, index);
     }
   }
 
   Future<void> _clearDueDate(Issue issue) async {
-    await Injection.apiService.issueEditDeadline(
-      owner: owner,
-      repo: repo,
-      index: index,
-      body: {'due_date': null},
+    await Injection.editIssueDeadlineUseCase(
+      owner, repo, index, {'due_date': null},
     );
     Injection.issueNotifier.getIssue(owner, repo, index);
   }
@@ -784,11 +766,8 @@ class _CommentItemState extends State<_CommentItem> {
 
     setState(() => _saving = true);
     try {
-      await Injection.apiService.issueEditComment(
-        owner: widget.owner,
-        repo: widget.repo,
-        id: widget.comment.id ?? 0,
-        body: {'body': text},
+      await Injection.editCommentUseCase(
+        widget.owner, widget.repo, widget.comment.id ?? 0, {'body': text},
       );
       if (mounted) {
         setState(() { _editing = false; _saving = false; });
@@ -824,8 +803,8 @@ class _CommentItemState extends State<_CommentItem> {
     if (confirmed != true) return;
 
     try {
-      await Injection.apiService.issueDeleteComment(
-        owner: widget.owner, repo: widget.repo, id: widget.comment.id ?? 0,
+      await Injection.deleteCommentUseCase(
+        widget.owner, widget.repo, widget.comment.id ?? 0,
       );
       if (mounted) {
         Injection.issueNotifier.listComments(widget.owner, widget.repo, widget.index);
@@ -1044,14 +1023,13 @@ class _TimelineSectionState extends State<_TimelineSection> {
   }
 
   Future<void> _load() async {
-    try {
-      _timeline = await Injection.apiService.issueGetTimeline(
-        owner: widget.owner,
-        repo: widget.repo,
-        index: widget.index,
-      );
-    } catch (_) {}
-    if (mounted) setState(() => _loading = false);
+    final result = await Injection.getIssueTimelineUseCase(
+      widget.owner, widget.repo, widget.index,
+    );
+    if (mounted) {
+      _timeline = result is Right<Failure, List<TimelineComment>> ? result.value : [];
+      setState(() => _loading = false);
+    }
   }
 
   @override
@@ -1201,14 +1179,13 @@ class _DependenciesSectionState extends State<_DependenciesSection> {
   }
 
   Future<void> _load() async {
-    try {
-      _dependencies = await Injection.apiService.issueListDependencies(
-        owner: widget.owner,
-        repo: widget.repo,
-        index: widget.index,
-      );
-    } catch (_) {}
-    if (mounted) setState(() => _loading = false);
+    final result = await Injection.listIssueDependenciesUseCase(
+      widget.owner, widget.repo, widget.index,
+    );
+    if (mounted) {
+      _dependencies = result is Right<Failure, List<Issue>> ? result.value : [];
+      setState(() => _loading = false);
+    }
   }
 
   Future<void> _add() async {
@@ -1238,19 +1215,16 @@ class _DependenciesSectionState extends State<_DependenciesSection> {
     if (number != null && mounted) {
       final depIndex = int.tryParse(number);
       if (depIndex != null) {
-        try {
-          await Injection.apiService.issueCreateDependency(
-            owner: widget.owner,
-            repo: widget.repo,
-            index: widget.index,
-            dependencyIndex: depIndex,
-          );
-          if (mounted) {
+        final result = await Injection.createIssueDependencyUseCase(
+          widget.owner, widget.repo, widget.index, depIndex,
+        );
+        if (mounted) {
+          if (result is Right<Failure, void>) {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.dependencyAdded)));
             _load();
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
           }
-        } catch (_) {
-          if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
         }
       }
     }
@@ -1270,19 +1244,16 @@ class _DependenciesSectionState extends State<_DependenciesSection> {
       ),
     );
     if (ok == true && dep.number != null && mounted) {
-      try {
-        await Injection.apiService.issueRemoveDependency(
-          owner: widget.owner,
-          repo: widget.repo,
-          index: widget.index,
-          dependencyIndex: dep.number!,
-        );
-        if (mounted) {
+      final result = await Injection.removeIssueDependencyUseCase(
+        widget.owner, widget.repo, widget.index, dep.number!,
+      );
+      if (mounted) {
+        if (result is Right<Failure, void>) {
           ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.dependencyRemoved)));
           _load();
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
         }
-      } catch (_) {
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
       }
     }
   }
