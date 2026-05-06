@@ -287,3 +287,21 @@ class DeleteGPGKeyUseCase {
   DeleteGPGKeyUseCase({required UserRepository repository}) : _repository = repository;
   Future<Either<Failure, void>> call(int id) async => _repository.deleteGPGKey(id);
 }
+
+class CheckUserFollowUseCase {
+  final UserRepository _repository;
+  CheckUserFollowUseCase({required UserRepository repository}) : _repository = repository;
+  Future<Either<Failure, bool>> call(String username) async => _repository.checkUserFollow(username);
+}
+
+class FollowUserUseCase {
+  final UserRepository _repository;
+  FollowUserUseCase({required UserRepository repository}) : _repository = repository;
+  Future<Either<Failure, void>> call(String username) async => _repository.followUser(username);
+}
+
+class UnfollowUserUseCase {
+  final UserRepository _repository;
+  UnfollowUserUseCase({required UserRepository repository}) : _repository = repository;
+  Future<Either<Failure, void>> call(String username) async => _repository.unfollowUser(username);
+}

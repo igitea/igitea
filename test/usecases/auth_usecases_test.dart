@@ -108,6 +108,12 @@ class FakeUserRepository implements UserRepository {
   @override
   Future<Either<Failure, GPGKey>> addGPGKey(String armoredPublicKey) => throw UnimplementedError();
   @override
+  Future<Either<Failure, bool>> checkUserFollow(String username) => throw UnimplementedError();
+  @override
+  Future<Either<Failure, void>> followUser(String username) => throw UnimplementedError();
+  @override
+  Future<Either<Failure, void>> unfollowUser(String username) => throw UnimplementedError();
+  @override
   Future<Either<Failure, void>> deleteGPGKey(int id) => throw UnimplementedError();
   @override
   Future<Either<Failure, void>> deleteToken(String username, int tokenId) =>

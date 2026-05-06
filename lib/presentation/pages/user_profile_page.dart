@@ -4,7 +4,10 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../core/animations/animated_wrapper.dart';
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
+import '../../core/errors/failures.dart';
+import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
+import '../../domain/usecases/user_usecases.dart';
 import '../../l10n/app_localizations.dart';
 import '../widgets/org_avatar.dart';
 import '../widgets/premium_card.dart';
@@ -40,31 +43,40 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
   Future<void> _load() async {
     setState(() => _loading = true);
-    try {
-      _user = await Injection.apiService.userGet(username: widget.username);
-    } catch (_) {}
-    try {
-      _orgs = await Injection.apiService.orgListUserOrgs(username: widget.username);
-    } catch (_) {}
-    try {
-      _repos = await Injection.apiService.userListRepos(username: widget.username);
-    } catch (_) {}
-    try {
-      _isFollowing = await Injection.apiService.userCheckFollow(username: widget.username);
-    } catch (_) {}
+
+    final userResult = await Injection.getUserUseCase(widget.username);
+    if (userResult is Right<Failure, User>) {
+      _user = userResult.value;
+    }
+
+    final orgResult = await Injection.listUserOrgsUseCase(widget.username);
+    if (orgResult is Right<Failure, List<Organization>>) {
+      _orgs = orgResult.value;
+    }
+
+    final repoResult = await Injection.listUserReposUseCase(
+      ListUserReposParams(username: widget.username),
+    );
+    if (repoResult is Right<Failure, List<Repository>>) {
+      _repos = repoResult.value;
+    }
+
+    final followResult = await Injection.checkUserFollowUseCase(widget.username);
+    if (followResult is Right<Failure, bool>) {
+      _isFollowing = followResult.value;
+    }
+
     if (mounted) setState(() => _loading = false);
   }
 
   Future<void> _toggleFollow() async {
     setState(() => _followLoading = true);
-    try {
-      if (_isFollowing) {
-        await Injection.apiService.userUnfollow(username: widget.username);
-      } else {
-        await Injection.apiService.userFollow(username: widget.username);
-      }
+    final result = _isFollowing
+        ? await Injection.unfollowUserUseCase(widget.username)
+        : await Injection.followUserUseCase(widget.username);
+    if (result is Right<Failure, void>) {
       _isFollowing = !_isFollowing;
-    } catch (_) {}
+    }
     if (mounted) setState(() => _followLoading = false);
   }
 

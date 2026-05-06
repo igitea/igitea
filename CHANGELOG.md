@@ -9,6 +9,7 @@
 - PRs: also checks `has_pull_requests` flag
 - **Use case layers**: added repository + use cases for issue subscriptions, dependencies, timeline, deadlines, comment edit/delete (10 new use cases)
 - issue_detail_page: all 11 direct `Injection.apiService` calls replaced with use cases
+- user_profile_page: 6 direct calls replaced (userGet, orgListUserOrgs, userListRepos, follow/unfollow/check)
 
 ## [0.29.0] - 2026-05-05
 

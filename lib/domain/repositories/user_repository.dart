@@ -100,4 +100,13 @@ abstract class UserRepository {
 
   /// Delete a GPG key for the current user.
   Future<Either<Failure, void>> deleteGPGKey(int id);
+
+  /// Check if the current user follows another user.
+  Future<Either<Failure, bool>> checkUserFollow(String username);
+
+  /// Follow a user.
+  Future<Either<Failure, void>> followUser(String username);
+
+  /// Unfollow a user.
+  Future<Either<Failure, void>> unfollowUser(String username);
 }

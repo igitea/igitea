@@ -337,3 +337,10 @@ class DeleteOrgActionsVariableParams {
   final String variableName;
   DeleteOrgActionsVariableParams({required this.org, required this.variableName});
 }
+
+class ListUserOrgsUseCase {
+  final OrganizationRepository _repository;
+  ListUserOrgsUseCase({required OrganizationRepository repository}) : _repository = repository;
+  Future<Either<Failure, List<Organization>>> call(String username) async =>
+      _repository.listUserOrgs(username);
+}

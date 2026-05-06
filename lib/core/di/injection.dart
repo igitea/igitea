@@ -198,6 +198,11 @@ class Injection {
   static late AddGPGKeyUseCase addGPGKeyUseCase;
   static late DeleteGPGKeyUseCase deleteGPGKeyUseCase;
 
+  static late ListUserOrgsUseCase listUserOrgsUseCase;
+  static late CheckUserFollowUseCase checkUserFollowUseCase;
+  static late FollowUserUseCase followUserUseCase;
+  static late UnfollowUserUseCase unfollowUserUseCase;
+
   static late ListOrgActionsSecretsUseCase listOrgActionsSecretsUseCase;
   static late CreateOrUpdateOrgActionsSecretUseCase createOrUpdateOrgActionsSecretUseCase;
   static late DeleteOrgActionsSecretUseCase deleteOrgActionsSecretUseCase;
@@ -386,6 +391,10 @@ class Injection {
     assert(listGPGKeysUseCase != null);
     assert(addGPGKeyUseCase != null);
     assert(deleteGPGKeyUseCase != null);
+    assert(listUserOrgsUseCase != null);
+    assert(checkUserFollowUseCase != null);
+    assert(followUserUseCase != null);
+    assert(unfollowUserUseCase != null);
   }
 
   static void _initRepositories() {
@@ -553,6 +562,10 @@ class Injection {
     listGPGKeysUseCase = ListGPGKeysUseCase(repository: userRepository);
     addGPGKeyUseCase = AddGPGKeyUseCase(repository: userRepository);
     deleteGPGKeyUseCase = DeleteGPGKeyUseCase(repository: userRepository);
+    listUserOrgsUseCase = ListUserOrgsUseCase(repository: organizationRepository);
+    checkUserFollowUseCase = CheckUserFollowUseCase(repository: userRepository);
+    followUserUseCase = FollowUserUseCase(repository: userRepository);
+    unfollowUserUseCase = UnfollowUserUseCase(repository: userRepository);
     editUserUseCase = EditUserUseCase(repository: adminRepository);
     runCronTaskUseCase = RunCronTaskUseCase(repository: adminRepository);
     listAdminHooksUseCase = ListAdminHooksUseCase(repository: adminRepository);

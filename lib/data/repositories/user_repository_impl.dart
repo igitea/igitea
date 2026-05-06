@@ -187,4 +187,19 @@ class UserRepositoryImpl implements UserRepository {
   Future<Either<Failure, void>> deleteGPGKey(int id) async {
     return execute(() => _apiService.userCurrentDeleteGPGKey(id: id));
   }
+
+  @override
+  Future<Either<Failure, bool>> checkUserFollow(String username) async {
+    return execute(() => _apiService.userCheckFollow(username: username));
+  }
+
+  @override
+  Future<Either<Failure, void>> followUser(String username) async {
+    return execute(() => _apiService.userFollow(username: username));
+  }
+
+  @override
+  Future<Either<Failure, void>> unfollowUser(String username) async {
+    return execute(() => _apiService.userUnfollow(username: username));
+  }
 }
