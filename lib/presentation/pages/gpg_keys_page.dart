@@ -17,6 +17,7 @@ class GpgKeysPage extends StatefulWidget {
 
 class _GpgKeysPageState extends State<GpgKeysPage> {
   List<GPGKey> _keys = [];
+  String? _error;
   bool _loading = true;
 
   @override
@@ -31,9 +32,9 @@ class _GpgKeysPageState extends State<GpgKeysPage> {
     if (!mounted) return;
     switch (result) {
       case Right<Failure, List<GPGKey>>(:final value):
-        setState(() { _keys = value; _loading = false; });
-      case Left<Failure, List<GPGKey>>():
-        if (mounted) setState(() => _loading = false);
+        setState(() { _keys = value; _loading = false; _error = null; });
+      case Left<Failure, List<GPGKey>>(:final value):
+        if (mounted) setState(() { _loading = false; _error = value.message; });
     }
   }
 
@@ -69,7 +70,7 @@ class _GpgKeysPageState extends State<GpgKeysPage> {
       case Right<Failure, GPGKey>():
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.gpgKeyAdded)));
         _load();
-      case Left<Failure, GPGKey>():
+      case Left<Failure, GPGKey>(:final value):
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
     }
   }
@@ -96,7 +97,7 @@ class _GpgKeysPageState extends State<GpgKeysPage> {
       case Right<Failure, void>():
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.gpgKeyDeleted)));
         _load();
-      case Left<Failure, void>():
+      case Left<Failure, void>(:final value):
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
     }
   }
@@ -115,7 +116,25 @@ class _GpgKeysPageState extends State<GpgKeysPage> {
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
-          : _keys.isEmpty
+          : _error != null
+              ? Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.error_outline_rounded, size: 48,
+                        color: Theme.of(context).colorScheme.error),
+                      const SizedBox(height: 16),
+                      Text(_error!, style: Theme.of(context).textTheme.bodyLarge),
+                      const SizedBox(height: 16),
+                      FilledButton.tonalIcon(
+                        onPressed: _load,
+                        icon: const Icon(Icons.refresh_rounded, size: 18),
+                        label: Text(l10n.retry),
+                      ),
+                    ],
+                  ),
+                )
+              : _keys.isEmpty
               ? EmptyState(icon: Icons.vpn_key_outlined, title: l10n.noGpgKeys)
               : RefreshIndicator(
                   onRefresh: _load,

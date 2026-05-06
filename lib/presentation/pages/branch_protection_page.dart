@@ -22,6 +22,7 @@ class BranchProtectionPage extends StatefulWidget {
 class _BranchProtectionPageState extends State<BranchProtectionPage> {
   List<BranchProtection> _protections = [];
   bool _loading = true;
+  String? _error;
 
   @override
   void initState() {
@@ -30,14 +31,14 @@ class _BranchProtectionPageState extends State<BranchProtectionPage> {
   }
 
   Future<void> _load() async {
-    setState(() => _loading = true);
+    setState(() { _loading = true; _error = null; });
     final result = await Injection.listBranchProtectionsUseCase(widget.owner, widget.repo);
     if (!mounted) return;
     switch (result) {
       case Right<Failure, List<BranchProtection>>(:final value):
         setState(() { _protections = value; _loading = false; });
-      case Left<Failure, List<BranchProtection>>():
-        if (mounted) setState(() => _loading = false);
+      case Left<Failure, List<BranchProtection>>(:final value):
+        if (mounted) setState(() { _loading = false; _error = value.message; });
     }
   }
 
@@ -76,7 +77,7 @@ class _BranchProtectionPageState extends State<BranchProtectionPage> {
       case Right<Failure, void>():
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.created)));
         _load();
-      case Left<Failure, void>():
+      case Left<Failure, void>(:final value):
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
     }
   }
@@ -102,7 +103,7 @@ class _BranchProtectionPageState extends State<BranchProtectionPage> {
       case Right<Failure, void>():
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.labelDeleted)));
         _load();
-      case Left<Failure, void>():
+      case Left<Failure, void>(:final value):
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
     }
   }
@@ -119,7 +120,25 @@ class _BranchProtectionPageState extends State<BranchProtectionPage> {
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
-          : _protections.isEmpty
+          : _error != null
+              ? Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.error_outline_rounded, size: 48,
+                        color: Theme.of(context).colorScheme.error),
+                      const SizedBox(height: 16),
+                      Text(_error!, style: Theme.of(context).textTheme.bodyLarge),
+                      const SizedBox(height: 16),
+                      FilledButton.tonalIcon(
+                        onPressed: _load,
+                        icon: const Icon(Icons.refresh_rounded, size: 18),
+                        label: Text(l10n.retry),
+                      ),
+                    ],
+                  ),
+                )
+              : _protections.isEmpty
               ? EmptyState(icon: Icons.shield_outlined, title: l10n.noData)
               : RefreshIndicator(
                   onRefresh: _load,

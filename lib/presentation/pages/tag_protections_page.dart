@@ -21,6 +21,7 @@ class TagProtectionsPage extends StatefulWidget {
 class _TagProtectionsPageState extends State<TagProtectionsPage> {
   List<TagProtection> _protections = [];
   bool _loading = true;
+  String? _error;
 
   @override
   void initState() {
@@ -29,14 +30,14 @@ class _TagProtectionsPageState extends State<TagProtectionsPage> {
   }
 
   Future<void> _load() async {
-    setState(() => _loading = true);
+    setState(() { _loading = true; _error = null; });
     final result = await Injection.listTagProtectionsUseCase(widget.owner, widget.repo);
     if (!mounted) return;
     switch (result) {
       case Right<Failure, List<TagProtection>>(:final value):
-        setState(() { _protections = value; _loading = false; });
-      case Left<Failure, List<TagProtection>>():
-        if (mounted) setState(() => _loading = false);
+        setState(() { _protections = value; _loading = false; _error = null; });
+      case Left<Failure, List<TagProtection>>(:final value):
+        setState(() { _error = value.message; _loading = false; });
     }
   }
 
@@ -157,7 +158,25 @@ class _TagProtectionsPageState extends State<TagProtectionsPage> {
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
-          : _protections.isEmpty
+          : _error != null
+              ? Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.error_outline_rounded, size: 48,
+                        color: Theme.of(context).colorScheme.error),
+                      const SizedBox(height: 16),
+                      Text(_error!, style: Theme.of(context).textTheme.bodyLarge),
+                      const SizedBox(height: 16),
+                      FilledButton.tonalIcon(
+                        onPressed: _load,
+                        icon: const Icon(Icons.refresh_rounded, size: 18),
+                        label: Text(l10n.retry),
+                      ),
+                    ],
+                  ),
+                )
+              : _protections.isEmpty
               ? EmptyState(icon: Icons.local_offer_outlined, title: l10n.noTagProtections)
               : RefreshIndicator(
                   onRefresh: _load,

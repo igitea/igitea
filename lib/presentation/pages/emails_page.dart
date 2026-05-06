@@ -17,6 +17,7 @@ class EmailsPage extends StatefulWidget {
 
 class _EmailsPageState extends State<EmailsPage> {
   List<Email> _emails = [];
+  String? _error;
   bool _loading = true;
 
   @override
@@ -31,9 +32,9 @@ class _EmailsPageState extends State<EmailsPage> {
     if (!mounted) return;
     switch (result) {
       case Right<Failure, List<Email>>(:final value):
-        setState(() { _emails = value; _loading = false; });
-      case Left<Failure, List<Email>>():
-        if (mounted) setState(() => _loading = false);
+        setState(() { _emails = value; _loading = false; _error = null; });
+      case Left<Failure, List<Email>>(:final value):
+        if (mounted) setState(() { _loading = false; _error = value.message; });
     }
   }
 
@@ -69,7 +70,7 @@ class _EmailsPageState extends State<EmailsPage> {
       case Right<Failure, void>():
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.created)));
         _load();
-      case Left<Failure, void>():
+      case Left<Failure, void>(:final value):
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
     }
   }
@@ -95,7 +96,7 @@ class _EmailsPageState extends State<EmailsPage> {
       case Right<Failure, void>():
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.labelDeleted)));
         _load();
-      case Left<Failure, void>():
+      case Left<Failure, void>(:final value):
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
     }
   }
@@ -113,7 +114,25 @@ class _EmailsPageState extends State<EmailsPage> {
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
-          : _emails.isEmpty
+          : _error != null
+              ? Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.error_outline_rounded, size: 48,
+                        color: Theme.of(context).colorScheme.error),
+                      const SizedBox(height: 16),
+                      Text(_error!, style: Theme.of(context).textTheme.bodyLarge),
+                      const SizedBox(height: 16),
+                      FilledButton.tonalIcon(
+                        onPressed: _load,
+                        icon: const Icon(Icons.refresh_rounded, size: 18),
+                        label: Text(l10n.retry),
+                      ),
+                    ],
+                  ),
+                )
+              : _emails.isEmpty
               ? EmptyState(icon: Icons.email_outlined, title: l10n.noData)
               : RefreshIndicator(
                   onRefresh: _load,
