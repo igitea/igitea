@@ -131,6 +131,17 @@ class DeleteAdminHookUseCase {
   }
 }
 
+class CreateAdminHookUseCase {
+  final AdminRepository _repository;
+
+  CreateAdminHookUseCase({required AdminRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, Hook>> call(Map<String, dynamic> body) async {
+    return _repository.createAdminHook(body);
+  }
+}
+
 class ListAdminRunnersUseCase {
   final AdminRepository _repository;
 

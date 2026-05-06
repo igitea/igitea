@@ -4181,6 +4181,24 @@ abstract class AppLocalizations {
   /// **'Add topic'**
   String get addTopic;
 
+  /// No description provided for @deleteOrganization.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Organization'**
+  String get deleteOrganization;
+
+  /// No description provided for @deleteOrganizationConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this organization? This action cannot be undone.'**
+  String get deleteOrganizationConfirm;
+
+  /// No description provided for @organizationDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Organization deleted'**
+  String get organizationDeleted;
+
   /// No description provided for @accessTokens.
   ///
   /// In en, this message translates to:

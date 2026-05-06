@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/di/injection.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/admin_notifier.dart';
+import 'create_admin_webhook_page.dart';
 
 class AdminHooksPage extends StatefulWidget {
   const AdminHooksPage({super.key});
@@ -24,7 +25,37 @@ class _AdminHooksPageState extends State<AdminHooksPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.adminHooksTitle)),
+      appBar: AppBar(
+        title: Text(l10n.adminHooksTitle),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.add),
+            tooltip: l10n.createWebhook,
+            onPressed: () async {
+              await Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const CreateAdminWebhookPage()),
+              );
+              if (context.mounted) {
+                Injection.adminNotifier.loadHooks();
+              }
+            },
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        heroTag: 'admin_hooks',
+        onPressed: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const CreateAdminWebhookPage()),
+          );
+          if (context.mounted) {
+            Injection.adminNotifier.loadHooks();
+          }
+        },
+        child: const Icon(Icons.add),
+      ),
       body: ListenableBuilder(
         listenable: Injection.adminNotifier,
         builder: (context, _) {

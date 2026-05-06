@@ -166,6 +166,7 @@ class AdminNotifier extends ChangeNotifier {
   ListAdminHooksUseCase _listAdminHooksUseCase;
   GetAdminHookUseCase _getAdminHookUseCase;
   DeleteAdminHookUseCase _deleteAdminHookUseCase;
+  CreateAdminHookUseCase _createAdminHookUseCase;
   ListCronTasksUseCase _listCronTasksUseCase;
   RunCronTaskUseCase _runCronTaskUseCase;
   ListAdminRunnersUseCase _listAdminRunnersUseCase;
@@ -205,6 +206,7 @@ class AdminNotifier extends ChangeNotifier {
     required ListAdminHooksUseCase listAdminHooksUseCase,
     required GetAdminHookUseCase getAdminHookUseCase,
     required DeleteAdminHookUseCase deleteAdminHookUseCase,
+    required CreateAdminHookUseCase createAdminHookUseCase,
     required ListCronTasksUseCase listCronTasksUseCase,
     required RunCronTaskUseCase runCronTaskUseCase,
     required ListAdminRunnersUseCase listAdminRunnersUseCase,
@@ -221,6 +223,7 @@ class AdminNotifier extends ChangeNotifier {
        _listAdminHooksUseCase = listAdminHooksUseCase,
        _getAdminHookUseCase = getAdminHookUseCase,
        _deleteAdminHookUseCase = deleteAdminHookUseCase,
+       _createAdminHookUseCase = createAdminHookUseCase,
        _listCronTasksUseCase = listCronTasksUseCase,
        _runCronTaskUseCase = runCronTaskUseCase,
        _listAdminRunnersUseCase = listAdminRunnersUseCase,
@@ -239,6 +242,7 @@ class AdminNotifier extends ChangeNotifier {
     required ListAdminHooksUseCase listAdminHooksUseCase,
     required GetAdminHookUseCase getAdminHookUseCase,
     required DeleteAdminHookUseCase deleteAdminHookUseCase,
+    required CreateAdminHookUseCase createAdminHookUseCase,
     required ListCronTasksUseCase listCronTasksUseCase,
     required RunCronTaskUseCase runCronTaskUseCase,
     required ListAdminRunnersUseCase listAdminRunnersUseCase,
@@ -256,6 +260,7 @@ class AdminNotifier extends ChangeNotifier {
     _listAdminHooksUseCase = listAdminHooksUseCase;
     _getAdminHookUseCase = getAdminHookUseCase;
     _deleteAdminHookUseCase = deleteAdminHookUseCase;
+    _createAdminHookUseCase = createAdminHookUseCase;
     _listCronTasksUseCase = listCronTasksUseCase;
     _runCronTaskUseCase = runCronTaskUseCase;
     _listAdminRunnersUseCase = listAdminRunnersUseCase;
@@ -362,6 +367,14 @@ class AdminNotifier extends ChangeNotifier {
         _operationState = const AdminOperationSuccess();
         notifyListeners();
     }
+  }
+
+  Future<Hook?> createHook(Map<String, dynamic> body) async {
+    final result = await _createAdminHookUseCase.call(body);
+    return switch (result) {
+      Left<Failure, Hook>(:final value) => null,
+      Right<Failure, Hook>(:final value) => value,
+    };
   }
 
   Future<void> loadCronTasks({int? page, int? limit}) async {

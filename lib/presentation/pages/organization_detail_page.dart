@@ -96,6 +96,11 @@ class _OrganizationDetailPageState extends State<OrganizationDetailPage>
                 },
               ),
               IconButton(
+                icon: const Icon(Icons.delete_outline),
+                tooltip: l10n.deleteOrganization,
+                onPressed: () => _confirmDeleteOrg(context, org.name ?? widget.orgName),
+              ),
+              IconButton(
                 icon: const Icon(Icons.webhook),
                 tooltip: l10n.webhooks,
                 onPressed: () {
@@ -145,6 +150,43 @@ class _OrganizationDetailPageState extends State<OrganizationDetailPage>
         ],
       ),
     );
+  }
+
+  Future<void> _confirmDeleteOrg(BuildContext context, String orgName) async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.deleteOrganization),
+        content: Text(l10n.deleteOrganizationConfirm),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(ctx).colorScheme.error,
+            ),
+            child: Text(l10n.delete),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    final success = await Injection.organizationNotifier.deleteOrg(orgName);
+    if (!mounted) return;
+
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.organizationDeleted)),
+      );
+      Navigator.of(context).pop();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${l10n.error}: ${l10n.unknownError}')),
+      );
+    }
   }
 }
 

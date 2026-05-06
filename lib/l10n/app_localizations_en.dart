@@ -2128,6 +2128,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addTopic => 'Add topic';
 
   @override
+  String get deleteOrganization => 'Delete Organization';
+
+  @override
+  String get deleteOrganizationConfirm =>
+      'Are you sure you want to delete this organization? This action cannot be undone.';
+
+  @override
+  String get organizationDeleted => 'Organization deleted';
+
+  @override
   String get accessTokens => 'Access Tokens';
 
   @override

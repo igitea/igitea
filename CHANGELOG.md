@@ -8,6 +8,12 @@
   - Use cases: `ListTopicsUseCase`, `ReplaceTopicsUseCase`, `AddTopicUseCase`, `DeleteTopicUseCase`
   - UI: edit button on repo header, dialog with add/remove topic chips
   - i18n: `addTopic` key (en/zh)
+- **Admin: Create System Webhook** — new `CreateAdminWebhookPage` with URL/secret/content-type/events form
+  - Use case: `CreateAdminHookUseCase`, Notifier: `createHook(body)`
+  - FAB and AppBar `+` button on admin hooks page
+- **Organization Deletion** — delete org with confirmation dialog from org detail page
+  - Use case: `DeleteOrgUseCase`, Notifier: `deleteOrg(org)`
+  - i18n: `deleteOrganization`, `deleteOrganizationConfirm`, `organizationDeleted`
 
 ## [0.28.0] - 2026-05-05
 

@@ -165,6 +165,17 @@ class CreateOrgUseCase {
   }
 }
 
+class DeleteOrgUseCase {
+  final OrganizationRepository _repository;
+
+  DeleteOrgUseCase({required OrganizationRepository repository})
+    : _repository = repository;
+
+  Future<Either<Failure, void>> call(String org) async {
+    return _repository.deleteOrg(org);
+  }
+}
+
 class CreateTeamUseCase {
   final OrganizationRepository _repository;
 

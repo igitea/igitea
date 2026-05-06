@@ -129,6 +129,7 @@ class Injection {
   static late ListTeamReposUseCase listTeamReposUseCase;
   static late EditOrgUseCase editOrgUseCase;
   static late CreateOrgUseCase createOrgUseCase;
+  static late DeleteOrgUseCase deleteOrgUseCase;
   static late CreateTeamUseCase createTeamUseCase;
   static late EditTeamUseCase editTeamUseCase;
   static late DeleteTeamUseCase deleteTeamUseCase;
@@ -153,6 +154,7 @@ class Injection {
   static late ListAdminHooksUseCase listAdminHooksUseCase;
   static late GetAdminHookUseCase getAdminHookUseCase;
   static late DeleteAdminHookUseCase deleteAdminHookUseCase;
+  static late CreateAdminHookUseCase createAdminHookUseCase;
   static late ListAdminRunnersUseCase listAdminRunnersUseCase;
   static late GetAdminRunnerUseCase getAdminRunnerUseCase;
   static late GetAdminRunnerRegistrationTokenUseCase getAdminRunnerRegistrationTokenUseCase;
@@ -274,6 +276,7 @@ class Injection {
     assert(listTeamReposUseCase != null);
     assert(editOrgUseCase != null);
     assert(createOrgUseCase != null);
+    assert(deleteOrgUseCase != null);
     assert(createTeamUseCase != null);
     assert(editTeamUseCase != null);
     assert(deleteTeamUseCase != null);
@@ -298,6 +301,7 @@ class Injection {
     assert(listAdminHooksUseCase != null);
     assert(getAdminHookUseCase != null);
     assert(deleteAdminHookUseCase != null);
+    assert(createAdminHookUseCase != null);
     assert(listAdminRunnersUseCase != null);
     assert(getAdminRunnerUseCase != null);
     assert(getAdminRunnerRegistrationTokenUseCase != null);
@@ -425,6 +429,7 @@ class Injection {
     );
     editOrgUseCase = EditOrgUseCase(repository: organizationRepository);
     createOrgUseCase = CreateOrgUseCase(repository: organizationRepository);
+    deleteOrgUseCase = DeleteOrgUseCase(repository: organizationRepository);
     createTeamUseCase = CreateTeamUseCase(repository: organizationRepository);
     editTeamUseCase = EditTeamUseCase(repository: organizationRepository);
     deleteTeamUseCase = DeleteTeamUseCase(repository: organizationRepository);
@@ -475,6 +480,7 @@ class Injection {
     listAdminHooksUseCase = ListAdminHooksUseCase(repository: adminRepository);
     getAdminHookUseCase = GetAdminHookUseCase(repository: adminRepository);
     deleteAdminHookUseCase = DeleteAdminHookUseCase(repository: adminRepository);
+    createAdminHookUseCase = CreateAdminHookUseCase(repository: adminRepository);
     listAdminRunnersUseCase = ListAdminRunnersUseCase(repository: adminRepository);
     getAdminRunnerUseCase = GetAdminRunnerUseCase(repository: adminRepository);
     getAdminRunnerRegistrationTokenUseCase = GetAdminRunnerRegistrationTokenUseCase(repository: adminRepository);
@@ -597,6 +603,7 @@ class Injection {
         listTeamReposUseCase: listTeamReposUseCase,
         editOrgUseCase: editOrgUseCase,
         createOrgUseCase: createOrgUseCase,
+        deleteOrgUseCase: deleteOrgUseCase,
         createTeamUseCase: createTeamUseCase,
         editTeamUseCase: editTeamUseCase,
         deleteTeamUseCase: deleteTeamUseCase,
@@ -624,6 +631,7 @@ class Injection {
         listAdminHooksUseCase: listAdminHooksUseCase,
         getAdminHookUseCase: getAdminHookUseCase,
         deleteAdminHookUseCase: deleteAdminHookUseCase,
+        createAdminHookUseCase: createAdminHookUseCase,
         listCronTasksUseCase: listCronTasksUseCase,
         runCronTaskUseCase: runCronTaskUseCase,
         listAdminRunnersUseCase: listAdminRunnersUseCase,
@@ -740,6 +748,7 @@ class Injection {
         listTeamReposUseCase: listTeamReposUseCase,
         editOrgUseCase: editOrgUseCase,
         createOrgUseCase: createOrgUseCase,
+        deleteOrgUseCase: deleteOrgUseCase,
         createTeamUseCase: createTeamUseCase,
         editTeamUseCase: editTeamUseCase,
         deleteTeamUseCase: deleteTeamUseCase,
@@ -768,6 +777,7 @@ class Injection {
         listAdminHooksUseCase: listAdminHooksUseCase,
         getAdminHookUseCase: getAdminHookUseCase,
         deleteAdminHookUseCase: deleteAdminHookUseCase,
+        createAdminHookUseCase: createAdminHookUseCase,
         listCronTasksUseCase: listCronTasksUseCase,
         runCronTaskUseCase: runCronTaskUseCase,
         listAdminRunnersUseCase: listAdminRunnersUseCase,
@@ -905,6 +915,7 @@ class Injection {
       listTeamReposUseCase: listTeamReposUseCase,
       editOrgUseCase: editOrgUseCase,
       createOrgUseCase: createOrgUseCase,
+      deleteOrgUseCase: deleteOrgUseCase,
       createTeamUseCase: createTeamUseCase,
       editTeamUseCase: editTeamUseCase,
       deleteTeamUseCase: deleteTeamUseCase,
@@ -932,6 +943,7 @@ class Injection {
       listAdminHooksUseCase: listAdminHooksUseCase,
       getAdminHookUseCase: getAdminHookUseCase,
       deleteAdminHookUseCase: deleteAdminHookUseCase,
+      createAdminHookUseCase: createAdminHookUseCase,
       listCronTasksUseCase: listCronTasksUseCase,
       runCronTaskUseCase: runCronTaskUseCase,
       listAdminRunnersUseCase: listAdminRunnersUseCase,

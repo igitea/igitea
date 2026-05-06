@@ -67,6 +67,7 @@ class OrgNotifier extends ChangeNotifier {
   ListTeamReposUseCase _listTeamReposUseCase;
   EditOrgUseCase _editOrgUseCase;
   CreateOrgUseCase _createOrgUseCase;
+  DeleteOrgUseCase _deleteOrgUseCase;
   CreateTeamUseCase _createTeamUseCase;
   EditTeamUseCase _editTeamUseCase;
   DeleteTeamUseCase _deleteTeamUseCase;
@@ -103,6 +104,7 @@ class OrgNotifier extends ChangeNotifier {
     required ListTeamReposUseCase listTeamReposUseCase,
     required EditOrgUseCase editOrgUseCase,
     required CreateOrgUseCase createOrgUseCase,
+    required DeleteOrgUseCase deleteOrgUseCase,
     required CreateTeamUseCase createTeamUseCase,
     required EditTeamUseCase editTeamUseCase,
     required DeleteTeamUseCase deleteTeamUseCase,
@@ -117,6 +119,7 @@ class OrgNotifier extends ChangeNotifier {
        _listTeamReposUseCase = listTeamReposUseCase,
        _editOrgUseCase = editOrgUseCase,
        _createOrgUseCase = createOrgUseCase,
+       _deleteOrgUseCase = deleteOrgUseCase,
        _createTeamUseCase = createTeamUseCase,
        _editTeamUseCase = editTeamUseCase,
        _deleteTeamUseCase = deleteTeamUseCase,
@@ -133,6 +136,7 @@ class OrgNotifier extends ChangeNotifier {
     required ListTeamReposUseCase listTeamReposUseCase,
     required EditOrgUseCase editOrgUseCase,
     required CreateOrgUseCase createOrgUseCase,
+    required DeleteOrgUseCase deleteOrgUseCase,
     required CreateTeamUseCase createTeamUseCase,
     required EditTeamUseCase editTeamUseCase,
     required DeleteTeamUseCase deleteTeamUseCase,
@@ -148,6 +152,7 @@ class OrgNotifier extends ChangeNotifier {
     _listTeamReposUseCase = listTeamReposUseCase;
     _editOrgUseCase = editOrgUseCase;
     _createOrgUseCase = createOrgUseCase;
+    _deleteOrgUseCase = deleteOrgUseCase;
     _createTeamUseCase = createTeamUseCase;
     _editTeamUseCase = editTeamUseCase;
     _deleteTeamUseCase = deleteTeamUseCase;
@@ -299,6 +304,11 @@ class OrgNotifier extends ChangeNotifier {
         _state = OrgLoaded(value);
         notifyListeners();
     }
+  }
+
+  Future<bool> deleteOrg(String org) async {
+    final result = await _deleteOrgUseCase.call(org);
+    return result is Right;
   }
 
   Future<bool> createTeam({

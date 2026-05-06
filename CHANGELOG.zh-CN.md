@@ -8,6 +8,12 @@
   - Use Cases：`ListTopicsUseCase`、`ReplaceTopicsUseCase`、`AddTopicUseCase`、`DeleteTopicUseCase`
   - UI：仓库头部主题编辑按钮，对话框内可添加/删除主题标签
   - i18n：新增 `addTopic` 键
+- **管理员：创建系统 Webhook** — 新的 `CreateAdminWebhookPage` 页面，支持 URL/Secret/ContentType/事件选择
+  - Use Case：`CreateAdminHookUseCase`，Notifier：`createHook(body)`
+  - 管理后台 Webhook 页面新增 FAB 和 AppBar `+` 按钮
+- **组织删除** — 组织详情页增加删除按钮，确认后删除并返回
+  - Use Case：`DeleteOrgUseCase`，Notifier：`deleteOrg(org)`
+  - i18n：`deleteOrganization`、`deleteOrganizationConfirm`、`organizationDeleted`
 
 ## [0.28.0] - 2026-05-05
 

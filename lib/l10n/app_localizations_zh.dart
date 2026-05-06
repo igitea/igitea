@@ -2105,6 +2105,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get addTopic => '添加主题';
 
   @override
+  String get deleteOrganization => '删除组织';
+
+  @override
+  String get deleteOrganizationConfirm => '确定要删除此组织吗？此操作不可撤销。';
+
+  @override
+  String get organizationDeleted => '组织已删除';
+
+  @override
   String get accessTokens => '访问令牌';
 
   @override
