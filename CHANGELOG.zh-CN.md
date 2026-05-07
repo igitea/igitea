@@ -1,6 +1,6 @@
 # 更新日志
 
-## [Unreleased]
+## [0.30.0] - 2026-05-05
 
 ### Added
 - **Webhook 编辑**：完整编辑表单（URL、内容类型、事件、启用开关），通过 `CreateWebhookPage` 预填字段实现
