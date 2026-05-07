@@ -200,6 +200,10 @@ class Injection {
   static late DeleteGPGKeyUseCase deleteGPGKeyUseCase;
 
   static late ListUserOrgsUseCase listUserOrgsUseCase;
+  static late ListOrgHooksUseCase listOrgHooksUseCase;
+  static late CreateOrgHookUseCase createOrgHookUseCase;
+  static late EditOrgHookUseCase editOrgHookUseCase;
+  static late DeleteOrgHookUseCase deleteOrgHookUseCase;
   static late CheckUserFollowUseCase checkUserFollowUseCase;
   static late FollowUserUseCase followUserUseCase;
   static late UnfollowUserUseCase unfollowUserUseCase;
@@ -394,6 +398,10 @@ class Injection {
     assert(addGPGKeyUseCase != null);
     assert(deleteGPGKeyUseCase != null);
     assert(listUserOrgsUseCase != null);
+    assert(listOrgHooksUseCase != null);
+    assert(createOrgHookUseCase != null);
+    assert(editOrgHookUseCase != null);
+    assert(deleteOrgHookUseCase != null);
     assert(checkUserFollowUseCase != null);
     assert(followUserUseCase != null);
     assert(unfollowUserUseCase != null);
@@ -566,6 +574,10 @@ class Injection {
     addGPGKeyUseCase = AddGPGKeyUseCase(repository: userRepository);
     deleteGPGKeyUseCase = DeleteGPGKeyUseCase(repository: userRepository);
     listUserOrgsUseCase = ListUserOrgsUseCase(repository: organizationRepository);
+    listOrgHooksUseCase = ListOrgHooksUseCase(repository: organizationRepository);
+    createOrgHookUseCase = CreateOrgHookUseCase(repository: organizationRepository);
+    editOrgHookUseCase = EditOrgHookUseCase(repository: organizationRepository);
+    deleteOrgHookUseCase = DeleteOrgHookUseCase(repository: organizationRepository);
     checkUserFollowUseCase = CheckUserFollowUseCase(repository: userRepository);
     followUserUseCase = FollowUserUseCase(repository: userRepository);
     unfollowUserUseCase = UnfollowUserUseCase(repository: userRepository);

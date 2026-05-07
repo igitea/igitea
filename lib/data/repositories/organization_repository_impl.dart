@@ -202,4 +202,24 @@ class OrganizationRepositoryImpl implements OrganizationRepository {
   ) async {
     return execute(() => _apiService.orgDeleteActionsVariable(org, variableName));
   }
+
+  @override
+  Future<Either<Failure, List<Hook>>> listOrgHooks(String org) async {
+    return execute(() => _apiService.orgListHooks(org: org));
+  }
+
+  @override
+  Future<Either<Failure, Hook>> createOrgHook(String org, Map<String, dynamic> body) async {
+    return execute(() => _apiService.orgCreateHook(org: org, body: body));
+  }
+
+  @override
+  Future<Either<Failure, Hook>> editOrgHook(String org, int id, Map<String, dynamic> body) async {
+    return execute(() => _apiService.orgEditHook(org: org, id: id, body: body));
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteOrgHook(String org, int id) async {
+    return execute(() => _apiService.orgDeleteHook(org: org, id: id));
+  }
 }

@@ -127,4 +127,16 @@ abstract class OrganizationRepository {
     String org,
     String variableName,
   );
+
+  /// List organization-level hooks.
+  Future<Either<Failure, List<Hook>>> listOrgHooks(String org);
+
+  /// Create an organization-level hook.
+  Future<Either<Failure, Hook>> createOrgHook(String org, Map<String, dynamic> body);
+
+  /// Edit an organization-level hook.
+  Future<Either<Failure, Hook>> editOrgHook(String org, int id, Map<String, dynamic> body);
+
+  /// Delete an organization-level hook.
+  Future<Either<Failure, void>> deleteOrgHook(String org, int id);
 }

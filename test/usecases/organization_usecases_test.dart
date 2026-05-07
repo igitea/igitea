@@ -122,6 +122,14 @@ class MockOrganizationRepository implements OrganizationRepository {
   Future<Either<Failure, void>> createOrUpdateOrgActionsVariable(String org, String variableName, Map<String, dynamic> body) async => const Right(null);
   @override
   Future<Either<Failure, void>> deleteOrgActionsVariable(String org, String variableName) async => const Right(null);
+  @override
+  Future<Either<Failure, List<Hook>>> listOrgHooks(String org) async => const Right([]);
+  @override
+  Future<Either<Failure, Hook>> createOrgHook(String org, Map<String, dynamic> body) async => Right(Hook());
+  @override
+  Future<Either<Failure, Hook>> editOrgHook(String org, int id, Map<String, dynamic> body) async => Right(Hook());
+  @override
+  Future<Either<Failure, void>> deleteOrgHook(String org, int id) async => const Right(null);
 }
 
 void main() {

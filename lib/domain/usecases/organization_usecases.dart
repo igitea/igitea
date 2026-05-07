@@ -344,3 +344,29 @@ class ListUserOrgsUseCase {
   Future<Either<Failure, List<Organization>>> call(String username) async =>
       _repository.listUserOrgs(username);
 }
+
+class ListOrgHooksUseCase {
+  final OrganizationRepository _repository;
+  ListOrgHooksUseCase({required OrganizationRepository repository}) : _repository = repository;
+  Future<Either<Failure, List<Hook>>> call(String org) async => _repository.listOrgHooks(org);
+}
+
+class CreateOrgHookUseCase {
+  final OrganizationRepository _repository;
+  CreateOrgHookUseCase({required OrganizationRepository repository}) : _repository = repository;
+  Future<Either<Failure, Hook>> call(String org, Map<String, dynamic> body) async =>
+      _repository.createOrgHook(org, body);
+}
+
+class EditOrgHookUseCase {
+  final OrganizationRepository _repository;
+  EditOrgHookUseCase({required OrganizationRepository repository}) : _repository = repository;
+  Future<Either<Failure, Hook>> call(String org, int id, Map<String, dynamic> body) async =>
+      _repository.editOrgHook(org, id, body);
+}
+
+class DeleteOrgHookUseCase {
+  final OrganizationRepository _repository;
+  DeleteOrgHookUseCase({required OrganizationRepository repository}) : _repository = repository;
+  Future<Either<Failure, void>> call(String org, int id) async => _repository.deleteOrgHook(org, id);
+}
