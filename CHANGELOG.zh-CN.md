@@ -5,6 +5,10 @@
 ### Added
 - **Webhook 编辑**：完整编辑表单（URL、内容类型、事件、启用开关），通过 `CreateWebhookPage` 预填字段实现
   - 仓库层：`editHook` 方法、`EditHookUseCase`、RepoNotifier `editHook()`
+- **组织 Webhook CRUD**：列出、创建、编辑、删除组织级 Webhook
+  - Use Cases：`ListOrgHooksUseCase`、`CreateOrgHookUseCase`、`EditOrgHookUseCase`、`DeleteOrgHookUseCase`
+  - 点击编辑 Webhook，完整表单支持 URL/密钥/内容类型/启用
+- **PR 审查增强**：类型化 `PullReview` 模型、审查摘要徽章（通过/需修改计数）
 - Release/Issue/PR 标签页：创建按钮现在遵循仓库权限（需 push/admin 权限）
 - Release：同时检查 `has_releases` 标志
 - Issue：同时检查 `has_issues` 标志

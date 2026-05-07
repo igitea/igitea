@@ -3,6 +3,8 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/animations/animated_wrapper.dart';
 import '../../core/di/injection.dart';
+import '../../core/errors/failures.dart';
+import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../domain/entities/issue_state.dart';
 import '../../l10n/app_localizations.dart';
@@ -29,7 +31,7 @@ class PRDetailPage extends StatefulWidget {
 
 class _PRDetailPageState extends State<PRDetailPage> {
   final _commentController = TextEditingController();
-  List<Map<String, dynamic>> _reviews = [];
+  List<PullReview> _reviews = [];
 
   @override
   void initState() {
@@ -42,12 +44,13 @@ class _PRDetailPageState extends State<PRDetailPage> {
   }
 
   Future<void> _loadReviews() async {
-    try {
-      final result = await Injection.apiService.repoListPullReviews(
-        owner: widget.owner, repo: widget.repo, index: widget.index,
-      );
-      if (mounted) setState(() => _reviews = result.cast<Map<String, dynamic>>());
-    } catch (_) {}
+    final result = await Injection.listPullReviewsUseCase(
+      widget.owner, widget.repo, widget.index,
+    );
+    if (mounted) {
+      _reviews = result is Right<Failure, List<PullReview>> ? result.value : [];
+      setState(() {});
+    }
   }
 
   @override
@@ -75,10 +78,7 @@ class _PRDetailPageState extends State<PRDetailPage> {
                   ),
                 );
                 if (result == true) {
-                  final r = await Injection.apiService.repoListPullReviews(
-                    owner: widget.owner, repo: widget.repo, index: widget.index,
-                  );
-                  if (mounted) setState(() => _reviews = r.cast<Map<String, dynamic>>());
+                  await _loadReviews();
                 }
               },
             ),
@@ -142,7 +142,7 @@ class _PRContent extends StatelessWidget {
   final String repo;
   final int index;
   final TextEditingController commentController;
-  final List<Map<String, dynamic>> reviews;
+  final List<PullReview> reviews;
 
   const _PRContent({
     required this.pr,
@@ -424,33 +424,52 @@ class _PRContent extends StatelessWidget {
 
   Widget _buildReviewSection(AppLocalizations l10n, ThemeData theme) {
     if (reviews.isEmpty) return const SizedBox.shrink();
+    final approved = reviews.where((r) => r.state?.value == 'APPROVED').length;
+    final changes = reviews.where((r) => r.state?.value == 'REQUEST_CHANGES').length;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            Icon(Icons.rate_review_outlined, size: 16, color: theme.colorScheme.onSurfaceVariant),
-            const SizedBox(width: 4),
-            Text(l10n.reviews, style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            )),
-            const SizedBox(width: 4),
-            Text('(${reviews.length})', style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            )),
-          ],
+        Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: Row(
+            children: [
+              Icon(Icons.rate_review_outlined, size: 16, color: theme.colorScheme.onSurfaceVariant),
+              const SizedBox(width: 4),
+              Text(l10n.reviews, style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              )),
+              const SizedBox(width: 4),
+              Text('(${reviews.length})', style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              )),
+              const SizedBox(width: 8),
+              if (approved > 0)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                  decoration: BoxDecoration(color: Colors.green.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(4)),
+                  child: Text('+$approved', style: const TextStyle(color: Colors.green, fontSize: 10, fontWeight: FontWeight.bold)),
+                ),
+              if (changes > 0) ...[
+                const SizedBox(width: 4),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                  decoration: BoxDecoration(color: Colors.red.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(4)),
+                  child: Text('-$changes', style: const TextStyle(color: Colors.red, fontSize: 10, fontWeight: FontWeight.bold)),
+                ),
+              ],
+            ],
+          ),
         ),
-        const SizedBox(height: 8),
         ...reviews.map((r) => _buildReviewCard(r, l10n, theme)),
       ],
     );
   }
 
-  Widget _buildReviewCard(Map<String, dynamic> review, AppLocalizations l10n, ThemeData theme) {
-    final state = review['state'] as String? ?? l10n.comment;
-    final body = review['body'] as String? ?? '';
-    final user = review['user'] as Map<String, dynamic>?;
-    final submitted = review['submitted_at'] as String?;
+  Widget _buildReviewCard(PullReview review, AppLocalizations l10n, ThemeData theme) {
+    final state = review.state?.value ?? 'comment';
+    final body = review.body ?? '';
+    final user = review.user;
+    final submitted = review.submitted_at;
     final color = switch (state) {
       'APPROVED' => Colors.green,
       'REQUEST_CHANGES' => Colors.red,
@@ -473,8 +492,8 @@ class _PRContent extends StatelessWidget {
               children: [
                 Icon(icon, color: color, size: 20),
                 const SizedBox(width: 8),
-                if (user?['login'] != null)
-                  Text(user!['login'] as String, style: theme.textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600)),
+                if (user?.login != null)
+                  Text(user!.login!, style: theme.textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600)),
                 const Spacer(),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
@@ -489,7 +508,7 @@ class _PRContent extends StatelessWidget {
             ],
             if (submitted != null) ...[
               const SizedBox(height: 4),
-              Text(_formatDate(DateTime.tryParse(submitted) ?? DateTime.now(), l10n),
+              Text(_formatDate(submitted, l10n),
                 style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
             ],
           ],

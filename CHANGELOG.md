@@ -8,6 +8,7 @@
 - **Organization Webhook CRUD**: list, create, edit, and delete org-level webhooks
   - Use cases: `ListOrgHooksUseCase`, `CreateOrgHookUseCase`, `EditOrgHookUseCase`, `DeleteOrgHookUseCase`
   - Tap to edit hook, full form with URL/secret/content-type/active fields
+- **PR Review enhancement**: typed `PullReview` model, review summary badges (approved/changes count)
 - Releases/Issues/PRs tabs: FABs now respect repo permissions (requires push/admin access)
 - Releases: also checks `has_releases` flag
 - Issues: also checks `has_issues` flag

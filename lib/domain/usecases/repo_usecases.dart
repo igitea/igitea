@@ -1143,3 +1143,10 @@ class DeleteTagProtectionUseCase {
   Future<Either<Failure, void>> call(String owner, String repo, int id) async =>
       _repository.deleteTagProtection(owner, repo, id);
 }
+
+class ListPullReviewsUseCase {
+  final RepoRepository _repository;
+  ListPullReviewsUseCase({required RepoRepository repository}) : _repository = repository;
+  Future<Either<Failure, List<PullReview>>> call(String owner, String repo, int index) async =>
+      _repository.listPullReviews(owner, repo, index);
+}

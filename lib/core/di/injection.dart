@@ -240,6 +240,8 @@ class Injection {
   static late CreateTagProtectionUseCase createTagProtectionUseCase;
   static late DeleteTagProtectionUseCase deleteTagProtectionUseCase;
 
+  static late ListPullReviewsUseCase listPullReviewsUseCase;
+
   static late AuthNotifier authNotifier;
   static late UserNotifier userNotifier;
   static late RepoNotifier repoNotifier;
@@ -388,6 +390,7 @@ class Injection {
     assert(listTagProtectionsUseCase != null);
     assert(createTagProtectionUseCase != null);
     assert(deleteTagProtectionUseCase != null);
+    assert(listPullReviewsUseCase != null);
     assert(listEmailsUseCase != null);
     assert(addEmailUseCase != null);
     assert(deleteEmailUseCase != null);
@@ -621,6 +624,7 @@ class Injection {
     listTagProtectionsUseCase = ListTagProtectionsUseCase(repository: repoRepository);
     createTagProtectionUseCase = CreateTagProtectionUseCase(repository: repoRepository);
     deleteTagProtectionUseCase = DeleteTagProtectionUseCase(repository: repoRepository);
+    listPullReviewsUseCase = ListPullReviewsUseCase(repository: repoRepository);
   }
 
   static void initialize({

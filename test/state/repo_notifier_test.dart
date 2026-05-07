@@ -385,6 +385,8 @@ class FakeRepoRepository implements RepoRepository {
   @override
   Future<Either<Failure, Hook>> editHook(String owner, String repo, int id, Map<String, dynamic> body) async => Right(Hook());
   @override
+  Future<Either<Failure, List<PullReview>>> listPullReviews(String owner, String repo, int index) async => const Right([]);
+  @override
   Future<Either<Failure, List<int>>> downloadActionArtifact(String owner, String repo, int artifactId) async => const Right([]);
 }
 

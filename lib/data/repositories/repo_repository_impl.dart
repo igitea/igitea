@@ -372,6 +372,16 @@ class RepoRepositoryImpl implements RepoRepository {
   }
 
   @override
+  Future<Either<Failure, List<PullReview>>> listPullReviews(
+    String owner, String repo, int index,
+  ) async {
+    return execute(() async {
+      final result = await _apiService.repoListPullReviews(owner: owner, repo: repo, index: index);
+      return result.map((e) => PullReview.fromJson(e as Map<String, dynamic>)).toList();
+    });
+  }
+
+  @override
   Future<Either<Failure, SearchResults>> searchRepos({
     String? q,
     int? uid,

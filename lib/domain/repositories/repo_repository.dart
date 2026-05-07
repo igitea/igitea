@@ -181,6 +181,11 @@ abstract class RepoRepository {
   /// Get a specific pull request.
   Future<Either<Failure, PullRequest>> getPullRequest(String owner, String repo, int index);
 
+  /// List pull request reviews.
+  Future<Either<Failure, List<PullReview>>> listPullReviews(
+    String owner, String repo, int index,
+  );
+
   /// Search repositories.
   Future<Either<Failure, SearchResults>> searchRepos({
     String? q,
