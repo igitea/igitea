@@ -99,6 +99,7 @@ class Injection {
   static late ListHooksUseCase listHooksUseCase;
   static late CreateHookUseCase createHookUseCase;
   static late DeleteHookUseCase deleteHookUseCase;
+  static late EditHookUseCase editHookUseCase;
   static late ListCollaboratorsUseCase listCollaboratorsUseCase;
   static late AddCollaboratorUseCase addCollaboratorUseCase;
   static late RemoveCollaboratorUseCase removeCollaboratorUseCase;
@@ -282,6 +283,7 @@ class Injection {
     assert(listHooksUseCase != null);
     assert(createHookUseCase != null);
     assert(deleteHookUseCase != null);
+    assert(editHookUseCase != null);
     assert(listCollaboratorsUseCase != null);
     assert(addCollaboratorUseCase != null);
     assert(removeCollaboratorUseCase != null);
@@ -455,6 +457,7 @@ class Injection {
     listHooksUseCase = ListHooksUseCase(repository: repoRepository);
     createHookUseCase = CreateHookUseCase(repository: repoRepository);
     deleteHookUseCase = DeleteHookUseCase(repository: repoRepository);
+    editHookUseCase = EditHookUseCase(repository: repoRepository);
     listCollaboratorsUseCase = ListCollaboratorsUseCase(repository: repoRepository);
     addCollaboratorUseCase = AddCollaboratorUseCase(repository: repoRepository);
     removeCollaboratorUseCase = RemoveCollaboratorUseCase(repository: repoRepository);
@@ -670,6 +673,7 @@ class Injection {
         listHooksUseCase: listHooksUseCase,
         createHookUseCase: createHookUseCase,
         deleteHookUseCase: deleteHookUseCase,
+        editHookUseCase: editHookUseCase,
         listCollaboratorsUseCase: listCollaboratorsUseCase,
         addCollaboratorUseCase: addCollaboratorUseCase,
         removeCollaboratorUseCase: removeCollaboratorUseCase,
@@ -815,6 +819,7 @@ class Injection {
         listHooksUseCase: listHooksUseCase,
         createHookUseCase: createHookUseCase,
         deleteHookUseCase: deleteHookUseCase,
+        editHookUseCase: editHookUseCase,
         listCollaboratorsUseCase: listCollaboratorsUseCase,
         addCollaboratorUseCase: addCollaboratorUseCase,
         removeCollaboratorUseCase: removeCollaboratorUseCase,
@@ -982,6 +987,7 @@ class Injection {
       listHooksUseCase: listHooksUseCase,
       createHookUseCase: createHookUseCase,
       deleteHookUseCase: deleteHookUseCase,
+      editHookUseCase: editHookUseCase,
       listCollaboratorsUseCase: listCollaboratorsUseCase,
       addCollaboratorUseCase: addCollaboratorUseCase,
       removeCollaboratorUseCase: removeCollaboratorUseCase,

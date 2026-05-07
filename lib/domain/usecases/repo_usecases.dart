@@ -871,6 +871,13 @@ class DeleteHookUseCase {
   }
 }
 
+class EditHookUseCase {
+  final RepoRepository _repository;
+  EditHookUseCase({required RepoRepository repository}) : _repository = repository;
+  Future<Either<Failure, Hook>> call(String owner, String repo, int id, Map<String, dynamic> body) async =>
+      _repository.editHook(owner, repo, id, body);
+}
+
 class ListCollaboratorsUseCase {
   final RepoRepository _repository;
   ListCollaboratorsUseCase({required RepoRepository repository}) : _repository = repository;

@@ -69,6 +69,7 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 - List webhooks with type, URL, and active status
 - Webhook detail: configuration, events list, edit and delete actions
 - Create webhooks: URL, secret, content type, event multi-select, active toggle
+- **Edit webhooks**: full edit form with pre-filled existing values
 - Organization-level webhook management
 
 ### Collaborators

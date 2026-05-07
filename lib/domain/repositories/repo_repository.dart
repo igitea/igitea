@@ -148,6 +148,11 @@ abstract class RepoRepository {
   /// Delete a hook.
   Future<Either<Failure, void>> deleteHook(String owner, String repo, int id);
 
+  /// Edit a hook.
+  Future<Either<Failure, Hook>> editHook(
+    String owner, String repo, int id, Map<String, dynamic> body,
+  );
+
   /// Get repository contents (files/directories).
   Future<Either<Failure, List<ContentsResponse>>> getRepoContents(
     String owner,

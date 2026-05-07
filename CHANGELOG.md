@@ -2,7 +2,9 @@
 
 ## [Unreleased]
 
-### Changed
+### Added
+- **Webhook editing**: full edit form (URL, content type, events, active toggle) via `CreateWebhookPage` with pre-filled fields
+  - Repository: `editHook` method, `EditHookUseCase`, RepoNotifier `editHook()`
 - Releases/Issues/PRs tabs: FABs now respect repo permissions (requires push/admin access)
 - Releases: also checks `has_releases` flag
 - Issues: also checks `has_issues` flag

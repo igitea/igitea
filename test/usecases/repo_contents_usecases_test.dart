@@ -325,6 +325,8 @@ class MockRepoRepository implements RepoRepository {
   Future<Either<Failure, ActionArtifactsResponse>> listActionArtifactsByRun(String owner, String repo, int runId) async =>
       Right(ActionArtifactsResponse(artifacts: [], total_count: 0));
   @override
+  Future<Either<Failure, Hook>> editHook(String owner, String repo, int id, Map<String, dynamic> body) async => Right(Hook());
+  @override
   Future<Either<Failure, List<int>>> downloadActionArtifact(String owner, String repo, int artifactId) async => const Right([]);
 }
 

@@ -301,6 +301,13 @@ class RepoRepositoryImpl implements RepoRepository {
   }
 
   @override
+  Future<Either<Failure, Hook>> editHook(
+    String owner, String repo, int id, Map<String, dynamic> body,
+  ) async {
+    return execute(() => _apiService.repoEditHook(owner: owner, repo: repo, id: id, body: body));
+  }
+
+  @override
   Future<Either<Failure, List<ContentsResponse>>> getRepoContents(
     String owner,
     String repo, {

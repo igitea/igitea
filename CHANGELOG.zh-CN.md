@@ -2,7 +2,9 @@
 
 ## [Unreleased]
 
-### Changed
+### Added
+- **Webhook 编辑**：完整编辑表单（URL、内容类型、事件、启用开关），通过 `CreateWebhookPage` 预填字段实现
+  - 仓库层：`editHook` 方法、`EditHookUseCase`、RepoNotifier `editHook()`
 - Release/Issue/PR 标签页：创建按钮现在遵循仓库权限（需 push/admin 权限）
 - Release：同时检查 `has_releases` 标志
 - Issue：同时检查 `has_issues` 标志

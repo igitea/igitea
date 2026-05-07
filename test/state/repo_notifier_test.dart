@@ -383,6 +383,8 @@ class FakeRepoRepository implements RepoRepository {
   Future<Either<Failure, ActionArtifactsResponse>> listActionArtifactsByRun(String owner, String repo, int runId) async =>
       Right(ActionArtifactsResponse(artifacts: [], total_count: 0));
   @override
+  Future<Either<Failure, Hook>> editHook(String owner, String repo, int id, Map<String, dynamic> body) async => Right(Hook());
+  @override
   Future<Either<Failure, List<int>>> downloadActionArtifact(String owner, String repo, int artifactId) async => const Right([]);
 }
 
@@ -425,6 +427,7 @@ void main() {
         listHooksUseCase: ListHooksUseCase(repository: fakeRepo),
         createHookUseCase: CreateHookUseCase(repository: fakeRepo),
         deleteHookUseCase: DeleteHookUseCase(repository: fakeRepo),
+        editHookUseCase: EditHookUseCase(repository: fakeRepo),
         listCollaboratorsUseCase: ListCollaboratorsUseCase(repository: fakeRepo),
         addCollaboratorUseCase: AddCollaboratorUseCase(repository: fakeRepo),
         removeCollaboratorUseCase: RemoveCollaboratorUseCase(repository: fakeRepo),

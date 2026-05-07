@@ -3,16 +3,19 @@ import 'package:flutter/material.dart';
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../core/utils/either.dart';
+import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 
 class CreateWebhookPage extends StatefulWidget {
   final String owner;
   final String repo;
+  final Hook? hook;
 
   const CreateWebhookPage({
     super.key,
     required this.owner,
     required this.repo,
+    this.hook,
   });
 
   @override
@@ -23,7 +26,7 @@ class _CreateWebhookPageState extends State<CreateWebhookPage> {
   late final TextEditingController _urlController;
   late final TextEditingController _secretController;
   String _contentType = 'json';
-  final Set<String> _selectedEvents = {};
+  Set<String> _selectedEvents = {};
   bool _active = true;
   bool _isSaving = false;
 
@@ -42,8 +45,14 @@ class _CreateWebhookPageState extends State<CreateWebhookPage> {
   @override
   void initState() {
     super.initState();
-    _urlController = TextEditingController();
+    final h = widget.hook;
+    _urlController = TextEditingController(
+      text: h?.config?['url']?.toString() ?? '',
+    );
     _secretController = TextEditingController();
+    _contentType = h?.config?['content_type']?.toString() ?? 'json';
+    _selectedEvents = Set.from(h?.events ?? ['push']);
+    _active = h?.active ?? true;
   }
 
   @override
@@ -78,7 +87,11 @@ class _CreateWebhookPageState extends State<CreateWebhookPage> {
       },
     };
 
-    final result = await Injection.repoNotifier.createHook(
+    final result = widget.hook != null
+        ? await Injection.repoNotifier.editHook(
+            widget.owner, widget.repo, widget.hook!.id ?? 0, body,
+          )
+        : await Injection.repoNotifier.createHook(
       widget.owner,
       widget.repo,
       body,
@@ -106,7 +119,7 @@ class _CreateWebhookPageState extends State<CreateWebhookPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.createWebhook),
+        title: Text(widget.hook != null ? l10n.editWebhook : l10n.createWebhook),
         actions: [
           IconButton(
             icon: _isSaving

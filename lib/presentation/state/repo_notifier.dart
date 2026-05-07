@@ -269,6 +269,7 @@ class RepoNotifier extends ChangeNotifier {
   ListHooksUseCase _listHooksUseCase;
   CreateHookUseCase _createHookUseCase;
   DeleteHookUseCase _deleteHookUseCase;
+  EditHookUseCase _editHookUseCase;
   ListCollaboratorsUseCase _listCollaboratorsUseCase;
   AddCollaboratorUseCase _addCollaboratorUseCase;
   RemoveCollaboratorUseCase _removeCollaboratorUseCase;
@@ -344,6 +345,7 @@ class RepoNotifier extends ChangeNotifier {
     required ListHooksUseCase listHooksUseCase,
     required CreateHookUseCase createHookUseCase,
     required DeleteHookUseCase deleteHookUseCase,
+    required EditHookUseCase editHookUseCase,
     required ListCollaboratorsUseCase listCollaboratorsUseCase,
     required AddCollaboratorUseCase addCollaboratorUseCase,
     required RemoveCollaboratorUseCase removeCollaboratorUseCase,
@@ -378,6 +380,7 @@ class RepoNotifier extends ChangeNotifier {
        _listHooksUseCase = listHooksUseCase,
        _createHookUseCase = createHookUseCase,
        _deleteHookUseCase = deleteHookUseCase,
+       _editHookUseCase = editHookUseCase,
        _listCollaboratorsUseCase = listCollaboratorsUseCase,
        _addCollaboratorUseCase = addCollaboratorUseCase,
        _removeCollaboratorUseCase = removeCollaboratorUseCase;
@@ -414,6 +417,7 @@ class RepoNotifier extends ChangeNotifier {
     required ListHooksUseCase listHooksUseCase,
     required CreateHookUseCase createHookUseCase,
     required DeleteHookUseCase deleteHookUseCase,
+    required EditHookUseCase editHookUseCase,
     required ListCollaboratorsUseCase listCollaboratorsUseCase,
     required AddCollaboratorUseCase addCollaboratorUseCase,
     required RemoveCollaboratorUseCase removeCollaboratorUseCase,
@@ -449,6 +453,7 @@ class RepoNotifier extends ChangeNotifier {
     _listHooksUseCase = listHooksUseCase;
     _createHookUseCase = createHookUseCase;
     _deleteHookUseCase = deleteHookUseCase;
+    _editHookUseCase = editHookUseCase;
     _listCollaboratorsUseCase = listCollaboratorsUseCase;
     _addCollaboratorUseCase = addCollaboratorUseCase;
     _removeCollaboratorUseCase = removeCollaboratorUseCase;
@@ -956,6 +961,12 @@ class RepoNotifier extends ChangeNotifier {
     return await _createHookUseCase.call(
       CreateHookParams(owner: owner, repo: repo, body: body),
     );
+  }
+
+  Future<Either<Failure, Hook>> editHook(
+    String owner, String repo, int id, Map<String, dynamic> body,
+  ) async {
+    return _editHookUseCase.call(owner, repo, id, body);
   }
 
   Future<Either<Failure, void>> deleteHook(

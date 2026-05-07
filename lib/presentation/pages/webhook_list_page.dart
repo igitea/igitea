@@ -390,59 +390,18 @@ class _WebhookDetailPageState extends State<WebhookDetailPage> {
   }
 
   Future<void> _editWebhook(AppLocalizations l10n) async {
-    final config = widget.hook.config ?? {};
-    final urlController = TextEditingController(text: config['url']?.toString() ?? '');
-    final result = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.editWebhook),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: urlController,
-              decoration: InputDecoration(
-                labelText: l10n.webhookUrl,
-                border: const OutlineInputBorder(),
-              ),
-            ),
-          ],
+    final result = await Navigator.push<bool>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => CreateWebhookPage(
+          owner: widget.owner,
+          repo: widget.repo,
+          hook: widget.hook,
         ),
-        actions: [
-          TextButton(onPressed: () => Navigator.of(context).pop(false), child: Text(l10n.cancel)),
-          FilledButton(onPressed: () => Navigator.of(context).pop(true), child: Text(l10n.save)),
-        ],
       ),
     );
-
-    if (result != true || urlController.text.trim().isEmpty) return;
-
-    try {
-      await Injection.apiService.repoEditHook(
-        owner: widget.owner,
-        repo: widget.repo,
-        id: widget.hook.id ?? 0,
-        body: {
-          'active': widget.hook.active ?? true,
-          'config': {
-            'url': urlController.text.trim(),
-            'content_type': config['content_type'] ?? 'json',
-          },
-          'events': widget.hook.events ?? [],
-        },
-      );
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.saved)),
-        );
-        Navigator.of(context).pop(true);
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.error}: $e')),
-        );
-      }
+    if (result == true && context.mounted) {
+      Navigator.of(context).pop(true);
     }
   }
 
