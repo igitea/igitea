@@ -5,6 +5,9 @@
 ### Added
 - **Webhook editing**: full edit form (URL, content type, events, active toggle) via `CreateWebhookPage` with pre-filled fields
   - Repository: `editHook` method, `EditHookUseCase`, RepoNotifier `editHook()`
+- **Organization Webhook CRUD**: list, create, edit, and delete org-level webhooks
+  - Use cases: `ListOrgHooksUseCase`, `CreateOrgHookUseCase`, `EditOrgHookUseCase`, `DeleteOrgHookUseCase`
+  - Tap to edit hook, full form with URL/secret/content-type/active fields
 - Releases/Issues/PRs tabs: FABs now respect repo permissions (requires push/admin access)
 - Releases: also checks `has_releases` flag
 - Issues: also checks `has_issues` flag
