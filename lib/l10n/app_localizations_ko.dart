@@ -99,10 +99,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get searchIssues => '이슈 검색';
 
   @override
-  String get users => 'Users';
+  String get users => '사용자';
 
   @override
-  String get enterSearchQueryUsers => 'Enter a search query to find users';
+  String get enterSearchQueryUsers => '검색어를 입력하여 사용자 찾기';
 
   @override
   String get noResults => '결과 없음';
@@ -111,7 +111,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get repositories => '저장소';
 
   @override
-  String get repositorySections => 'Repository Sections';
+  String get repositorySections => '저장소 섹션';
 
   @override
   String get issues => '이슈';
@@ -184,7 +184,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get assignees => '담당자';
 
   @override
-  String get assignee => 'Assignee';
+  String get assignee => '담당자';
 
   @override
   String get participants => '참가자';
@@ -231,7 +231,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String followerCount(Object count) {
-    return '$count followers';
+    return '$count 팔로워';
   }
 
   @override
@@ -241,7 +241,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String followingCount(Object count) {
-    return '$count following';
+    return '$count 팔로잉';
   }
 
   @override
@@ -251,7 +251,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String repositoryCount(Object count) {
-    return '$count repositories';
+    return '$count 리포지토리';
   }
 
   @override
@@ -294,7 +294,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String lastRun(Object time) {
-    return 'Last run: $time';
+    return '마지막 실행: $time';
   }
 
   @override
@@ -304,7 +304,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String nextRun(Object time) {
-    return 'Next run: $time';
+    return '다음 실행: $time';
   }
 
   @override
@@ -335,7 +335,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String unreadNotifications(Object count) {
-    return 'Unread notifications: $count';
+    return '읽지 않은 알림: $count';
   }
 
   @override
@@ -351,7 +351,7 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String ago(Object time) {
-    return '$time ago';
+    return '$time 전';
   }
 
   @override
@@ -510,7 +510,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get stay => '남기';
 
   @override
-  String get restoringSession => 'Restoring session...';
+  String get restoringSession => '세션 복원 중...';
 
   @override
   String get pleaseEnterServerUrl => '서버 URL을 입력하세요';
@@ -522,7 +522,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get connectToGitea => 'Gitea 인스턴스에 연결';
 
   @override
-  String get usernamePassword => 'Username & Password';
+  String get usernamePassword => '사용자 이름 및 비밀번호';
 
   @override
   String get serverUrl => '서버 URL';
@@ -540,19 +540,19 @@ class AppLocalizationsKo extends AppLocalizations {
   String get pleaseEnterPassword => '비밀번호를 입력하세요';
 
   @override
-  String get pasteAccessToken => 'Paste your personal access token';
+  String get pasteAccessToken => '개인 액세스 토큰 붙여넣기';
 
   @override
-  String get pleaseEnterAccessToken => 'Please enter an access token';
+  String get pleaseEnterAccessToken => '액세스 토큰을 입력하세요';
 
   @override
   String get signInWithToken => '토큰으로 로그인';
 
   @override
-  String get welcomeToIgitea => 'Welcome to iGitea';
+  String get welcomeToIgitea => 'iGitea에 오신 것을 환영합니다';
 
   @override
-  String get signInToGetStarted => 'Sign in to get started';
+  String get signInToGetStarted => '시작하려면 로그인하세요';
 
   @override
   String get quickActions => '빠른 작업';
@@ -565,11 +565,11 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String helloParams(Object full_name) {
-    return 'Hello, $full_name!';
+    return '안녕하세요, $full_name님!';
   }
 
   @override
-  String get user => 'User';
+  String get user => '사용자';
 
   @override
   String get private => '비공개';
@@ -581,19 +581,19 @@ class AppLocalizationsKo extends AppLocalizations {
   String get enterSearchQueryRepos => '검색어를 입력하세요';
 
   @override
-  String get enterSearchQueryIssues => 'Enter a search query to find issues';
+  String get enterSearchQueryIssues => '검색어를 입력하여 이슈 찾기';
 
   @override
-  String get noIssuesFound => 'No issues found.';
+  String get noIssuesFound => '이슈를 찾을 수 없습니다.';
 
   @override
-  String get failedToLoadProfile => 'Failed to load profile';
+  String get failedToLoadProfile => '프로필을 불러오지 못했습니다';
 
   @override
-  String get unknownUser => 'Unknown User';
+  String get unknownUser => '알 수 없는 사용자';
 
   @override
-  String get admin => 'Admin';
+  String get admin => '관리자';
 
   @override
   String get repos => '저장소';
@@ -605,76 +605,76 @@ class AppLocalizationsKo extends AppLocalizations {
   String get following => '팔로잉';
 
   @override
-  String get follow => 'Follow';
+  String get follow => '팔로우';
 
   @override
-  String get unfollow => 'Unfollow';
+  String get unfollow => '언팔로우';
 
   @override
-  String get signOutConfirmMessage => 'Are you sure you want to sign out?';
+  String get signOutConfirmMessage => '로그아웃하시겠습니까?';
 
   @override
-  String get chooseTheme => 'Choose Theme';
+  String get chooseTheme => '테마 선택';
 
   @override
-  String get loadingSettings => 'Loading settings...';
+  String get loadingSettings => '설정 로딩 중...';
 
   @override
-  String get userManagementComingSoon => 'User management coming soon';
+  String get userManagementComingSoon => '사용자 관리 기능 준비 중';
 
   @override
-  String get maxResponseItems => 'Max Response Items';
+  String get maxResponseItems => '최대 응답 항목';
 
   @override
-  String get defaultPagingNum => 'Default Paging Num';
+  String get defaultPagingNum => '기본 페이지 수';
 
   @override
-  String get defaultMaxBlobSize => 'Default Max Blob Size';
+  String get defaultMaxBlobSize => '기본 최대 Blob 크기';
 
   @override
-  String get defaultTheme => 'Default Theme';
+  String get defaultTheme => '기본 테마';
 
   @override
-  String get allowedReactions => 'Allowed Reactions';
+  String get allowedReactions => '허용된 반응';
 
   @override
-  String get attachments => 'Attachments';
+  String get attachments => '첨부 파일';
 
   @override
-  String get enabled => 'Enabled';
+  String get enabled => '활성화됨';
 
   @override
-  String get maxFiles => 'Max Files';
+  String get maxFiles => '최대 파일 수';
 
   @override
-  String get maxSize => 'Max Size';
+  String get maxSize => '최대 크기';
 
   @override
-  String get allowedTypes => 'Allowed Types';
+  String get allowedTypes => '허용된 유형';
 
   @override
-  String get bytes => 'bytes';
+  String get bytes => '바이트';
 
   @override
   String get repository => '저장소';
 
   @override
-  String get httpGitDisabled => 'HTTP Git Disabled';
+  String get httpGitDisabled => 'HTTP Git 비활성화';
 
   @override
-  String get lfsDisabled => 'LFS Disabled';
+  String get lfsDisabled => 'LFS 비활성화';
 
   @override
-  String get migrationsDisabled => 'Migrations Disabled';
+  String get migrationsDisabled => '마이그레이션 비활성화';
 
   @override
-  String get mirrorsDisabled => 'Mirrors Disabled';
+  String get mirrorsDisabled => '미러 비활성화';
 
   @override
-  String get starsDisabled => 'Stars Disabled';
+  String get starsDisabled => '별표 비활성화';
 
   @override
-  String get timeTrackingDisabled => 'Time Tracking Disabled';
+  String get timeTrackingDisabled => '시간 추적 비활성화';
 
   @override
   String get yes => '예';
@@ -683,23 +683,23 @@ class AppLocalizationsKo extends AppLocalizations {
   String get no => '아니오';
 
   @override
-  String get schedule => 'Schedule';
+  String get schedule => '일정';
 
   @override
-  String get next => 'Next';
+  String get next => '다음';
 
   @override
-  String get executions => 'Executions';
+  String get executions => '실행';
 
   @override
-  String get failedToLoadCronTasks => 'Failed to load cron tasks';
+  String get failedToLoadCronTasks => 'Cron 작업 로드 실패';
 
   @override
-  String get noCronTasksFound => 'No cron tasks found';
+  String get noCronTasksFound => 'Cron 작업을 찾을 수 없음';
 
   @override
   String cronTriggeredParams(Object name) {
-    return 'Cron \"$name\" triggered';
+    return 'Cron \"$name\" 실행됨';
   }
 
   @override
@@ -707,149 +707,148 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String openedParams(Object time) {
-    return 'opened $time';
+    return '$time에 열림';
   }
 
   @override
   String get noDescriptionProvided => '설명이 제공되지 않았습니다';
 
   @override
-  String get failedToLoadComments => 'Failed to load comments';
+  String get failedToLoadComments => '댓글 로드 실패';
 
   @override
   String get writeComment => '댓글 작성';
 
   @override
   String commentsCountParams(Object count) {
-    return '$count comments';
+    return '$count개 댓글';
   }
 
   @override
   String updatedParams(Object time) {
-    return 'Updated $time';
+    return '$time에 업데이트됨';
   }
 
   @override
   String commentsParams(Object count) {
-    return 'Comments ($count)';
+    return '댓글 ($count)';
   }
 
   @override
-  String get files => 'files';
+  String get files => '파일';
 
   @override
-  String get mergeable => 'Mergeable';
+  String get mergeable => '병합 가능';
 
   @override
-  String get merged => 'Merged';
+  String get merged => '병합됨';
 
   @override
   String get draft => '초안';
 
   @override
-  String get failedToLoadRepo => 'Failed to load repository';
+  String get failedToLoadRepo => '저장소 로드 실패';
 
   @override
-  String get copyUrl => 'Copy URL';
+  String get copyUrl => 'URL 복사';
 
   @override
-  String get urlCopied => 'URL copied';
+  String get urlCopied => 'URL 복사됨';
 
   @override
-  String get emptyDirectory => 'Empty directory';
+  String get emptyDirectory => '빈 디렉터리';
 
   @override
   String get noIssues => '이슈 없음';
 
   @override
-  String get noPullRequests => 'No pull requests';
+  String get noPullRequests => '풀 요청 없음';
 
   @override
-  String get noReleases => 'No releases';
+  String get noReleases => '릴리스 없음';
 
   @override
-  String get noBranches => 'No branches';
+  String get noBranches => '브랜치 없음';
 
   @override
-  String get preRelease => 'Pre-release';
+  String get preRelease => '사전 릴리스';
 
   @override
-  String get archived => 'Archived';
+  String get archived => '보관됨';
 
   @override
   String get defaultBranch => '기본 브랜치';
 
   @override
-  String get copyCode => 'Copy code';
+  String get copyCode => '코드 복사';
 
   @override
-  String get failedToLoadFile => 'Failed to load file';
+  String get failedToLoadFile => '파일 로드 실패';
 
   @override
-  String get filePreviewNotAvailable => 'File preview not available';
+  String get filePreviewNotAvailable => '파일 미리보기 불가';
 
   @override
   String get download => '다운로드';
 
   @override
-  String get failedToOpenDownloadUrl => 'Failed to open download URL';
+  String get failedToOpenDownloadUrl => '다운로드 URL을 열지 못함';
 
   @override
   String get noNotifications => '알림 없음';
 
   @override
-  String get noTitle => 'No title';
+  String get noTitle => '제목 없음';
 
   @override
-  String get allNotificationsMarkedAsRead => 'All notifications marked as read';
+  String get allNotificationsMarkedAsRead => '모든 알림을 읽음으로 표시';
 
   @override
-  String get createUser => 'Create User';
+  String get createUser => '사용자 생성';
 
   @override
-  String get editUser => 'Edit User';
+  String get editUser => '사용자 편집';
 
   @override
-  String get deleteIssue => 'Delete Issue';
+  String get deleteIssue => '이슈 삭제';
 
   @override
-  String get deleteIssueConfirm =>
-      'Are you sure you want to delete this issue? This action cannot be undone.';
+  String get deleteIssueConfirm => '이 이슈를 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.';
 
   @override
-  String get issueDeleted => 'Issue deleted';
+  String get issueDeleted => '이슈가 삭제되었습니다';
 
   @override
-  String get deleteUser => 'Delete User';
+  String get deleteUser => '사용자 삭제';
 
   @override
   String deleteUserConfirmParams(Object username) {
-    return 'Are you sure you want to delete user \"$username\"? This action cannot be undone.';
+    return '사용자 \"$username\"을(를) 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.';
   }
 
   @override
-  String get userCreated => 'User created successfully';
+  String get userCreated => '사용자가 생성되었습니다';
 
   @override
-  String get userUpdated => 'User updated successfully';
+  String get userUpdated => '사용자가 업데이트되었습니다';
 
   @override
-  String get userDeleted => 'User deleted successfully';
+  String get userDeleted => '사용자가 삭제되었습니다';
 
   @override
-  String get noUsersFound => 'No users found';
+  String get noUsersFound => '사용자를 찾을 수 없음';
 
   @override
-  String get pleaseEnterEmail => 'Please enter an email';
+  String get pleaseEnterEmail => '이메일을 입력하세요';
 
   @override
-  String get fullName => 'Full name';
+  String get fullName => '전체 이름';
 
   @override
-  String get mustChangePassword => 'Must change password on first login';
+  String get mustChangePassword => '첫 로그인 시 비밀번호 변경 필요';
 
   @override
-  String get pleaseEnterTitle => 'Please enter a title';
+  String get pleaseEnterTitle => '제목을 입력하세요';
 
   @override
   String get noActivity => '활동 없음';
@@ -858,10 +857,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get createdRepo => '저장소를 생성했습니다';
 
   @override
-  String get pushedTag => 'pushed tag';
+  String get pushedTag => '태그를 푸시했습니다';
 
   @override
-  String get deletedTag => 'deleted tag';
+  String get deletedTag => '태그를 삭제했습니다';
 
   @override
   String get createdIssue => '이슈를 생성했습니다';
@@ -891,7 +890,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get forkedRepo => '포크했습니다';
 
   @override
-  String get transferredRepo => 'transferred repository';
+  String get transferredRepo => '저장소를 이전했습니다';
 
   @override
   String get deletedRepo => '저장소를 삭제했습니다';
@@ -900,10 +899,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get updatedWiki => 'Wiki를 업데이트했습니다';
 
   @override
-  String get performedAction => 'performed action';
+  String get performedAction => '작업을 수행했습니다';
 
   @override
-  String get commitRepo => 'committed to';
+  String get commitRepo => '커밋했습니다';
 
   @override
   String get renameRepo => '저장소 이름을 변경했습니다';
@@ -912,7 +911,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get starRepo => '저장소에 별표를 표시했습니다';
 
   @override
-  String get watchRepo => 'started watching repository';
+  String get watchRepo => '워치를 시작했습니다';
 
   @override
   String get reopenPR => 'PR을 재열었습니다';
@@ -921,31 +920,31 @@ class AppLocalizationsKo extends AppLocalizations {
   String get approvePR => 'PR을 승인했습니다';
 
   @override
-  String get rejectPR => 'rejected pull request';
+  String get rejectPR => 'PR을 거절했습니다';
 
   @override
   String get publishRelease => '릴리스를 발행했습니다';
 
   @override
-  String get deleteBranch => 'deleted branch';
+  String get deleteBranch => '브랜치를 삭제했습니다';
 
   @override
   String get autoMergePR => 'PR을 자동 병합했습니다';
 
   @override
-  String get pullReviewDismissed => 'dismissed pull request review';
+  String get pullReviewDismissed => 'PR 리뷰를 기각했습니다';
 
   @override
-  String get pullRequestReady => 'marked pull request as ready for review';
+  String get pullRequestReady => 'PR을 리뷰 준비됨으로 표시';
 
   @override
-  String get mirrorSyncPush => 'synced push to mirror';
+  String get mirrorSyncPush => '푸시를 미러에 동기화';
 
   @override
-  String get mirrorSyncCreate => 'synced create to mirror';
+  String get mirrorSyncCreate => '생성을 미러에 동기화';
 
   @override
-  String get mirrorSyncDelete => 'synced delete to mirror';
+  String get mirrorSyncDelete => '삭제를 미러에 동기화';
 
   @override
   String get inRepo => '에서';
@@ -969,46 +968,46 @@ class AppLocalizationsKo extends AppLocalizations {
   String get settingsSaved => '설정이 저장되었습니다';
 
   @override
-  String get privateRepo => 'Private repository';
+  String get privateRepo => '비공개 저장소';
 
   @override
-  String get privateRepoDesc => 'Only visible to you and collaborators';
+  String get privateRepoDesc => '귀하와 협력자만 볼 수 있습니다';
 
   @override
-  String get enableIssues => 'Enable Issues';
+  String get enableIssues => '이슈 활성화';
 
   @override
-  String get enablePullRequests => 'Enable Pull Requests';
+  String get enablePullRequests => '풀 요청 활성화';
 
   @override
-  String get enableWiki => 'Enable Wiki';
+  String get enableWiki => 'Wiki 활성화';
 
   @override
   String get preview => '미리보기';
 
   @override
-  String get commitMessage => 'Commit Message';
+  String get commitMessage => '커밋 메시지';
 
   @override
   String get commit => '커밋';
 
   @override
-  String get commitMessageHint => 'Describe your changes (optional)';
+  String get commitMessageHint => '변경 사항 설명 (선택사항)';
 
   @override
-  String get cannotGetFileSha => 'Cannot get file SHA. Please reload the file.';
+  String get cannotGetFileSha => '파일 SHA를 가져올 수 없습니다. 파일을 다시 로드하세요.';
 
   @override
-  String get failedToSaveFile => 'Failed to save file';
+  String get failedToSaveFile => '파일 저장 실패';
 
   @override
-  String get fileSaved => 'File saved successfully';
+  String get fileSaved => '파일이 저장되었습니다';
 
   @override
-  String get discard => 'Discard';
+  String get discard => '취소';
 
   @override
-  String get message => 'Message';
+  String get message => '메시지';
 
   @override
   String get ok => '확인';
@@ -1017,7 +1016,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get sha => 'SHA';
 
   @override
-  String get changedFiles => 'Changed Files';
+  String get changedFiles => '변경된 파일';
 
   @override
   String get tags => '태그';
@@ -1026,25 +1025,25 @@ class AppLocalizationsKo extends AppLocalizations {
   String get noCommits => '커밋 없음';
 
   @override
-  String get noTags => 'No tags';
+  String get noTags => '태그 없음';
 
   @override
-  String get protected => 'Protected';
+  String get protected => '보호됨';
 
   @override
-  String get latestCommit => 'Latest Commit';
+  String get latestCommit => '최신 커밋';
 
   @override
-  String get permissions => 'Permissions';
+  String get permissions => '권한';
 
   @override
-  String get canPush => 'Can Push';
+  String get canPush => '푸시 가능';
 
   @override
-  String get canMerge => 'Can Merge';
+  String get canMerge => '병합 가능';
 
   @override
-  String get downloads => 'Downloads';
+  String get downloads => '다운로드';
 
   @override
   String get tarball => 'Tarball';
@@ -1053,68 +1052,67 @@ class AppLocalizationsKo extends AppLocalizations {
   String get zipball => 'Zipball';
 
   @override
-  String get downloadTarball => 'Download Tarball';
+  String get downloadTarball => 'Tarball 다운로드';
 
   @override
-  String get downloadZipball => 'Download Zipball';
+  String get downloadZipball => 'Zipball 다운로드';
 
   @override
   String get url => 'URL';
 
   @override
-  String get info => 'Info';
+  String get info => '정보';
 
   @override
-  String get teams => 'Teams';
+  String get teams => '팀';
 
   @override
   String get noTeams => '팀 없음';
 
   @override
-  String get location => 'Location';
+  String get location => '위치';
 
   @override
-  String get visibility => 'Visibility';
+  String get visibility => '공개 범위';
 
   @override
-  String get assets => 'Assets';
+  String get assets => '자산';
 
   @override
-  String get publishedAt => 'Published At';
+  String get publishedAt => '게시일';
 
   @override
-  String get target => 'Target';
+  String get target => '대상';
 
   @override
-  String get forked => 'Forked';
+  String get forked => '포크됨';
 
   @override
-  String get forkRepoConfirm =>
-      'This will create a fork of this repository in your account.';
+  String get forkRepoConfirm => '귀하의 계정에 이 저장소의 포크가 생성됩니다.';
 
   @override
-  String get editIssue => 'Edit Issue';
+  String get editIssue => '이슈 편집';
 
   @override
-  String get titleRequired => 'Title is required';
+  String get titleRequired => '제목은 필수입니다';
 
   @override
-  String get selectMilestone => 'Select milestone';
+  String get selectMilestone => '마일스톤 선택';
 
   @override
-  String get members => 'Members';
+  String get members => '멤버';
 
   @override
   String get noMembers => '멤버 없음';
 
   @override
-  String get editOrganization => 'Edit Organization';
+  String get editOrganization => '조직 편집';
 
   @override
-  String get createOrganization => 'Create Organization';
+  String get createOrganization => '조직 생성';
 
   @override
-  String get createRepository => 'Create Repository';
+  String get createRepository => '저장소 생성';
 
   @override
   String get repositoryName => '저장소 이름';
@@ -1138,72 +1136,69 @@ class AppLocalizationsKo extends AppLocalizations {
   String get privateDescription => '누가 보고 커밋할 수 있는지 선택할 수 있습니다';
 
   @override
-  String get initializeWithReadme => 'Initialize with README';
+  String get initializeWithReadme => 'README로 초기화';
 
   @override
-  String get initializeWithReadmeDescription =>
-      'Add a README file to help others understand your project';
+  String get initializeWithReadmeDescription => 'README 파일을 추가하여 프로젝트 이해를 돕습니다';
 
   @override
   String repoCreated(Object repoName) {
-    return 'Repository \'$repoName\' created successfully';
+    return '저장소 \'$repoName\'이(가) 생성되었습니다';
   }
 
   @override
-  String get complete => 'complete';
+  String get complete => '완료';
 
   @override
   String get wiki => 'Wiki';
 
   @override
-  String get newWikiPage => 'New Wiki Page';
+  String get newWikiPage => '새 Wiki 페이지';
 
   @override
-  String get editWikiPage => 'Edit Wiki Page';
+  String get editWikiPage => 'Wiki 페이지 편집';
 
   @override
-  String get deleteWikiPage => 'Delete Wiki Page';
+  String get deleteWikiPage => 'Wiki 페이지 삭제';
 
   @override
-  String get deleteWikiPageConfirm =>
-      'Are you sure you want to delete this wiki page? This action cannot be undone.';
+  String get deleteWikiPageConfirm => '이 Wiki 페이지를 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.';
 
   @override
-  String get wikiPageDeleted => 'Wiki page deleted';
+  String get wikiPageDeleted => 'Wiki 페이지가 삭제되었습니다';
 
   @override
-  String get wikiPageTitle => 'Page Title';
+  String get wikiPageTitle => '페이지 제목';
 
   @override
   String get wikiPageTitleHint => 'e.g. Home';
 
   @override
-  String get wikiPageContent => 'Content';
+  String get wikiPageContent => '내용';
 
   @override
-  String get wikiPageContentHint => 'Write in Markdown...';
+  String get wikiPageContentHint => 'Markdown으로 작성...';
 
   @override
   String get noWikiPages => 'Wiki 페이지 없음';
 
   @override
-  String get noWikiPagesDescription =>
-      'This repository doesn\'t have any wiki pages yet.';
+  String get noWikiPagesDescription => '이 저장소에 Wiki 페이지가 아직 없습니다.';
 
   @override
-  String get createFirstWikiPage => 'Create First Page';
+  String get createFirstWikiPage => '첫 페이지 만들기';
 
   @override
-  String get lastCommit => 'Last commit';
+  String get lastCommit => '마지막 커밋';
 
   @override
   String get noContent => '내용 없음';
 
   @override
-  String get saved => 'Saved';
+  String get saved => '저장됨';
 
   @override
-  String get created => 'Created';
+  String get created => '생성됨';
 
   @override
   String get createMilestone => '마일스톤 생성';
@@ -1224,10 +1219,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get milestoneTitle => '제목';
 
   @override
-  String get milestoneDescription => 'Description';
+  String get milestoneDescription => '설명';
 
   @override
-  String get milestoneDescriptionHint => 'Describe this milestone';
+  String get milestoneDescriptionHint => '이 마일스톤 설명';
 
   @override
   String get milestoneDueDate => '마감일';
@@ -1242,7 +1237,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get milestoneStateClosed => '닫힘';
 
   @override
-  String get total => 'Total';
+  String get total => '합계';
 
   @override
   String get clear => '지우기';
@@ -1281,10 +1276,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get webhookSecret => '비밀키';
 
   @override
-  String get webhookSecretHint => 'Optional secret token';
+  String get webhookSecretHint => '선택적 시크릿 토큰';
 
   @override
-  String get webhookContentType => 'Content Type';
+  String get webhookContentType => '콘텐츠 유형';
 
   @override
   String get webhookContentTypeJson => 'application/json';
@@ -1293,10 +1288,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get webhookContentTypeForm => 'application/x-www-form-urlencoded';
 
   @override
-  String get webhookEvents => 'Events';
+  String get webhookEvents => '이벤트';
 
   @override
-  String get webhookEventsHint => 'Select events to trigger this webhook';
+  String get webhookEventsHint => '이 Webhook을 트리거할 이벤트 선택';
 
   @override
   String get webhookActive => '활성';
@@ -1314,10 +1309,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get webhookUpdatedAt => '업데이트일';
 
   @override
-  String get webhookLastDelivery => 'Last Delivery';
+  String get webhookLastDelivery => '마지막 전달';
 
   @override
-  String get webhookSelectAllEvents => 'Select All';
+  String get webhookSelectAllEvents => '모두 선택';
 
   @override
   String get webhookPushEvents => '푸시';
@@ -1347,41 +1342,40 @@ class AppLocalizationsKo extends AppLocalizations {
   String get webhookForkEvents => '포크';
 
   @override
-  String get loginWithOAuth2 => 'Login with OAuth2';
+  String get loginWithOAuth2 => 'OAuth2로 로그인';
 
   @override
   String get oauth2 => 'OAuth2';
 
   @override
-  String get oauth2Description => 'Authorize via Gitea OAuth2 application';
+  String get oauth2Description => 'Gitea OAuth2 애플리케이션으로 인증';
 
   @override
-  String get oauth2ClientId => 'Client ID';
+  String get oauth2ClientId => '클라이언트 ID';
 
   @override
-  String get oauth2ClientSecret => 'Client Secret';
+  String get oauth2ClientSecret => '클라이언트 시크릿';
 
   @override
-  String get oauth2RedirectUri => 'Redirect URI';
+  String get oauth2RedirectUri => '리디렉션 URI';
 
   @override
   String get oauth2RedirectUriHint => 'igitea://oauth/callback';
 
   @override
-  String get oauth2Authorize => 'Open Authorization Page';
+  String get oauth2Authorize => '인증 페이지 열기';
 
   @override
-  String get oauth2ExchangeCode => 'Exchange Code for Token';
+  String get oauth2ExchangeCode => '코드를 토큰으로 교환';
 
   @override
-  String get oauth2AuthorizationCode => 'Authorization Code';
+  String get oauth2AuthorizationCode => '인증 코드';
 
   @override
-  String get oauth2AuthorizationCodeHint =>
-      'Paste the code from the redirect URL';
+  String get oauth2AuthorizationCodeHint => '리디렉션 URL에서 코드를 붙여넣기';
 
   @override
-  String get oauth2TokenRefreshed => 'Token refreshed successfully';
+  String get oauth2TokenRefreshed => '토큰이 갱신되었습니다';
 
   @override
   String get createLabel => '라벨 생성';
@@ -1435,10 +1429,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get compareVersions => '버전 비교';
 
   @override
-  String get baseRef => 'Base (older)';
+  String get baseRef => '베이스(이전)';
 
   @override
-  String get headRef => 'Head (newer)';
+  String get headRef => '헤드(최신)';
 
   @override
   String get compare => '비교';
@@ -1450,7 +1444,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get noActions => '워크플로우 없음';
 
   @override
-  String get run => 'Run';
+  String get run => '실행';
 
   @override
   String get status => '상태';
@@ -1534,7 +1528,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get limited => '제한';
 
   @override
-  String get unknownSection => 'Unknown section';
+  String get unknownSection => '알 수 없는 섹션';
 
   @override
   String get deleteKey => '키 삭제';
@@ -1561,7 +1555,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get requestReviewers => '리뷰어 요청';
 
   @override
-  String get addReviewerHint => 'Enter reviewer username';
+  String get addReviewerHint => '리뷰어 사용자명 입력';
 
   @override
   String get subscribe => '구독';
@@ -1570,10 +1564,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get unsubscribe => '구독 취소';
 
   @override
-  String get subscribed => 'Subscribed';
+  String get subscribed => '구독 중';
 
   @override
-  String get unsubscribed => 'Unsubscribed';
+  String get unsubscribed => '구독 취소됨';
 
   @override
   String get setDueDate => '마감일 설정';
@@ -1600,10 +1594,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get ssh => 'SSH';
 
   @override
-  String get teamAdminAccess => 'Team Admin Access';
+  String get teamAdminAccess => '팀 관리자 액세스';
 
   @override
-  String get details => 'Details';
+  String get details => '세부정보';
 
   @override
   String get id => 'ID';
@@ -1612,35 +1606,35 @@ class AppLocalizationsKo extends AppLocalizations {
   String get searchRepositoriesHint => '저장소 검색';
 
   @override
-  String get publicKey => 'Public Key';
+  String get publicKey => '공개 키';
 
   @override
-  String get failedToGetAccessToken => 'Failed to get access token';
+  String get failedToGetAccessToken => '액세스 토큰을 가져오지 못했습니다';
 
   @override
-  String get fileNotFound => 'File not found';
+  String get fileNotFound => '파일을 찾을 수 없음';
 
   @override
-  String get noSshKeysFound => 'No SSH keys found';
+  String get noSshKeysFound => 'SSH 키를 찾을 수 없음';
 
   @override
-  String get other => 'Other';
+  String get other => '기타';
 
   @override
-  String get usernameRequired => 'Username is required';
+  String get usernameRequired => '사용자 이름은 필수입니다';
 
   @override
-  String get myLaptopHint => 'My Laptop';
+  String get myLaptopHint => '내 노트북';
 
   @override
-  String get sshPublicKeyHint => 'Paste your SSH public key here';
+  String get sshPublicKeyHint => 'SSH 공개 키를 여기에 붙여넣기';
 
   @override
-  String get noChangesFoundForFile => 'No changes found for this file';
+  String get noChangesFoundForFile => '이 파일에 대한 변경 사항이 없습니다';
 
   @override
   String commitUpdateFile(Object fileName) {
-    return 'Update $fileName';
+    return '$fileName 업데이트';
   }
 
   @override
@@ -1650,7 +1644,7 @@ class AppLocalizationsKo extends AppLocalizations {
   String get ui => 'UI';
 
   @override
-  String get justNow => 'just now';
+  String get justNow => '방금';
 
   @override
   String get packages => '패키지';
@@ -1755,30 +1749,30 @@ class AppLocalizationsKo extends AppLocalizations {
   String get defaultLabels => '빠른 선택';
 
   @override
-  String get applyLabelSet => 'Apply label set';
+  String get applyLabelSet => '라벨 세트 적용';
 
   @override
   String get applyLabelSetDescription =>
-      'Select a predefined label set to create all labels at once.';
+      '미리 정의된 라벨 세트를 선택하여 한 번에 모든 라벨을 생성합니다.';
 
   @override
   String applyAllLabels(Object count) {
-    return 'Apply all ($count labels)';
+    return '모두 적용 ($count 라벨)';
   }
 
   @override
   String applyAllLabelsParams(Object count) {
-    return 'Apply all ($count labels)';
+    return '모두 적용 ($count 라벨)';
   }
 
   @override
-  String get creating => 'Creating...';
+  String get creating => '생성 중...';
 
   @override
-  String get addCustomLabel => 'Add custom label';
+  String get addCustomLabel => '사용자 정의 라벨 추가';
 
   @override
-  String get selectTemplate => 'Select a template';
+  String get selectTemplate => '템플릿 선택';
 
   @override
   String get createTeam => '팀 생성';
@@ -1837,10 +1831,10 @@ class AppLocalizationsKo extends AppLocalizations {
   String get noSearchResults => '사용자를 찾을 수 없습니다';
 
   @override
-  String get teamCanCreateOrgRepos => 'Can create org repos';
+  String get teamCanCreateOrgRepos => '조직 저장소 생성 가능';
 
   @override
-  String get teamIncludesAllRepos => 'Includes all repositories';
+  String get teamIncludesAllRepos => '모든 저장소 포함';
 
   @override
   String get collaborators => '협력자';
@@ -1878,195 +1872,193 @@ class AppLocalizationsKo extends AppLocalizations {
   String get addEmail => '이메일 추가';
 
   @override
-  String get gpgKeys => 'GPG Keys';
+  String get gpgKeys => 'GPG 키';
 
   @override
-  String get addGpgKey => 'Add GPG Key';
+  String get addGpgKey => 'GPG 키 추가';
 
   @override
   String get gpgKeyHint => '-----BEGIN PGP PUBLIC KEY BLOCK-----';
 
   @override
-  String get gpgKeyAdded => 'GPG key added';
+  String get gpgKeyAdded => 'GPG 키가 추가되었습니다';
 
   @override
-  String get gpgKeyDeleted => 'GPG key deleted';
+  String get gpgKeyDeleted => 'GPG 키가 삭제되었습니다';
 
   @override
-  String get deleteGpgKey => 'Delete GPG Key';
+  String get deleteGpgKey => 'GPG 키 삭제';
 
   @override
-  String get deleteGpgKeyConfirm =>
-      'Are you sure you want to delete this GPG key?';
+  String get deleteGpgKeyConfirm => '이 GPG 키를 삭제하시겠습니까?';
 
   @override
-  String get noGpgKeys => 'No GPG keys';
+  String get noGpgKeys => 'GPG 키 없음';
 
   @override
-  String get sign => 'Sign';
+  String get sign => '서명';
 
   @override
-  String get certify => 'Certify';
+  String get certify => '인증';
 
   @override
-  String get verified => 'Verified';
+  String get verified => '확인됨';
 
   @override
-  String get tagProtections => 'Tag Protections';
+  String get tagProtections => '태그 보호';
 
   @override
-  String get manageTagProtections => 'Manage tag protection rules';
+  String get manageTagProtections => '태그 보호 규칙 관리';
 
   @override
-  String get createTagProtection => 'Create Tag Protection';
+  String get createTagProtection => '태그 보호 생성';
 
   @override
-  String get namePattern => 'Name Pattern';
+  String get namePattern => '이름 패턴';
 
   @override
-  String get tagProtectionCreated => 'Tag protection created';
+  String get tagProtectionCreated => '태그 보호가 생성되었습니다';
 
   @override
-  String get tagProtectionDeleted => 'Tag protection deleted';
+  String get tagProtectionDeleted => '태그 보호가 삭제되었습니다';
 
   @override
-  String get deleteTagProtection => 'Delete Tag Protection';
+  String get deleteTagProtection => '태그 보호 삭제';
 
   @override
-  String get deleteTagProtectionConfirm =>
-      'Are you sure you want to delete this tag protection?';
+  String get deleteTagProtectionConfirm => '이 태그 보호를 삭제하시겠습니까?';
 
   @override
-  String get noTagProtections => 'No tag protections';
+  String get noTagProtections => '태그 보호 없음';
 
   @override
-  String get allowedUsers => 'Allowed users';
+  String get allowedUsers => '허용된 사용자';
 
   @override
-  String get dependencies => 'Dependencies';
+  String get dependencies => '종속성';
 
   @override
-  String get addDependency => 'Add Dependency';
+  String get addDependency => '종속성 추가';
 
   @override
-  String get dependencyAdded => 'Dependency added';
+  String get dependencyAdded => '종속성이 추가되었습니다';
 
   @override
-  String get dependencyRemoved => 'Dependency removed';
+  String get dependencyRemoved => '종속성이 제거되었습니다';
 
   @override
-  String get removeDependency => 'Remove Dependency';
+  String get removeDependency => '종속성 제거';
 
   @override
-  String get removeDependencyConfirm => 'Remove this dependency?';
+  String get removeDependencyConfirm => '이 종속성을 제거하시겠습니까?';
 
   @override
-  String get noDependencies => 'No dependencies';
+  String get noDependencies => '종속성 없음';
 
   @override
-  String get blocks => 'Blocks';
+  String get blocks => '차단';
 
   @override
-  String get dependsOn => 'Depends on';
+  String get dependsOn => '종속 대상';
 
   @override
-  String get issueNumberHint => 'Issue #';
+  String get issueNumberHint => '이슈 #';
 
   @override
-  String get events => 'events';
+  String get events => '이벤트';
 
   @override
-  String get items => 'items';
+  String get items => '항목';
 
   @override
-  String get commented => 'commented';
+  String get commented => '댓글 작성됨';
 
   @override
-  String get labelUpdated => 'Label updated';
+  String get labelUpdated => '라벨이 업데이트되었습니다';
 
   @override
-  String get milestoneUpdated => 'Milestone updated';
+  String get milestoneUpdated => '마일스톤이 업데이트되었습니다';
 
   @override
-  String get assigneeUpdated => 'Assignee updated';
+  String get assigneeUpdated => '담당자가 업데이트되었습니다';
 
   @override
-  String get reopened => 'Reopened';
+  String get reopened => '다시 열림';
 
   @override
-  String get stargazers => 'Stargazers';
+  String get stargazers => '스타 사용자';
 
   @override
-  String get subscribers => 'Subscribers';
+  String get subscribers => '구독자';
 
   @override
-  String get noStargazers => 'No stargazers yet';
+  String get noStargazers => '아직 스타 사용자가 없습니다';
 
   @override
-  String get noSubscribers => 'No subscribers yet';
+  String get noSubscribers => '아직 구독자가 없습니다';
 
   @override
-  String get adminHooksTitle => 'System Hooks';
+  String get adminHooksTitle => '시스템 훅';
 
   @override
-  String get adminCronTitle => 'Cron Tasks';
+  String get adminCronTitle => 'Cron 작업';
 
   @override
-  String get adminRunnersTitle => 'Actions Runners';
+  String get adminRunnersTitle => 'Actions 러너';
 
   @override
-  String get adminEmailsTitle => 'Emails';
+  String get adminEmailsTitle => '이메일';
 
   @override
-  String get adminBadgesTitle => 'Badges';
+  String get adminBadgesTitle => '배지';
 
   @override
-  String get adminRunCron => 'Run Now';
+  String get adminRunCron => '지금 실행';
 
   @override
-  String get adminGetToken => 'Get Registration Token';
+  String get adminGetToken => '등록 토큰 가져오기';
 
   @override
-  String get adminNoHooks => 'No system hooks configured';
+  String get adminNoHooks => '시스템 훅이 구성되지 않음';
 
   @override
-  String get adminNoCron => 'No cron tasks';
+  String get adminNoCron => 'Cron 작업 없음';
 
   @override
-  String get adminNoRunners => 'No action runners';
+  String get adminNoRunners => 'Actions 러너 없음';
 
   @override
-  String get adminNoEmails => 'No emails';
+  String get adminNoEmails => '이메일 없음';
 
   @override
-  String get adminNoBadges => 'No badges';
+  String get adminNoBadges => '배지 없음';
 
   @override
-  String get adminBadgeUsername => 'Username';
+  String get adminBadgeUsername => '사용자 이름';
 
   @override
-  String get adminBadgeDescription => 'Description';
+  String get adminBadgeDescription => '설명';
 
   @override
-  String get oauthAppsTitle => 'OAuth Applications';
+  String get oauthAppsTitle => 'OAuth 애플리케이션';
 
   @override
-  String get oauthNoApps => 'No OAuth applications';
+  String get oauthNoApps => 'OAuth 애플리케이션 없음';
 
   @override
-  String get oauthCreateApp => 'Create OAuth App';
+  String get oauthCreateApp => 'OAuth 앱 생성';
 
   @override
-  String get oauthRedirectUri => 'Redirect URI';
+  String get oauthRedirectUri => '리디렉션 URI';
 
   @override
-  String get oauthDeleteAppConfirm => 'Delete OAuth application';
+  String get oauthDeleteAppConfirm => 'OAuth 애플리케이션 삭제';
 
   @override
-  String get name => 'Name';
+  String get name => '이름';
 
   @override
-  String get confirmDelete => 'Confirm Delete';
+  String get confirmDelete => '삭제 확인';
 
   @override
   String get actionsSecretsTitle => 'Actions Secrets';
@@ -2075,139 +2067,137 @@ class AppLocalizationsKo extends AppLocalizations {
   String get actionsVariablesTitle => 'Actions Variables';
 
   @override
-  String get actionsNoSecrets => 'No secrets configured';
+  String get actionsNoSecrets => 'Secrets 구성 없음';
 
   @override
-  String get actionsNoVariables => 'No variables configured';
+  String get actionsNoVariables => 'Variables 구성 없음';
 
   @override
-  String get actionsCreateSecret => 'Create Secret';
+  String get actionsCreateSecret => 'Secret 생성';
 
   @override
-  String get actionsCreateVariable => 'Create Variable';
+  String get actionsCreateVariable => 'Variable 생성';
 
   @override
-  String get actionsSecretName => 'Secret Name';
+  String get actionsSecretName => 'Secret 이름';
 
   @override
-  String get actionsSecretValue => 'Secret Value';
+  String get actionsSecretValue => 'Secret 값';
 
   @override
-  String get actionsVariableName => 'Variable Name';
+  String get actionsVariableName => 'Variable 이름';
 
   @override
-  String get actionsVariableValue => 'Variable Value';
+  String get actionsVariableValue => 'Variable 값';
 
   @override
-  String get actionsDeleteSecretConfirm => 'Delete this secret?';
+  String get actionsDeleteSecretConfirm => '이 Secret을 삭제하시겠습니까?';
 
   @override
-  String get actionsDeleteVariableConfirm => 'Delete this variable?';
+  String get actionsDeleteVariableConfirm => '이 Variable을 삭제하시겠습니까?';
 
   @override
-  String get deleted => 'Deleted';
+  String get deleted => '삭제됨';
 
   @override
-  String get overdue => 'Overdue';
+  String get overdue => '기한 초과';
 
   @override
-  String get addTopic => 'Add topic';
+  String get addTopic => '토픽 추가';
 
   @override
-  String get importRepository => 'Import Repository';
+  String get importRepository => '저장소 가져오기';
 
   @override
-  String get import => 'Import';
+  String get import => '가져오기';
 
   @override
-  String get repoImported => 'Repository imported';
+  String get repoImported => '저장소를 가져왔습니다';
 
   @override
-  String get cloneUrl => 'Clone URL';
+  String get cloneUrl => '복제 URL';
 
   @override
-  String get repoOwner => 'Owner';
+  String get repoOwner => '소유자';
 
   @override
-  String get gitService => 'Git Service';
+  String get gitService => 'Git 서비스';
 
   @override
-  String get authentication => 'Authentication';
+  String get authentication => '인증';
 
   @override
-  String get authUsername => 'Auth Username';
+  String get authUsername => '인증 사용자 이름';
 
   @override
-  String get authPassword => 'Auth Password';
+  String get authPassword => '인증 비밀번호';
 
   @override
-  String get authToken => 'Auth Token';
+  String get authToken => '인증 토큰';
 
   @override
-  String get migrationOptions => 'Options';
+  String get migrationOptions => '옵션';
 
   @override
-  String get migrateData => 'Data to Import';
+  String get migrateData => '가져올 데이터';
 
   @override
-  String get mirror => 'Mirror';
+  String get mirror => '미러';
 
   @override
-  String get mirrorInterval => 'Mirror Interval';
+  String get mirrorInterval => '미러 간격';
 
   @override
-  String get requiredField => 'This field is required';
+  String get requiredField => '이 필드는 필수입니다';
 
   @override
-  String get personal => 'Personal';
+  String get personal => '개인';
 
   @override
-  String get deleteOrganization => 'Delete Organization';
+  String get deleteOrganization => '조직 삭제';
 
   @override
-  String get deleteOrganizationConfirm =>
-      'Are you sure you want to delete this organization? This action cannot be undone.';
+  String get deleteOrganizationConfirm => '이 조직을 삭제하시겠습니까? 이 작업은 취소할 수 없습니다.';
 
   @override
-  String get organizationDeleted => 'Organization deleted';
+  String get organizationDeleted => '조직이 삭제되었습니다';
 
   @override
-  String get accessTokens => 'Access Tokens';
+  String get accessTokens => '액세스 토큰';
 
   @override
-  String get createToken => 'Create Token';
+  String get createToken => '토큰 생성';
 
   @override
-  String get tokenName => 'Token Name';
+  String get tokenName => '토큰 이름';
 
   @override
-  String get tokenCreated => 'Token Created';
+  String get tokenCreated => '토큰이 생성되었습니다';
 
   @override
-  String get tokenValueWarning =>
-      'Make sure to copy this token now. You won\'t be able to see it again.';
+  String get tokenValueWarning => '지금 이 토큰을 복사하세요. 이후에는 다시 볼 수 없습니다.';
 
   @override
-  String get failedToCreateToken => 'Failed to create token';
+  String get failedToCreateToken => '토큰 생성 실패';
 
   @override
-  String get deleteToken => 'Delete Token';
+  String get deleteToken => '토큰 삭제';
 
   @override
-  String get deleteTokenConfirm => 'Are you sure you want to delete';
+  String get deleteTokenConfirm => '삭제하시겠습니까?';
 
   @override
-  String get tokenDeleted => 'Token deleted';
+  String get tokenDeleted => '토큰이 삭제되었습니다';
 
   @override
-  String get noTokens => 'No access tokens';
+  String get noTokens => '액세스 토큰 없음';
 
   @override
-  String get scopes => 'Scopes';
+  String get scopes => '범위';
 
   @override
-  String get selectAll => 'Select All';
+  String get selectAll => '전체 선택';
 
   @override
-  String get deselectAll => 'Deselect All';
+  String get deselectAll => '전체 해제';
 }

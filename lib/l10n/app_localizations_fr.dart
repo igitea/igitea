@@ -99,10 +99,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get searchIssues => 'Rechercher des tickets';
 
   @override
-  String get users => 'Users';
+  String get users => 'Utilisateurs';
 
   @override
-  String get enterSearchQueryUsers => 'Enter a search query to find users';
+  String get enterSearchQueryUsers =>
+      'Saisissez une requête pour trouver des utilisateurs';
 
   @override
   String get noResults => 'Aucun résultat trouvé';
@@ -111,7 +112,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get repositories => 'Dépôts';
 
   @override
-  String get repositorySections => 'Repository Sections';
+  String get repositorySections => 'Sections du dépôt';
 
   @override
   String get issues => 'Tickets';
@@ -185,7 +186,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get assignees => 'Responsables';
 
   @override
-  String get assignee => 'Assignee';
+  String get assignee => 'Responsable';
 
   @override
   String get participants => 'Participants';
@@ -218,7 +219,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get website => 'Site web';
 
   @override
-  String get bio => 'Bio';
+  String get bio => 'Biographie';
 
   @override
   String joinedOn(Object date) {
@@ -232,7 +233,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String followerCount(Object count) {
-    return '$count followers';
+    return '$count abonnés';
   }
 
   @override
@@ -242,7 +243,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String followingCount(Object count) {
-    return '$count following';
+    return '$count abonnements';
   }
 
   @override
@@ -252,7 +253,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String repositoryCount(Object count) {
-    return '$count repositories';
+    return '$count dépôts';
   }
 
   @override
@@ -295,7 +296,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String lastRun(Object time) {
-    return 'Last run: $time';
+    return 'Dernière exécution : $time';
   }
 
   @override
@@ -305,7 +306,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String nextRun(Object time) {
-    return 'Next run: $time';
+    return 'Prochaine exécution : $time';
   }
 
   @override
@@ -336,7 +337,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String unreadNotifications(Object count) {
-    return 'Unread notifications: $count';
+    return 'Notifications non lues : $count';
   }
 
   @override
@@ -352,7 +353,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String ago(Object time) {
-    return '$time ago';
+    return 'il y a $time';
   }
 
   @override
@@ -513,7 +514,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get stay => 'Rester';
 
   @override
-  String get restoringSession => 'Restoring session...';
+  String get restoringSession => 'Restauration de la session...';
 
   @override
   String get pleaseEnterServerUrl => 'Veuillez saisir une URL de serveur';
@@ -525,54 +526,54 @@ class AppLocalizationsFr extends AppLocalizations {
   String get connectToGitea => 'Connectez-vous à votre instance Gitea';
 
   @override
-  String get usernamePassword => 'Username & Password';
+  String get usernamePassword => 'Identifiant et Mot de passe';
 
   @override
   String get serverUrl => 'URL du serveur';
 
   @override
-  String get enterUsername => 'Enter your username';
+  String get enterUsername => 'Entrez votre nom d\'utilisateur';
 
   @override
-  String get pleaseEnterUsername => 'Please enter your username';
+  String get pleaseEnterUsername => 'Veuillez entrer votre nom d\'utilisateur';
 
   @override
-  String get enterPassword => 'Enter your password';
+  String get enterPassword => 'Entrez votre mot de passe';
 
   @override
-  String get pleaseEnterPassword => 'Please enter your password';
+  String get pleaseEnterPassword => 'Veuillez entrer votre mot de passe';
 
   @override
-  String get pasteAccessToken => 'Paste your personal access token';
+  String get pasteAccessToken => 'Collez votre jeton d\'accès personnel';
 
   @override
-  String get pleaseEnterAccessToken => 'Please enter an access token';
+  String get pleaseEnterAccessToken => 'Veuillez entrer un jeton d\'accès';
 
   @override
   String get signInWithToken => 'Connexion avec Token';
 
   @override
-  String get welcomeToIgitea => 'Welcome to iGitea';
+  String get welcomeToIgitea => 'Bienvenue sur iGitea';
 
   @override
-  String get signInToGetStarted => 'Sign in to get started';
+  String get signInToGetStarted => 'Connectez-vous pour commencer';
 
   @override
   String get quickActions => 'Actions rapides';
 
   @override
-  String get yourRepositories => 'Your Repositories';
+  String get yourRepositories => 'Vos dépôts';
 
   @override
   String get noRepositoriesFound => 'Aucun dépôt trouvé';
 
   @override
   String helloParams(Object full_name) {
-    return 'Hello, $full_name!';
+    return 'Bonjour, $full_name!';
   }
 
   @override
-  String get user => 'User';
+  String get user => 'Utilisateur';
 
   @override
   String get private => 'Privé';
@@ -582,19 +583,20 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get enterSearchQueryRepos =>
-      'Enter a search query to find repositories';
+      'Entrez une requête pour trouver des dépôts';
 
   @override
-  String get enterSearchQueryIssues => 'Enter a search query to find issues';
+  String get enterSearchQueryIssues =>
+      'Entrez une requête pour trouver des tickets';
 
   @override
-  String get noIssuesFound => 'No issues found.';
+  String get noIssuesFound => 'Aucun ticket trouvé.';
 
   @override
-  String get failedToLoadProfile => 'Failed to load profile';
+  String get failedToLoadProfile => 'Échec du chargement du profil';
 
   @override
-  String get unknownUser => 'Unknown User';
+  String get unknownUser => 'Utilisateur inconnu';
 
   @override
   String get admin => 'Admin';
@@ -609,52 +611,54 @@ class AppLocalizationsFr extends AppLocalizations {
   String get following => 'Abonnements';
 
   @override
-  String get follow => 'Follow';
+  String get follow => 'Suivre';
 
   @override
-  String get unfollow => 'Unfollow';
+  String get unfollow => 'Ne plus suivre';
 
   @override
-  String get signOutConfirmMessage => 'Are you sure you want to sign out?';
+  String get signOutConfirmMessage =>
+      'Êtes-vous sûr de vouloir vous déconnecter ?';
 
   @override
-  String get chooseTheme => 'Choose Theme';
+  String get chooseTheme => 'Choisir le thème';
 
   @override
-  String get loadingSettings => 'Loading settings...';
+  String get loadingSettings => 'Chargement des paramètres...';
 
   @override
-  String get userManagementComingSoon => 'User management coming soon';
+  String get userManagementComingSoon =>
+      'Gestion des utilisateurs bientôt disponible';
 
   @override
-  String get maxResponseItems => 'Max Response Items';
+  String get maxResponseItems => 'Nombre max de réponses';
 
   @override
-  String get defaultPagingNum => 'Default Paging Num';
+  String get defaultPagingNum => 'Nombre de pagination par défaut';
 
   @override
-  String get defaultMaxBlobSize => 'Default Max Blob Size';
+  String get defaultMaxBlobSize => 'Taille max de blob par défaut';
 
   @override
-  String get defaultTheme => 'Default Theme';
+  String get defaultTheme => 'Thème par défaut';
 
   @override
-  String get allowedReactions => 'Allowed Reactions';
+  String get allowedReactions => 'Réactions autorisées';
 
   @override
-  String get attachments => 'Attachments';
+  String get attachments => 'Pièces jointes';
 
   @override
-  String get enabled => 'Enabled';
+  String get enabled => 'Activé';
 
   @override
-  String get maxFiles => 'Max Files';
+  String get maxFiles => 'Fichiers max';
 
   @override
-  String get maxSize => 'Max Size';
+  String get maxSize => 'Taille max';
 
   @override
-  String get allowedTypes => 'Allowed Types';
+  String get allowedTypes => 'Types autorisés';
 
   @override
   String get bytes => 'bytes';
@@ -663,22 +667,22 @@ class AppLocalizationsFr extends AppLocalizations {
   String get repository => 'Dépôt';
 
   @override
-  String get httpGitDisabled => 'HTTP Git Disabled';
+  String get httpGitDisabled => 'HTTP Git désactivé';
 
   @override
-  String get lfsDisabled => 'LFS Disabled';
+  String get lfsDisabled => 'LFS désactivé';
 
   @override
-  String get migrationsDisabled => 'Migrations Disabled';
+  String get migrationsDisabled => 'Migrations désactivées';
 
   @override
-  String get mirrorsDisabled => 'Mirrors Disabled';
+  String get mirrorsDisabled => 'Miroirs désactivés';
 
   @override
-  String get starsDisabled => 'Stars Disabled';
+  String get starsDisabled => 'Étoiles désactivées';
 
   @override
-  String get timeTrackingDisabled => 'Time Tracking Disabled';
+  String get timeTrackingDisabled => 'Suivi temporel désactivé';
 
   @override
   String get yes => 'Oui';
@@ -690,20 +694,20 @@ class AppLocalizationsFr extends AppLocalizations {
   String get schedule => 'Schedule';
 
   @override
-  String get next => 'Next';
+  String get next => 'Suivant';
 
   @override
-  String get executions => 'Executions';
+  String get executions => 'Exécutions';
 
   @override
-  String get failedToLoadCronTasks => 'Failed to load cron tasks';
+  String get failedToLoadCronTasks => 'Échec du chargement des tâches cron';
 
   @override
-  String get noCronTasksFound => 'No cron tasks found';
+  String get noCronTasksFound => 'Aucune tâche cron trouvée';
 
   @override
   String cronTriggeredParams(Object name) {
-    return 'Cron \"$name\" triggered';
+    return 'Cron \"$name\" déclenché';
   }
 
   @override
@@ -711,245 +715,248 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String openedParams(Object time) {
-    return 'opened $time';
+    return 'ouvert $time';
   }
 
   @override
-  String get noDescriptionProvided => 'No description provided.';
+  String get noDescriptionProvided => 'Aucune description fournie.';
 
   @override
-  String get failedToLoadComments => 'Failed to load comments';
+  String get failedToLoadComments => 'Échec du chargement des commentaires';
 
   @override
   String get writeComment => 'Écrire un commentaire';
 
   @override
   String commentsCountParams(Object count) {
-    return '$count comments';
+    return '$count commentaires';
   }
 
   @override
   String updatedParams(Object time) {
-    return 'Updated $time';
+    return 'Mis à jour $time';
   }
 
   @override
   String commentsParams(Object count) {
-    return 'Comments ($count)';
+    return 'Commentaires ($count)';
   }
 
   @override
-  String get files => 'files';
+  String get files => 'fichiers';
 
   @override
-  String get mergeable => 'Mergeable';
+  String get mergeable => 'Fusionnable';
 
   @override
-  String get merged => 'Merged';
+  String get merged => 'Fusionné';
 
   @override
   String get draft => 'Brouillon';
 
   @override
-  String get failedToLoadRepo => 'Failed to load repository';
+  String get failedToLoadRepo => 'Échec du chargement du dépôt';
 
   @override
-  String get copyUrl => 'Copy URL';
+  String get copyUrl => 'Copier l\'URL';
 
   @override
-  String get urlCopied => 'URL copied';
+  String get urlCopied => 'URL copiée';
 
   @override
-  String get emptyDirectory => 'Empty directory';
+  String get emptyDirectory => 'Répertoire vide';
 
   @override
   String get noIssues => 'Aucune issue';
 
   @override
-  String get noPullRequests => 'No pull requests';
+  String get noPullRequests => 'Aucune pull request';
 
   @override
-  String get noReleases => 'No releases';
+  String get noReleases => 'Aucune version';
 
   @override
-  String get noBranches => 'No branches';
+  String get noBranches => 'Aucune branche';
 
   @override
-  String get preRelease => 'Pre-release';
+  String get preRelease => 'Pré-version';
 
   @override
-  String get archived => 'Archived';
+  String get archived => 'Archivé';
 
   @override
   String get defaultBranch => 'Branche par défaut';
 
   @override
-  String get copyCode => 'Copy code';
+  String get copyCode => 'Copier le code';
 
   @override
-  String get failedToLoadFile => 'Failed to load file';
+  String get failedToLoadFile => 'Échec du chargement du fichier';
 
   @override
-  String get filePreviewNotAvailable => 'File preview not available';
+  String get filePreviewNotAvailable => 'Aperçu du fichier non disponible';
 
   @override
   String get download => 'Télécharger';
 
   @override
-  String get failedToOpenDownloadUrl => 'Failed to open download URL';
+  String get failedToOpenDownloadUrl =>
+      'Échec d\'ouverture de l\'URL de téléchargement';
 
   @override
   String get noNotifications => 'Aucune notification';
 
   @override
-  String get noTitle => 'No title';
+  String get noTitle => 'Pas de titre';
 
   @override
-  String get allNotificationsMarkedAsRead => 'All notifications marked as read';
+  String get allNotificationsMarkedAsRead =>
+      'Toutes les notifications marquées comme lues';
 
   @override
-  String get createUser => 'Create User';
+  String get createUser => 'Créer un utilisateur';
 
   @override
-  String get editUser => 'Edit User';
+  String get editUser => 'Modifier l\'utilisateur';
 
   @override
-  String get deleteIssue => 'Delete Issue';
+  String get deleteIssue => 'Supprimer l\'issue';
 
   @override
   String get deleteIssueConfirm =>
-      'Are you sure you want to delete this issue? This action cannot be undone.';
+      'Êtes-vous sûr de vouloir supprimer cette issue ? Cette action est irréversible.';
 
   @override
-  String get issueDeleted => 'Issue deleted';
+  String get issueDeleted => 'Issue supprimée';
 
   @override
-  String get deleteUser => 'Delete User';
+  String get deleteUser => 'Supprimer l\'utilisateur';
 
   @override
   String deleteUserConfirmParams(Object username) {
-    return 'Are you sure you want to delete user \"$username\"? This action cannot be undone.';
+    return 'Êtes-vous sûr de vouloir supprimer l\'utilisateur \"$username\" ? Cette action est irréversible.';
   }
 
   @override
-  String get userCreated => 'User created successfully';
+  String get userCreated => 'Utilisateur créé avec succès';
 
   @override
-  String get userUpdated => 'User updated successfully';
+  String get userUpdated => 'Utilisateur mis à jour avec succès';
 
   @override
-  String get userDeleted => 'User deleted successfully';
+  String get userDeleted => 'Utilisateur supprimé avec succès';
 
   @override
-  String get noUsersFound => 'No users found';
+  String get noUsersFound => 'Aucun utilisateur trouvé';
 
   @override
-  String get pleaseEnterEmail => 'Please enter an email';
+  String get pleaseEnterEmail => 'Veuillez entrer un e-mail';
 
   @override
-  String get fullName => 'Full name';
+  String get fullName => 'Nom complet';
 
   @override
-  String get mustChangePassword => 'Must change password on first login';
+  String get mustChangePassword =>
+      'Doit changer le mot de passe à la première connexion';
 
   @override
-  String get pleaseEnterTitle => 'Please enter a title';
+  String get pleaseEnterTitle => 'Veuillez entrer un titre';
 
   @override
   String get noActivity => 'Aucune activité';
 
   @override
-  String get createdRepo => 'created repository';
+  String get createdRepo => 'dépôt créé';
 
   @override
-  String get pushedTag => 'pushed tag';
+  String get pushedTag => 'tag poussé';
 
   @override
-  String get deletedTag => 'deleted tag';
+  String get deletedTag => 'tag supprimé';
 
   @override
-  String get createdIssue => 'created issue';
+  String get createdIssue => 'ticket créé';
 
   @override
-  String get closedIssue => 'closed issue';
+  String get closedIssue => 'ticket fermé';
 
   @override
-  String get reopenedIssue => 'reopened issue';
+  String get reopenedIssue => 'ticket rouvert';
 
   @override
-  String get createdPR => 'created pull request';
+  String get createdPR => 'pull request créée';
 
   @override
-  String get mergedPR => 'merged pull request';
+  String get mergedPR => 'pull request fusionnée';
 
   @override
-  String get closedPR => 'closed pull request';
+  String get closedPR => 'pull request fermée';
 
   @override
-  String get commentedOnIssue => 'commented on issue';
+  String get commentedOnIssue => 'a commenté le ticket';
 
   @override
-  String get commentedOnPR => 'commented on pull request';
+  String get commentedOnPR => 'a commenté la pull request';
 
   @override
-  String get forkedRepo => 'forked repository';
+  String get forkedRepo => 'dépôt forké';
 
   @override
-  String get transferredRepo => 'transferred repository';
+  String get transferredRepo => 'dépôt transféré';
 
   @override
-  String get deletedRepo => 'deleted repository';
+  String get deletedRepo => 'dépôt supprimé';
 
   @override
-  String get updatedWiki => 'updated wiki';
+  String get updatedWiki => 'wiki mis à jour';
 
   @override
-  String get performedAction => 'performed action';
+  String get performedAction => 'action effectuée';
 
   @override
-  String get commitRepo => 'committed to';
+  String get commitRepo => 'a commit sur';
 
   @override
-  String get renameRepo => 'renamed repository';
+  String get renameRepo => 'dépôt renommé';
 
   @override
-  String get starRepo => 'starred repository';
+  String get starRepo => 'dépôt staré';
 
   @override
-  String get watchRepo => 'started watching repository';
+  String get watchRepo => 'a commencé à suivre';
 
   @override
-  String get reopenPR => 'reopened pull request';
+  String get reopenPR => 'pull request rouverte';
 
   @override
-  String get approvePR => 'approved pull request';
+  String get approvePR => 'pull request approuvée';
 
   @override
-  String get rejectPR => 'rejected pull request';
+  String get rejectPR => 'pull request rejetée';
 
   @override
-  String get publishRelease => 'published release';
+  String get publishRelease => 'version publiée';
 
   @override
-  String get deleteBranch => 'deleted branch';
+  String get deleteBranch => 'branche supprimée';
 
   @override
-  String get autoMergePR => 'auto-merged pull request';
+  String get autoMergePR => 'pull request fusionnée automatiquement';
 
   @override
-  String get pullReviewDismissed => 'dismissed pull request review';
+  String get pullReviewDismissed => 'review de pull request rejetée';
 
   @override
-  String get pullRequestReady => 'marked pull request as ready for review';
+  String get pullRequestReady => 'pull request marquée comme prête';
 
   @override
-  String get mirrorSyncPush => 'synced push to mirror';
+  String get mirrorSyncPush => 'push synchronisé vers le miroir';
 
   @override
-  String get mirrorSyncCreate => 'synced create to mirror';
+  String get mirrorSyncCreate => 'création synchronisée vers le miroir';
 
   @override
-  String get mirrorSyncDelete => 'synced delete to mirror';
+  String get mirrorSyncDelete => 'suppression synchronisée vers le miroir';
 
   @override
   String get inRepo => 'dans';
@@ -974,43 +981,45 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settingsSaved => 'Paramètres enregistrés';
 
   @override
-  String get privateRepo => 'Private repository';
+  String get privateRepo => 'Dépôt privé';
 
   @override
-  String get privateRepoDesc => 'Only visible to you and collaborators';
+  String get privateRepoDesc =>
+      'Visible uniquement par vous et les collaborateurs';
 
   @override
-  String get enableIssues => 'Enable Issues';
+  String get enableIssues => 'Activer les tickets';
 
   @override
-  String get enablePullRequests => 'Enable Pull Requests';
+  String get enablePullRequests => 'Activer les pull requests';
 
   @override
-  String get enableWiki => 'Enable Wiki';
+  String get enableWiki => 'Activer le Wiki';
 
   @override
   String get preview => 'Aperçu';
 
   @override
-  String get commitMessage => 'Commit Message';
+  String get commitMessage => 'Message de commit';
 
   @override
   String get commit => 'Commit';
 
   @override
-  String get commitMessageHint => 'Describe your changes (optional)';
+  String get commitMessageHint => 'Décrivez vos modifications (optionnel)';
 
   @override
-  String get cannotGetFileSha => 'Cannot get file SHA. Please reload the file.';
+  String get cannotGetFileSha =>
+      'Impossible d\'obtenir le SHA du fichier. Veuillez recharger le fichier.';
 
   @override
-  String get failedToSaveFile => 'Failed to save file';
+  String get failedToSaveFile => 'Échec de l\'enregistrement du fichier';
 
   @override
-  String get fileSaved => 'File saved successfully';
+  String get fileSaved => 'Fichier enregistré avec succès';
 
   @override
-  String get discard => 'Discard';
+  String get discard => 'Annuler';
 
   @override
   String get message => 'Message';
@@ -1022,7 +1031,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get sha => 'SHA';
 
   @override
-  String get changedFiles => 'Changed Files';
+  String get changedFiles => 'Fichiers modifiés';
 
   @override
   String get tags => 'Étiquettes';
@@ -1031,25 +1040,25 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noCommits => 'Aucun commit';
 
   @override
-  String get noTags => 'No tags';
+  String get noTags => 'Aucun tag';
 
   @override
-  String get protected => 'Protected';
+  String get protected => 'Protégé';
 
   @override
-  String get latestCommit => 'Latest Commit';
+  String get latestCommit => 'Dernier commit';
 
   @override
   String get permissions => 'Permissions';
 
   @override
-  String get canPush => 'Can Push';
+  String get canPush => 'Peut pousser';
 
   @override
-  String get canMerge => 'Can Merge';
+  String get canMerge => 'Peut fusionner';
 
   @override
-  String get downloads => 'Downloads';
+  String get downloads => 'Téléchargements';
 
   @override
   String get tarball => 'Tarball';
@@ -1058,68 +1067,68 @@ class AppLocalizationsFr extends AppLocalizations {
   String get zipball => 'Zipball';
 
   @override
-  String get downloadTarball => 'Download Tarball';
+  String get downloadTarball => 'Télécharger Tarball';
 
   @override
-  String get downloadZipball => 'Download Zipball';
+  String get downloadZipball => 'Télécharger Zipball';
 
   @override
   String get url => 'URL';
 
   @override
-  String get info => 'Info';
+  String get info => 'Infos';
 
   @override
-  String get teams => 'Teams';
+  String get teams => 'Équipes';
 
   @override
   String get noTeams => 'Aucune équipe';
 
   @override
-  String get location => 'Location';
+  String get location => 'Emplacement';
 
   @override
-  String get visibility => 'Visibility';
+  String get visibility => 'Visibilité';
 
   @override
-  String get assets => 'Assets';
+  String get assets => 'Actifs';
 
   @override
-  String get publishedAt => 'Published At';
+  String get publishedAt => 'Publié le';
 
   @override
-  String get target => 'Target';
+  String get target => 'Cible';
 
   @override
-  String get forked => 'Forked';
+  String get forked => 'Forké';
 
   @override
   String get forkRepoConfirm =>
-      'This will create a fork of this repository in your account.';
+      'Cela créera un fork de ce dépôt dans votre compte.';
 
   @override
-  String get editIssue => 'Edit Issue';
+  String get editIssue => 'Modifier le ticket';
 
   @override
-  String get titleRequired => 'Title is required';
+  String get titleRequired => 'Le titre est requis';
 
   @override
-  String get selectMilestone => 'Select milestone';
+  String get selectMilestone => 'Sélectionner un jalon';
 
   @override
-  String get members => 'Members';
+  String get members => 'Membres';
 
   @override
   String get noMembers => 'Aucun membre';
 
   @override
-  String get editOrganization => 'Edit Organization';
+  String get editOrganization => 'Modifier l\'organisation';
 
   @override
-  String get createOrganization => 'Create Organization';
+  String get createOrganization => 'Créer une organisation';
 
   @override
-  String get createRepository => 'Create Repository';
+  String get createRepository => 'Créer un dépôt';
 
   @override
   String get repositoryName => 'Nom du dépôt';
@@ -1128,64 +1137,64 @@ class AppLocalizationsFr extends AppLocalizations {
   String get repositoryNameHint => 'my-awesome-repo';
 
   @override
-  String get repositoryNameRequired => 'Repository name is required';
+  String get repositoryNameRequired => 'Le nom du dépôt est requis';
 
   @override
-  String get descriptionHint => 'Short description of your repository';
+  String get descriptionHint => 'Brève description de votre dépôt';
 
   @override
   String get public => 'Public';
 
   @override
   String get publicDescription =>
-      'Anyone on the internet can see this repository';
+      'Tout le monde sur Internet peut voir ce dépôt';
 
   @override
   String get privateDescription =>
-      'You choose who can see and commit to this repository';
+      'Vous choisissez qui peut voir et contribuer à ce dépôt';
 
   @override
-  String get initializeWithReadme => 'Initialize with README';
+  String get initializeWithReadme => 'Initialiser avec README';
 
   @override
   String get initializeWithReadmeDescription =>
-      'Add a README file to help others understand your project';
+      'Ajoutez un fichier README pour aider les autres à comprendre votre projet';
 
   @override
   String repoCreated(Object repoName) {
-    return 'Repository \'$repoName\' created successfully';
+    return 'Dépôt \'$repoName\' créé avec succès';
   }
 
   @override
-  String get complete => 'complete';
+  String get complete => 'terminé';
 
   @override
   String get wiki => 'Wiki';
 
   @override
-  String get newWikiPage => 'New Wiki Page';
+  String get newWikiPage => 'Nouvelle page Wiki';
 
   @override
-  String get editWikiPage => 'Edit Wiki Page';
+  String get editWikiPage => 'Modifier la page Wiki';
 
   @override
-  String get deleteWikiPage => 'Delete Wiki Page';
+  String get deleteWikiPage => 'Supprimer la page Wiki';
 
   @override
   String get deleteWikiPageConfirm =>
-      'Are you sure you want to delete this wiki page? This action cannot be undone.';
+      'Êtes-vous sûr de vouloir supprimer cette page Wiki ? Cette action est irréversible.';
 
   @override
-  String get wikiPageDeleted => 'Wiki page deleted';
+  String get wikiPageDeleted => 'Page Wiki supprimée';
 
   @override
-  String get wikiPageTitle => 'Page Title';
+  String get wikiPageTitle => 'Titre de la page';
 
   @override
   String get wikiPageTitleHint => 'e.g. Home';
 
   @override
-  String get wikiPageContent => 'Content';
+  String get wikiPageContent => 'Contenu';
 
   @override
   String get wikiPageContentHint => 'Write in Markdown...';
@@ -1195,22 +1204,22 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get noWikiPagesDescription =>
-      'This repository doesn\'t have any wiki pages yet.';
+      'Ce dépôt n\'a pas encore de pages Wiki.';
 
   @override
-  String get createFirstWikiPage => 'Create First Page';
+  String get createFirstWikiPage => 'Créer la première page';
 
   @override
-  String get lastCommit => 'Last commit';
+  String get lastCommit => 'Dernier commit';
 
   @override
   String get noContent => 'Pas de contenu';
 
   @override
-  String get saved => 'Saved';
+  String get saved => 'Enregistré';
 
   @override
-  String get created => 'Created';
+  String get created => 'Créé';
 
   @override
   String get createMilestone => 'Créer un jalon';
@@ -1223,10 +1232,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get deleteMilestoneConfirm =>
-      'Are you sure you want to delete this milestone? This action cannot be undone.';
+      'Êtes-vous sûr de vouloir supprimer ce jalon ? Cette action est irréversible.';
 
   @override
-  String get milestoneDeleted => 'Milestone deleted';
+  String get milestoneDeleted => 'Jalon supprimé';
 
   @override
   String get milestoneTitle => 'Titre';
@@ -1235,7 +1244,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get milestoneDescription => 'Description';
 
   @override
-  String get milestoneDescriptionHint => 'Describe this milestone';
+  String get milestoneDescriptionHint => 'Décrivez ce jalon';
 
   @override
   String get milestoneDueDate => 'Date d\'échéance';
@@ -1275,10 +1284,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get deleteWebhookConfirm =>
-      'Are you sure you want to delete this webhook? This action cannot be undone.';
+      'Êtes-vous sûr de vouloir supprimer ce webhook ? Cette action est irréversible.';
 
   @override
-  String get webhookDeleted => 'Webhook deleted';
+  String get webhookDeleted => 'Webhook supprimé';
 
   @override
   String get webhookUrl => 'URL';
@@ -1290,10 +1299,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get webhookSecret => 'Secret';
 
   @override
-  String get webhookSecretHint => 'Optional secret token';
+  String get webhookSecretHint => 'Jeton secret optionnel';
 
   @override
-  String get webhookContentType => 'Content Type';
+  String get webhookContentType => 'Type de contenu';
 
   @override
   String get webhookContentTypeJson => 'application/json';
@@ -1302,10 +1311,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get webhookContentTypeForm => 'application/x-www-form-urlencoded';
 
   @override
-  String get webhookEvents => 'Events';
+  String get webhookEvents => 'Événements';
 
   @override
-  String get webhookEventsHint => 'Select events to trigger this webhook';
+  String get webhookEventsHint =>
+      'Sélectionnez les événements déclenchant ce webhook';
 
   @override
   String get webhookActive => 'Actif';
@@ -1317,16 +1327,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get webhookType => 'Type';
 
   @override
-  String get webhookCreatedAt => 'Created';
+  String get webhookCreatedAt => 'Créé';
 
   @override
-  String get webhookUpdatedAt => 'Updated';
+  String get webhookUpdatedAt => 'Mis à jour';
 
   @override
-  String get webhookLastDelivery => 'Last Delivery';
+  String get webhookLastDelivery => 'Dernière livraison';
 
   @override
-  String get webhookSelectAllEvents => 'Select All';
+  String get webhookSelectAllEvents => 'Tout sélectionner';
 
   @override
   String get webhookPushEvents => 'Push';
@@ -1335,62 +1345,62 @@ class AppLocalizationsFr extends AppLocalizations {
   String get webhookPullRequestEvents => 'Pull Requests';
 
   @override
-  String get webhookIssuesEvents => 'Issues';
+  String get webhookIssuesEvents => 'Tickets';
 
   @override
-  String get webhookCreateEvents => 'Create';
+  String get webhookCreateEvents => 'Création';
 
   @override
-  String get webhookDeleteEvents => 'Delete';
+  String get webhookDeleteEvents => 'Suppression';
 
   @override
-  String get webhookReleaseEvents => 'Releases';
+  String get webhookReleaseEvents => 'Versions';
 
   @override
   String get webhookWikiEvents => 'Wiki';
 
   @override
-  String get webhookStarEvents => 'Star';
+  String get webhookStarEvents => 'Étoile';
 
   @override
   String get webhookForkEvents => 'Fork';
 
   @override
-  String get loginWithOAuth2 => 'Login with OAuth2';
+  String get loginWithOAuth2 => 'Connexion avec OAuth2';
 
   @override
   String get oauth2 => 'OAuth2';
 
   @override
-  String get oauth2Description => 'Authorize via Gitea OAuth2 application';
+  String get oauth2Description => 'Autoriser via l\'application OAuth2 Gitea';
 
   @override
-  String get oauth2ClientId => 'Client ID';
+  String get oauth2ClientId => 'ID client';
 
   @override
-  String get oauth2ClientSecret => 'Client Secret';
+  String get oauth2ClientSecret => 'Secret client';
 
   @override
-  String get oauth2RedirectUri => 'Redirect URI';
+  String get oauth2RedirectUri => 'URI de redirection';
 
   @override
   String get oauth2RedirectUriHint => 'igitea://oauth/callback';
 
   @override
-  String get oauth2Authorize => 'Open Authorization Page';
+  String get oauth2Authorize => 'Ouvrir la page d\'autorisation';
 
   @override
-  String get oauth2ExchangeCode => 'Exchange Code for Token';
+  String get oauth2ExchangeCode => 'Échanger le code pour un jeton';
 
   @override
-  String get oauth2AuthorizationCode => 'Authorization Code';
+  String get oauth2AuthorizationCode => 'Code d\'autorisation';
 
   @override
   String get oauth2AuthorizationCodeHint =>
-      'Paste the code from the redirect URL';
+      'Collez le code depuis l\'URL de redirection';
 
   @override
-  String get oauth2TokenRefreshed => 'Token refreshed successfully';
+  String get oauth2TokenRefreshed => 'Jeton actualisé avec succès';
 
   @override
   String get createLabel => 'Créer une étiquette';
@@ -1403,10 +1413,10 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get deleteLabelConfirm =>
-      'Are you sure you want to delete this label?';
+      'Êtes-vous sûr de vouloir supprimer cette étiquette ?';
 
   @override
-  String get labelDeleted => 'Label deleted';
+  String get labelDeleted => 'Étiquette supprimée';
 
   @override
   String get labelName => 'Nom';
@@ -1418,7 +1428,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get labelDescription => 'Description';
 
   @override
-  String get labelDescriptionHint => 'Optional description';
+  String get labelDescriptionHint => 'Description optionnelle';
 
   @override
   String get labelColor => 'Couleur';
@@ -1436,19 +1446,19 @@ class AppLocalizationsFr extends AppLocalizations {
   String get viewDiff => 'Voir le diff';
 
   @override
-  String get unifiedView => 'Unified view';
+  String get unifiedView => 'Vue unifiée';
 
   @override
-  String get splitView => 'Split view';
+  String get splitView => 'Vue divisée';
 
   @override
   String get compareVersions => 'Comparer les versions';
 
   @override
-  String get baseRef => 'Base (older)';
+  String get baseRef => 'Base (plus ancien)';
 
   @override
-  String get headRef => 'Head (newer)';
+  String get headRef => 'Tête (plus récent)';
 
   @override
   String get compare => 'Comparer';
@@ -1460,7 +1470,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noActions => 'Aucun workflow';
 
   @override
-  String get run => 'Run';
+  String get run => 'Exécuter';
 
   @override
   String get status => 'Statut';
@@ -1472,7 +1482,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noJobs => 'Aucun job';
 
   @override
-  String get artifacts => 'Artifacts';
+  String get artifacts => 'Artefacts';
 
   @override
   String get branch => 'Branche';
@@ -1487,10 +1497,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get filterByStatus => 'Filtrer par statut';
 
   @override
-  String get reviewChanges => 'Review Changes';
+  String get reviewChanges => 'Revoir les modifications';
 
   @override
-  String get reviewBody => 'Review comment';
+  String get reviewBody => 'Commentaire de review';
 
   @override
   String get reviews => 'Relectures';
@@ -1505,13 +1515,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get comment => 'Commentaire';
 
   @override
-  String get blame => 'Blame';
+  String get blame => 'Blâme';
 
   @override
-  String get diffView => 'Diff View';
+  String get diffView => 'Vue Diff';
 
   @override
-  String get pickColor => 'Pick Color';
+  String get pickColor => 'Choisir une couleur';
 
   @override
   String get sshKeys => 'Clés SSH';
@@ -1544,36 +1554,36 @@ class AppLocalizationsFr extends AppLocalizations {
   String get limited => 'Limité';
 
   @override
-  String get unknownSection => 'Unknown section';
+  String get unknownSection => 'Section inconnue';
 
   @override
-  String get deleteKey => 'Delete Key';
+  String get deleteKey => 'Supprimer la clé';
 
   @override
   String get deleteKeyConfirm =>
-      'Are you sure you want to delete this SSH key?';
+      'Êtes-vous sûr de vouloir supprimer cette clé SSH ?';
 
   @override
-  String get keyDeleted => 'Key deleted successfully';
+  String get keyDeleted => 'Clé supprimée avec succès';
 
   @override
-  String get addSshKey => 'Add SSH Key';
+  String get addSshKey => 'Ajouter une clé SSH';
 
   @override
   String get add => 'Ajouter';
 
   @override
-  String get keyAdded => 'Key added successfully';
+  String get keyAdded => 'Clé ajoutée avec succès';
 
   @override
   String get deleteCommentConfirm =>
-      'Are you sure you want to delete this comment?';
+      'Êtes-vous sûr de vouloir supprimer ce commentaire ?';
 
   @override
   String get requestReviewers => 'Demander des relecteurs';
 
   @override
-  String get addReviewerHint => 'Enter reviewer username';
+  String get addReviewerHint => 'Entrez le nom du relecteur';
 
   @override
   String get subscribe => 'S\'abonner';
@@ -1582,28 +1592,28 @@ class AppLocalizationsFr extends AppLocalizations {
   String get unsubscribe => 'Se désabonner';
 
   @override
-  String get subscribed => 'Subscribed';
+  String get subscribed => 'Abonné';
 
   @override
-  String get unsubscribed => 'Unsubscribed';
+  String get unsubscribed => 'Désabonné';
 
   @override
-  String get setDueDate => 'Set Due Date';
+  String get setDueDate => 'Définir la date d\'échéance';
 
   @override
-  String get removeDueDate => 'Remove Due Date';
+  String get removeDueDate => 'Supprimer la date d\'échéance';
 
   @override
-  String get topics => 'Topics';
+  String get topics => 'Sujets';
 
   @override
-  String get noTopics => 'No topics';
+  String get noTopics => 'Aucun sujet';
 
   @override
-  String get branchProtection => 'Branch Protection';
+  String get branchProtection => 'Protection de branche';
 
   @override
-  String get protectBranch => 'Protect Branch';
+  String get protectBranch => 'Protéger la branche';
 
   @override
   String get https => 'HTTPS';
@@ -1612,10 +1622,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get ssh => 'SSH';
 
   @override
-  String get teamAdminAccess => 'Team Admin Access';
+  String get teamAdminAccess => 'Accès admin d\'équipe';
 
   @override
-  String get details => 'Details';
+  String get details => 'Détails';
 
   @override
   String get id => 'ID';
@@ -1624,35 +1634,36 @@ class AppLocalizationsFr extends AppLocalizations {
   String get searchRepositoriesHint => 'Rechercher des dépôts';
 
   @override
-  String get publicKey => 'Public Key';
+  String get publicKey => 'Clé publique';
 
   @override
-  String get failedToGetAccessToken => 'Failed to get access token';
+  String get failedToGetAccessToken => 'Échec d\'obtention du jeton d\'accès';
 
   @override
-  String get fileNotFound => 'File not found';
+  String get fileNotFound => 'Fichier non trouvé';
 
   @override
-  String get noSshKeysFound => 'No SSH keys found';
+  String get noSshKeysFound => 'Aucune clé SSH trouvée';
 
   @override
-  String get other => 'Other';
+  String get other => 'Autre';
 
   @override
-  String get usernameRequired => 'Username is required';
+  String get usernameRequired => 'Nom d\'utilisateur requis';
 
   @override
-  String get myLaptopHint => 'My Laptop';
+  String get myLaptopHint => 'Mon ordinateur';
 
   @override
-  String get sshPublicKeyHint => 'Paste your SSH public key here';
+  String get sshPublicKeyHint => 'Collez votre clé publique SSH ici';
 
   @override
-  String get noChangesFoundForFile => 'No changes found for this file';
+  String get noChangesFoundForFile =>
+      'Aucune modification trouvée pour ce fichier';
 
   @override
   String commitUpdateFile(Object fileName) {
-    return 'Update $fileName';
+    return 'Mettre à jour $fileName';
   }
 
   @override
@@ -1662,7 +1673,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get ui => 'UI';
 
   @override
-  String get justNow => 'just now';
+  String get justNow => 'à l\'instant';
 
   @override
   String get packages => 'Paquets';
@@ -1769,30 +1780,30 @@ class AppLocalizationsFr extends AppLocalizations {
   String get defaultLabels => 'Sélection rapide';
 
   @override
-  String get applyLabelSet => 'Apply label set';
+  String get applyLabelSet => 'Appliquer le jeu d\'étiquettes';
 
   @override
   String get applyLabelSetDescription =>
-      'Select a predefined label set to create all labels at once.';
+      'Sélectionnez un jeu d\'étiquettes prédéfini pour créer toutes les étiquettes en une fois.';
 
   @override
   String applyAllLabels(Object count) {
-    return 'Apply all ($count labels)';
+    return 'Tout appliquer ($count étiquettes)';
   }
 
   @override
   String applyAllLabelsParams(Object count) {
-    return 'Apply all ($count labels)';
+    return 'Tout appliquer ($count étiquettes)';
   }
 
   @override
-  String get creating => 'Creating...';
+  String get creating => 'Création...';
 
   @override
-  String get addCustomLabel => 'Add custom label';
+  String get addCustomLabel => 'Ajouter une étiquette personnalisée';
 
   @override
-  String get selectTemplate => 'Select a template';
+  String get selectTemplate => 'Sélectionner un modèle';
 
   @override
   String get createTeam => 'Créer équipe';
@@ -1851,10 +1862,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get noSearchResults => 'Aucun résultat';
 
   @override
-  String get teamCanCreateOrgRepos => 'Can create org repos';
+  String get teamCanCreateOrgRepos => 'Peut créer des dépôts d\'organisation';
 
   @override
-  String get teamIncludesAllRepos => 'Includes all repositories';
+  String get teamIncludesAllRepos => 'Inclut tous les dépôts';
 
   @override
   String get collaborators => 'Collaborateurs';
@@ -1892,336 +1903,336 @@ class AppLocalizationsFr extends AppLocalizations {
   String get addEmail => 'Ajouter email';
 
   @override
-  String get gpgKeys => 'GPG Keys';
+  String get gpgKeys => 'Clés GPG';
 
   @override
-  String get addGpgKey => 'Add GPG Key';
+  String get addGpgKey => 'Ajouter une clé GPG';
 
   @override
   String get gpgKeyHint => '-----BEGIN PGP PUBLIC KEY BLOCK-----';
 
   @override
-  String get gpgKeyAdded => 'GPG key added';
+  String get gpgKeyAdded => 'Clé GPG ajoutée';
 
   @override
-  String get gpgKeyDeleted => 'GPG key deleted';
+  String get gpgKeyDeleted => 'Clé GPG supprimée';
 
   @override
-  String get deleteGpgKey => 'Delete GPG Key';
+  String get deleteGpgKey => 'Supprimer la clé GPG';
 
   @override
   String get deleteGpgKeyConfirm =>
-      'Are you sure you want to delete this GPG key?';
+      'Êtes-vous sûr de vouloir supprimer cette clé GPG ?';
 
   @override
-  String get noGpgKeys => 'No GPG keys';
+  String get noGpgKeys => 'Aucune clé GPG';
 
   @override
-  String get sign => 'Sign';
+  String get sign => 'Signer';
 
   @override
-  String get certify => 'Certify';
+  String get certify => 'Certifier';
 
   @override
-  String get verified => 'Verified';
+  String get verified => 'Vérifié';
 
   @override
-  String get tagProtections => 'Tag Protections';
+  String get tagProtections => 'Protection des tags';
 
   @override
-  String get manageTagProtections => 'Manage tag protection rules';
+  String get manageTagProtections => 'Gérer les règles de protection des tags';
 
   @override
-  String get createTagProtection => 'Create Tag Protection';
+  String get createTagProtection => 'Créer une protection de tag';
 
   @override
-  String get namePattern => 'Name Pattern';
+  String get namePattern => 'Modèle de nom';
 
   @override
-  String get tagProtectionCreated => 'Tag protection created';
+  String get tagProtectionCreated => 'Protection de tag créée';
 
   @override
-  String get tagProtectionDeleted => 'Tag protection deleted';
+  String get tagProtectionDeleted => 'Protection de tag supprimée';
 
   @override
-  String get deleteTagProtection => 'Delete Tag Protection';
+  String get deleteTagProtection => 'Supprimer la protection de tag';
 
   @override
   String get deleteTagProtectionConfirm =>
-      'Are you sure you want to delete this tag protection?';
+      'Êtes-vous sûr de vouloir supprimer cette protection de tag ?';
 
   @override
-  String get noTagProtections => 'No tag protections';
+  String get noTagProtections => 'Aucune protection de tag';
 
   @override
-  String get allowedUsers => 'Allowed users';
+  String get allowedUsers => 'Utilisateurs autorisés';
 
   @override
-  String get dependencies => 'Dependencies';
+  String get dependencies => 'Dépendances';
 
   @override
-  String get addDependency => 'Add Dependency';
+  String get addDependency => 'Ajouter une dépendance';
 
   @override
-  String get dependencyAdded => 'Dependency added';
+  String get dependencyAdded => 'Dépendance ajoutée';
 
   @override
-  String get dependencyRemoved => 'Dependency removed';
+  String get dependencyRemoved => 'Dépendance supprimée';
 
   @override
-  String get removeDependency => 'Remove Dependency';
+  String get removeDependency => 'Supprimer la dépendance';
 
   @override
-  String get removeDependencyConfirm => 'Remove this dependency?';
+  String get removeDependencyConfirm => 'Supprimer cette dépendance ?';
 
   @override
-  String get noDependencies => 'No dependencies';
+  String get noDependencies => 'Aucune dépendance';
 
   @override
-  String get blocks => 'Blocks';
+  String get blocks => 'Bloque';
 
   @override
-  String get dependsOn => 'Depends on';
+  String get dependsOn => 'Dépend de';
 
   @override
-  String get issueNumberHint => 'Issue #';
+  String get issueNumberHint => 'Issue n°';
 
   @override
-  String get events => 'events';
+  String get events => 'événements';
 
   @override
-  String get items => 'items';
+  String get items => 'éléments';
 
   @override
-  String get commented => 'commented';
+  String get commented => 'a commenté';
 
   @override
-  String get labelUpdated => 'Label updated';
+  String get labelUpdated => 'Label mis à jour';
 
   @override
-  String get milestoneUpdated => 'Milestone updated';
+  String get milestoneUpdated => 'Jalon mis à jour';
 
   @override
-  String get assigneeUpdated => 'Assignee updated';
+  String get assigneeUpdated => 'Assigné mis à jour';
 
   @override
-  String get reopened => 'Reopened';
+  String get reopened => 'Rouvert';
 
   @override
   String get stargazers => 'Stargazers';
 
   @override
-  String get subscribers => 'Subscribers';
+  String get subscribers => 'Abonnés';
 
   @override
-  String get noStargazers => 'No stargazers yet';
+  String get noStargazers => 'Pas encore de stargazers';
 
   @override
-  String get noSubscribers => 'No subscribers yet';
+  String get noSubscribers => 'Pas encore d\'abonnés';
 
   @override
-  String get adminHooksTitle => 'System Hooks';
+  String get adminHooksTitle => 'Hooks système';
 
   @override
-  String get adminCronTitle => 'Cron Tasks';
+  String get adminCronTitle => 'Tâches Cron';
 
   @override
-  String get adminRunnersTitle => 'Actions Runners';
+  String get adminRunnersTitle => 'Runners Actions';
 
   @override
-  String get adminEmailsTitle => 'Emails';
+  String get adminEmailsTitle => 'E-mails';
 
   @override
   String get adminBadgesTitle => 'Badges';
 
   @override
-  String get adminRunCron => 'Run Now';
+  String get adminRunCron => 'Exécuter maintenant';
 
   @override
-  String get adminGetToken => 'Get Registration Token';
+  String get adminGetToken => 'Obtenir le jeton d\'inscription';
 
   @override
-  String get adminNoHooks => 'No system hooks configured';
+  String get adminNoHooks => 'Aucun hook système configuré';
 
   @override
-  String get adminNoCron => 'No cron tasks';
+  String get adminNoCron => 'Aucune tâche cron';
 
   @override
-  String get adminNoRunners => 'No action runners';
+  String get adminNoRunners => 'Aucun runner d\'actions';
 
   @override
-  String get adminNoEmails => 'No emails';
+  String get adminNoEmails => 'Aucun email';
 
   @override
-  String get adminNoBadges => 'No badges';
+  String get adminNoBadges => 'Aucun badge';
 
   @override
-  String get adminBadgeUsername => 'Username';
+  String get adminBadgeUsername => 'Nom d\'utilisateur';
 
   @override
   String get adminBadgeDescription => 'Description';
 
   @override
-  String get oauthAppsTitle => 'OAuth Applications';
+  String get oauthAppsTitle => 'Applications OAuth';
 
   @override
-  String get oauthNoApps => 'No OAuth applications';
+  String get oauthNoApps => 'Aucune application OAuth';
 
   @override
-  String get oauthCreateApp => 'Create OAuth App';
+  String get oauthCreateApp => 'Créer une application OAuth';
 
   @override
-  String get oauthRedirectUri => 'Redirect URI';
+  String get oauthRedirectUri => 'URI de redirection';
 
   @override
-  String get oauthDeleteAppConfirm => 'Delete OAuth application';
+  String get oauthDeleteAppConfirm => 'Supprimer l\'application OAuth';
 
   @override
-  String get name => 'Name';
+  String get name => 'Nom';
 
   @override
-  String get confirmDelete => 'Confirm Delete';
+  String get confirmDelete => 'Confirmer la suppression';
 
   @override
-  String get actionsSecretsTitle => 'Actions Secrets';
+  String get actionsSecretsTitle => 'Secrets Actions';
 
   @override
-  String get actionsVariablesTitle => 'Actions Variables';
+  String get actionsVariablesTitle => 'Variables Actions';
 
   @override
-  String get actionsNoSecrets => 'No secrets configured';
+  String get actionsNoSecrets => 'Aucun secret configuré';
 
   @override
-  String get actionsNoVariables => 'No variables configured';
+  String get actionsNoVariables => 'Aucune variable configurée';
 
   @override
-  String get actionsCreateSecret => 'Create Secret';
+  String get actionsCreateSecret => 'Créer un Secret';
 
   @override
-  String get actionsCreateVariable => 'Create Variable';
+  String get actionsCreateVariable => 'Créer une Variable';
 
   @override
-  String get actionsSecretName => 'Secret Name';
+  String get actionsSecretName => 'Nom du Secret';
 
   @override
-  String get actionsSecretValue => 'Secret Value';
+  String get actionsSecretValue => 'Valeur du Secret';
 
   @override
-  String get actionsVariableName => 'Variable Name';
+  String get actionsVariableName => 'Nom de la Variable';
 
   @override
-  String get actionsVariableValue => 'Variable Value';
+  String get actionsVariableValue => 'Valeur de la Variable';
 
   @override
-  String get actionsDeleteSecretConfirm => 'Delete this secret?';
+  String get actionsDeleteSecretConfirm => 'Supprimer ce secret ?';
 
   @override
-  String get actionsDeleteVariableConfirm => 'Delete this variable?';
+  String get actionsDeleteVariableConfirm => 'Supprimer cette variable ?';
 
   @override
-  String get deleted => 'Deleted';
+  String get deleted => 'Supprimé';
 
   @override
-  String get overdue => 'Overdue';
+  String get overdue => 'En retard';
 
   @override
-  String get addTopic => 'Add topic';
+  String get addTopic => 'Ajouter un sujet';
 
   @override
-  String get importRepository => 'Import Repository';
+  String get importRepository => 'Importer un dépôt';
 
   @override
-  String get import => 'Import';
+  String get import => 'Importer';
 
   @override
-  String get repoImported => 'Repository imported';
+  String get repoImported => 'Dépôt importé';
 
   @override
-  String get cloneUrl => 'Clone URL';
+  String get cloneUrl => 'URL de clonage';
 
   @override
-  String get repoOwner => 'Owner';
+  String get repoOwner => 'Propriétaire';
 
   @override
-  String get gitService => 'Git Service';
+  String get gitService => 'Service Git';
 
   @override
-  String get authentication => 'Authentication';
+  String get authentication => 'Authentification';
 
   @override
-  String get authUsername => 'Auth Username';
+  String get authUsername => 'Nom d\'utilisateur d\'authentification';
 
   @override
-  String get authPassword => 'Auth Password';
+  String get authPassword => 'Mot de passe d\'authentification';
 
   @override
-  String get authToken => 'Auth Token';
+  String get authToken => 'Jeton d\'authentification';
 
   @override
   String get migrationOptions => 'Options';
 
   @override
-  String get migrateData => 'Data to Import';
+  String get migrateData => 'Données à importer';
 
   @override
-  String get mirror => 'Mirror';
+  String get mirror => 'Miroir';
 
   @override
-  String get mirrorInterval => 'Mirror Interval';
+  String get mirrorInterval => 'Intervalle de miroir';
 
   @override
-  String get requiredField => 'This field is required';
+  String get requiredField => 'Ce champ est obligatoire';
 
   @override
-  String get personal => 'Personal';
+  String get personal => 'Personnel';
 
   @override
-  String get deleteOrganization => 'Delete Organization';
+  String get deleteOrganization => 'Supprimer l\'organisation';
 
   @override
   String get deleteOrganizationConfirm =>
-      'Are you sure you want to delete this organization? This action cannot be undone.';
+      'Êtes-vous sûr de vouloir supprimer cette organisation ? Cette action est irréversible.';
 
   @override
-  String get organizationDeleted => 'Organization deleted';
+  String get organizationDeleted => 'Organisation supprimée';
 
   @override
-  String get accessTokens => 'Access Tokens';
+  String get accessTokens => 'Jetons d\'accès';
 
   @override
-  String get createToken => 'Create Token';
+  String get createToken => 'Créer un jeton';
 
   @override
-  String get tokenName => 'Token Name';
+  String get tokenName => 'Nom du jeton';
 
   @override
-  String get tokenCreated => 'Token Created';
+  String get tokenCreated => 'Jeton créé';
 
   @override
   String get tokenValueWarning =>
-      'Make sure to copy this token now. You won\'t be able to see it again.';
+      'Copiez ce jeton maintenant. Vous ne pourrez plus le voir ensuite.';
 
   @override
-  String get failedToCreateToken => 'Failed to create token';
+  String get failedToCreateToken => 'Échec de la création du jeton';
 
   @override
-  String get deleteToken => 'Delete Token';
+  String get deleteToken => 'Supprimer le jeton';
 
   @override
-  String get deleteTokenConfirm => 'Are you sure you want to delete';
+  String get deleteTokenConfirm => 'Êtes-vous sûr de vouloir supprimer';
 
   @override
-  String get tokenDeleted => 'Token deleted';
+  String get tokenDeleted => 'Jeton supprimé';
 
   @override
-  String get noTokens => 'No access tokens';
+  String get noTokens => 'Aucun jeton d\'accès';
 
   @override
-  String get scopes => 'Scopes';
+  String get scopes => 'Portées';
 
   @override
-  String get selectAll => 'Select All';
+  String get selectAll => 'Tout sélectionner';
 
   @override
-  String get deselectAll => 'Deselect All';
+  String get deselectAll => 'Tout désélectionner';
 }

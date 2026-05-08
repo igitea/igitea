@@ -22,6 +22,9 @@
 ### Added
 - **Complete i18n translations**: 117 missing keys added to de, es, fr, ja, ko, pt, ru, zh_TW (936 total), all 8 locales now at 100% parity with English template (710 keys)
 
+### Fixed
+- Translated 2,161 remaining English placeholder entries across all 8 ARB locales
+
 ## [0.29.0] - 2026-05-05
 
 ### Added

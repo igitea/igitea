@@ -2296,6 +2296,12 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get searchIssues => '搜尋問題';
 
   @override
+  String get users => '使用者';
+
+  @override
+  String get enterSearchQueryUsers => '輸入搜尋關鍵詞以搜尋使用者';
+
+  @override
   String get noResults => '找不到結果';
 
   @override
@@ -2995,42 +3001,51 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get allNotificationsMarkedAsRead => '所有通知已标为已读';
 
   @override
-  String get createUser => 'Create User';
+  String get createUser => '建立使用者';
 
   @override
-  String get editUser => 'Edit User';
+  String get editUser => '編輯使用者';
 
   @override
-  String get deleteUser => 'Delete User';
+  String get deleteIssue => '刪除 Issue';
+
+  @override
+  String get deleteIssueConfirm => '確定要刪除此 Issue 嗎？此動作無法復原。';
+
+  @override
+  String get issueDeleted => 'Issue 已刪除';
+
+  @override
+  String get deleteUser => '刪除使用者';
 
   @override
   String deleteUserConfirmParams(Object username) {
-    return 'Are you sure you want to delete user \"$username\"? This action cannot be undone.';
+    return '確定要刪除使用者「$username」嗎？此動作無法復原。';
   }
 
   @override
-  String get userCreated => 'User created successfully';
+  String get userCreated => '使用者建立成功';
 
   @override
-  String get userUpdated => 'User updated successfully';
+  String get userUpdated => '使用者更新成功';
 
   @override
-  String get userDeleted => 'User deleted successfully';
+  String get userDeleted => '使用者刪除成功';
 
   @override
-  String get noUsersFound => 'No users found';
+  String get noUsersFound => '找不到使用者';
 
   @override
-  String get pleaseEnterEmail => 'Please enter an email';
+  String get pleaseEnterEmail => '請輸入電子郵件';
 
   @override
-  String get fullName => 'Full name';
+  String get fullName => '完整名稱';
 
   @override
-  String get mustChangePassword => 'Must change password on first login';
+  String get mustChangePassword => '首次登入時必須變更密碼';
 
   @override
-  String get pleaseEnterTitle => 'Please enter a title';
+  String get pleaseEnterTitle => '請輸入標題';
 
   @override
   String get noActivity => '暂无活动';
@@ -3150,10 +3165,10 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get settingsSaved => '設定已保存';
 
   @override
-  String get privateRepo => 'Private repository';
+  String get privateRepo => '私人倉庫';
 
   @override
-  String get privateRepoDesc => 'Only visible to you and collaborators';
+  String get privateRepoDesc => '僅限您和協作者可見';
 
   @override
   String get enableIssues => '启用 Issue';
@@ -3243,28 +3258,28 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get url => '链接';
 
   @override
-  String get info => 'Info';
+  String get info => '資訊';
 
   @override
-  String get teams => 'Teams';
+  String get teams => '團隊';
 
   @override
   String get noTeams => '暂无团队';
 
   @override
-  String get location => 'Location';
+  String get location => '位置';
 
   @override
-  String get visibility => 'Visibility';
+  String get visibility => '可見性';
 
   @override
-  String get assets => 'Assets';
+  String get assets => '資產';
 
   @override
-  String get publishedAt => 'Published At';
+  String get publishedAt => '發佈於';
 
   @override
-  String get target => 'Target';
+  String get target => '目標';
 
   @override
   String get forked => '已分叉';
@@ -3273,16 +3288,16 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get forkRepoConfirm => '这将在你的账号下建立此倉庫的 Fork。';
 
   @override
-  String get editIssue => 'Edit Issue';
+  String get editIssue => '編輯 Issue';
 
   @override
-  String get titleRequired => 'Title is required';
+  String get titleRequired => '標題為必填項';
 
   @override
   String get selectMilestone => '选择里程碑';
 
   @override
-  String get members => 'Members';
+  String get members => '成員';
 
   @override
   String get noMembers => '暂无成员';
@@ -3746,6 +3761,12 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get unsubscribe => '取消订阅';
 
   @override
+  String get subscribed => '已訂閱';
+
+  @override
+  String get unsubscribed => '已取消訂閱';
+
+  @override
   String get setDueDate => '設定截止日期';
 
   @override
@@ -3770,7 +3791,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get ssh => 'SSH';
 
   @override
-  String get teamAdminAccess => 'Team Admin Access';
+  String get teamAdminAccess => '團隊管理員存取';
 
   @override
   String get details => 'Details';
@@ -3782,35 +3803,35 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get searchRepositoriesHint => '搜尋倉庫';
 
   @override
-  String get publicKey => 'Public Key';
+  String get publicKey => '公開金鑰';
 
   @override
-  String get failedToGetAccessToken => 'Failed to get access token';
+  String get failedToGetAccessToken => '取得存取權杖失敗';
 
   @override
-  String get fileNotFound => 'File not found';
+  String get fileNotFound => '找不到檔案';
 
   @override
-  String get noSshKeysFound => 'No SSH keys found';
+  String get noSshKeysFound => '找不到 SSH 金鑰';
 
   @override
-  String get other => 'Other';
+  String get other => '其他';
 
   @override
-  String get usernameRequired => 'Username is required';
+  String get usernameRequired => '使用者名稱為必填項';
 
   @override
-  String get myLaptopHint => 'My Laptop';
+  String get myLaptopHint => '我的筆記型電腦';
 
   @override
-  String get sshPublicKeyHint => 'Paste your SSH public key here';
+  String get sshPublicKeyHint => '在此貼上您的 SSH 公開金鑰';
 
   @override
-  String get noChangesFoundForFile => 'No changes found for this file';
+  String get noChangesFoundForFile => '找不到此檔案的變更';
 
   @override
   String commitUpdateFile(Object fileName) {
-    return 'Update $fileName';
+    return '更新 $fileName';
   }
 
   @override
@@ -3820,7 +3841,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get ui => 'UI';
 
   @override
-  String get justNow => 'just now';
+  String get justNow => '剛才';
 
   @override
   String get packages => '套件';
@@ -4045,4 +4066,334 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get addEmail => '新增郵件';
+
+  @override
+  String get gpgKeys => 'GPG 金鑰';
+
+  @override
+  String get addGpgKey => '新增 GPG 金鑰';
+
+  @override
+  String get gpgKeyHint => '-----BEGIN PGP PUBLIC KEY BLOCK-----';
+
+  @override
+  String get gpgKeyAdded => 'GPG 金鑰已新增';
+
+  @override
+  String get gpgKeyDeleted => 'GPG 金鑰已刪除';
+
+  @override
+  String get deleteGpgKey => '刪除 GPG 金鑰';
+
+  @override
+  String get deleteGpgKeyConfirm => '確定要刪除此 GPG 金鑰嗎？';
+
+  @override
+  String get noGpgKeys => '暫無 GPG 金鑰';
+
+  @override
+  String get sign => '簽署';
+
+  @override
+  String get certify => '認證';
+
+  @override
+  String get verified => '已驗證';
+
+  @override
+  String get tagProtections => '標籤保護';
+
+  @override
+  String get manageTagProtections => '管理標籤保護規則';
+
+  @override
+  String get createTagProtection => '建立標籤保護';
+
+  @override
+  String get namePattern => '名稱模式';
+
+  @override
+  String get tagProtectionCreated => '標籤保護已建立';
+
+  @override
+  String get tagProtectionDeleted => '標籤保護已刪除';
+
+  @override
+  String get deleteTagProtection => '刪除標籤保護';
+
+  @override
+  String get deleteTagProtectionConfirm => '確定要刪除此標籤保護嗎？';
+
+  @override
+  String get noTagProtections => '暫無標籤保護';
+
+  @override
+  String get allowedUsers => '允許的使用者';
+
+  @override
+  String get dependencies => '相依性';
+
+  @override
+  String get addDependency => '新增相依';
+
+  @override
+  String get dependencyAdded => '相依已新增';
+
+  @override
+  String get dependencyRemoved => '相依已移除';
+
+  @override
+  String get removeDependency => '移除相依';
+
+  @override
+  String get removeDependencyConfirm => '確定要移除此相依嗎？';
+
+  @override
+  String get noDependencies => '暫無相依';
+
+  @override
+  String get blocks => '封鎖';
+
+  @override
+  String get dependsOn => '相依於';
+
+  @override
+  String get issueNumberHint => 'Issue #';
+
+  @override
+  String get events => '事件';
+
+  @override
+  String get items => '項目';
+
+  @override
+  String get commented => '已評論';
+
+  @override
+  String get labelUpdated => '標籤已更新';
+
+  @override
+  String get milestoneUpdated => '里程碑已更新';
+
+  @override
+  String get assigneeUpdated => '負責人已更新';
+
+  @override
+  String get reopened => '已重新開啟';
+
+  @override
+  String get stargazers => '星標使用者';
+
+  @override
+  String get subscribers => '訂閱者';
+
+  @override
+  String get noStargazers => '尚無星標使用者';
+
+  @override
+  String get noSubscribers => '尚無訂閱者';
+
+  @override
+  String get adminHooksTitle => '系統 Hooks';
+
+  @override
+  String get adminCronTitle => '排程任務';
+
+  @override
+  String get adminRunnersTitle => 'Actions Runners';
+
+  @override
+  String get adminEmailsTitle => '郵件記錄';
+
+  @override
+  String get adminBadgesTitle => '徽章管理';
+
+  @override
+  String get adminRunCron => '立即執行';
+
+  @override
+  String get adminGetToken => '取得註冊 Token';
+
+  @override
+  String get adminNoHooks => '未設定系統 Hooks';
+
+  @override
+  String get adminNoCron => '無排程任務';
+
+  @override
+  String get adminNoRunners => '無 Action Runners';
+
+  @override
+  String get adminNoEmails => '無郵件記錄';
+
+  @override
+  String get adminNoBadges => '無徽章';
+
+  @override
+  String get adminBadgeUsername => '使用者名稱';
+
+  @override
+  String get adminBadgeDescription => '描述';
+
+  @override
+  String get oauthAppsTitle => 'OAuth 應用程式';
+
+  @override
+  String get oauthNoApps => '無 OAuth 應用程式';
+
+  @override
+  String get oauthCreateApp => '建立 OAuth 應用程式';
+
+  @override
+  String get oauthRedirectUri => '重新導向 URI';
+
+  @override
+  String get oauthDeleteAppConfirm => '刪除 OAuth 應用程式';
+
+  @override
+  String get name => '名稱';
+
+  @override
+  String get confirmDelete => '確認刪除';
+
+  @override
+  String get actionsSecretsTitle => 'Actions Secrets';
+
+  @override
+  String get actionsVariablesTitle => 'Actions Variables';
+
+  @override
+  String get actionsNoSecrets => '未設定 Secrets';
+
+  @override
+  String get actionsNoVariables => '未設定 Variables';
+
+  @override
+  String get actionsCreateSecret => '建立 Secret';
+
+  @override
+  String get actionsCreateVariable => '建立 Variable';
+
+  @override
+  String get actionsSecretName => 'Secret 名稱';
+
+  @override
+  String get actionsSecretValue => 'Secret 值';
+
+  @override
+  String get actionsVariableName => 'Variable 名稱';
+
+  @override
+  String get actionsVariableValue => 'Variable 值';
+
+  @override
+  String get actionsDeleteSecretConfirm => '刪除此 Secret？';
+
+  @override
+  String get actionsDeleteVariableConfirm => '刪除此 Variable？';
+
+  @override
+  String get deleted => '已刪除';
+
+  @override
+  String get overdue => '已逾期';
+
+  @override
+  String get addTopic => '新增主題';
+
+  @override
+  String get importRepository => '匯入儲存庫';
+
+  @override
+  String get import => '匯入';
+
+  @override
+  String get repoImported => '儲存庫已匯入';
+
+  @override
+  String get cloneUrl => '複製網址';
+
+  @override
+  String get repoOwner => '擁有者';
+
+  @override
+  String get gitService => 'Git 服務';
+
+  @override
+  String get authentication => '身分驗證';
+
+  @override
+  String get authUsername => '驗證使用者名稱';
+
+  @override
+  String get authPassword => '驗證密碼';
+
+  @override
+  String get authToken => '驗證權杖';
+
+  @override
+  String get migrationOptions => '選項';
+
+  @override
+  String get migrateData => '要匯入的資料';
+
+  @override
+  String get mirror => '鏡像';
+
+  @override
+  String get mirrorInterval => '鏡像間隔';
+
+  @override
+  String get requiredField => '此欄位為必填';
+
+  @override
+  String get personal => '個人';
+
+  @override
+  String get deleteOrganization => '刪除組織';
+
+  @override
+  String get deleteOrganizationConfirm => '確定要刪除此組織嗎？此動作無法復原。';
+
+  @override
+  String get organizationDeleted => '組織已刪除';
+
+  @override
+  String get accessTokens => '存取權杖';
+
+  @override
+  String get createToken => '建立權杖';
+
+  @override
+  String get tokenName => '權杖名稱';
+
+  @override
+  String get tokenCreated => '權杖已建立';
+
+  @override
+  String get tokenValueWarning => '請立即複製此權杖，關閉後將無法再次檢視。';
+
+  @override
+  String get failedToCreateToken => '建立權杖失敗';
+
+  @override
+  String get deleteToken => '刪除權杖';
+
+  @override
+  String get deleteTokenConfirm => '確定要刪除';
+
+  @override
+  String get tokenDeleted => '權杖已刪除';
+
+  @override
+  String get noTokens => '暫無存取權杖';
+
+  @override
+  String get scopes => '權限範圍';
+
+  @override
+  String get selectAll => '全選';
+
+  @override
+  String get deselectAll => '取消全選';
 }
