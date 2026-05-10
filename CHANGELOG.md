@@ -19,7 +19,15 @@
 
 ## [Unreleased]
 
+## [0.31.0] - 2026-05-10
+
 ### Added
+- **Issue/PR Emoji Reactions**: add/remove emoji reactions on issues, PRs, and comments
+  - API: 6 methods for issue and comment reactions (list/add/delete)
+  - Repository + use cases: `ReactionRepository`, 6 use cases
+  - UI: reaction row with emoji buttons, highlighted state on user's own reactions
+  - Supported: +1, -1, laugh, hooray, confused, heart, eyes
+- **Branch → Code browser**: tapping a branch in the branches list now navigates to the code browser filtered to that branch
 - **Saved Filters**: save and restore issue list filter presets (state + search query) via SharedPreferences
   - Model: `SavedFilter` with id/name/state/query fields
   - Service: `SavedFilterService` with lazy SharedPreferences init

@@ -2,7 +2,15 @@
 
 ## [Unreleased]
 
+## [0.31.0] - 2026-05-10
+
 ### Added
+- **Issue/PR 表情反应**：在 Issue、PR 和评论上添加/删除表情反应
+  - API：6 个方法支持 Issue 和评论的 reactions（列表/添加/删除）
+  - Repository + Use Cases：`ReactionRepository`，6 个 Use Cases
+  - UI：表情反应行，支持 emoji 按钮，用户自己的反应高亮显示
+  - 支持：+1、-1、laugh、hooray、confused、heart、eyes
+- **分支 → 代码浏览**：点击分支列表中的分支，现在直接跳转到该分支的代码浏览器
 - **保存筛选条件**：通过 SharedPreferences 保存和恢复 Issue 列表筛选条件预设（状态 + 搜索关键词）
   - 模型：`SavedFilter`，包含 id/name/state/query 字段
   - 服务：`SavedFilterService`，支持延迟初始化 SharedPreferences
