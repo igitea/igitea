@@ -3,6 +3,10 @@
 ## [Unreleased]
 
 ### Added
+- **保存筛选条件**：通过 SharedPreferences 保存和恢复 Issue 列表筛选条件预设（状态 + 搜索关键词）
+  - 模型：`SavedFilter`，包含 id/name/state/query 字段
+  - 服务：`SavedFilterService`，支持延迟初始化 SharedPreferences
+  - UI：可展开的保存筛选条件栏，支持应用/删除，保存当前筛选条件按钮
 - **仓库关注/取消关注**：仓库详情头部添加关注按钮，支持订阅/取消订阅仓库通知
   - API：`repoAddSubscription`/`repoDeleteSubscription`/`repoCheckSubscription`
   - Use Cases：`AddRepoSubscriptionUseCase`/`DeleteRepoSubscriptionUseCase`/`CheckRepoSubscriptionUseCase`

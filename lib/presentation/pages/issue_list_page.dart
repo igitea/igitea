@@ -10,6 +10,8 @@ import '../widgets/empty_state.dart';
 import '../widgets/premium_card.dart';
 import '../widgets/user_avatar.dart';
 import 'issue_detail_page.dart';
+import '../../domain/services/saved_filter_service.dart';
+import '../../domain/models/saved_filter.dart';
 
 class IssueListPage extends StatefulWidget {
   const IssueListPage({super.key});
@@ -22,6 +24,10 @@ class _IssueListPageState extends State<IssueListPage> {
   String _searchQuery = '';
   final _searchController = TextEditingController();
   bool _isNavigating = false;
+  final SavedFilterService _savedFilterService = SavedFilterService();
+  List<SavedFilter> _savedFilters = [];
+  bool _savedFiltersExpanded = false;
+  bool _filtersLoaded = false;
 
   @override
   void initState() {
@@ -32,6 +38,7 @@ class _IssueListPageState extends State<IssueListPage> {
         notifier.searchIssues('', state: notifier.issuesListFilter ?? 'open');
       }
     });
+    _loadSavedFilters();
   }
 
   @override
@@ -59,6 +66,59 @@ class _IssueListPageState extends State<IssueListPage> {
   void _onSearch(String query) {
     setState(() => _searchQuery = query);
     _forceReload();
+  }
+
+  Future<void> _loadSavedFilters() async {
+    final filters = await _savedFilterService.loadFilters();
+    if (mounted) {
+      setState(() {
+        _savedFilters = filters;
+        _filtersLoaded = true;
+      });
+    }
+  }
+
+  void _applyFilter(SavedFilter filter) {
+    final notifier = Injection.issueNotifier;
+    notifier.searchIssues(
+      filter.query ?? '',
+      state: filter.state,
+    );
+    setState(() {});
+  }
+
+  Future<void> _saveCurrentFilter() async {
+    final notifier = Injection.issueNotifier;
+    final filterState = notifier.issuesListFilter ?? 'open';
+    final controller = TextEditingController();
+    final name = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Save Filter'),
+        content: TextField(
+          controller: controller,
+          decoration: const InputDecoration(hintText: 'Filter name'),
+          autofocus: true,
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
+          FilledButton(onPressed: () => Navigator.pop(ctx, controller.text), child: const Text('Save')),
+        ],
+      ),
+    );
+    controller.dispose();
+    if (name != null && name.trim().isNotEmpty) {
+      await _savedFilterService.addFilter(
+        name.trim(), filterState,
+        query: _searchQuery.isNotEmpty ? _searchQuery : null,
+      );
+      _loadSavedFilters();
+    }
+  }
+
+  Future<void> _deleteSavedFilter(SavedFilter filter) async {
+    await _savedFilterService.deleteFilter(filter.id);
+    _loadSavedFilters();
   }
 
   @override
@@ -108,6 +168,63 @@ class _IssueListPageState extends State<IssueListPage> {
               ),
             ),
           ),
+          if (_filtersLoaded && _savedFilters.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: UIConstants.md),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  InkWell(
+                    onTap: () => setState(() => _savedFiltersExpanded = !_savedFiltersExpanded),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: UIConstants.xs),
+                      child: Row(
+                        children: [
+                          Icon(
+                            _savedFiltersExpanded ? Icons.expand_less : Icons.expand_more,
+                            size: 18,
+                          ),
+                          const SizedBox(width: 4),
+                          Text('Saved Filters (${_savedFilters.length})',
+                            style: Theme.of(context).textTheme.labelMedium,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  if (_savedFiltersExpanded)
+                    SizedBox(
+                      height: 36,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _savedFilters.length,
+                        separatorBuilder: (_, _) => const SizedBox(width: 4),
+                        itemBuilder: (context, i) {
+                          final f = _savedFilters[i];
+                          return InputChip(
+                            label: Text(f.name, style: const TextStyle(fontSize: 12)),
+                            onPressed: () => _applyFilter(f),
+                            onDeleted: () => _deleteSavedFilter(f),
+                          );
+                        },
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          if (_filtersLoaded && (_searchQuery.isNotEmpty || Injection.issueNotifier.issuesListFilter != null))
+            Align(
+              alignment: Alignment.centerRight,
+              child: Padding(
+                padding: const EdgeInsets.only(right: UIConstants.md),
+                child: TextButton.icon(
+                  icon: const Icon(Icons.save_outlined, size: 16),
+                  label: const Text('Save filter', style: TextStyle(fontSize: 12)),
+                  onPressed: _saveCurrentFilter,
+                ),
+              ),
+            ),
           Expanded(
             child: ListenableBuilder(
               listenable: Injection.issueNotifier,

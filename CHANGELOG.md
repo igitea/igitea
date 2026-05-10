@@ -20,6 +20,10 @@
 ## [Unreleased]
 
 ### Added
+- **Saved Filters**: save and restore issue list filter presets (state + search query) via SharedPreferences
+  - Model: `SavedFilter` with id/name/state/query fields
+  - Service: `SavedFilterService` with lazy SharedPreferences init
+  - UI: expandable saved filters bar with apply/delete, save current filter button
 - **Repository watch/unwatch**: toggle button in repo detail header to subscribe/unsubscribe to repository notifications
   - API: `repoAddSubscription`/`repoDeleteSubscription`/`repoCheckSubscription`
   - Use cases: `AddRepoSubscriptionUseCase`/`DeleteRepoSubscriptionUseCase`/`CheckRepoSubscriptionUseCase`

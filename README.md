@@ -47,6 +47,7 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 - **Issue dependencies**: add/remove dependencies with navigation to linked issues
 - **Issue subscriptions**: subscribe/unsubscribe toggle with status indicator
 - **Due date display**: visual overdue warning for past-due open issues
+- **Saved Filters**: save and restore issue list filter presets via SharedPreferences
 
 ### Milestones
 - List milestones with progress bars and open/closed counts
