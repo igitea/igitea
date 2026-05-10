@@ -415,6 +415,24 @@ class RepoRepositoryImpl implements RepoRepository {
   }
 
   @override
+  Future<Either<Failure, void>> addRepoSubscription(
+      String owner, String repo) async {
+    return execute(() => _apiService.repoAddSubscription(owner: owner, repo: repo));
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteRepoSubscription(
+      String owner, String repo) async {
+    return execute(() => _apiService.repoDeleteSubscription(owner: owner, repo: repo));
+  }
+
+  @override
+  Future<Either<Failure, bool>> checkRepoSubscription(
+      String owner, String repo) async {
+    return execute(() => _apiService.repoCheckSubscription(owner: owner, repo: repo));
+  }
+
+  @override
   Future<Either<Failure, PullRequest>> createPullRequest(
     String owner,
     String repo,

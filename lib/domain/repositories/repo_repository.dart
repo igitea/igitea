@@ -203,6 +203,12 @@ abstract class RepoRepository {
   /// Check if the current user has starred a repository.
   Future<Either<Failure, bool>> checkStarred(String owner, String repo);
 
+  Future<Either<Failure, void>> addRepoSubscription(String owner, String repo);
+
+  Future<Either<Failure, void>> deleteRepoSubscription(String owner, String repo);
+
+  Future<Either<Failure, bool>> checkRepoSubscription(String owner, String repo);
+
   /// Create a pull request.
   Future<Either<Failure, PullRequest>> createPullRequest(
     String owner,

@@ -20,6 +20,10 @@
 ## [Unreleased]
 
 ### Added
+- **Repository watch/unwatch**: toggle button in repo detail header to subscribe/unsubscribe to repository notifications
+  - API: `repoAddSubscription`/`repoDeleteSubscription`/`repoCheckSubscription`
+  - Use cases: `AddRepoSubscriptionUseCase`/`DeleteRepoSubscriptionUseCase`/`CheckRepoSubscriptionUseCase`
+  - Notifier: `checkWatched`/`toggleWatch` methods, `isWatched`/`watchLoading` state
 - **Complete i18n translations**: 117 missing keys added to de, es, fr, ja, ko, pt, ru, zh_TW (936 total), all 8 locales now at 100% parity with English template (710 keys)
 
 ### Fixed

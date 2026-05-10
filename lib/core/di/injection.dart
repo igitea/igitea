@@ -26,6 +26,7 @@ import '../../domain/usecases/notification_usecases.dart';
 import '../../domain/usecases/organization_usecases.dart';
 import '../../domain/usecases/package_usecases.dart';
 import '../../domain/usecases/repo_usecases.dart';
+import '../../domain/usecases/repo_watch_usecases.dart';
 import '../../domain/usecases/user_oauth_usecases.dart';
 import '../../domain/usecases/user_usecases.dart';
 import '../../presentation/state/admin_notifier.dart';
@@ -84,6 +85,9 @@ class Injection {
   static late StarRepoUseCase starRepoUseCase;
   static late UnstarRepoUseCase unstarRepoUseCase;
   static late CheckStarredUseCase checkStarredUseCase;
+  static late AddRepoSubscriptionUseCase addRepoSubscriptionUseCase;
+  static late DeleteRepoSubscriptionUseCase deleteRepoSubscriptionUseCase;
+  static late CheckRepoSubscriptionUseCase checkRepoSubscriptionUseCase;
   static late MergePullRequestUseCase mergePullRequestUseCase;
   static late CreatePullRequestUseCase createPullRequestUseCase;
   static late EditRepoUseCase editRepoUseCase;
@@ -453,6 +457,9 @@ class Injection {
     starRepoUseCase = StarRepoUseCase(repository: repoRepository);
     unstarRepoUseCase = UnstarRepoUseCase(repository: repoRepository);
     checkStarredUseCase = CheckStarredUseCase(repository: repoRepository);
+    addRepoSubscriptionUseCase = AddRepoSubscriptionUseCase(repository: repoRepository);
+    deleteRepoSubscriptionUseCase = DeleteRepoSubscriptionUseCase(repository: repoRepository);
+    checkRepoSubscriptionUseCase = CheckRepoSubscriptionUseCase(repository: repoRepository);
     mergePullRequestUseCase = MergePullRequestUseCase(repository: repoRepository);
     createPullRequestUseCase = CreatePullRequestUseCase(repository: repoRepository);
     editRepoUseCase = EditRepoUseCase(repository: repoRepository);
@@ -675,152 +682,9 @@ class Injection {
         starRepoUseCase: starRepoUseCase,
         unstarRepoUseCase: unstarRepoUseCase,
         checkStarredUseCase: checkStarredUseCase,
-        mergePullRequestUseCase: mergePullRequestUseCase,
-        createPullRequestUseCase: createPullRequestUseCase,
-        editRepoUseCase: editRepoUseCase,
-        deleteRepoUseCase: deleteRepoUseCase,
-        updateFileUseCase: updateFileUseCase,
-        createForkUseCase: createForkUseCase,
-        listWikiPagesUseCase: listWikiPagesUseCase,
-        getWikiPageUseCase: getWikiPageUseCase,
-        createWikiPageUseCase: createWikiPageUseCase,
-        editWikiPageUseCase: editWikiPageUseCase,
-        deleteWikiPageUseCase: deleteWikiPageUseCase,
-        listHooksUseCase: listHooksUseCase,
-        createHookUseCase: createHookUseCase,
-        deleteHookUseCase: deleteHookUseCase,
-        editHookUseCase: editHookUseCase,
-        listCollaboratorsUseCase: listCollaboratorsUseCase,
-        addCollaboratorUseCase: addCollaboratorUseCase,
-        removeCollaboratorUseCase: removeCollaboratorUseCase,
-      );
-      issueNotifier.updateUseCases(
-        listIssuesUseCase: listIssuesUseCase,
-        getIssueUseCase: getIssueUseCase,
-        createIssueUseCase: createIssueUseCase,
-        editIssueUseCase: editIssueUseCase,
-        deleteIssueUseCase: deleteIssueUseCase,
-        listCommentsUseCase: listCommentsUseCase,
-        createCommentUseCase: createCommentUseCase,
-        searchIssuesUseCase: searchIssuesUseCase,
-        listLabelsUseCase: listLabelsUseCase,
-        listMilestonesUseCase: listMilestonesUseCase,
-        createMilestoneUseCase: createMilestoneUseCase,
-        editMilestoneUseCase: editMilestoneUseCase,
-        deleteMilestoneUseCase: deleteMilestoneUseCase,
-        createLabelUseCase: createLabelUseCase,
-        editLabelUseCase: editLabelUseCase,
-        deleteLabelUseCase: deleteLabelUseCase,
-      replaceIssueLabelsUseCase: replaceIssueLabelsUseCase,
-      );
-      organizationNotifier.updateUseCases(
-        getOrgUseCase: getOrgUseCase,
-        listCurrentUserOrgsUseCase: listCurrentUserOrgsUseCase,
-        listOrgReposUseCase: listOrgReposUseCase,
-        listOrgTeamsUseCase: listOrgTeamsUseCase,
-        getTeamUseCase: getTeamUseCase,
-        listTeamMembersUseCase: listTeamMembersUseCase,
-        listTeamReposUseCase: listTeamReposUseCase,
-        editOrgUseCase: editOrgUseCase,
-        createOrgUseCase: createOrgUseCase,
-        deleteOrgUseCase: deleteOrgUseCase,
-        createTeamUseCase: createTeamUseCase,
-        editTeamUseCase: editTeamUseCase,
-        deleteTeamUseCase: deleteTeamUseCase,
-        addTeamMemberUseCase: addTeamMemberUseCase,
-        removeTeamMemberUseCase: removeTeamMemberUseCase,
-      );
-      notificationNotifier.updateUseCases(
-        listNotificationsUseCase: listNotificationsUseCase,
-        markThreadReadUseCase: markThreadReadUseCase,
-        markNotificationsReadUseCase: markNotificationsReadUseCase,
-        checkNewAvailableUseCase: checkNewNotificationsUseCase,
-      );
-      packageNotifier.updateUseCases(
-        listPackagesUseCase: listPackagesUseCase,
-        getPackageUseCase: getPackageUseCase,
-        listPackageFilesUseCase: listPackageFilesUseCase,
-        deletePackageUseCase: deletePackageUseCase,
-        listPackageVersionsUseCase: listPackageVersionsUseCase,
-      );
-      adminNotifier.updateUseCases(
-        searchUsersUseCase: searchUsersUseCase,
-        createUserUseCase: createUserUseCase,
-        editUserUseCase: editUserUseCase,
-        deleteUserUseCase: deleteUserUseCase,
-        listAdminHooksUseCase: listAdminHooksUseCase,
-        getAdminHookUseCase: getAdminHookUseCase,
-        deleteAdminHookUseCase: deleteAdminHookUseCase,
-        createAdminHookUseCase: createAdminHookUseCase,
-        listCronTasksUseCase: listCronTasksUseCase,
-        runCronTaskUseCase: runCronTaskUseCase,
-        listAdminRunnersUseCase: listAdminRunnersUseCase,
-        getAdminRunnerUseCase: getAdminRunnerUseCase,
-        getAdminRunnerRegistrationTokenUseCase: getAdminRunnerRegistrationTokenUseCase,
-        listAdminEmailsUseCase: listAdminEmailsUseCase,
-        listUserBadgesUseCase: listUserBadgesUseCase,
-        createUserBadgeUseCase: createUserBadgeUseCase,
-        deleteUserBadgeUseCase: deleteUserBadgeUseCase,
-      );
-      userOAuthNotifier.updateUseCases(
-        listOAuth2AppsUseCase: listOAuth2AppsUseCase,
-        createOAuth2AppUseCase: createOAuth2AppUseCase,
-        getOAuth2AppUseCase: getOAuth2AppUseCase,
-        deleteOAuth2AppUseCase: deleteOAuth2AppUseCase,
-      );
-      tokenNotifier.updateUseCases(
-        listTokensUseCase: listTokensUseCase,
-        createTokenUseCase: createTokenUseCase,
-        deleteTokenUseCase: deleteTokenUseCase,
-      );
-      orgActionsNotifier.updateUseCases(
-        listOrgActionsSecretsUseCase: listOrgActionsSecretsUseCase,
-        createOrUpdateOrgActionsSecretUseCase: createOrUpdateOrgActionsSecretUseCase,
-        deleteOrgActionsSecretUseCase: deleteOrgActionsSecretUseCase,
-        listOrgActionsVariablesUseCase: listOrgActionsVariablesUseCase,
-        getOrgActionsVariableUseCase: getOrgActionsVariableUseCase,
-        createOrUpdateOrgActionsVariableUseCase: createOrUpdateOrgActionsVariableUseCase,
-        deleteOrgActionsVariableUseCase: deleteOrgActionsVariableUseCase,
-      );
-      repoActionsNotifier.updateUseCases(
-        listRepoActionsSecretsUseCase: listRepoActionsSecretsUseCase,
-        createOrUpdateRepoActionsSecretUseCase: createOrUpdateRepoActionsSecretUseCase,
-        deleteRepoActionsSecretUseCase: deleteRepoActionsSecretUseCase,
-        listRepoActionsVariablesUseCase: listRepoActionsVariablesUseCase,
-        getRepoActionsVariableUseCase: getRepoActionsVariableUseCase,
-        createOrUpdateRepoActionsVariableUseCase: createOrUpdateRepoActionsVariableUseCase,
-        deleteRepoActionsVariableUseCase: deleteRepoActionsVariableUseCase,
-      );
-    } else {
-      authNotifier = AuthNotifier(
-        loginUseCase: loginUseCase,
-        getSettingsUseCase: getSettingsUseCase,
-      );
-      userNotifier = UserNotifier(
-        getCurrentUserUseCase: getCurrentUserUseCase,
-        listCurrentUserReposUseCase: listCurrentUserReposUseCase,
-        getUserActivitiesUseCase: getUserActivitiesUseCase,
-        listStarredReposUseCase: listStarredReposUseCase,
-        searchPublicUsersUseCase: searchPublicUsersUseCase,
-      );
-      repoNotifier = RepoNotifier(
-        getRepoUseCase: getRepoUseCase,
-        searchReposUseCase: searchReposUseCase,
-        listBranchesUseCase: listBranchesUseCase,
-        listCommitsUseCase: listCommitsUseCase,
-        getCommitUseCase: getCommitUseCase,
-        listTagsUseCase: listTagsUseCase,
-        getTagUseCase: getTagUseCase,
-        getRepoContentsUseCase: getRepoContentsUseCase,
-        listPullRequestsUseCase: listPullRequestsUseCase,
-        getPullRequestUseCase: getPullRequestUseCase,
-        listReleasesUseCase: listReleasesUseCase,
-        createReleaseUseCase: createReleaseUseCase,
-        editReleaseUseCase: editReleaseUseCase,
-        deleteReleaseUseCase: deleteReleaseUseCase,
-        starRepoUseCase: starRepoUseCase,
-        unstarRepoUseCase: unstarRepoUseCase,
-        checkStarredUseCase: checkStarredUseCase,
+        addRepoSubscriptionUseCase: addRepoSubscriptionUseCase,
+        deleteRepoSubscriptionUseCase: deleteRepoSubscriptionUseCase,
+        checkRepoSubscriptionUseCase: checkRepoSubscriptionUseCase,
         mergePullRequestUseCase: mergePullRequestUseCase,
         createPullRequestUseCase: createPullRequestUseCase,
         editRepoUseCase: editRepoUseCase,
@@ -989,6 +853,9 @@ class Injection {
       starRepoUseCase: starRepoUseCase,
       unstarRepoUseCase: unstarRepoUseCase,
       checkStarredUseCase: checkStarredUseCase,
+      addRepoSubscriptionUseCase: addRepoSubscriptionUseCase,
+      deleteRepoSubscriptionUseCase: deleteRepoSubscriptionUseCase,
+      checkRepoSubscriptionUseCase: checkRepoSubscriptionUseCase,
       mergePullRequestUseCase: mergePullRequestUseCase,
       createPullRequestUseCase: createPullRequestUseCase,
       editRepoUseCase: editRepoUseCase,

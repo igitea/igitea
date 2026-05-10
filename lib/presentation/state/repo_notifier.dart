@@ -4,6 +4,7 @@ import '../../core/errors/failures.dart';
 import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../domain/usecases/repo_usecases.dart';
+import '../../domain/usecases/repo_watch_usecases.dart';
 
 sealed class RepoState {
   const RepoState();
@@ -255,6 +256,9 @@ class RepoNotifier extends ChangeNotifier {
   StarRepoUseCase _starRepoUseCase;
   UnstarRepoUseCase _unstarRepoUseCase;
   CheckStarredUseCase _checkStarredUseCase;
+  AddRepoSubscriptionUseCase _addRepoSubscriptionUseCase;
+  DeleteRepoSubscriptionUseCase _deleteRepoSubscriptionUseCase;
+  CheckRepoSubscriptionUseCase _checkRepoSubscriptionUseCase;
   MergePullRequestUseCase _mergePullRequestUseCase;
   CreatePullRequestUseCase _createPullRequestUseCase;
   EditRepoUseCase _editRepoUseCase;
@@ -312,6 +316,10 @@ class RepoNotifier extends ChangeNotifier {
   bool get isStarred => _isStarred;
   bool _starLoading = false;
   bool get starLoading => _starLoading;
+  bool _isWatched = false;
+  bool get isWatched => _isWatched;
+  bool _watchLoading = false;
+  bool get watchLoading => _watchLoading;
 
   RepoNotifier({
     required GetRepoUseCase getRepoUseCase,
@@ -331,6 +339,9 @@ class RepoNotifier extends ChangeNotifier {
     required StarRepoUseCase starRepoUseCase,
     required UnstarRepoUseCase unstarRepoUseCase,
     required CheckStarredUseCase checkStarredUseCase,
+    required AddRepoSubscriptionUseCase addRepoSubscriptionUseCase,
+    required DeleteRepoSubscriptionUseCase deleteRepoSubscriptionUseCase,
+    required CheckRepoSubscriptionUseCase checkRepoSubscriptionUseCase,
     required MergePullRequestUseCase mergePullRequestUseCase,
     required CreatePullRequestUseCase createPullRequestUseCase,
     required EditRepoUseCase editRepoUseCase,
@@ -366,6 +377,9 @@ class RepoNotifier extends ChangeNotifier {
        _starRepoUseCase = starRepoUseCase,
        _unstarRepoUseCase = unstarRepoUseCase,
        _checkStarredUseCase = checkStarredUseCase,
+       _addRepoSubscriptionUseCase = addRepoSubscriptionUseCase,
+       _deleteRepoSubscriptionUseCase = deleteRepoSubscriptionUseCase,
+       _checkRepoSubscriptionUseCase = checkRepoSubscriptionUseCase,
        _mergePullRequestUseCase = mergePullRequestUseCase,
        _createPullRequestUseCase = createPullRequestUseCase,
        _editRepoUseCase = editRepoUseCase,
@@ -403,6 +417,9 @@ class RepoNotifier extends ChangeNotifier {
     required StarRepoUseCase starRepoUseCase,
     required UnstarRepoUseCase unstarRepoUseCase,
     required CheckStarredUseCase checkStarredUseCase,
+    required AddRepoSubscriptionUseCase addRepoSubscriptionUseCase,
+    required DeleteRepoSubscriptionUseCase deleteRepoSubscriptionUseCase,
+    required CheckRepoSubscriptionUseCase checkRepoSubscriptionUseCase,
     required MergePullRequestUseCase mergePullRequestUseCase,
     required CreatePullRequestUseCase createPullRequestUseCase,
     required EditRepoUseCase editRepoUseCase,
@@ -439,6 +456,9 @@ class RepoNotifier extends ChangeNotifier {
     _starRepoUseCase = starRepoUseCase;
     _unstarRepoUseCase = unstarRepoUseCase;
     _checkStarredUseCase = checkStarredUseCase;
+    _addRepoSubscriptionUseCase = addRepoSubscriptionUseCase;
+    _deleteRepoSubscriptionUseCase = deleteRepoSubscriptionUseCase;
+    _checkRepoSubscriptionUseCase = checkRepoSubscriptionUseCase;
     _mergePullRequestUseCase = mergePullRequestUseCase;
     _createPullRequestUseCase = createPullRequestUseCase;
     _editRepoUseCase = editRepoUseCase;
@@ -764,6 +784,44 @@ class RepoNotifier extends ChangeNotifier {
       }
     }
     _starLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> checkWatched(String owner, String repo) async {
+    _watchLoading = true;
+    notifyListeners();
+    final result = await _checkRepoSubscriptionUseCase.call(
+      CheckRepoSubscriptionParams(owner: owner, repo: repo),
+    );
+    if (result is Right<Failure, bool>) {
+      _isWatched = result.value;
+    } else {
+      _isWatched = false;
+    }
+    _watchLoading = false;
+    notifyListeners();
+  }
+
+  Future<void> toggleWatch(String owner, String repo) async {
+    if (_watchLoading) return;
+    _watchLoading = true;
+    notifyListeners();
+    if (_isWatched) {
+      final result = await _deleteRepoSubscriptionUseCase.call(
+        DeleteRepoSubscriptionParams(owner: owner, repo: repo),
+      );
+      if (result is Right<Failure, void>) {
+        _isWatched = false;
+      }
+    } else {
+      final result = await _addRepoSubscriptionUseCase.call(
+        AddRepoSubscriptionParams(owner: owner, repo: repo),
+      );
+      if (result is Right<Failure, void>) {
+        _isWatched = true;
+      }
+    }
+    _watchLoading = false;
     notifyListeners();
   }
 

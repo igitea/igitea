@@ -3,6 +3,10 @@
 ## [Unreleased]
 
 ### Added
+- **仓库关注/取消关注**：仓库详情头部添加关注按钮，支持订阅/取消订阅仓库通知
+  - API：`repoAddSubscription`/`repoDeleteSubscription`/`repoCheckSubscription`
+  - Use Cases：`AddRepoSubscriptionUseCase`/`DeleteRepoSubscriptionUseCase`/`CheckRepoSubscriptionUseCase`
+  - Notifier：`checkWatched`/`toggleWatch` 方法，`isWatched`/`watchLoading` 状态
 - **国际化翻译补全**：为 de、es、fr、ja、ko、pt、ru、zh_TW 共 8 个区域各补充 117 个缺失键（共 936 条），全部 8 个区域现已与英文模板完全对齐（710 个键）
 
 ### Fixed

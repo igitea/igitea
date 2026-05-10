@@ -216,6 +216,18 @@ class MockRepoRepository implements RepoRepository {
       throw UnimplementedError();
 
   @override
+  Future<Either<Failure, void>> addRepoSubscription(String owner, String repo) =>
+      throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, void>> deleteRepoSubscription(String owner, String repo) =>
+      throw UnimplementedError();
+
+  @override
+  Future<Either<Failure, bool>> checkRepoSubscription(String owner, String repo) =>
+      throw UnimplementedError();
+
+  @override
   Future<Either<Failure, PullRequest>> createPullRequest(
     String owner, String repo, Map<String, dynamic> body) => throw UnimplementedError();
 

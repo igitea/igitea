@@ -29,7 +29,7 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 
 ### Repositories
 - List, search, and browse repositories
-- Collapsible header with star/fork actions
+- Collapsible header with star/watch/fork actions
 - Section list navigation: Code, Issues, Milestones, Pull Requests, Releases, Commits, Branches, Tags, Wiki, Webhooks, Labels (tap to open)
 - File browser with breadcrumb navigation
 - File viewer with Markdown rendering, images, and syntax highlighting
@@ -111,6 +111,7 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 ### Starred Repositories
 - View all starred repositories from profile
 - Star/unstar with toggle button
+- Watch/unwatch with toggle button
 
 ### Activity Feed
 - Dashboard shows recent activities

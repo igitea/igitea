@@ -4,6 +4,7 @@ import 'package:igitea/core/utils/either.dart';
 import 'package:igitea/data/models/generated/generated_models.dart';
 import 'package:igitea/domain/repositories/repo_repository.dart';
 import 'package:igitea/domain/usecases/repo_usecases.dart';
+import 'package:igitea/domain/usecases/repo_watch_usecases.dart';
 import 'package:igitea/presentation/state/repo_notifier.dart';
 
 class FakeRepoRepository implements RepoRepository {
@@ -388,6 +389,12 @@ class FakeRepoRepository implements RepoRepository {
   Future<Either<Failure, List<PullReview>>> listPullReviews(String owner, String repo, int index) async => const Right([]);
   @override
   Future<Either<Failure, List<int>>> downloadActionArtifact(String owner, String repo, int artifactId) async => const Right([]);
+  @override
+  Future<Either<Failure, void>> addRepoSubscription(String owner, String repo) async => const Right(null);
+  @override
+  Future<Either<Failure, void>> deleteRepoSubscription(String owner, String repo) async => const Right(null);
+  @override
+  Future<Either<Failure, bool>> checkRepoSubscription(String owner, String repo) async => const Right(false);
 }
 
 void main() {
@@ -415,6 +422,9 @@ void main() {
         starRepoUseCase: StarRepoUseCase(repository: fakeRepo),
         unstarRepoUseCase: UnstarRepoUseCase(repository: fakeRepo),
         checkStarredUseCase: CheckStarredUseCase(repository: fakeRepo),
+        addRepoSubscriptionUseCase: AddRepoSubscriptionUseCase(repository: fakeRepo),
+        deleteRepoSubscriptionUseCase: DeleteRepoSubscriptionUseCase(repository: fakeRepo),
+        checkRepoSubscriptionUseCase: CheckRepoSubscriptionUseCase(repository: fakeRepo),
         mergePullRequestUseCase: MergePullRequestUseCase(repository: fakeRepo),
         createPullRequestUseCase: CreatePullRequestUseCase(repository: fakeRepo),
         editRepoUseCase: EditRepoUseCase(repository: fakeRepo),

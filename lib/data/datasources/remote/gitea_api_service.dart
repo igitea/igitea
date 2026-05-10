@@ -1693,6 +1693,30 @@ class GiteaApiService {
     return list.map((e) => Repository.fromJson(e as Map<String, dynamic>)).toList();
   }
 
+  Future<void> repoAddSubscription({required String owner, required String repo}) async {
+    await _client.put(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/subscription',
+    );
+  }
+
+  Future<void> repoDeleteSubscription({required String owner, required String repo}) async {
+    await _client.delete(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/subscription',
+    );
+  }
+
+  Future<bool> repoCheckSubscription({required String owner, required String repo}) async {
+    try {
+      await _client.get(
+        '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/subscription',
+      );
+      return true;
+    } catch (e) {
+      if (e.toString().contains('404')) return false;
+      rethrow;
+    }
+  }
+
   Future<Repository> repoCreateFork({
     required String owner,
     required String repo,

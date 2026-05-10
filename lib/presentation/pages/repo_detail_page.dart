@@ -85,6 +85,7 @@ class _RepoDetailPageState extends State<RepoDetailPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Injection.repoNotifier.getRepo(widget.owner, widget.repo);
       Injection.repoNotifier.checkStarred(widget.owner, widget.repo);
+      Injection.repoNotifier.checkWatched(widget.owner, widget.repo);
       _loadLanguages();
     });
   }
@@ -154,14 +155,35 @@ class _RepoDetailPageState extends State<RepoDetailPage> {
               builder: (context, _) {
                 final isStarred = Injection.repoNotifier.isStarred;
                 final starLoading = Injection.repoNotifier.starLoading;
-                return IconButton(
-                  icon: Icon(
-                    isStarred ? Icons.star : Icons.star_outline,
-                    color: isStarred ? Colors.amber : null,
-                  ),
-                  onPressed: starLoading
-                      ? null
-                      : () => Injection.repoNotifier.toggleStar(widget.owner, widget.repo),
+                final isWatched = Injection.repoNotifier.isWatched;
+                final watchLoading = Injection.repoNotifier.watchLoading;
+                return Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    IconButton(
+                      icon: Icon(
+                        isStarred ? Icons.star : Icons.star_outline,
+                        color: isStarred ? Colors.amber : null,
+                      ),
+                      onPressed: starLoading
+                          ? null
+                          : () => Injection.repoNotifier.toggleStar(widget.owner, widget.repo),
+                    ),
+                    const SizedBox(width: 8),
+                    IconButton(
+                      icon: Icon(
+                        isWatched
+                            ? Icons.notifications_active
+                            : Icons.notifications_outlined,
+                        color: isWatched ? Colors.blue : null,
+                      ),
+                      tooltip: isWatched ? 'Unwatch' : 'Watch',
+                      onPressed: watchLoading
+                          ? null
+                          : () => Injection.repoNotifier.toggleWatch(
+                              widget.owner, widget.repo),
+                    ),
+                  ],
                 );
               },
             ),
@@ -737,19 +759,8 @@ class _UrlRow extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-          IconButton(
-            icon: const Icon(Icons.copy, size: UIConstants.iconSm),
-            visualDensity: VisualDensity.compact,
-            tooltip: l10n.copyUrl,
-            onPressed: () {
-              Clipboard.setData(ClipboardData(text: url));
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(l10n.urlCopied)),
-              );
-            },
-          ),
-        ],
-      ),
+          ],
+        ),
     );
   }
 }

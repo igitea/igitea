@@ -248,6 +248,24 @@ class MockRepoRepository implements RepoRepository {
   }
 
   @override
+  Future<Either<Failure, void>> addRepoSubscription(String owner, String repo) async {
+    if (shouldFail) return Left(failure);
+    return const Right(null);
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteRepoSubscription(String owner, String repo) async {
+    if (shouldFail) return Left(failure);
+    return const Right(null);
+  }
+
+  @override
+  Future<Either<Failure, bool>> checkRepoSubscription(String owner, String repo) async {
+    if (shouldFail) return Left(failure);
+    return const Right(false);
+  }
+
+  @override
   Future<Either<Failure, PullRequest>> createPullRequest(
     String owner, String repo, Map<String, dynamic> body) => throw UnimplementedError();
 
