@@ -49,6 +49,17 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
   bool _subscriptionLoading = false;
   List<Reaction> _issueReactions = [];
 
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Injection.issueNotifier.getIssue(widget.owner, widget.repo, widget.index);
+      Injection.issueNotifier.listComments(widget.owner, widget.repo, widget.index);
+      _checkSubscription();
+      _refreshIssueReactions();
+    });
+  }
+
   Future<void> _refreshIssueReactions() async {
     final result = await Injection.getIssueReactionsUseCase(
       widget.owner, widget.repo, widget.index,
