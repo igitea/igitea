@@ -793,10 +793,11 @@ class RepoNotifier extends ChangeNotifier {
     final result = await _checkRepoSubscriptionUseCase.call(
       CheckRepoSubscriptionParams(owner: owner, repo: repo),
     );
-    if (result is Right<Failure, bool>) {
-      _isWatched = result.value;
-    } else {
-      _isWatched = false;
+    switch (result) {
+      case Left<Failure, bool>():
+        _isWatched = false;
+      case Right<Failure, bool>(:final value):
+        _isWatched = value;
     }
     _watchLoading = false;
     notifyListeners();
@@ -810,15 +811,21 @@ class RepoNotifier extends ChangeNotifier {
       final result = await _deleteRepoSubscriptionUseCase.call(
         DeleteRepoSubscriptionParams(owner: owner, repo: repo),
       );
-      if (result is Right<Failure, void>) {
-        _isWatched = false;
+      switch (result) {
+        case Left<Failure, void>():
+          break;
+        case Right<Failure, void>():
+          _isWatched = false;
       }
     } else {
       final result = await _addRepoSubscriptionUseCase.call(
         AddRepoSubscriptionParams(owner: owner, repo: repo),
       );
-      if (result is Right<Failure, void>) {
-        _isWatched = true;
+      switch (result) {
+        case Left<Failure, void>():
+          break;
+        case Right<Failure, void>():
+          _isWatched = true;
       }
     }
     _watchLoading = false;

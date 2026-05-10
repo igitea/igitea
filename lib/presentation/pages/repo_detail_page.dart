@@ -18,7 +18,6 @@ import '../widgets/empty_state.dart';
 import '../widgets/premium_card.dart';
 import '../widgets/user_avatar.dart';
 import '../widgets/file_icon.dart';
-import 'branch_detail_page.dart';
 import 'commit_detail_page.dart';
 import 'create_release_page.dart';
 import 'branch_protection_page.dart';
@@ -2159,7 +2158,12 @@ class _BranchesTabState extends State<_BranchesTab> {
                         onTap: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (_) => BranchDetailPage(branch: branch),
+                              builder: (_) => _RepoSectionPage(
+                                owner: widget.owner,
+                                repo: widget.repo,
+                                sectionId: 'code',
+                                defaultBranch: branch.name,
+                              ),
                             ),
                           );
                         },
