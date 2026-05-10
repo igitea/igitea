@@ -604,20 +604,18 @@ class _IssueContent extends StatelessWidget {
       duration: const Duration(milliseconds: 200),
       curve: Curves.easeInOut,
       alignment: Alignment.topLeft,
-      child: activeReactions.isEmpty
-          ? const SizedBox(height: 4)
-          : Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  _buildPickReactionButton(context, reactions, onToggle),
-                  const SizedBox(width: 4),
-                  ...activeReactions.map((content) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 4),
-                      child: AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 250),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _buildPickReactionButton(context, reactions, onToggle),
+            if (activeReactions.isNotEmpty) const SizedBox(width: 4),
+            ...activeReactions.map((content) {
+              return Padding(
+                padding: const EdgeInsets.only(right: 4),
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 250),
                         transitionBuilder: (child, animation) {
                           return ScaleTransition(
                             scale: animation,
