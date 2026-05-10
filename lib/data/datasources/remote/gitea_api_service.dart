@@ -1711,9 +1711,8 @@ class GiteaApiService {
         '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/subscription',
       );
       return true;
-    } catch (e) {
-      if (e.toString().contains('404')) return false;
-      rethrow;
+    } catch (_) {
+      return false;
     }
   }
 
@@ -1857,6 +1856,78 @@ class GiteaApiService {
       '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues/${index.toString()}/subscriptions/check',
     );
     return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<List<dynamic>> issueListReactions({
+    required String owner,
+    required String repo,
+    required int index,
+  }) async {
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues/$index/reactions',
+    );
+    return jsonDecode(response.body) as List<dynamic>;
+  }
+
+  Future<Map<String, dynamic>> issueAddReaction({
+    required String owner,
+    required String repo,
+    required int index,
+    required String content,
+  }) async {
+    final response = await _client.post(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues/$index/reactions',
+      body: {'content': content},
+    );
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<void> issueDeleteReaction({
+    required String owner,
+    required String repo,
+    required int index,
+    required String content,
+  }) async {
+    await _client.delete(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues/$index/reactions',
+      body: {'content': content},
+    );
+  }
+
+  Future<List<dynamic>> issueListCommentReactions({
+    required String owner,
+    required String repo,
+    required int commentId,
+  }) async {
+    final response = await _client.get(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues/comments/$commentId/reactions',
+    );
+    return jsonDecode(response.body) as List<dynamic>;
+  }
+
+  Future<Map<String, dynamic>> issueAddCommentReaction({
+    required String owner,
+    required String repo,
+    required int commentId,
+    required String content,
+  }) async {
+    final response = await _client.post(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues/comments/$commentId/reactions',
+      body: {'content': content},
+    );
+    return jsonDecode(response.body) as Map<String, dynamic>;
+  }
+
+  Future<void> issueDeleteCommentReaction({
+    required String owner,
+    required String repo,
+    required int commentId,
+    required String content,
+  }) async {
+    await _client.delete(
+      '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues/comments/$commentId/reactions',
+      body: {'content': content},
+    );
   }
 
   /// Set issue due date

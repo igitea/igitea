@@ -7,6 +7,7 @@ import '../../data/repositories/notification_repository_impl.dart';
 import '../../data/repositories/organization_repository_impl.dart';
 import '../../data/repositories/package_repository_impl.dart';
 import '../../data/repositories/repo_repository_impl.dart';
+import '../../data/repositories/reaction_repository_impl.dart';
 import '../../data/repositories/user_oauth_repository_impl.dart';
 import '../../data/repositories/user_repository_impl.dart';
 import '../../domain/repositories/admin_repository.dart';
@@ -16,6 +17,7 @@ import '../../domain/repositories/notification_repository.dart';
 import '../../domain/repositories/organization_repository.dart';
 import '../../domain/repositories/package_repository.dart';
 import '../../domain/repositories/repo_repository.dart';
+import '../../domain/repositories/reaction_repository.dart';
 import '../../domain/repositories/user_oauth_repository.dart';
 import '../../domain/repositories/user_repository.dart';
 import '../../domain/usecases/admin_usecases.dart';
@@ -25,6 +27,7 @@ import '../../domain/usecases/misc_usecases.dart';
 import '../../domain/usecases/notification_usecases.dart';
 import '../../domain/usecases/organization_usecases.dart';
 import '../../domain/usecases/package_usecases.dart';
+import '../../domain/usecases/reaction_usecases.dart';
 import '../../domain/usecases/repo_usecases.dart';
 import '../../domain/usecases/repo_watch_usecases.dart';
 import '../../domain/usecases/user_oauth_usecases.dart';
@@ -56,6 +59,7 @@ class Injection {
   static late AdminRepository adminRepository;
   static late MiscRepository miscRepository;
   static late UserOAuthRepository userOAuthRepository;
+  static late ReactionRepository reactionRepository;
 
   static late LoginUseCase loginUseCase;
   static late GetSettingsUseCase getSettingsUseCase;
@@ -246,6 +250,13 @@ class Injection {
 
   static late ListPullReviewsUseCase listPullReviewsUseCase;
 
+  static late GetIssueReactionsUseCase getIssueReactionsUseCase;
+  static late AddIssueReactionUseCase addIssueReactionUseCase;
+  static late DeleteIssueReactionUseCase deleteIssueReactionUseCase;
+  static late GetCommentReactionsUseCase getCommentReactionsUseCase;
+  static late AddCommentReactionUseCase addCommentReactionUseCase;
+  static late DeleteCommentReactionUseCase deleteCommentReactionUseCase;
+
   static late AuthNotifier authNotifier;
   static late UserNotifier userNotifier;
   static late RepoNotifier repoNotifier;
@@ -278,6 +289,9 @@ class Injection {
     assert(starRepoUseCase != null);
     assert(unstarRepoUseCase != null);
     assert(checkStarredUseCase != null);
+    assert(addRepoSubscriptionUseCase != null);
+    assert(deleteRepoSubscriptionUseCase != null);
+    assert(checkRepoSubscriptionUseCase != null);
     assert(mergePullRequestUseCase != null);
     assert(createPullRequestUseCase != null);
     assert(editRepoUseCase != null);
@@ -395,6 +409,12 @@ class Injection {
     assert(createTagProtectionUseCase != null);
     assert(deleteTagProtectionUseCase != null);
     assert(listPullReviewsUseCase != null);
+    assert(getIssueReactionsUseCase != null);
+    assert(addIssueReactionUseCase != null);
+    assert(deleteIssueReactionUseCase != null);
+    assert(getCommentReactionsUseCase != null);
+    assert(addCommentReactionUseCase != null);
+    assert(deleteCommentReactionUseCase != null);
     assert(listEmailsUseCase != null);
     assert(addEmailUseCase != null);
     assert(deleteEmailUseCase != null);
@@ -424,6 +444,7 @@ class Injection {
     adminRepository = AdminRepositoryImpl(apiService: apiService);
     miscRepository = MiscRepositoryImpl(apiService: apiService);
     userOAuthRepository = UserOAuthRepositoryImpl(apiService: apiService);
+    reactionRepository = ReactionRepositoryImpl(apiService: apiService);
   }
 
   static void _initUseCases() {
@@ -632,6 +653,12 @@ class Injection {
     createTagProtectionUseCase = CreateTagProtectionUseCase(repository: repoRepository);
     deleteTagProtectionUseCase = DeleteTagProtectionUseCase(repository: repoRepository);
     listPullReviewsUseCase = ListPullReviewsUseCase(repository: repoRepository);
+    getIssueReactionsUseCase = GetIssueReactionsUseCase(repository: reactionRepository);
+    addIssueReactionUseCase = AddIssueReactionUseCase(repository: reactionRepository);
+    deleteIssueReactionUseCase = DeleteIssueReactionUseCase(repository: reactionRepository);
+    getCommentReactionsUseCase = GetCommentReactionsUseCase(repository: reactionRepository);
+    addCommentReactionUseCase = AddCommentReactionUseCase(repository: reactionRepository);
+    deleteCommentReactionUseCase = DeleteCommentReactionUseCase(repository: reactionRepository);
   }
 
   static void initialize({

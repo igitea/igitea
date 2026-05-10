@@ -712,5 +712,13 @@
   "noTokens": "No access tokens",
   "scopes": "Scopes",
   "selectAll": "Select All",
-  "deselectAll": "Deselect All"
+  "deselectAll": "Deselect All",
+  "reactions": "Reactions",
+  "watch": "Watch",
+  "unwatch": "Unwatch",
+  "savedFilters": "Saved Filters",
+  "saveCurrentFilter": "Save current filter",
+  "deleteFilter": "Delete filter",
+  "filterName": "Filter name",
+  "noSavedFilters": "No saved filters yet"
 }

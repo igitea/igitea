@@ -4372,6 +4372,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Deselect All'**
   String get deselectAll;
+
+  /// No description provided for @reactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Reactions'**
+  String get reactions;
+
+  /// No description provided for @watch.
+  ///
+  /// In en, this message translates to:
+  /// **'Watch'**
+  String get watch;
+
+  /// No description provided for @unwatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Unwatch'**
+  String get unwatch;
+
+  /// No description provided for @savedFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved Filters'**
+  String get savedFilters;
+
+  /// No description provided for @saveCurrentFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Save current filter'**
+  String get saveCurrentFilter;
+
+  /// No description provided for @deleteFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete filter'**
+  String get deleteFilter;
+
+  /// No description provided for @filterName.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter name'**
+  String get filterName;
+
+  /// No description provided for @noSavedFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved filters yet'**
+  String get noSavedFilters;
 }
 
 class _AppLocalizationsDelegate

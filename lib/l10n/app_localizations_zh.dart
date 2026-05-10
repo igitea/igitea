@@ -2199,6 +2199,30 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get deselectAll => '取消全选';
+
+  @override
+  String get reactions => 'Reactions';
+
+  @override
+  String get watch => 'Watch';
+
+  @override
+  String get unwatch => 'Unwatch';
+
+  @override
+  String get savedFilters => 'Saved Filters';
+
+  @override
+  String get saveCurrentFilter => 'Save current filter';
+
+  @override
+  String get deleteFilter => 'Delete filter';
+
+  @override
+  String get filterName => 'Filter name';
+
+  @override
+  String get noSavedFilters => 'No saved filters yet';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).

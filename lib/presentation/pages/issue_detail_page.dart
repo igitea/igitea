@@ -15,6 +15,18 @@ import '../../presentation/state/user_notifier.dart';
 import '../widgets/user_avatar.dart';
 import 'edit_issue_page.dart';
 
+const _reactionEmojis = {
+  '+1': '\u{1f44d}',
+  '-1': '\u{1f44e}',
+  'laugh': '\u{1f604}',
+  'hooray': '\u{1f389}',
+  'confused': '\u{1f615}',
+  'heart': '\u{2764}\u{fe0f}',
+  'eyes': '\u{1f440}',
+};
+
+const _defaultReactions = ['+1', '-1', 'laugh', 'hooray', 'confused', 'heart', 'eyes'];
+
 class IssueDetailPage extends StatefulWidget {
   final String owner;
   final String repo;
@@ -35,6 +47,8 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
   final _commentController = TextEditingController();
   bool _isSubscribed = false;
   bool _subscriptionLoading = false;
+  List<Reaction> _issueReactions = [];
+  bool _reactionsLoading = false;
 
   @override
   void initState() {
@@ -43,6 +57,7 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
       Injection.issueNotifier.getIssue(widget.owner, widget.repo, widget.index);
       Injection.issueNotifier.listComments(widget.owner, widget.repo, widget.index);
       _checkSubscription();
+      _loadIssueReactions();
     });
   }
 
@@ -95,6 +110,34 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
         );
       }
     }
+  }
+
+  Future<void> _loadIssueReactions() async {
+    setState(() => _reactionsLoading = true);
+    final result = await Injection.getIssueReactionsUseCase(
+      widget.owner, widget.repo, widget.index,
+    );
+    if (result is Right<Failure, List<Reaction>>) {
+      _issueReactions = result.value;
+    }
+    if (mounted) setState(() => _reactionsLoading = false);
+  }
+
+  Future<void> _toggleIssueReaction(String content) async {
+    final currentUser = Injection.authNotifier.state is AuthAuthenticated
+        ? (Injection.authNotifier.state as AuthAuthenticated).user.login
+        : null;
+    final existing = _issueReactions.where(
+      (r) => r.content == content && r.user?.login == currentUser,
+    ).toList();
+    if (existing.isNotEmpty) {
+      await Injection.deleteIssueReactionUseCase(
+        widget.owner, widget.repo, widget.index, content);
+    } else {
+      await Injection.addIssueReactionUseCase(
+        widget.owner, widget.repo, widget.index, content);
+    }
+    _loadIssueReactions();
   }
 
   Future<void> _confirmDeleteIssue() async {
@@ -196,6 +239,9 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
               isSubscribed: _isSubscribed,
               subscriptionLoading: _subscriptionLoading,
               onToggleSubscription: _toggleSubscription,
+              issueReactions: _issueReactions,
+              reactionsLoading: _reactionsLoading,
+              onToggleReaction: _toggleIssueReaction,
             ),
             _ => const Center(child: CircularProgressIndicator()),
           };
@@ -214,6 +260,9 @@ class _IssueContent extends StatelessWidget {
   final bool isSubscribed;
   final bool subscriptionLoading;
   final VoidCallback onToggleSubscription;
+  final List<Reaction> issueReactions;
+  final bool reactionsLoading;
+  final Future<void> Function(String) onToggleReaction;
 
   const _IssueContent({
     required this.issue,
@@ -224,6 +273,9 @@ class _IssueContent extends StatelessWidget {
     required this.isSubscribed,
     required this.subscriptionLoading,
     required this.onToggleSubscription,
+    required this.issueReactions,
+    required this.reactionsLoading,
+    required this.onToggleReaction,
   });
 
   @override
@@ -460,6 +512,9 @@ class _IssueContent extends StatelessWidget {
               ),
             ),
 
+          if (!reactionsLoading)
+            _buildReactionRow(context, issueReactions, onToggleReaction),
+
           const SizedBox(height: 16),
 
           _DependenciesSection(owner: owner, repo: repo, index: index),
@@ -535,6 +590,44 @@ class _IssueContent extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildReactionRow(BuildContext context, List<Reaction> reactions, Future<void> Function(String) onToggle) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Wrap(
+        spacing: 4,
+        runSpacing: 4,
+        children: _defaultReactions.map((content) {
+          final count = reactions.where((r) => r.content == content).length;
+          final currentUser = Injection.authNotifier.state is AuthAuthenticated
+              ? (Injection.authNotifier.state as AuthAuthenticated).user.login
+              : null;
+          final userReacted = reactions.any(
+            (r) => r.content == content && r.user?.login == currentUser,
+          );
+          return Material(
+            color: userReacted ? theme.colorScheme.primaryContainer : Colors.transparent,
+            borderRadius: BorderRadius.circular(16),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: () => onToggle(content),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: Text(
+                  '${_reactionEmojis[content] ?? content} $count',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: userReacted ? theme.colorScheme.onPrimaryContainer : null,
+                  ),
+                ),
+              ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }
@@ -746,17 +839,50 @@ class _CommentItemState extends State<_CommentItem> {
   late TextEditingController _editController;
   bool _editing = false;
   bool _saving = false;
+  List<Reaction> _commentReactions = [];
+  bool _commentReactionsLoading = false;
 
   @override
   void initState() {
     super.initState();
     _editController = TextEditingController(text: widget.comment.body ?? '');
+    _loadCommentReactions();
   }
 
   @override
   void dispose() {
     _editController.dispose();
     super.dispose();
+  }
+
+  Future<void> _loadCommentReactions() async {
+    if (widget.comment.id == null) return;
+    setState(() => _commentReactionsLoading = true);
+    final result = await Injection.getCommentReactionsUseCase(
+      widget.owner, widget.repo, widget.comment.id!,
+    );
+    if (result is Right<Failure, List<Reaction>>) {
+      _commentReactions = result.value;
+    }
+    if (mounted) setState(() => _commentReactionsLoading = false);
+  }
+
+  Future<void> _toggleCommentReaction(String content) async {
+    if (widget.comment.id == null) return;
+    final currentUser = Injection.authNotifier.state is AuthAuthenticated
+        ? (Injection.authNotifier.state as AuthAuthenticated).user.login
+        : null;
+    final existing = _commentReactions.where(
+      (r) => r.content == content && r.user?.login == currentUser,
+    ).toList();
+    if (existing.isNotEmpty) {
+      await Injection.deleteCommentReactionUseCase(
+        widget.owner, widget.repo, widget.comment.id!, content);
+    } else {
+      await Injection.addCommentReactionUseCase(
+        widget.owner, widget.repo, widget.comment.id!, content);
+    }
+    _loadCommentReactions();
   }
 
   Future<void> _saveEdit() async {
@@ -941,6 +1067,46 @@ class _CommentItemState extends State<_CommentItem> {
                                   launchUrl(Uri.parse(href), mode: LaunchMode.externalApplication);
                                 }
                               },
+                            ),
+                          if (!_commentReactionsLoading && widget.comment.id != null)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 4),
+                              child: SizedBox(
+                                height: 28,
+                                child: ListView(
+                                  scrollDirection: Axis.horizontal,
+                                  children: _defaultReactions.map((content) {
+                                    final count = _commentReactions.where((r) => r.content == content).length;
+                                    final currentUser = Injection.authNotifier.state is AuthAuthenticated
+                                        ? (Injection.authNotifier.state as AuthAuthenticated).user.login
+                                        : null;
+                                    final userReacted = _commentReactions.any(
+                                      (r) => r.content == content && r.user?.login == currentUser,
+                                    );
+                                    return Padding(
+                                      padding: const EdgeInsets.only(right: 4),
+                                      child: Material(
+                                        color: userReacted ? theme.colorScheme.primaryContainer : Colors.transparent,
+                                        borderRadius: BorderRadius.circular(12),
+                                        child: InkWell(
+                                          borderRadius: BorderRadius.circular(12),
+                                          onTap: () => _toggleCommentReaction(content),
+                                          child: Padding(
+                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                            child: Text(
+                                              '${_reactionEmojis[content] ?? content} $count',
+                                              style: TextStyle(
+                                                fontSize: 12,
+                                                color: userReacted ? theme.colorScheme.onPrimaryContainer : null,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                              ),
                             ),
                           const SizedBox(height: 4),
                           Text(

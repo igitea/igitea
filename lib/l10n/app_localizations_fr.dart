@@ -2235,4 +2235,28 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get deselectAll => 'Tout désélectionner';
+
+  @override
+  String get reactions => 'Reactions';
+
+  @override
+  String get watch => 'Watch';
+
+  @override
+  String get unwatch => 'Unwatch';
+
+  @override
+  String get savedFilters => 'Saved Filters';
+
+  @override
+  String get saveCurrentFilter => 'Save current filter';
+
+  @override
+  String get deleteFilter => 'Delete filter';
+
+  @override
+  String get filterName => 'Filter name';
+
+  @override
+  String get noSavedFilters => 'No saved filters yet';
 }

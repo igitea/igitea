@@ -6,12 +6,25 @@ import '../../core/di/injection.dart';
 import '../../core/errors/failures.dart';
 import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
+import '../../domain/entities/auth_state.dart';
 import '../../domain/entities/issue_state.dart';
 import '../../l10n/app_localizations.dart';
 import '../../presentation/state/issue_notifier.dart';
 import '../../presentation/state/repo_notifier.dart';
 import '../widgets/user_avatar.dart';
 import 'create_review_dialog.dart';
+
+const _reactionEmojis = {
+  '+1': '\u{1f44d}',
+  '-1': '\u{1f44e}',
+  'laugh': '\u{1f604}',
+  'hooray': '\u{1f389}',
+  'confused': '\u{1f615}',
+  'heart': '\u{2764}\u{fe0f}',
+  'eyes': '\u{1f440}',
+};
+
+const _defaultReactions = ['+1', '-1', 'laugh', 'hooray', 'confused', 'heart', 'eyes'];
 
 class PRDetailPage extends StatefulWidget {
   final String owner;
@@ -32,6 +45,8 @@ class PRDetailPage extends StatefulWidget {
 class _PRDetailPageState extends State<PRDetailPage> {
   final _commentController = TextEditingController();
   List<PullReview> _reviews = [];
+  List<Reaction> _prReactions = [];
+  bool _reactionsLoading = false;
 
   @override
   void initState() {
@@ -40,7 +55,36 @@ class _PRDetailPageState extends State<PRDetailPage> {
       Injection.repoNotifier.getPullRequest(widget.owner, widget.repo, widget.index);
       Injection.issueNotifier.listComments(widget.owner, widget.repo, widget.index);
       _loadReviews();
+      _loadPrReactions();
     });
+  }
+
+  Future<void> _loadPrReactions() async {
+    setState(() => _reactionsLoading = true);
+    final result = await Injection.getIssueReactionsUseCase(
+      widget.owner, widget.repo, widget.index,
+    );
+    if (result is Right<Failure, List<Reaction>>) {
+      _prReactions = result.value;
+    }
+    if (mounted) setState(() => _reactionsLoading = false);
+  }
+
+  Future<void> _togglePrReaction(String content) async {
+    final currentUser = Injection.authNotifier.state is AuthAuthenticated
+        ? (Injection.authNotifier.state as AuthAuthenticated).user.login
+        : null;
+    final existing = _prReactions.where(
+      (r) => r.content == content && r.user?.login == currentUser,
+    ).toList();
+    if (existing.isNotEmpty) {
+      await Injection.deleteIssueReactionUseCase(
+        widget.owner, widget.repo, widget.index, content);
+    } else {
+      await Injection.addIssueReactionUseCase(
+        widget.owner, widget.repo, widget.index, content);
+    }
+    _loadPrReactions();
   }
 
   Future<void> _loadReviews() async {
@@ -127,6 +171,9 @@ class _PRDetailPageState extends State<PRDetailPage> {
               index: widget.index,
               commentController: _commentController,
               reviews: _reviews,
+              prReactions: _prReactions,
+              reactionsLoading: _reactionsLoading,
+              onToggleReaction: _togglePrReaction,
             ),
             _ => const Center(child: CircularProgressIndicator()),
           };
@@ -143,6 +190,9 @@ class _PRContent extends StatelessWidget {
   final int index;
   final TextEditingController commentController;
   final List<PullReview> reviews;
+  final List<Reaction> prReactions;
+  final bool reactionsLoading;
+  final Future<void> Function(String) onToggleReaction;
 
   const _PRContent({
     required this.pr,
@@ -151,6 +201,9 @@ class _PRContent extends StatelessWidget {
     required this.index,
     required this.commentController,
     required this.reviews,
+    required this.prReactions,
+    required this.reactionsLoading,
+    required this.onToggleReaction,
   });
 
   @override
@@ -346,6 +399,9 @@ class _PRContent extends StatelessWidget {
               ),
             ),
 
+          if (!reactionsLoading)
+            _buildReactionRow(context, prReactions, onToggleReaction),
+
           const Divider(height: 32),
 
           ListenableBuilder(
@@ -418,6 +474,44 @@ class _PRContent extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildReactionRow(BuildContext context, List<Reaction> reactions, Future<void> Function(String) onToggle) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Wrap(
+        spacing: 4,
+        runSpacing: 4,
+        children: _defaultReactions.map((content) {
+          final count = reactions.where((r) => r.content == content).length;
+          final currentUser = Injection.authNotifier.state is AuthAuthenticated
+              ? (Injection.authNotifier.state as AuthAuthenticated).user.login
+              : null;
+          final userReacted = reactions.any(
+            (r) => r.content == content && r.user?.login == currentUser,
+          );
+          return Material(
+            color: userReacted ? theme.colorScheme.primaryContainer : Colors.transparent,
+            borderRadius: BorderRadius.circular(16),
+            child: InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: () => onToggle(content),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                child: Text(
+                  '${_reactionEmojis[content] ?? content} $count',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: userReacted ? theme.colorScheme.onPrimaryContainer : null,
+                  ),
+                ),
+              ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }
@@ -536,7 +630,11 @@ class _PRContent extends StatelessWidget {
         const SizedBox(height: 8),
         ...comments.asMap().entries.map((entry) => FadeInWrapper(
           delay: Duration(milliseconds: entry.key * 30),
-          child: _CommentItem(comment: entry.value),
+          child: _CommentItem(
+            comment: entry.value,
+            owner: owner,
+            repo: repo,
+          ),
         )),
       ],
     );
@@ -601,10 +699,56 @@ class _PRContent extends StatelessWidget {
   }
 }
 
-class _CommentItem extends StatelessWidget {
+class _CommentItem extends StatefulWidget {
   final Comment comment;
+  final String owner;
+  final String repo;
 
-  const _CommentItem({required this.comment});
+  const _CommentItem({required this.comment, required this.owner, required this.repo});
+
+  @override
+  State<_CommentItem> createState() => _CommentItemState();
+}
+
+class _CommentItemState extends State<_CommentItem> {
+  List<Reaction> _commentReactions = [];
+  bool _commentReactionsLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCommentReactions();
+  }
+
+  Future<void> _loadCommentReactions() async {
+    if (widget.comment.id == null) return;
+    setState(() => _commentReactionsLoading = true);
+    final result = await Injection.getCommentReactionsUseCase(
+      widget.owner, widget.repo, widget.comment.id!,
+    );
+    if (result is Right<Failure, List<Reaction>>) {
+      _commentReactions = result.value;
+    }
+    if (mounted) setState(() => _commentReactionsLoading = false);
+  }
+
+  Future<void> _toggleCommentReaction(String content) async {
+    if (widget.comment.id == null) return;
+    final currentUser = Injection.authNotifier.state is AuthAuthenticated
+        ? (Injection.authNotifier.state as AuthAuthenticated).user.login
+        : null;
+    final existing = _commentReactions.where(
+      (r) => r.content == content && r.user?.login == currentUser,
+    ).toList();
+    if (existing.isNotEmpty) {
+      await Injection.deleteCommentReactionUseCase(
+        widget.owner, widget.repo, widget.comment.id!, content);
+    } else {
+      await Injection.addCommentReactionUseCase(
+        widget.owner, widget.repo, widget.comment.id!, content);
+    }
+    _loadCommentReactions();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -619,17 +763,17 @@ class _CommentItem extends StatelessWidget {
           children: [
             Row(
               children: [
-                if (comment.user != null) ...[
-                  UserAvatar(user: comment.user!, radius: 14),
+                if (widget.comment.user != null) ...[
+                  UserAvatar(user: widget.comment.user!, radius: 14),
                   const SizedBox(width: 8),
                   Text(
-                    comment.user!.login ?? '',
+                    widget.comment.user!.login ?? '',
                     style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ],
                 const Spacer(),
                 Text(
-                  _formatDate(comment.created_at, l10n),
+                  _formatDate(widget.comment.created_at, l10n),
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -637,15 +781,55 @@ class _CommentItem extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            if (comment.body != null && comment.body!.isNotEmpty)
+            if (widget.comment.body != null && widget.comment.body!.isNotEmpty)
               MarkdownBody(
-                data: comment.body!,
+                data: widget.comment.body!,
                 selectable: true,
                 onTapLink: (text, href, title) {
                   if (href != null) {
                     launchUrl(Uri.parse(href), mode: LaunchMode.externalApplication);
                   }
                 },
+              ),
+            if (!_commentReactionsLoading && widget.comment.id != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: SizedBox(
+                  height: 28,
+                  child: ListView(
+                    scrollDirection: Axis.horizontal,
+                    children: _defaultReactions.map((content) {
+                      final count = _commentReactions.where((r) => r.content == content).length;
+                      final currentUser = Injection.authNotifier.state is AuthAuthenticated
+                          ? (Injection.authNotifier.state as AuthAuthenticated).user.login
+                          : null;
+                      final userReacted = _commentReactions.any(
+                        (r) => r.content == content && r.user?.login == currentUser,
+                      );
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 4),
+                        child: Material(
+                          color: userReacted ? theme.colorScheme.primaryContainer : Colors.transparent,
+                          borderRadius: BorderRadius.circular(12),
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(12),
+                            onTap: () => _toggleCommentReaction(content),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              child: Text(
+                                '${_reactionEmojis[content] ?? content} $count',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: userReacted ? theme.colorScheme.onPrimaryContainer : null,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
               ),
           ],
         ),
