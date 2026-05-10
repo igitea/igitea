@@ -46,7 +46,6 @@ class _PRDetailPageState extends State<PRDetailPage> {
   final _commentController = TextEditingController();
   List<PullReview> _reviews = [];
   List<Reaction> _prReactions = [];
-  bool _reactionsLoading = false;
 
   @override
   void initState() {
@@ -55,19 +54,18 @@ class _PRDetailPageState extends State<PRDetailPage> {
       Injection.repoNotifier.getPullRequest(widget.owner, widget.repo, widget.index);
       Injection.issueNotifier.listComments(widget.owner, widget.repo, widget.index);
       _loadReviews();
-      _loadPrReactions();
+      _refreshPrReactions();
     });
   }
 
-  Future<void> _loadPrReactions() async {
-    setState(() => _reactionsLoading = true);
+  Future<void> _refreshPrReactions() async {
     final result = await Injection.getIssueReactionsUseCase(
       widget.owner, widget.repo, widget.index,
     );
     if (result is Right<Failure, List<Reaction>>) {
       _prReactions = result.value;
     }
-    if (mounted) setState(() => _reactionsLoading = false);
+    if (mounted) setState(() {});
   }
 
   Future<void> _togglePrReaction(String content) async {
@@ -77,14 +75,22 @@ class _PRDetailPageState extends State<PRDetailPage> {
     final existing = _prReactions.where(
       (r) => r.content == content && r.user?.login == currentUser,
     ).toList();
+
+    _prReactions = List.from(_prReactions);
     if (existing.isNotEmpty) {
+      _prReactions.removeWhere(
+        (r) => r.content == content && r.user?.login == currentUser,
+      );
+      if (mounted) setState(() {});
       await Injection.deleteIssueReactionUseCase(
         widget.owner, widget.repo, widget.index, content);
     } else {
+      _prReactions.add(Reaction(content: content, user: User(login: currentUser)));
+      if (mounted) setState(() {});
       await Injection.addIssueReactionUseCase(
         widget.owner, widget.repo, widget.index, content);
     }
-    _loadPrReactions();
+    await _refreshPrReactions();
   }
 
   Future<void> _loadReviews() async {
@@ -172,7 +178,6 @@ class _PRDetailPageState extends State<PRDetailPage> {
               commentController: _commentController,
               reviews: _reviews,
               prReactions: _prReactions,
-              reactionsLoading: _reactionsLoading,
               onToggleReaction: _togglePrReaction,
             ),
             _ => const Center(child: CircularProgressIndicator()),
@@ -191,7 +196,6 @@ class _PRContent extends StatelessWidget {
   final TextEditingController commentController;
   final List<PullReview> reviews;
   final List<Reaction> prReactions;
-  final bool reactionsLoading;
   final Future<void> Function(String) onToggleReaction;
 
   const _PRContent({
@@ -202,7 +206,6 @@ class _PRContent extends StatelessWidget {
     required this.commentController,
     required this.reviews,
     required this.prReactions,
-    required this.reactionsLoading,
     required this.onToggleReaction,
   });
 
@@ -399,8 +402,7 @@ class _PRContent extends StatelessWidget {
               ),
             ),
 
-          if (!reactionsLoading)
-            _buildReactionRow(context, prReactions, onToggleReaction),
+          _buildReactionRow(context, prReactions, onToggleReaction),
 
           const Divider(height: 32),
 
@@ -479,39 +481,158 @@ class _PRContent extends StatelessWidget {
   }
 
   Widget _buildReactionRow(BuildContext context, List<Reaction> reactions, Future<void> Function(String) onToggle) {
+    final activeReactions = _defaultReactions.where((content) {
+      return reactions.any((r) => r.content == content);
+    }).toList();
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeInOut,
+      alignment: Alignment.topLeft,
+      child: activeReactions.isEmpty
+          ? const SizedBox(height: 4)
+          : Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  _buildPickReactionButton(context, reactions, onToggle),
+                  const SizedBox(width: 4),
+                  ...activeReactions.map((content) {
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 4),
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 250),
+                        transitionBuilder: (child, animation) {
+                          return ScaleTransition(
+                            scale: animation,
+                            child: FadeTransition(
+                              opacity: animation,
+                              child: child,
+                            ),
+                          );
+                        },
+                        child: _buildReactionChip(context, reactions, content, onToggle),
+                      ),
+                    );
+                  }),
+                ],
+              ),
+            ),
+    );
+  }
+
+  Widget _buildPickReactionButton(BuildContext context, List<Reaction> reactions, Future<void> Function(String) onToggle) {
     final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Wrap(
-        spacing: 4,
-        runSpacing: 4,
-        children: _defaultReactions.map((content) {
-          final count = reactions.where((r) => r.content == content).length;
-          final currentUser = Injection.authNotifier.state is AuthAuthenticated
-              ? (Injection.authNotifier.state as AuthAuthenticated).user.login
-              : null;
-          final userReacted = reactions.any(
-            (r) => r.content == content && r.user?.login == currentUser,
-          );
-          return Material(
-            color: userReacted ? theme.colorScheme.primaryContainer : Colors.transparent,
+    return Builder(
+      builder: (ctx) {
+        return Material(
+          color: theme.colorScheme.surfaceContainerHighest.withAlpha(128),
+          borderRadius: BorderRadius.circular(16),
+          child: InkWell(
             borderRadius: BorderRadius.circular(16),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(16),
-              onTap: () => onToggle(content),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                child: Text(
-                  '${_reactionEmojis[content] ?? content} $count',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: userReacted ? theme.colorScheme.onPrimaryContainer : null,
+        onTap: () {
+          final renderBox = ctx.findRenderObject() as RenderBox?;
+          if (renderBox == null) return;
+          final position = renderBox.localToGlobal(Offset.zero);
+          final size = renderBox.size;
+          late final OverlayEntry overlay;
+          overlay = OverlayEntry(
+            builder: (ctx) => GestureDetector(
+              onTap: () => overlay.remove(),
+              behavior: HitTestBehavior.translucent,
+              child: Stack(
+                children: [
+                  Positioned(
+                    left: position.dx,
+                    top: position.dy + size.height + 4,
+                    child: Material(
+                      elevation: 8,
+                      borderRadius: BorderRadius.circular(12),
+                      color: theme.colorScheme.surfaceContainerHigh,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: Wrap(
+                          spacing: 2,
+                          runSpacing: 2,
+                          children: _defaultReactions.map((content) {
+                            final currentUser = Injection.authNotifier.state is AuthAuthenticated
+                                ? (Injection.authNotifier.state as AuthAuthenticated).user.login
+                                : null;
+                            final userReacted = reactions.any(
+                              (r) => r.content == content && r.user?.login == currentUser,
+                            );
+                            return Material(
+                              color: userReacted ? theme.colorScheme.primaryContainer : Colors.transparent,
+                              borderRadius: BorderRadius.circular(20),
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(20),
+                                onTap: () {
+                                  overlay.remove();
+                                  onToggle(content);
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.all(10),
+                                  child: Text(
+                                    _reactionEmojis[content] ?? content,
+                                    style: TextStyle(fontSize: 22),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
                   ),
-                ),
+                ],
               ),
             ),
           );
-        }).toList(),
+          Overlay.of(context).insert(overlay);
+        },
+        child: const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.emoji_emotions_outlined, size: 18),
+              SizedBox(width: 1),
+              Icon(Icons.add, size: 10),
+            ],
+          ),
+        ),
+      ),
+    );
+    },
+  );
+}
+
+  Widget _buildReactionChip(BuildContext context, List<Reaction> reactions, String content, Future<void> Function(String) onToggle) {
+    final theme = Theme.of(context);
+    final count = reactions.where((r) => r.content == content).length;
+    final currentUser = Injection.authNotifier.state is AuthAuthenticated
+        ? (Injection.authNotifier.state as AuthAuthenticated).user.login
+        : null;
+    final userReacted = reactions.any(
+      (r) => r.content == content && r.user?.login == currentUser,
+    );
+    return Material(
+      key: ValueKey(content),
+      color: userReacted ? theme.colorScheme.primaryContainer : theme.colorScheme.surfaceContainerHighest.withAlpha(128),
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () => onToggle(content),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+          child: Text(
+            '${_reactionEmojis[content] ?? content} $count',
+            style: TextStyle(
+              fontSize: 14,
+              color: userReacted ? theme.colorScheme.onPrimaryContainer : null,
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -712,24 +833,22 @@ class _CommentItem extends StatefulWidget {
 
 class _CommentItemState extends State<_CommentItem> {
   List<Reaction> _commentReactions = [];
-  bool _commentReactionsLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _loadCommentReactions();
+    _refreshCommentReactions();
   }
 
-  Future<void> _loadCommentReactions() async {
+  Future<void> _refreshCommentReactions() async {
     if (widget.comment.id == null) return;
-    setState(() => _commentReactionsLoading = true);
     final result = await Injection.getCommentReactionsUseCase(
       widget.owner, widget.repo, widget.comment.id!,
     );
     if (result is Right<Failure, List<Reaction>>) {
       _commentReactions = result.value;
     }
-    if (mounted) setState(() => _commentReactionsLoading = false);
+    if (mounted) setState(() {});
   }
 
   Future<void> _toggleCommentReaction(String content) async {
@@ -740,14 +859,52 @@ class _CommentItemState extends State<_CommentItem> {
     final existing = _commentReactions.where(
       (r) => r.content == content && r.user?.login == currentUser,
     ).toList();
+
+    _commentReactions = List.from(_commentReactions);
     if (existing.isNotEmpty) {
+      _commentReactions.removeWhere(
+        (r) => r.content == content && r.user?.login == currentUser,
+      );
+      if (mounted) setState(() {});
       await Injection.deleteCommentReactionUseCase(
         widget.owner, widget.repo, widget.comment.id!, content);
     } else {
+      _commentReactions.add(Reaction(content: content, user: User(login: currentUser)));
+      if (mounted) setState(() {});
       await Injection.addCommentReactionUseCase(
         widget.owner, widget.repo, widget.comment.id!, content);
     }
-    _loadCommentReactions();
+    await _refreshCommentReactions();
+  }
+
+  Widget _buildCommentReactionChip(String content) {
+    final theme = Theme.of(context);
+    final count = _commentReactions.where((r) => r.content == content).length;
+    final currentUser = Injection.authNotifier.state is AuthAuthenticated
+        ? (Injection.authNotifier.state as AuthAuthenticated).user.login
+        : null;
+    final userReacted = _commentReactions.any(
+      (r) => r.content == content && r.user?.login == currentUser,
+    );
+    return Material(
+      key: ValueKey(content),
+      color: userReacted ? theme.colorScheme.primaryContainer : theme.colorScheme.surfaceContainerHighest.withAlpha(128),
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () => _toggleCommentReaction(content),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+          child: Text(
+            '${_reactionEmojis[content] ?? content} $count',
+            style: TextStyle(
+              fontSize: 12,
+              color: userReacted ? theme.colorScheme.onPrimaryContainer : null,
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -791,46 +948,46 @@ class _CommentItemState extends State<_CommentItem> {
                   }
                 },
               ),
-            if (!_commentReactionsLoading && widget.comment.id != null)
-              Padding(
-                padding: const EdgeInsets.only(top: 4),
-                child: SizedBox(
-                  height: 28,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: _defaultReactions.map((content) {
-                      final count = _commentReactions.where((r) => r.content == content).length;
-                      final currentUser = Injection.authNotifier.state is AuthAuthenticated
-                          ? (Injection.authNotifier.state as AuthAuthenticated).user.login
-                          : null;
-                      final userReacted = _commentReactions.any(
-                        (r) => r.content == content && r.user?.login == currentUser,
-                      );
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 4),
-                        child: Material(
-                          color: userReacted ? theme.colorScheme.primaryContainer : Colors.transparent,
-                          borderRadius: BorderRadius.circular(12),
-                          child: InkWell(
-                            borderRadius: BorderRadius.circular(12),
-                            onTap: () => _toggleCommentReaction(content),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                              child: Text(
-                                '${_reactionEmojis[content] ?? content} $count',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: userReacted ? theme.colorScheme.onPrimaryContainer : null,
-                                ),
-                              ),
-                            ),
-                          ),
+            if (widget.comment.id != null)
+              Builder(builder: (context) {
+                final activeCommentReactions = _defaultReactions.where((content) {
+                  return _commentReactions.any((r) => r.content == content);
+                }).toList();
+                if (activeCommentReactions.isEmpty) return const SizedBox.shrink();
+                return AnimatedSize(
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeInOut,
+                  alignment: Alignment.topLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Wrap(
+                      spacing: 4,
+                      runSpacing: 4,
+                      children: [
+                        _CommentPickReactionButton(
+                          commentReactions: _commentReactions,
+                          onSelect: (content) => _toggleCommentReaction(content),
                         ),
-                      );
-                    }).toList(),
+                        ...activeCommentReactions.map((content) {
+                          return AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 250),
+                            transitionBuilder: (child, animation) {
+                              return ScaleTransition(
+                                scale: animation,
+                                child: FadeTransition(
+                                  opacity: animation,
+                                  child: child,
+                                ),
+                              );
+                            },
+                            child: _buildCommentReactionChip(content),
+                          );
+                        }),
+                      ],
+                    ),
                   ),
-                ),
-              ),
+                );
+              }),
           ],
         ),
       ),
@@ -847,5 +1004,99 @@ class _CommentItemState extends State<_CommentItem> {
     if (diff.inHours > 0) return l10n.ago('${diff.inHours}h');
     if (diff.inMinutes > 0) return l10n.ago('${diff.inMinutes}m');
     return l10n.justNow;
+  }
+}
+
+class _CommentPickReactionButton extends StatefulWidget {
+  final List<Reaction> commentReactions;
+  final void Function(String) onSelect;
+
+  const _CommentPickReactionButton({
+    required this.commentReactions,
+    required this.onSelect,
+  });
+
+  @override
+  State<_CommentPickReactionButton> createState() => _CommentPickReactionButtonState();
+}
+
+class _CommentPickReactionButtonState extends State<_CommentPickReactionButton> {
+  final GlobalKey _key = GlobalKey();
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Material(
+      key: _key,
+      color: theme.colorScheme.surfaceContainerHighest.withAlpha(128),
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () {
+          final renderBox = _key.currentContext?.findRenderObject() as RenderBox?;
+          if (renderBox == null) return;
+          final position = renderBox.localToGlobal(Offset.zero);
+          final size = renderBox.size;
+          late final OverlayEntry overlay;
+          overlay = OverlayEntry(
+            builder: (ctx) => GestureDetector(
+              onTap: () => overlay.remove(),
+              behavior: HitTestBehavior.translucent,
+              child: Stack(
+                children: [
+                  Positioned(
+                    left: position.dx,
+                    top: position.dy + size.height + 4,
+                    child: Material(
+                      elevation: 8,
+                      borderRadius: BorderRadius.circular(12),
+                      color: theme.colorScheme.surfaceContainerHigh,
+                      child: Padding(
+                        padding: const EdgeInsets.all(6),
+                        child: Wrap(
+                          spacing: 2,
+                          runSpacing: 2,
+                          children: _defaultReactions.map((content) {
+                            final currentUser = Injection.authNotifier.state is AuthAuthenticated
+                                ? (Injection.authNotifier.state as AuthAuthenticated).user.login
+                                : null;
+                            final userReacted = widget.commentReactions.any(
+                              (r) => r.content == content && r.user?.login == currentUser,
+                            );
+                            return Material(
+                              color: userReacted ? theme.colorScheme.primaryContainer : Colors.transparent,
+                              borderRadius: BorderRadius.circular(16),
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(16),
+                                onTap: () {
+                                  overlay.remove();
+                                  widget.onSelect(content);
+                                },
+                                child: Padding(
+                                  padding: const EdgeInsets.all(8),
+                                  child: Text(
+                                    _reactionEmojis[content] ?? content,
+                                    style: const TextStyle(fontSize: 20),
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+          Overlay.of(context).insert(overlay);
+        },
+        child: const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+          child: Icon(Icons.emoji_emotions_outlined, size: 16),
+        ),
+      ),
+    );
   }
 }

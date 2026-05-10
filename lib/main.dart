@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'app.dart';
 
 void main() {
+  FlutterError.onError = (details) {
+    FlutterError.presentError(details);
+    debugPrint('=== FLUTTER ERROR ===');
+    debugPrint('${details.exception}');
+    debugPrint('${details.stack}');
+  };
   ErrorWidget.builder = (details) {
     return Scaffold(
       body: Center(
@@ -24,7 +30,7 @@ void main() {
                   color: Colors.grey[600],
                 ),
                 textAlign: TextAlign.center,
-                maxLines: 3,
+                maxLines: 5,
                 overflow: TextOverflow.ellipsis,
               ),
             ],

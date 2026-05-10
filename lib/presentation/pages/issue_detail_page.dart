@@ -48,17 +48,40 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
   bool _isSubscribed = false;
   bool _subscriptionLoading = false;
   List<Reaction> _issueReactions = [];
-  bool _reactionsLoading = false;
 
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Injection.issueNotifier.getIssue(widget.owner, widget.repo, widget.index);
-      Injection.issueNotifier.listComments(widget.owner, widget.repo, widget.index);
-      _checkSubscription();
-      _loadIssueReactions();
-    });
+  Future<void> _refreshIssueReactions() async {
+    final result = await Injection.getIssueReactionsUseCase(
+      widget.owner, widget.repo, widget.index,
+    );
+    if (result is Right<Failure, List<Reaction>>) {
+      _issueReactions = result.value;
+    }
+    if (mounted) setState(() {});
+  }
+
+  Future<void> _toggleIssueReaction(String content) async {
+    final currentUser = Injection.authNotifier.state is AuthAuthenticated
+        ? (Injection.authNotifier.state as AuthAuthenticated).user.login
+        : null;
+    final existing = _issueReactions.where(
+      (r) => r.content == content && r.user?.login == currentUser,
+    ).toList();
+
+    _issueReactions = List.from(_issueReactions);
+    if (existing.isNotEmpty) {
+      _issueReactions.removeWhere(
+        (r) => r.content == content && r.user?.login == currentUser,
+      );
+      if (mounted) setState(() {});
+      await Injection.deleteIssueReactionUseCase(
+        widget.owner, widget.repo, widget.index, content);
+    } else {
+      _issueReactions.add(Reaction(content: content, user: User(login: currentUser)));
+      if (mounted) setState(() {});
+      await Injection.addIssueReactionUseCase(
+        widget.owner, widget.repo, widget.index, content);
+    }
+    await _refreshIssueReactions();
   }
 
   Future<void> _checkSubscription() async {
@@ -110,34 +133,6 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
         );
       }
     }
-  }
-
-  Future<void> _loadIssueReactions() async {
-    setState(() => _reactionsLoading = true);
-    final result = await Injection.getIssueReactionsUseCase(
-      widget.owner, widget.repo, widget.index,
-    );
-    if (result is Right<Failure, List<Reaction>>) {
-      _issueReactions = result.value;
-    }
-    if (mounted) setState(() => _reactionsLoading = false);
-  }
-
-  Future<void> _toggleIssueReaction(String content) async {
-    final currentUser = Injection.authNotifier.state is AuthAuthenticated
-        ? (Injection.authNotifier.state as AuthAuthenticated).user.login
-        : null;
-    final existing = _issueReactions.where(
-      (r) => r.content == content && r.user?.login == currentUser,
-    ).toList();
-    if (existing.isNotEmpty) {
-      await Injection.deleteIssueReactionUseCase(
-        widget.owner, widget.repo, widget.index, content);
-    } else {
-      await Injection.addIssueReactionUseCase(
-        widget.owner, widget.repo, widget.index, content);
-    }
-    _loadIssueReactions();
   }
 
   Future<void> _confirmDeleteIssue() async {
@@ -240,7 +235,6 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
               subscriptionLoading: _subscriptionLoading,
               onToggleSubscription: _toggleSubscription,
               issueReactions: _issueReactions,
-              reactionsLoading: _reactionsLoading,
               onToggleReaction: _toggleIssueReaction,
             ),
             _ => const Center(child: CircularProgressIndicator()),
@@ -261,7 +255,6 @@ class _IssueContent extends StatelessWidget {
   final bool subscriptionLoading;
   final VoidCallback onToggleSubscription;
   final List<Reaction> issueReactions;
-  final bool reactionsLoading;
   final Future<void> Function(String) onToggleReaction;
 
   const _IssueContent({
@@ -274,7 +267,6 @@ class _IssueContent extends StatelessWidget {
     required this.subscriptionLoading,
     required this.onToggleSubscription,
     required this.issueReactions,
-    required this.reactionsLoading,
     required this.onToggleReaction,
   });
 
@@ -512,8 +504,7 @@ class _IssueContent extends StatelessWidget {
               ),
             ),
 
-          if (!reactionsLoading)
-            _buildReactionRow(context, issueReactions, onToggleReaction),
+          _buildReactionRow(context, issueReactions, onToggleReaction),
 
           const SizedBox(height: 16),
 
@@ -595,39 +586,158 @@ class _IssueContent extends StatelessWidget {
   }
 
   Widget _buildReactionRow(BuildContext context, List<Reaction> reactions, Future<void> Function(String) onToggle) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Wrap(
-        spacing: 4,
-        runSpacing: 4,
-        children: _defaultReactions.map((content) {
-          final count = reactions.where((r) => r.content == content).length;
-          final currentUser = Injection.authNotifier.state is AuthAuthenticated
-              ? (Injection.authNotifier.state as AuthAuthenticated).user.login
-              : null;
-          final userReacted = reactions.any(
-            (r) => r.content == content && r.user?.login == currentUser,
-          );
-          return Material(
-            color: userReacted ? theme.colorScheme.primaryContainer : Colors.transparent,
-            borderRadius: BorderRadius.circular(16),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(16),
-              onTap: () => onToggle(content),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                child: Text(
-                  '${_reactionEmojis[content] ?? content} $count',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: userReacted ? theme.colorScheme.onPrimaryContainer : null,
-                  ),
-                ),
+    final activeReactions = _defaultReactions.where((content) {
+      return reactions.any((r) => r.content == content);
+    }).toList();
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.easeInOut,
+      alignment: Alignment.topLeft,
+      child: activeReactions.isEmpty
+          ? const SizedBox(height: 4)
+          : Padding(
+              padding: const EdgeInsets.symmetric(vertical: 4),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  _buildPickReactionButton(context, reactions, onToggle),
+                  const SizedBox(width: 4),
+                  ...activeReactions.map((content) {
+                    return Padding(
+                      padding: const EdgeInsets.only(right: 4),
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 250),
+                        transitionBuilder: (child, animation) {
+                          return ScaleTransition(
+                            scale: animation,
+                            child: FadeTransition(
+                              opacity: animation,
+                              child: child,
+                            ),
+                          );
+                        },
+                        child: _buildReactionChip(context, reactions, content, onToggle),
+                      ),
+                    );
+                  }),
+                ],
               ),
             ),
-          );
-        }).toList(),
+    );
+  }
+
+  Widget _buildPickReactionButton(BuildContext context, List<Reaction> reactions, Future<void> Function(String) onToggle) {
+    final theme = Theme.of(context);
+    return Builder(
+      builder: (ctx) {
+        return Material(
+          color: theme.colorScheme.surfaceContainerHighest.withAlpha(128),
+          borderRadius: BorderRadius.circular(16),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(16),
+            onTap: () {
+              final renderBox = ctx.findRenderObject() as RenderBox?;
+              if (renderBox == null) return;
+              final position = renderBox.localToGlobal(Offset.zero);
+              final size = renderBox.size;
+              late final OverlayEntry overlay;
+              overlay = OverlayEntry(
+                builder: (ctx) => GestureDetector(
+                  onTap: () => overlay.remove(),
+                  behavior: HitTestBehavior.translucent,
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        left: position.dx,
+                        top: position.dy + size.height + 4,
+                        child: Material(
+                          elevation: 8,
+                          borderRadius: BorderRadius.circular(12),
+                          color: theme.colorScheme.surfaceContainerHigh,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: Wrap(
+                              spacing: 2,
+                              runSpacing: 2,
+                              children: _defaultReactions.map((content) {
+                                final currentUser = Injection.authNotifier.state is AuthAuthenticated
+                                    ? (Injection.authNotifier.state as AuthAuthenticated).user.login
+                                    : null;
+                                final userReacted = reactions.any(
+                                  (r) => r.content == content && r.user?.login == currentUser,
+                                );
+                                return Material(
+                                  color: userReacted ? theme.colorScheme.primaryContainer : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(20),
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(20),
+                                    onTap: () {
+                                      overlay.remove();
+                                      onToggle(content);
+                                    },
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(10),
+                                      child: Text(
+                                        _reactionEmojis[content] ?? content,
+                                        style: TextStyle(fontSize: 22),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+              Overlay.of(context).insert(overlay);
+            },
+            child: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.emoji_emotions_outlined, size: 18),
+                  SizedBox(width: 1),
+                  Icon(Icons.add, size: 10),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildReactionChip(BuildContext context, List<Reaction> reactions, String content, Future<void> Function(String) onToggle) {
+    final theme = Theme.of(context);
+    final count = reactions.where((r) => r.content == content).length;
+    final currentUser = Injection.authNotifier.state is AuthAuthenticated
+        ? (Injection.authNotifier.state as AuthAuthenticated).user.login
+        : null;
+    final userReacted = reactions.any(
+      (r) => r.content == content && r.user?.login == currentUser,
+    );
+    return Material(
+      key: ValueKey(content),
+      color: userReacted ? theme.colorScheme.primaryContainer : theme.colorScheme.surfaceContainerHighest.withAlpha(128),
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(16),
+        onTap: () => onToggle(content),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+          child: Text(
+            '${_reactionEmojis[content] ?? content} $count',
+            style: TextStyle(
+              fontSize: 14,
+              color: userReacted ? theme.colorScheme.onPrimaryContainer : null,
+            ),
+          ),
+        ),
       ),
     );
   }
@@ -840,13 +950,12 @@ class _CommentItemState extends State<_CommentItem> {
   bool _editing = false;
   bool _saving = false;
   List<Reaction> _commentReactions = [];
-  bool _commentReactionsLoading = false;
 
   @override
   void initState() {
     super.initState();
     _editController = TextEditingController(text: widget.comment.body ?? '');
-    _loadCommentReactions();
+    _refreshCommentReactions();
   }
 
   @override
@@ -855,16 +964,15 @@ class _CommentItemState extends State<_CommentItem> {
     super.dispose();
   }
 
-  Future<void> _loadCommentReactions() async {
+  Future<void> _refreshCommentReactions() async {
     if (widget.comment.id == null) return;
-    setState(() => _commentReactionsLoading = true);
     final result = await Injection.getCommentReactionsUseCase(
       widget.owner, widget.repo, widget.comment.id!,
     );
     if (result is Right<Failure, List<Reaction>>) {
       _commentReactions = result.value;
     }
-    if (mounted) setState(() => _commentReactionsLoading = false);
+    if (mounted) setState(() {});
   }
 
   Future<void> _toggleCommentReaction(String content) async {
@@ -875,14 +983,22 @@ class _CommentItemState extends State<_CommentItem> {
     final existing = _commentReactions.where(
       (r) => r.content == content && r.user?.login == currentUser,
     ).toList();
+
+    _commentReactions = List.from(_commentReactions);
     if (existing.isNotEmpty) {
+      _commentReactions.removeWhere(
+        (r) => r.content == content && r.user?.login == currentUser,
+      );
+      if (mounted) setState(() {});
       await Injection.deleteCommentReactionUseCase(
         widget.owner, widget.repo, widget.comment.id!, content);
     } else {
+      _commentReactions.add(Reaction(content: content, user: User(login: currentUser)));
+      if (mounted) setState(() {});
       await Injection.addCommentReactionUseCase(
         widget.owner, widget.repo, widget.comment.id!, content);
     }
-    _loadCommentReactions();
+    await _refreshCommentReactions();
   }
 
   Future<void> _saveEdit() async {
@@ -991,166 +1107,124 @@ class _CommentItemState extends State<_CommentItem> {
                       });
                     }
                   : null,
-              child: IntrinsicWidth(
-                child: Stack(
-                  clipBehavior: Clip.none,
-                  children: [
-                    Container(
-                      constraints: BoxConstraints(
-                        maxWidth: maxBubbleWidth,
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Container(
+                    constraints: BoxConstraints(
+                      maxWidth: maxBubbleWidth,
+                    ),
+                    padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+                    decoration: BoxDecoration(
+                      color: bubbleColor,
+                      borderRadius: BorderRadius.only(
+                        topLeft: const Radius.circular(18),
+                        topRight: const Radius.circular(18),
+                        bottomLeft: Radius.circular(isMe ? 18 : 4),
+                        bottomRight: Radius.circular(isMe ? 4 : 18),
                       ),
-                      padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
-                      decoration: BoxDecoration(
-                        color: bubbleColor,
-                        borderRadius: BorderRadius.only(
-                          topLeft: const Radius.circular(18),
-                          topRight: const Radius.circular(18),
-                          bottomLeft: Radius.circular(isMe ? 18 : 4),
-                          bottomRight: Radius.circular(isMe ? 4 : 18),
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-                        children: [
-                          if (!isMe && widget.comment.user?.login != null)
-                            Text(
-                              widget.comment.user!.login!,
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                fontWeight: FontWeight.bold,
-                                color: theme.colorScheme.primary,
-                              ),
-                            ),
-                          if (_editing)
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.end,
-                              children: [
-                                TextField(
-                                  controller: _editController,
-                                  decoration: const InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    isDense: true,
-                                  ),
-                                  maxLines: 5,
-                                  minLines: 2,
-                                ),
-                                const SizedBox(height: 4),
-                                Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    TextButton(
-                                      onPressed: () => setState(() {
-                                        _editing = false;
-                                        _editController.text = widget.comment.body ?? '';
-                                      }),
-                                      child: Text(l10n.cancel),
-                                    ),
-                                    const SizedBox(width: 4),
-                                    FilledButton(
-                                      onPressed: _saving ? null : _saveEdit,
-                                      child: _saving
-                                          ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-                                          : Text(l10n.save),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            )
-                          else if (widget.comment.body != null && widget.comment.body!.isNotEmpty)
-                            MarkdownBody(
-                              data: widget.comment.body!,
-                              selectable: true,
-                              styleSheet: MarkdownStyleSheet.fromTheme(theme).copyWith(
-                                p: theme.textTheme.bodyMedium,
-                              ),
-                              onTapLink: (text, href, title) {
-                                if (href != null) {
-                                  launchUrl(Uri.parse(href), mode: LaunchMode.externalApplication);
-                                }
-                              },
-                            ),
-                          if (!_commentReactionsLoading && widget.comment.id != null)
-                            Padding(
-                              padding: const EdgeInsets.only(top: 4),
-                              child: SizedBox(
-                                height: 28,
-                                child: ListView(
-                                  scrollDirection: Axis.horizontal,
-                                  children: _defaultReactions.map((content) {
-                                    final count = _commentReactions.where((r) => r.content == content).length;
-                                    final currentUser = Injection.authNotifier.state is AuthAuthenticated
-                                        ? (Injection.authNotifier.state as AuthAuthenticated).user.login
-                                        : null;
-                                    final userReacted = _commentReactions.any(
-                                      (r) => r.content == content && r.user?.login == currentUser,
-                                    );
-                                    return Padding(
-                                      padding: const EdgeInsets.only(right: 4),
-                                      child: Material(
-                                        color: userReacted ? theme.colorScheme.primaryContainer : Colors.transparent,
-                                        borderRadius: BorderRadius.circular(12),
-                                        child: InkWell(
-                                          borderRadius: BorderRadius.circular(12),
-                                          onTap: () => _toggleCommentReaction(content),
-                                          child: Padding(
-                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                            child: Text(
-                                              '${_reactionEmojis[content] ?? content} $count',
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: userReacted ? theme.colorScheme.onPrimaryContainer : null,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    );
-                                  }).toList(),
-                                ),
-                              ),
-                            ),
-                          const SizedBox(height: 4),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                      children: [
+                        if (!isMe && widget.comment.user?.login != null)
                           Text(
-                            _formatDate(widget.comment.created_at, AppLocalizations.of(context)!),
+                            widget.comment.user!.login!,
                             style: theme.textTheme.labelSmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                              color: theme.colorScheme.primary,
                             ),
                           ),
+                        if (_editing)
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              TextField(
+                                controller: _editController,
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  isDense: true,
+                                ),
+                                maxLines: 5,
+                                minLines: 2,
+                              ),
+                              const SizedBox(height: 4),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  TextButton(
+                                    onPressed: () => setState(() {
+                                      _editing = false;
+                                      _editController.text = widget.comment.body ?? '';
+                                    }),
+                                    child: Text(l10n.cancel),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  FilledButton(
+                                    onPressed: _saving ? null : _saveEdit,
+                                    child: _saving
+                                        ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                                        : Text(l10n.save),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          )
+                        else if (widget.comment.body != null && widget.comment.body!.isNotEmpty)
+                          MarkdownBody(
+                            data: widget.comment.body!,
+                            selectable: true,
+                            styleSheet: MarkdownStyleSheet.fromTheme(theme).copyWith(
+                              p: theme.textTheme.bodyMedium,
+                            ),
+                            onTapLink: (text, href, title) {
+                              if (href != null) {
+                                launchUrl(Uri.parse(href), mode: LaunchMode.externalApplication);
+                              }
+                            },
+                          ),
+                        const SizedBox(height: 4),
+                        Text(
+                          _formatDate(widget.comment.created_at, AppLocalizations.of(context)!),
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (isMe && !_editing)
+                    Positioned(
+                      top: 4,
+                      right: 4,
+                      child: PopupMenuButton<String>(
+                        padding: EdgeInsets.zero,
+                        icon: Icon(Icons.more_horiz, size: 14, color: theme.colorScheme.onSurfaceVariant),
+                        onSelected: (v) {
+                          if (v == 'edit') setState(() => _editing = true);
+                          if (v == 'delete') _delete();
+                        },
+                        itemBuilder: (_) => [
+                          PopupMenuItem(value: 'edit', child: Text(l10n.edit)),
+                          PopupMenuItem(value: 'delete', child: Text(l10n.delete)),
                         ],
                       ),
                     ),
-                    if (isMe && !_editing)
-                      Positioned(
-                        top: 4,
-                        right: 4,
-                        child: PopupMenuButton<String>(
-                          padding: EdgeInsets.zero,
-                          icon: Icon(Icons.more_horiz, size: 14, color: theme.colorScheme.onSurfaceVariant),
-                          onSelected: (v) {
-                            if (v == 'edit') setState(() => _editing = true);
-                            if (v == 'delete') _delete();
-                          },
-                          itemBuilder: (_) => [
-                            PopupMenuItem(value: 'edit', child: Text(l10n.edit)),
-                            PopupMenuItem(value: 'delete', child: Text(l10n.delete)),
-                          ],
-                        ),
-                      ),
-                  ],
-                ),
+                ],
               ),
-            ),
-          ),
-          if (isMe) ...[
-            const SizedBox(width: 8),
-            if (widget.comment.user != null)
-              UserAvatar(user: widget.comment.user!, radius: 16)
-            else
-              CircleAvatar(radius: 16, child: Icon(Icons.person, size: 16)),
-          ],
-        ],
+        ),
       ),
-    );
+      if (isMe) ...[
+        const SizedBox(width: 8),
+        if (widget.comment.user != null)
+          UserAvatar(user: widget.comment.user!, radius: 16)
+        else
+          CircleAvatar(radius: 16, child: Icon(Icons.person, size: 16)),
+      ],
+    ],
+  ),
+);
   }
 
   String _formatDate(DateTime? date, AppLocalizations l10n) {
@@ -1503,3 +1577,4 @@ class _DependenciesSectionState extends State<_DependenciesSection> {
     );
   }
 }
+

@@ -679,19 +679,19 @@ class Injection {
     _initUseCases();
     _assertUseCasesInitialized();
 
-    if (_initialized) {
-      authNotifier.updateUseCases(
+    if (!_initialized) {
+      authNotifier = AuthNotifier(
         loginUseCase: loginUseCase,
         getSettingsUseCase: getSettingsUseCase,
       );
-      userNotifier.updateUseCases(
+      userNotifier = UserNotifier(
         getCurrentUserUseCase: getCurrentUserUseCase,
         listCurrentUserReposUseCase: listCurrentUserReposUseCase,
         getUserActivitiesUseCase: getUserActivitiesUseCase,
         listStarredReposUseCase: listStarredReposUseCase,
         searchPublicUsersUseCase: searchPublicUsersUseCase,
       );
-      repoNotifier.updateUseCases(
+      repoNotifier = RepoNotifier(
         getRepoUseCase: getRepoUseCase,
         searchReposUseCase: searchReposUseCase,
         listBranchesUseCase: listBranchesUseCase,
