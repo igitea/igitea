@@ -922,7 +922,7 @@ class _IssueContent extends StatelessWidget {
 
     if (date != null) {
       final result = await Injection.editIssueDeadlineUseCase(
-        owner, repo, index, {'due_date': date.toIso8601String()},
+        owner, repo, index, {'due_date': date.toUtc().toIso8601String()},
       );
       switch (result) {
         case Right<Failure, void>():
@@ -938,10 +938,10 @@ class _IssueContent extends StatelessWidget {
   }
 
   Future<void> _clearDueDate() async {
-    final result = await Injection.editIssueDeadlineUseCase(
-      owner, repo, index, {'due_date': null},
+    final result = await Injection.editIssueUseCase(
+      EditIssueParams(owner: owner, repo: repo, index: index, body: {'due_date': null}),
     );
-    if (result is Right<Failure, void>) {
+    if (result is Right<Failure, Issue>) {
       Injection.issueNotifier.reloadIssue(owner, repo, index);
     }
   }
