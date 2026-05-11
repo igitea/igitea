@@ -9,6 +9,7 @@
   - API：6 个方法支持 Issue 和评论的 reactions（列表/添加/删除）
   - Repository + Use Cases：`ReactionRepository`，6 个 Use Cases
   - UI：表情反应行，支持 emoji 按钮，用户自己的反应高亮显示
+  - GitHub 风格选择器：按钮下方浮起下拉面板，平滑动画，count=0 时自动隐藏
   - 支持：+1、-1、laugh、hooray、confused、heart、eyes
 - **分支 → 代码浏览**：点击分支列表中的分支，现在直接跳转到该分支的代码浏览器
 - **保存筛选条件**：通过 SharedPreferences 保存和恢复 Issue 列表筛选条件预设（状态 + 搜索关键词）
@@ -20,9 +21,18 @@
   - Use Cases：`AddRepoSubscriptionUseCase`/`DeleteRepoSubscriptionUseCase`/`CheckRepoSubscriptionUseCase`
   - Notifier：`checkWatched`/`toggleWatch` 方法，`isWatched`/`watchLoading` 状态
 - **国际化翻译补全**：为 de、es、fr、ja、ko、pt、ru、zh_TW 共 8 个区域各补充 117 个缺失键（共 936 条），全部 8 个区域现已与英文模板完全对齐（710 个键）
+- **无限滚动分页**：评论、组织仓库、星标仓库、通知、PR 列表每页加载 20 条，底部"加载更多"按钮
+- **权限感知 UI**：因期编辑、里程碑编辑、Issue 编辑按钮在无 push/admin 权限时自动隐藏
 
 ### Fixed
 - 翻译了全部 8 个 ARB 文件中残留的 2,161 条英文占位条目
+- Emoji 反应：所有 reaction 为 0 时选择按钮保持可见
+- Emoji 反应：乐观本地更新，防止切换时闪烁/整个行消失
+- 截止日期设置：使用 UTC ISO8601 格式（Z 后缀）兼容 Gitea Go 后端
+- 截止日期清除：改用 PATCH issue 端点代替 POST deadline 端点
+- 截止日期：仅静默刷新该数据，不再全页 loading 闪烁
+- Issue 详情页：修复缺少 initState 导致的无限加载 Bug
+- 时间线：过滤掉 comment 类型事件（已在评论区独立显示）
 
 ## [0.30.0] - 2026-05-05
 

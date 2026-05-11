@@ -26,6 +26,7 @@
   - API: 6 methods for issue and comment reactions (list/add/delete)
   - Repository + use cases: `ReactionRepository`, 6 use cases
   - UI: reaction row with emoji buttons, highlighted state on user's own reactions
+  - GitHub-style picker: positioned dropdown below + button, smooth animations, reactions with count=0 auto-hide
   - Supported: +1, -1, laugh, hooray, confused, heart, eyes
 - **Branch → Code browser**: tapping a branch in the branches list now navigates to the code browser filtered to that branch
 - **Saved Filters**: save and restore issue list filter presets (state + search query) via SharedPreferences
@@ -37,9 +38,18 @@
   - Use cases: `AddRepoSubscriptionUseCase`/`DeleteRepoSubscriptionUseCase`/`CheckRepoSubscriptionUseCase`
   - Notifier: `checkWatched`/`toggleWatch` methods, `isWatched`/`watchLoading` state
 - **Complete i18n translations**: 117 missing keys added to de, es, fr, ja, ko, pt, ru, zh_TW (936 total), all 8 locales now at 100% parity with English template (710 keys)
+- **Infinite scroll pagination**: comments, org repositories, starred repos, notifications, PR lists now load in pages (20 per page) with "Load more" button
+- **Permission-aware UI**: edit buttons (due date, milestone, issue edit) now hidden when user lacks push/admin permission on the repository
 
 ### Fixed
 - Translated 2,161 remaining English placeholder entries across all 8 ARB locales
+- Emoji reaction: picker button stays visible when all reactions are removed
+- Emoji reaction: optimistic local update prevents flash/loading state on toggle
+- Due date set: uses UTC ISO8601 format (Z suffix) for Gitea Go backend compatibility
+- Due date clear: uses PATCH issue endpoint instead of POST deadline endpoint
+- Due date: only refreshes due date data silently (no full page loading flash)
+- Issue detail page: restored missing initState causing infinite loading
+- Timeline: filtered out comment events (already shown in dedicated comments section)
 
 ## [0.29.0] - 2026-05-05
 
