@@ -927,12 +927,8 @@ class _IssueContent extends StatelessWidget {
       switch (result) {
         case Right<Failure, void>():
           Injection.issueNotifier.reloadIssue(owner, repo, index);
-        case Left<Failure, void>(:final value):
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('${AppLocalizations.of(context)!.error}: ${value.message}')),
-            );
-          }
+        case Left<Failure, void>():
+          break;
       }
     }
   }
