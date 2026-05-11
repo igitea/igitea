@@ -387,9 +387,10 @@ class _ActivityFeedState extends State<_ActivityFeed> {
         }
 
         return Column(
-          children: activities.take(10).toList().asMap().entries.map((entry) {
-            final index = entry.key;
-            final activity = entry.value;
+          children: [
+            ...activities.asMap().entries.map((entry) {
+              final index = entry.key;
+              final activity = entry.value;
             return FadeInWrapper(
               delay: Duration(milliseconds: index * 30),
               child: PremiumListCard(
@@ -432,6 +433,19 @@ class _ActivityFeedState extends State<_ActivityFeed> {
               ),
             );
           }).toList(),
+          if (Injection.userNotifier.activitiesHasMore)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Injection.userNotifier.activitiesLoadingMore
+                    ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(strokeWidth: 2))
+                    : TextButton(
+                        onPressed: () => Injection.userNotifier.loadMoreActivities(widget.user.login!),
+                        child: const Text('Load more activity'),
+                      ),
+              ),
+            ),
+        ],
         );
       },
     );

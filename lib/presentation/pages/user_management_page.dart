@@ -56,7 +56,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                 ],
               ),
             ),
-            AdminUsersLoaded(:final users) => _UserList(users: users),
+            AdminUsersLoaded(:final users, :final hasMore) => _UserList(users: users, hasMore: hasMore),
             _ => const Center(child: CircularProgressIndicator()),
           };
         },
@@ -95,8 +95,9 @@ class _UserManagementPageState extends State<UserManagementPage> {
 
 class _UserList extends StatelessWidget {
   final List<User> users;
+  final bool hasMore;
 
-  const _UserList({required this.users});
+  const _UserList({required this.users, required this.hasMore});
 
   @override
   Widget build(BuildContext context) {
@@ -106,8 +107,21 @@ class _UserList extends StatelessWidget {
     }
     return ListView.builder(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      itemCount: users.length,
+      itemCount: users.length + (hasMore ? 1 : 0),
       itemBuilder: (context, index) {
+        if (index == users.length) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Injection.adminNotifier.usersLoadingMore
+                  ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(strokeWidth: 2))
+                  : TextButton(
+                      onPressed: () => Injection.adminNotifier.loadMoreUsers(),
+                      child: const Text('Load more users'),
+                    ),
+            ),
+          );
+        }
         final user = users[index];
         return FadeInWrapper(
           delay: Duration(milliseconds: index * 30),

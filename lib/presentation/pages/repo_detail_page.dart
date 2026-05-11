@@ -1657,13 +1657,26 @@ class _ReleasesTabState extends State<_ReleasesTab> {
                     ],
                   ),
                 ),
-              ReleasesLoaded(:final releases) => releases.isEmpty
+              ReleasesLoaded(:final releases, :final hasMore) => releases.isEmpty
                   ? EmptyState(icon: Icons.new_releases_outlined, title: widget.l10n.noReleases)
                   : ListView.builder(
                       padding: UIConstants.pagePadding +
                           EdgeInsets.only(bottom: 80),
-                      itemCount: releases.length,
+                      itemCount: releases.length + (hasMore ? 1 : 0),
                       itemBuilder: (context, index) {
+                        if (index == releases.length) {
+                          return Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Injection.repoNotifier.releasesLoadingMore
+                                  ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(strokeWidth: 2))
+                                  : TextButton(
+                                      onPressed: () => Injection.repoNotifier.loadMoreReleases(widget.owner, widget.repo),
+                                      child: const Text('Load more releases'),
+                                    ),
+                            ),
+                          );
+                        }
                         final release = releases[index];
                         return FadeInWrapper(
                           delay: Duration(milliseconds: index * 20),

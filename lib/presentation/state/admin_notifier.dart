@@ -19,7 +19,8 @@ class AdminUsersLoading extends AdminUsersState {
 
 class AdminUsersLoaded extends AdminUsersState {
   final List<User> users;
-  const AdminUsersLoaded(this.users);
+  final bool hasMore;
+  const AdminUsersLoaded(this.users, {this.hasMore = false});
 }
 
 class AdminUsersError extends AdminUsersState {
@@ -179,6 +180,10 @@ class AdminNotifier extends ChangeNotifier {
 
   AdminUsersState _usersState = const AdminUsersInitial();
   AdminUsersState get usersState => _usersState;
+  int _usersPage = 1;
+  bool _usersLoadingMore = false;
+  bool get usersLoadingMore => _usersLoadingMore;
+  static const int _usersLimit = 20;
 
   AdminOperationState _operationState = const AdminOperationInitial();
   AdminOperationState get operationState => _operationState;
@@ -274,19 +279,43 @@ class AdminNotifier extends ChangeNotifier {
 
   Future<void> searchUsers({int? sourceId, String? loginName, int? page, int? limit}) async {
     _usersState = const AdminUsersLoading();
+    _usersPage = 1;
     notifyListeners();
 
     final result = await _searchUsersUseCase.call(
-      SearchUsersParams(source_id: sourceId, login_name: loginName, page: page, limit: limit),
+      SearchUsersParams(source_id: sourceId, login_name: loginName, page: page ?? 1, limit: limit ?? _usersLimit),
     );
     switch (result) {
       case Left<Failure, List<User>>(:final value):
         _usersState = AdminUsersError(value.message);
         notifyListeners();
       case Right<Failure, List<User>>(:final value):
-        _usersState = AdminUsersLoaded(value);
+        _usersState = AdminUsersLoaded(value, hasMore: value.length >= _usersLimit);
         notifyListeners();
     }
+  }
+
+  Future<void> loadMoreUsers({int? sourceId, String? loginName}) async {
+    if (_usersLoadingMore) return;
+    final current = _usersState;
+    if (current is! AdminUsersLoaded || !current.hasMore) return;
+    _usersLoadingMore = true;
+    notifyListeners();
+    _usersPage++;
+    final result = await _searchUsersUseCase.call(
+      SearchUsersParams(source_id: sourceId, login_name: loginName, page: _usersPage, limit: _usersLimit),
+    );
+    switch (result) {
+      case Right<Failure, List<User>>(:final value):
+        _usersState = AdminUsersLoaded(
+          [...current.users, ...value],
+          hasMore: value.length >= _usersLimit,
+        );
+      case Left<Failure, List<User>>():
+        _usersPage--;
+    }
+    _usersLoadingMore = false;
+    notifyListeners();
   }
 
   Future<void> createUser(Map<String, dynamic> body) async {

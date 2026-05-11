@@ -165,7 +165,8 @@ class ReleasesLoading extends ReleasesState {
 
 class ReleasesLoaded extends ReleasesState {
   final List<Release> releases;
-  const ReleasesLoaded(this.releases);
+  final bool hasMore;
+  const ReleasesLoaded(this.releases, {this.hasMore = false});
 }
 
 class ReleasesError extends ReleasesState {
@@ -298,6 +299,10 @@ class RepoNotifier extends ChangeNotifier {
 
   ReleasesState _releasesState = const ReleasesInitial();
   ReleasesState get releasesState => _releasesState;
+  int _releasesPage = 1;
+  bool _releasesLoadingMore = false;
+  bool get releasesLoadingMore => _releasesLoadingMore;
+  static const int _releasesLimit = 20;
 
   CommitsState _commitsState = const CommitsInitial();
   CommitsState get commitsState => _commitsState;
@@ -702,18 +707,42 @@ class RepoNotifier extends ChangeNotifier {
 
   Future<void> listReleases(String owner, String repo) async {
     _releasesState = const ReleasesLoading();
+    _releasesPage = 1;
     notifyListeners();
     final result = await _listReleasesUseCase.call(
-      ListReleasesParams(owner: owner, repo: repo),
+      ListReleasesParams(owner: owner, repo: repo, page: 1, limit: _releasesLimit),
     );
     switch (result) {
       case Left<Failure, List<Release>>(:final value):
         _releasesState = ReleasesError(value.message);
         notifyListeners();
       case Right<Failure, List<Release>>(:final value):
-        _releasesState = ReleasesLoaded(value);
+        _releasesState = ReleasesLoaded(value, hasMore: value.length >= _releasesLimit);
         notifyListeners();
     }
+  }
+
+  Future<void> loadMoreReleases(String owner, String repo) async {
+    if (_releasesLoadingMore) return;
+    final current = _releasesState;
+    if (current is! ReleasesLoaded || !current.hasMore) return;
+    _releasesLoadingMore = true;
+    notifyListeners();
+    _releasesPage++;
+    final result = await _listReleasesUseCase.call(
+      ListReleasesParams(owner: owner, repo: repo, page: _releasesPage, limit: _releasesLimit),
+    );
+    switch (result) {
+      case Right<Failure, List<Release>>(:final value):
+        _releasesState = ReleasesLoaded(
+          [...current.releases, ...value],
+          hasMore: value.length >= _releasesLimit,
+        );
+      case Left<Failure, List<Release>>():
+        _releasesPage--;
+    }
+    _releasesLoadingMore = false;
+    notifyListeners();
   }
 
   Future<bool> createRelease({

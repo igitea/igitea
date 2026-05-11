@@ -39,6 +39,12 @@ class UserNotifier extends ChangeNotifier {
 
   List<Activity> _activities = [];
   List<Activity> get activities => _activities;
+  bool _activitiesHasMore = false;
+  bool get activitiesHasMore => _activitiesHasMore;
+  int _activitiesPage = 1;
+  bool _activitiesLoadingMore = false;
+  bool get activitiesLoadingMore => _activitiesLoadingMore;
+  static const int _activitiesLimit = 20;
 
   List<Repository> _starredRepos = [];
   List<Repository> get starredRepos => _starredRepos;
@@ -117,8 +123,9 @@ class UserNotifier extends ChangeNotifier {
   }
 
   Future<void> getUserActivities(String username, {int? page, int? limit}) async {
+    _activitiesPage = 1;
     final result = await _getUserActivitiesUseCase.call(
-      GetUserActivitiesParams(username: username, page: page, limit: limit),
+      GetUserActivitiesParams(username: username, page: page ?? 1, limit: limit ?? _activitiesLimit),
     );
     switch (result) {
       case Left<Failure, List<Activity>>():
@@ -126,8 +133,28 @@ class UserNotifier extends ChangeNotifier {
         notifyListeners();
       case Right<Failure, List<Activity>>(:final value):
         _activities = value;
+        _activitiesHasMore = value.length >= _activitiesLimit;
         notifyListeners();
     }
+  }
+
+  Future<void> loadMoreActivities(String username) async {
+    if (_activitiesLoadingMore || !_activitiesHasMore) return;
+    _activitiesLoadingMore = true;
+    notifyListeners();
+    _activitiesPage++;
+    final result = await _getUserActivitiesUseCase.call(
+      GetUserActivitiesParams(username: username, page: _activitiesPage, limit: _activitiesLimit),
+    );
+    switch (result) {
+      case Right<Failure, List<Activity>>(:final value):
+        _activities = [..._activities, ...value];
+        _activitiesHasMore = value.length >= _activitiesLimit;
+      case Left<Failure, List<Activity>>():
+        _activitiesPage--;
+    }
+    _activitiesLoadingMore = false;
+    notifyListeners();
   }
 
   Future<void> listStarredRepos({int? page, int? limit}) async {
