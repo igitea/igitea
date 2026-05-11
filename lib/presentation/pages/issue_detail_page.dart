@@ -373,10 +373,11 @@ class _IssueContent extends StatelessWidget {
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 );
               }),
-              ActionChip(
-                label: Text(l10n.edit),
-                avatar: const Icon(Icons.edit, size: 16),
-                onPressed: () async {
+              if (canEdit)
+                ActionChip(
+                  label: Text(l10n.edit),
+                  avatar: const Icon(Icons.edit, size: 16),
+                  onPressed: () async {
                   final edited = await Navigator.of(context).push<bool>(
                     MaterialPageRoute(
                       builder: (_) => EditIssuePage(
@@ -430,11 +431,13 @@ class _IssueContent extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(issue.milestone!.title ?? ''),
-                  const SizedBox(width: 8),
-                  InkWell(
-                    onTap: () => _showMilestoneEditor(context, issue),
-                    child: Icon(Icons.edit, size: 16, color: theme.colorScheme.primary),
-                  ),
+                  if (canEdit) ...[
+                    const SizedBox(width: 8),
+                    InkWell(
+                      onTap: () => _showMilestoneEditor(context, issue),
+                      child: Icon(Icons.edit, size: 16, color: theme.colorScheme.primary),
+                    ),
+                  ],
                 ],
               ),
             ),
