@@ -561,7 +561,8 @@ class _IssueContent extends StatelessWidget {
                     ),
                   ],
                 ),
-                CommentsLoaded(:final comments) => _buildCommentsList(context, comments, l10n),
+                CommentsLoaded(:final comments, :final hasMore) =>
+                  _buildCommentsList(context, comments, hasMore: hasMore, l10n: l10n),
                 _ => const SizedBox.shrink(),
               };
             },
@@ -772,7 +773,7 @@ class _IssueContent extends StatelessWidget {
     );
   }
 
-  Widget _buildCommentsList(BuildContext context, List<Comment> comments, AppLocalizations l10n) {
+  Widget _buildCommentsList(BuildContext context, List<Comment> comments, {bool hasMore = false, required AppLocalizations l10n}) {
     if (comments.isEmpty) {
       return SizedBox.shrink();
     }
@@ -810,6 +811,18 @@ class _IssueContent extends StatelessWidget {
             index: index,
           ),
         )),
+        if (hasMore)
+          Padding(
+            padding: const EdgeInsets.only(top: 8),
+            child: Center(
+              child: Injection.issueNotifier.commentLoadingMore
+                  ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(strokeWidth: 2))
+                  : TextButton(
+                      onPressed: () => Injection.issueNotifier.loadMoreComments(owner, repo, index),
+                      child: const Text('Load more comments'),
+                    ),
+            ),
+          ),
       ],
     ));
   }

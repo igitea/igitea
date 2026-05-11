@@ -890,10 +890,14 @@ class GiteaApiService {
     required int index,
     DateTime? since,
     DateTime? before,
+    int? page,
+    int? limit,
   }) async {
     final query = <String, String>{};
     if (since != null) query['since'] = since.toIso8601String();
     if (before != null) query['before'] = before.toIso8601String();
+    if (page != null) query['page'] = page.toString();
+    if (limit != null) query['limit'] = limit.toString();
     final response = await _client.get(
       '/repos/${Uri.encodeComponent(owner)}/${Uri.encodeComponent(repo)}/issues/${index.toString()}/comments',
       queryParameters: query,

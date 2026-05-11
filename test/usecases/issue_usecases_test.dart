@@ -73,6 +73,8 @@ class MockIssueRepository implements IssueRepository {
     int index, {
     DateTime? since,
     DateTime? before,
+    int? page,
+    int? limit,
   }) async {
     if (shouldFail) return Left(failure);
     return const Right([Comment(id: 1, body: 'text')]);

@@ -107,6 +107,8 @@ class IssueRepositoryImpl implements IssueRepository {
     int index, {
     DateTime? since,
     DateTime? before,
+    int? page,
+    int? limit,
   }) async {
     return execute(
       () => _apiService.issueGetComments(
@@ -115,6 +117,8 @@ class IssueRepositoryImpl implements IssueRepository {
         index: index,
         since: since,
         before: before,
+        page: page,
+        limit: limit,
       ),
     );
   }

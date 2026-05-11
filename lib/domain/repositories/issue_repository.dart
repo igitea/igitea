@@ -55,6 +55,8 @@ abstract class IssueRepository {
     int index, {
     DateTime? since,
     DateTime? before,
+    int? page,
+    int? limit,
   });
 
   /// Create a comment on an issue.

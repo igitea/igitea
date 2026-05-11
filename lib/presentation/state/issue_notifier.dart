@@ -51,7 +51,8 @@ class CommentsLoading extends CommentsState {
 
 class CommentsLoaded extends CommentsState {
   final List<Comment> comments;
-  const CommentsLoaded(this.comments);
+  final bool hasMore;
+  const CommentsLoaded(this.comments, {this.hasMore = false});
 }
 
 class CommentsError extends CommentsState {
@@ -109,6 +110,10 @@ class IssueNotifier extends ChangeNotifier {
 
   CommentsState _commentsState = const CommentsInitial();
   CommentsState get commentsState => _commentsState;
+  int _commentPage = 1;
+  bool _commentLoadingMore = false;
+  bool get commentLoadingMore => _commentLoadingMore;
+  static const int _commentLimit = 20;
 
   String? lastSearchQuery;
   String? _issuesListFilter;
@@ -392,19 +397,45 @@ _listMilestonesUseCase = listMilestonesUseCase;
 
   Future<void> listComments(String owner, String repo, int index) async {
     _commentsState = const CommentsLoading();
+    _commentPage = 1;
     notifyListeners();
 
     final result = await _listCommentsUseCase.call(
-      ListCommentsParams(owner: owner, repo: repo, index: index),
+      ListCommentsParams(owner: owner, repo: repo, index: index, page: 1, limit: _commentLimit),
     );
     switch (result) {
       case Left<Failure, List<Comment>>(:final value):
         _commentsState = CommentsError(value.message);
         notifyListeners();
       case Right<Failure, List<Comment>>(:final value):
-        _commentsState = CommentsLoaded(value);
+        _commentsState = CommentsLoaded(value, hasMore: value.length >= _commentLimit);
         notifyListeners();
     }
+  }
+
+  Future<void> loadMoreComments(String owner, String repo, int index) async {
+    if (_commentLoadingMore) return;
+    final current = _commentsState;
+    if (current is! CommentsLoaded || !current.hasMore) return;
+
+    _commentLoadingMore = true;
+    notifyListeners();
+    _commentPage++;
+
+    final result = await _listCommentsUseCase.call(
+      ListCommentsParams(owner: owner, repo: repo, index: index, page: _commentPage, limit: _commentLimit),
+    );
+    switch (result) {
+      case Right<Failure, List<Comment>>(:final value):
+        _commentsState = CommentsLoaded(
+          [...current.comments, ...value],
+          hasMore: value.length >= _commentLimit,
+        );
+      case Left<Failure, List<Comment>>():
+        _commentPage--;
+    }
+    _commentLoadingMore = false;
+    notifyListeners();
   }
 
   Future<void> createComment(

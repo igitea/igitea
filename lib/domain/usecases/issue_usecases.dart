@@ -153,6 +153,8 @@ class ListCommentsUseCase {
       params.index,
       since: params.since,
       before: params.before,
+      page: params.page,
+      limit: params.limit,
     );
   }
 }
@@ -163,6 +165,8 @@ class ListCommentsParams {
   final int index;
   final DateTime? since;
   final DateTime? before;
+  final int? page;
+  final int? limit;
 
   ListCommentsParams({
     required this.owner,
@@ -170,6 +174,8 @@ class ListCommentsParams {
     required this.index,
     this.since,
     this.before,
+    this.page,
+    this.limit,
   });
 }
 
