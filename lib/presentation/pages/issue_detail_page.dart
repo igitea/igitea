@@ -11,6 +11,7 @@ import '../../domain/entities/issue_state.dart';
 import '../../domain/usecases/issue_usecases.dart';
 import '../../l10n/app_localizations.dart';
 import '../../presentation/state/issue_notifier.dart';
+import '../../presentation/state/repo_notifier.dart';
 import '../../presentation/state/user_notifier.dart';
 import '../widgets/user_avatar.dart';
 import 'edit_issue_page.dart';
@@ -55,6 +56,7 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Injection.issueNotifier.getIssue(widget.owner, widget.repo, widget.index);
       Injection.issueNotifier.listComments(widget.owner, widget.repo, widget.index);
+      Injection.repoNotifier.getRepo(widget.owner, widget.repo);
       _checkSubscription();
       _refreshIssueReactions();
     });
@@ -186,6 +188,15 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
     super.dispose();
   }
 
+  bool _canEdit() {
+    final repoState = Injection.repoNotifier.state;
+    if (repoState is RepoLoaded) {
+      final p = repoState.repo.permissions;
+      return p?.push == true || p?.admin == true;
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -247,6 +258,7 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
               onToggleSubscription: _toggleSubscription,
               issueReactions: _issueReactions,
               onToggleReaction: _toggleIssueReaction,
+              canEdit: _canEdit(),
             ),
             _ => const Center(child: CircularProgressIndicator()),
           };
@@ -267,6 +279,7 @@ class _IssueContent extends StatelessWidget {
   final VoidCallback onToggleSubscription;
   final List<Reaction> issueReactions;
   final Future<void> Function(String) onToggleReaction;
+  final bool canEdit;
 
   const _IssueContent({
     required this.issue,
@@ -279,6 +292,7 @@ class _IssueContent extends StatelessWidget {
     required this.onToggleSubscription,
     required this.issueReactions,
     required this.onToggleReaction,
+    required this.canEdit,
   });
 
   @override
@@ -448,19 +462,22 @@ class _IssueContent extends StatelessWidget {
                           style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.error),
                         ),
                       ],
-                      const SizedBox(width: 8),
-                      InkWell(
-                        onTap: () => _editDueDate(context, issue),
-                        child: Icon(Icons.edit, size: 16, color: theme.colorScheme.primary),
-                      ),
-                      const SizedBox(width: 4),
-                      InkWell(
-                        onTap: () => _clearDueDate(),
-                        child: Icon(Icons.clear, size: 16, color: theme.colorScheme.error),
-                      ),
+                      if (canEdit) ...[
+                        const SizedBox(width: 8),
+                        InkWell(
+                          onTap: () => _editDueDate(context, issue),
+                          child: Icon(Icons.edit, size: 16, color: theme.colorScheme.primary),
+                        ),
+                        const SizedBox(width: 4),
+                        InkWell(
+                          onTap: () => _clearDueDate(),
+                          child: Icon(Icons.clear, size: 16, color: theme.colorScheme.error),
+                        ),
+                      ],
                     ],
                   )
-                : InkWell(
+                : canEdit
+                    ? InkWell(
                     onTap: () => _editDueDate(context, issue),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -474,7 +491,8 @@ class _IssueContent extends StatelessWidget {
                         ),
                       ],
                     ),
-                  ),
+                    )
+                  : const SizedBox.shrink(),
           ),
 
           const SizedBox(height: 8),
