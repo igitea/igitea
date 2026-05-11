@@ -29,7 +29,8 @@ class OrgListLoaded extends OrgState {
 
 class OrgReposLoaded extends OrgState {
   final List<Repository> repos;
-  const OrgReposLoaded(this.repos);
+  final bool hasMore;
+  const OrgReposLoaded(this.repos, {this.hasMore = false});
 }
 
 class OrgTeamsLoaded extends OrgState {
@@ -93,6 +94,11 @@ class OrgNotifier extends ChangeNotifier {
 
   OrgState _teamReposState = const OrgInitial();
   OrgState get teamReposState => _teamReposState;
+
+  int _reposPage = 1;
+  bool _reposLoadingMore = false;
+  bool get reposLoadingMore => _reposLoadingMore;
+  static const int _orgReposLimit = 20;
 
   OrgNotifier({
     required GetOrgUseCase getOrgUseCase,
@@ -195,19 +201,45 @@ class OrgNotifier extends ChangeNotifier {
 
   Future<void> listOrgRepos(String org, {int? page, int? limit}) async {
     _reposState = const OrgLoading();
+    _reposPage = 1;
     notifyListeners();
 
     final result = await _listOrgReposUseCase.call(
-      ListOrgReposParams(org: org, page: page, limit: limit),
+      ListOrgReposParams(org: org, page: page ?? 1, limit: limit ?? _orgReposLimit),
     );
     switch (result) {
       case Left<Failure, List<Repository>>(:final value):
         _reposState = OrgError(value.message);
         notifyListeners();
       case Right<Failure, List<Repository>>(:final value):
-        _reposState = OrgReposLoaded(value);
+        _reposState = OrgReposLoaded(value, hasMore: value.length >= _orgReposLimit);
         notifyListeners();
     }
+  }
+
+  Future<void> loadMoreOrgRepos(String org) async {
+    if (_reposLoadingMore) return;
+    final current = _reposState;
+    if (current is! OrgReposLoaded || !current.hasMore) return;
+
+    _reposLoadingMore = true;
+    notifyListeners();
+    _reposPage++;
+
+    final result = await _listOrgReposUseCase.call(
+      ListOrgReposParams(org: org, page: _reposPage, limit: _orgReposLimit),
+    );
+    switch (result) {
+      case Right<Failure, List<Repository>>(:final value):
+        _reposState = OrgReposLoaded(
+          [...current.repos, ...value],
+          hasMore: value.length >= _orgReposLimit,
+        );
+      case Left<Failure, List<Repository>>():
+        _reposPage--;
+    }
+    _reposLoadingMore = false;
+    notifyListeners();
   }
 
   Future<void> listOrgTeams(String org, {int? page, int? limit}) async {

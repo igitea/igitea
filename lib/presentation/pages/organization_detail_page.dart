@@ -480,8 +480,21 @@ class _ReposTabState extends State<_ReposTab> {
             onRefresh: () => Injection.organizationNotifier.listOrgRepos(widget.orgName),
             child: ListView.builder(
               padding: const EdgeInsets.all(16),
-              itemCount: repos.length,
+              itemCount: repos.length + (state.hasMore ? 1 : 0),
               itemBuilder: (context, index) {
+                if (index == repos.length) {
+                  return Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Injection.organizationNotifier.reposLoadingMore
+                          ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(strokeWidth: 2))
+                          : TextButton(
+                              onPressed: () => Injection.organizationNotifier.loadMoreOrgRepos(widget.orgName),
+                              child: const Text('Load more repositories'),
+                            ),
+                    ),
+                  );
+                }
                 final repo = repos[index];
                 return FadeInWrapper(
                   delay: Duration(milliseconds: index * 30),
