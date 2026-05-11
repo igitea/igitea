@@ -1401,14 +1401,27 @@ class _PullRequestsTabState extends State<_PullRequestsTab> {
                           ],
                         ),
                       ),
-                    PullRequestsLoaded(:final pullRequests) => pullRequests.isEmpty
+                    PullRequestsLoaded(:final pullRequests, :final hasMore) => pullRequests.isEmpty
                         ? EmptyState(icon: Icons.merge_type, title: widget.l10n.noPullRequests)
                         : RefreshIndicator(
                             onRefresh: () async => _loadPullRequests(),
                             child: ListView.builder(
                               padding: UIConstants.pagePadding + const EdgeInsets.symmetric(vertical: UIConstants.sm),
-                              itemCount: pullRequests.length,
+                              itemCount: pullRequests.length + (hasMore ? 1 : 0),
                               itemBuilder: (context, index) {
+                                if (index == pullRequests.length) {
+                                  return Center(
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(16),
+                                      child: Injection.repoNotifier.prLoadingMore
+                                          ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(strokeWidth: 2))
+                                          : TextButton(
+                                              onPressed: () => Injection.repoNotifier.loadMorePullRequests(widget.owner, widget.repo, state: _selectedFilter),
+                                              child: const Text('Load more'),
+                                            ),
+                                    ),
+                                  );
+                                }
                                 final pr = pullRequests[index];
                                 return FadeInWrapper(
                                   delay: Duration(milliseconds: index * 20),

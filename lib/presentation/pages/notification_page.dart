@@ -68,11 +68,12 @@ class _NotificationPageState extends State<NotificationPage> {
                 ],
               ),
             ),
-             NotificationListLoaded(:final notifications) => _NotificationList(
-              notifications: notifications,
-              l10n: l10n,
-              onNotificationTap: (n) => _navigateTo(context, n),
-            ),
+             NotificationListLoaded(:final notifications, :final hasMore) => _NotificationList(
+               notifications: notifications,
+               hasMore: hasMore,
+               l10n: l10n,
+               onNotificationTap: (n) => _navigateTo(context, n),
+             ),
             _ => EmptyState(icon: Icons.notifications_none, title: l10n.noNotifications),
           };
         },
@@ -197,11 +198,13 @@ class _NotificationPageState extends State<NotificationPage> {
 
 class _NotificationList extends StatelessWidget {
   final List<NotificationThread> notifications;
+  final bool hasMore;
   final AppLocalizations l10n;
   final void Function(NotificationThread) onNotificationTap;
 
   const _NotificationList({
     required this.notifications,
+    required this.hasMore,
     required this.l10n,
     required this.onNotificationTap,
   });
@@ -215,8 +218,21 @@ class _NotificationList extends StatelessWidget {
       onRefresh: () => Injection.notificationNotifier.listNotifications(),
       child: ListView.builder(
         padding: UIConstants.pagePadding + const EdgeInsets.symmetric(vertical: UIConstants.sm),
-        itemCount: notifications.length,
+        itemCount: notifications.length + (hasMore ? 1 : 0),
         itemBuilder: (context, index) {
+          if (index == notifications.length) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Injection.notificationNotifier.notifLoadingMore
+                    ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(strokeWidth: 2))
+                    : TextButton(
+                        onPressed: () => Injection.notificationNotifier.loadMoreNotifications(),
+                        child: const Text('Load more'),
+                      ),
+              ),
+            );
+          }
           final notification = notifications[index];
           return FadeInWrapper(
             delay: Duration(milliseconds: index * 30),

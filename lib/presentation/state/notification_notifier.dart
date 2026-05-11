@@ -20,7 +20,8 @@ class NotificationLoading extends NotificationState {
 
 class NotificationListLoaded extends NotificationState {
   final List<NotificationThread> notifications;
-  const NotificationListLoaded(this.notifications);
+  final bool hasMore;
+  const NotificationListLoaded(this.notifications, {this.hasMore = false});
 }
 
 class NotificationCountLoaded extends NotificationState {
@@ -41,6 +42,11 @@ class NotificationNotifier extends ChangeNotifier {
 
   NotificationState _state = const NotificationInitial();
   NotificationState get state => _state;
+
+  int _notifPage = 1;
+  bool _notifLoadingMore = false;
+  bool get notifLoadingMore => _notifLoadingMore;
+  static const int _notifLimit = 20;
 
   NotificationNotifier({
     required ListNotificationsUseCase listNotificationsUseCase,
@@ -74,6 +80,7 @@ class NotificationNotifier extends ChangeNotifier {
     int? limit,
   }) async {
     _state = const NotificationLoading();
+    _notifPage = 1;
     notifyListeners();
 
     final result = await _listNotificationsUseCase.call(
@@ -82,17 +89,40 @@ class NotificationNotifier extends ChangeNotifier {
       subject_type: subject_type,
       since: since,
       before: before,
-      page: page,
-      limit: limit,
+      page: page ?? 1,
+      limit: limit ?? _notifLimit,
     );
     switch (result) {
       case Left<Failure, List<NotificationThread>>(:final value):
         _state = NotificationError(value.message);
         notifyListeners();
       case Right<Failure, List<NotificationThread>>(:final value):
-        _state = NotificationListLoaded(value);
+        _state = NotificationListLoaded(value, hasMore: value.length >= _notifLimit);
         notifyListeners();
     }
+  }
+
+  Future<void> loadMoreNotifications() async {
+    if (_notifLoadingMore) return;
+    final current = _state;
+    if (current is! NotificationListLoaded || !current.hasMore) return;
+    _notifLoadingMore = true;
+    notifyListeners();
+    _notifPage++;
+    final result = await _listNotificationsUseCase.call(
+      page: _notifPage, limit: _notifLimit,
+    );
+    switch (result) {
+      case Right<Failure, List<NotificationThread>>(:final value):
+        _state = NotificationListLoaded(
+          [...current.notifications, ...value],
+          hasMore: value.length >= _notifLimit,
+        );
+      case Left<Failure, List<NotificationThread>>():
+        _notifPage--;
+    }
+    _notifLoadingMore = false;
+    notifyListeners();
   }
 
   Future<void> markThreadRead(String id, {String? to_status}) async {

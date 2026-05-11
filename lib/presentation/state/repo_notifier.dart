@@ -142,7 +142,8 @@ class PullRequestsLoading extends PullRequestsState {
 
 class PullRequestsLoaded extends PullRequestsState {
   final List<PullRequest> pullRequests;
-  const PullRequestsLoaded(this.pullRequests);
+  final bool hasMore;
+  const PullRequestsLoaded(this.pullRequests, {this.hasMore = false});
 }
 
 class PullRequestsError extends PullRequestsState {
@@ -290,6 +291,10 @@ class RepoNotifier extends ChangeNotifier {
 
   PullRequestsState _pullRequestsState = const PullRequestsInitial();
   PullRequestsState get pullRequestsState => _pullRequestsState;
+  int _prPage = 1;
+  bool _prLoadingMore = false;
+  bool get prLoadingMore => _prLoadingMore;
+  static const int _prLimit = 20;
 
   ReleasesState _releasesState = const ReleasesInitial();
   ReleasesState get releasesState => _releasesState;
@@ -640,18 +645,43 @@ class RepoNotifier extends ChangeNotifier {
 
   Future<void> listPullRequests(String owner, String repo, {String? state}) async {
     _pullRequestsState = const PullRequestsLoading();
+    _prPage = 1;
     notifyListeners();
     final result = await _listPullRequestsUseCase.call(
-      ListPullRequestsParams(owner: owner, repo: repo, state: state),
+      ListPullRequestsParams(owner: owner, repo: repo, state: state, page: 1, limit: _prLimit),
     );
     switch (result) {
       case Left<Failure, List<PullRequest>>(:final value):
         _pullRequestsState = PullRequestsError(value.message);
         notifyListeners();
       case Right<Failure, List<PullRequest>>(:final value):
-        _pullRequestsState = PullRequestsLoaded(value);
+        _pullRequestsState = PullRequestsLoaded(value, hasMore: value.length >= _prLimit);
         notifyListeners();
     }
+  }
+
+  Future<void> loadMorePullRequests(String owner, String repo, {String? state}) async {
+    if (_prLoadingMore) return;
+    final current = _pullRequestsState;
+    if (current is! PullRequestsLoaded || !current.hasMore) return;
+
+    _prLoadingMore = true;
+    notifyListeners();
+    _prPage++;
+    final result = await _listPullRequestsUseCase.call(
+      ListPullRequestsParams(owner: owner, repo: repo, state: state, page: _prPage, limit: _prLimit),
+    );
+    switch (result) {
+      case Right<Failure, List<PullRequest>>(:final value):
+        _pullRequestsState = PullRequestsLoaded(
+          [...current.pullRequests, ...value],
+          hasMore: value.length >= _prLimit,
+        );
+      case Left<Failure, List<PullRequest>>():
+        _prPage--;
+    }
+    _prLoadingMore = false;
+    notifyListeners();
   }
 
   Future<void> getPullRequest(String owner, String repo, int index) async {

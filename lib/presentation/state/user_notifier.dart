@@ -42,6 +42,12 @@ class UserNotifier extends ChangeNotifier {
 
   List<Repository> _starredRepos = [];
   List<Repository> get starredRepos => _starredRepos;
+  bool _starredHasMore = false;
+  bool get starredHasMore => _starredHasMore;
+  int _starredPage = 1;
+  bool _starredLoadingMore = false;
+  bool get starredLoadingMore => _starredLoadingMore;
+  static const int _starredLimit = 20;
 
   List<User> _searchedUsers = [];
   List<User> get searchedUsers => _searchedUsers;
@@ -125,8 +131,9 @@ class UserNotifier extends ChangeNotifier {
   }
 
   Future<void> listStarredRepos({int? page, int? limit}) async {
+    _starredPage = 1;
     final result = await _listStarredReposUseCase.call(
-      ListStarredReposParams(page: page, limit: limit),
+      ListStarredReposParams(page: page ?? 1, limit: limit ?? _starredLimit),
     );
     switch (result) {
       case Left<Failure, List<Repository>>():
@@ -134,8 +141,28 @@ class UserNotifier extends ChangeNotifier {
         notifyListeners();
       case Right<Failure, List<Repository>>(:final value):
         _starredRepos = value;
+        _starredHasMore = value.length >= _starredLimit;
         notifyListeners();
     }
+  }
+
+  Future<void> loadMoreStarredRepos() async {
+    if (_starredLoadingMore || !_starredHasMore) return;
+    _starredLoadingMore = true;
+    notifyListeners();
+    _starredPage++;
+    final result = await _listStarredReposUseCase.call(
+      ListStarredReposParams(page: _starredPage, limit: _starredLimit),
+    );
+    switch (result) {
+      case Right<Failure, List<Repository>>(:final value):
+        _starredRepos = [..._starredRepos, ...value];
+        _starredHasMore = value.length >= _starredLimit;
+      case Left<Failure, List<Repository>>():
+        _starredPage--;
+    }
+    _starredLoadingMore = false;
+    notifyListeners();
   }
 
   Future<void> searchUsers(String query) async {

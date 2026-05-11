@@ -61,8 +61,21 @@ class _StarredReposPageState extends State<StarredReposPage> {
                         Injection.userNotifier.listStarredRepos(),
                     child: ListView.builder(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
-                      itemCount: starredRepos.length,
+                      itemCount: starredRepos.length + (Injection.userNotifier.starredHasMore ? 1 : 0),
                       itemBuilder: (context, index) {
+                        if (index == starredRepos.length) {
+                          return Center(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Injection.userNotifier.starredLoadingMore
+                                  ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(strokeWidth: 2))
+                                  : TextButton(
+                                      onPressed: () => Injection.userNotifier.loadMoreStarredRepos(),
+                                      child: const Text('Load more'),
+                                    ),
+                            ),
+                          );
+                        }
                         final repo = starredRepos[index];
                         return FadeInWrapper(
                           delay: Duration(milliseconds: index * 30),
