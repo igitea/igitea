@@ -1305,7 +1305,9 @@ class _TimelineSectionState extends State<_TimelineSection> {
       widget.owner, widget.repo, widget.index,
     );
     if (mounted) {
-      _timeline = result is Right<Failure, List<TimelineComment>> ? result.value : [];
+      _timeline = result is Right<Failure, List<TimelineComment>>
+          ? result.value.where((t) => t.type != 'comment').toList()
+          : [];
       setState(() => _loading = false);
     }
   }
