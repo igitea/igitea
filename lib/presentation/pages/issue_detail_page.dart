@@ -455,7 +455,7 @@ class _IssueContent extends StatelessWidget {
                       ),
                       const SizedBox(width: 4),
                       InkWell(
-                        onTap: () => _clearDueDate(issue),
+                        onTap: () => _clearDueDate(),
                         child: Icon(Icons.clear, size: 16, color: theme.colorScheme.error),
                       ),
                     ],
@@ -923,15 +923,15 @@ class _IssueContent extends StatelessWidget {
       await Injection.editIssueDeadlineUseCase(
         owner, repo, index, {'due_date': date.toIso8601String()},
       );
-      Injection.issueNotifier.getIssue(owner, repo, index);
+      Injection.issueNotifier.reloadIssue(owner, repo, index);
     }
   }
 
-  Future<void> _clearDueDate(Issue issue) async {
+  Future<void> _clearDueDate() async {
     await Injection.editIssueDeadlineUseCase(
       owner, repo, index, {'due_date': null},
     );
-    Injection.issueNotifier.getIssue(owner, repo, index);
+    Injection.issueNotifier.reloadIssue(owner, repo, index);
   }
 }
 

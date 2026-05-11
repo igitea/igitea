@@ -220,12 +220,25 @@ _listMilestonesUseCase = listMilestonesUseCase;
         _state = IssueError(value.message);
         notifyListeners();
       case Right<Failure, Issue>(:final value):
-        _state = IssueDetailLoaded(value);
-        notifyListeners();
-    }
-  }
+         _state = IssueDetailLoaded(value);
+         notifyListeners();
+     }
+   }
 
-  Future<void> createIssue(
+   Future<void> reloadIssue(String owner, String repo, int index) async {
+     final result = await _getIssueUseCase.call(
+       GetIssueParams(owner: owner, repo: repo, index: index),
+     );
+     switch (result) {
+       case Right<Failure, Issue>(:final value):
+         _state = IssueDetailLoaded(value);
+         notifyListeners();
+       case Left<Failure, Issue>():
+         break;
+     }
+   }
+
+   Future<void> createIssue(
     String owner,
     String repo,
     Map<String, dynamic> body,
