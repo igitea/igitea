@@ -19,6 +19,8 @@
 
 ## [Unreleased]
 
+## [0.32.0] - 2026-05-11
+
 ### Added
 - **Infinite scroll pagination**: activity feed, admin user search, user repos, releases now load 20 per page with "Load more" button
 
