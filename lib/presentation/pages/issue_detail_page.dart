@@ -918,20 +918,32 @@ class _IssueContent extends StatelessWidget {
       firstDate: DateTime(2000),
       lastDate: DateTime.now().add(const Duration(days: 365 * 5)),
     );
+    if (!context.mounted) return;
 
-    if (date != null && context.mounted) {
-      await Injection.editIssueDeadlineUseCase(
+    if (date != null) {
+      final result = await Injection.editIssueDeadlineUseCase(
         owner, repo, index, {'due_date': date.toIso8601String()},
       );
-      Injection.issueNotifier.reloadIssue(owner, repo, index);
+      switch (result) {
+        case Right<Failure, void>():
+          Injection.issueNotifier.reloadIssue(owner, repo, index);
+        case Left<Failure, void>(:final value):
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('${AppLocalizations.of(context)!.error}: ${value.message}')),
+            );
+          }
+      }
     }
   }
 
   Future<void> _clearDueDate() async {
-    await Injection.editIssueDeadlineUseCase(
+    final result = await Injection.editIssueDeadlineUseCase(
       owner, repo, index, {'due_date': null},
     );
-    Injection.issueNotifier.reloadIssue(owner, repo, index);
+    if (result is Right<Failure, void>) {
+      Injection.issueNotifier.reloadIssue(owner, repo, index);
+    }
   }
 }
 
