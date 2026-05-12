@@ -4420,6 +4420,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No saved filters yet'**
   String get noSavedFilters;
+
+  /// No description provided for @browseRepositories.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse your repositories'**
+  String get browseRepositories;
+
+  /// No description provided for @viewIssues.
+  ///
+  /// In en, this message translates to:
+  /// **'View and manage issues'**
+  String get viewIssues;
+
+  /// No description provided for @recentActivitySubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Track your recent activity'**
+  String get recentActivitySubtitle;
+
+  /// No description provided for @yourStarredRepos.
+  ///
+  /// In en, this message translates to:
+  /// **'Your starred repositories'**
+  String get yourStarredRepos;
+
+  /// No description provided for @yourOrganizations.
+  ///
+  /// In en, this message translates to:
+  /// **'Your organizations'**
+  String get yourOrganizations;
+
+  /// No description provided for @loadMoreActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Load more activity'**
+  String get loadMoreActivity;
 }
 
 class _AppLocalizationsDelegate

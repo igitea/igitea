@@ -2262,4 +2262,22 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get noSavedFilters => 'No saved filters yet';
+
+  @override
+  String get browseRepositories => 'Repositorys durchsuchen';
+
+  @override
+  String get viewIssues => 'Issues anzeigen und verwalten';
+
+  @override
+  String get recentActivitySubtitle => 'Aktuelle Aktivität anzeigen';
+
+  @override
+  String get yourStarredRepos => 'Deine markierten Repositorys';
+
+  @override
+  String get yourOrganizations => 'Deine Organisationen';
+
+  @override
+  String get loadMoreActivity => 'Weitere Aktivitäten laden';
 }

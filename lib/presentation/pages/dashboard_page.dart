@@ -99,21 +99,6 @@ class _DashboardPageState extends State<DashboardPage> {
             child: _QuickActions(l10n: l10n, user: user),
           ),
           const SizedBox(height: UIConstants.md),
-          FadeInWrapper(
-            delay: const Duration(milliseconds: 200),
-            child: Text(
-              l10n.yourRepositories,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          const SizedBox(height: UIConstants.sm),
-          FadeInWrapper(
-            delay: const Duration(milliseconds: 250),
-            child: _RepoSummary(l10n: l10n),
-          ),
-          const SizedBox(height: UIConstants.md),
         ],
       ),
     );
@@ -275,49 +260,35 @@ class _QuickActions extends StatelessWidget {
           icon: Icons.source,
           iconColor: theme.colorScheme.primary,
           label: l10n.repositories,
-          subtitle: 'Browse your repositories',
+          subtitle: l10n.browseRepositories,
           onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const RepoListPage())),
         ),
         _ActionTile(
           icon: Icons.bug_report_outlined,
           iconColor: theme.colorScheme.tertiary,
           label: l10n.issues,
-          subtitle: 'View and manage issues',
+          subtitle: l10n.viewIssues,
           onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const IssueListPage())),
-        ),
-        _ActionTile(
-          icon: Icons.notifications_outlined,
-          iconColor: theme.colorScheme.error,
-          label: l10n.notifications,
-          subtitle: 'Check your notifications',
-          onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const NotificationPage())),
         ),
         _ActionTile(
           icon: Icons.history,
           iconColor: theme.colorScheme.secondary,
           label: l10n.recentActivity,
-          subtitle: 'Track your recent activity',
+          subtitle: l10n.recentActivitySubtitle,
           onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => ActivityPage(user: user))),
         ),
         _ActionTile(
           icon: Icons.star_outline,
           iconColor: Colors.amber.shade700,
           label: l10n.starredRepos,
-          subtitle: 'Your starred repositories',
+          subtitle: l10n.yourStarredRepos,
           onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const StarredReposPage())),
-        ),
-        _ActionTile(
-          icon: Icons.assignment_ind_outlined,
-          iconColor: theme.colorScheme.secondary,
-          label: 'My Issues',
-          subtitle: 'Issues assigned to you',
-          onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => IssueListPage(initialFilter: 'assigned'))),
         ),
         _ActionTile(
           icon: Icons.business_outlined,
           iconColor: theme.colorScheme.primary,
           label: l10n.organisations,
-          subtitle: 'Your organizations',
+          subtitle: l10n.yourOrganizations,
           onTap: () async {
             final result = await Injection.listCurrentUserOrgsUseCase();
             if (result is Right<Failure, List<Organization>>) {
@@ -519,7 +490,7 @@ class _ActivityFeedState extends State<_ActivityFeed> {
                     ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(strokeWidth: 2))
                     : TextButton(
                         onPressed: () => Injection.userNotifier.loadMoreActivities(widget.user.login!),
-                        child: const Text('Load more activity'),
+                        child: Text(l10n.loadMoreActivity),
                       ),
               ),
             ),

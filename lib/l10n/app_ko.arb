@@ -709,4 +709,11 @@
   "scopes": "범위",
   "selectAll": "전체 선택",
   "deselectAll": "전체 해제"
+,
+  "browseRepositories": "저장소 둘러보기",
+  "viewIssues": "Issue 보기 및 관리",
+  "recentActivitySubtitle": "최근 활동 보기",
+  "yourStarredRepos": "별표 표시한 저장소",
+  "yourOrganizations": "내 조직",
+  "loadMoreActivity": "더 불러오기"
 }

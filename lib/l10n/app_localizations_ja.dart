@@ -2223,4 +2223,22 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get noSavedFilters => 'No saved filters yet';
+
+  @override
+  String get browseRepositories => 'リポジトリを閲覧';
+
+  @override
+  String get viewIssues => 'Issueを表示・管理';
+
+  @override
+  String get recentActivitySubtitle => '最近のアクティビティ';
+
+  @override
+  String get yourStarredRepos => 'スター付きリポジトリ';
+
+  @override
+  String get yourOrganizations => '組織一覧';
+
+  @override
+  String get loadMoreActivity => 'さらに読み込む';
 }

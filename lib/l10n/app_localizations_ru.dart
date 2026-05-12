@@ -2252,4 +2252,22 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get noSavedFilters => 'No saved filters yet';
+
+  @override
+  String get browseRepositories => 'Просмотр репозиториев';
+
+  @override
+  String get viewIssues => 'Просмотр и управление Issue';
+
+  @override
+  String get recentActivitySubtitle => 'Просмотр последних действий';
+
+  @override
+  String get yourStarredRepos => 'Избранные репозитории';
+
+  @override
+  String get yourOrganizations => 'Ваши организации';
+
+  @override
+  String get loadMoreActivity => 'Загрузить ещё';
 }

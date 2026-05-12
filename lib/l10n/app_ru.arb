@@ -709,4 +709,11 @@
   "scopes": "Области",
   "selectAll": "Выбрать всё",
   "deselectAll": "Отменить выбор"
+,
+  "browseRepositories": "Просмотр репозиториев",
+  "viewIssues": "Просмотр и управление Issue",
+  "recentActivitySubtitle": "Просмотр последних действий",
+  "yourStarredRepos": "Избранные репозитории",
+  "yourOrganizations": "Ваши организации",
+  "loadMoreActivity": "Загрузить ещё"
 }

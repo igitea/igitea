@@ -710,4 +710,11 @@
   "scopes": "权限范围",
   "selectAll": "全选",
   "deselectAll": "取消全选"
+,
+  "browseRepositories": "浏览你的仓库",
+  "viewIssues": "查看和管理 Issue",
+  "recentActivitySubtitle": "查看最近的动态",
+  "yourStarredRepos": "你收藏的仓库",
+  "yourOrganizations": "你的组织",
+  "loadMoreActivity": "加载更多动态"
 }

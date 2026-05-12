@@ -2259,4 +2259,22 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get noSavedFilters => 'No saved filters yet';
+
+  @override
+  String get browseRepositories => 'Parcourir les dépôts';
+
+  @override
+  String get viewIssues => 'Voir et gérer les issues';
+
+  @override
+  String get recentActivitySubtitle => 'Voir l\'activité récente';
+
+  @override
+  String get yourStarredRepos => 'Vos dépôts favoris';
+
+  @override
+  String get yourOrganizations => 'Vos organisations';
+
+  @override
+  String get loadMoreActivity => 'Charger plus d\'activité';
 }

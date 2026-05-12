@@ -709,4 +709,11 @@
   "scopes": "權限範圍",
   "selectAll": "全選",
   "deselectAll": "取消全選"
+,
+  "browseRepositories": "瀏覽你的儲存庫",
+  "viewIssues": "檢視和管理 Issue",
+  "recentActivitySubtitle": "檢視最近的動態",
+  "yourStarredRepos": "你收藏的儲存庫",
+  "yourOrganizations": "你的組織",
+  "loadMoreActivity": "載入更多動態"
 }

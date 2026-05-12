@@ -720,5 +720,11 @@
   "saveCurrentFilter": "Save current filter",
   "deleteFilter": "Delete filter",
   "filterName": "Filter name",
-  "noSavedFilters": "No saved filters yet"
+  "noSavedFilters": "No saved filters yet",
+  "browseRepositories": "Browse your repositories",
+  "viewIssues": "View and manage issues",
+  "recentActivitySubtitle": "Track your recent activity",
+  "yourStarredRepos": "Your starred repositories",
+  "yourOrganizations": "Your organizations",
+  "loadMoreActivity": "Load more activity"
 }

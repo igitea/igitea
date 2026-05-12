@@ -2253,4 +2253,22 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get noSavedFilters => 'No saved filters yet';
+
+  @override
+  String get browseRepositories => 'Navegar pelos repositórios';
+
+  @override
+  String get viewIssues => 'Ver e gerenciar issues';
+
+  @override
+  String get recentActivitySubtitle => 'Ver atividade recente';
+
+  @override
+  String get yourStarredRepos => 'Seus repositórios favoritos';
+
+  @override
+  String get yourOrganizations => 'Suas organizações';
+
+  @override
+  String get loadMoreActivity => 'Carregar mais atividades';
 }

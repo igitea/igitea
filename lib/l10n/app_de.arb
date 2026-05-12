@@ -709,4 +709,11 @@
   "scopes": "Berechtigungen",
   "selectAll": "Alle auswählen",
   "deselectAll": "Auswahl aufheben"
+,
+  "browseRepositories": "Repositorys durchsuchen",
+  "viewIssues": "Issues anzeigen und verwalten",
+  "recentActivitySubtitle": "Aktuelle Aktivität anzeigen",
+  "yourStarredRepos": "Deine markierten Repositorys",
+  "yourOrganizations": "Deine Organisationen",
+  "loadMoreActivity": "Weitere Aktivitäten laden"
 }

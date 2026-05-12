@@ -2248,4 +2248,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noSavedFilters => 'No saved filters yet';
+
+  @override
+  String get browseRepositories => 'Browse your repositories';
+
+  @override
+  String get viewIssues => 'View and manage issues';
+
+  @override
+  String get recentActivitySubtitle => 'Track your recent activity';
+
+  @override
+  String get yourStarredRepos => 'Your starred repositories';
+
+  @override
+  String get yourOrganizations => 'Your organizations';
+
+  @override
+  String get loadMoreActivity => 'Load more activity';
 }

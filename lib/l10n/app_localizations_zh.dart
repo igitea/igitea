@@ -2223,6 +2223,24 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get noSavedFilters => 'No saved filters yet';
+
+  @override
+  String get browseRepositories => '浏览你的仓库';
+
+  @override
+  String get viewIssues => '查看和管理 Issue';
+
+  @override
+  String get recentActivitySubtitle => '查看最近的动态';
+
+  @override
+  String get yourStarredRepos => '你收藏的仓库';
+
+  @override
+  String get yourOrganizations => '你的组织';
+
+  @override
+  String get loadMoreActivity => '加载更多动态';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -4420,4 +4438,22 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get deselectAll => '取消全選';
+
+  @override
+  String get browseRepositories => '瀏覽你的儲存庫';
+
+  @override
+  String get viewIssues => '檢視和管理 Issue';
+
+  @override
+  String get recentActivitySubtitle => '檢視最近的動態';
+
+  @override
+  String get yourStarredRepos => '你收藏的儲存庫';
+
+  @override
+  String get yourOrganizations => '你的組織';
+
+  @override
+  String get loadMoreActivity => '載入更多動態';
 }

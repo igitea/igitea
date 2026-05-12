@@ -2224,4 +2224,22 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get noSavedFilters => 'No saved filters yet';
+
+  @override
+  String get browseRepositories => '저장소 둘러보기';
+
+  @override
+  String get viewIssues => 'Issue 보기 및 관리';
+
+  @override
+  String get recentActivitySubtitle => '최근 활동 보기';
+
+  @override
+  String get yourStarredRepos => '별표 표시한 저장소';
+
+  @override
+  String get yourOrganizations => '내 조직';
+
+  @override
+  String get loadMoreActivity => '더 불러오기';
 }

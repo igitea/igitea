@@ -709,4 +709,11 @@
   "scopes": "スコープ",
   "selectAll": "すべて選択",
   "deselectAll": "すべて解除"
+,
+  "browseRepositories": "リポジトリを閲覧",
+  "viewIssues": "Issueを表示・管理",
+  "recentActivitySubtitle": "最近のアクティビティ",
+  "yourStarredRepos": "スター付きリポジトリ",
+  "yourOrganizations": "組織一覧",
+  "loadMoreActivity": "さらに読み込む"
 }

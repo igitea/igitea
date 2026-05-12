@@ -709,4 +709,11 @@
   "scopes": "Ámbitos",
   "selectAll": "Seleccionar todo",
   "deselectAll": "Deseleccionar todo"
+,
+  "browseRepositories": "Explorar repositorios",
+  "viewIssues": "Ver y gestionar issues",
+  "recentActivitySubtitle": "Ver actividad reciente",
+  "yourStarredRepos": "Tus repositorios destacados",
+  "yourOrganizations": "Tus organizaciones",
+  "loadMoreActivity": "Cargar más actividad"
 }

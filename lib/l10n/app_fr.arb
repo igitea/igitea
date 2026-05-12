@@ -709,4 +709,11 @@
   "scopes": "Portées",
   "selectAll": "Tout sélectionner",
   "deselectAll": "Tout désélectionner"
+,
+  "browseRepositories": "Parcourir les dépôts",
+  "viewIssues": "Voir et gérer les issues",
+  "recentActivitySubtitle": "Voir l'activité récente",
+  "yourStarredRepos": "Vos dépôts favoris",
+  "yourOrganizations": "Vos organisations",
+  "loadMoreActivity": "Charger plus d'activité"
 }
