@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../../core/animations/animated_wrapper.dart';
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
+import '../../core/errors/failures.dart';
+import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/user_notifier.dart';
@@ -11,8 +13,8 @@ import '../widgets/user_avatar.dart';
 import 'issue_list_page.dart';
 import 'issue_detail_page.dart';
 import 'notification_page.dart';
+import 'organizations_list_page.dart';
 import 'pr_detail_page.dart';
-import 'profile_page.dart';
 import 'repo_detail_page.dart';
 import 'repo_list_page.dart';
 import 'starred_repos_page.dart';
@@ -94,7 +96,7 @@ class _DashboardPageState extends State<DashboardPage> {
           const SizedBox(height: UIConstants.sm),
           FadeInWrapper(
             delay: const Duration(milliseconds: 150),
-            child: _QuickActions(l10n: l10n),
+            child: _QuickActions(l10n: l10n, user: user),
           ),
           const SizedBox(height: UIConstants.md),
           FadeInWrapper(
@@ -112,20 +114,6 @@ class _DashboardPageState extends State<DashboardPage> {
             child: _RepoSummary(l10n: l10n),
           ),
           const SizedBox(height: UIConstants.md),
-          FadeInWrapper(
-            delay: const Duration(milliseconds: 300),
-            child: Text(
-              l10n.recentActivity,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-          const SizedBox(height: UIConstants.sm),
-          FadeInWrapper(
-            delay: const Duration(milliseconds: 350),
-            child: _ActivityFeed(user: user),
-          ),
         ],
       ),
     );
@@ -171,137 +159,6 @@ class _WelcomeCard extends StatelessWidget {
     );
   }
 }
-
-class _QuickActions extends StatelessWidget {
-  final AppLocalizations l10n;
-
-  const _QuickActions({required this.l10n});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Column(
-      children: [
-        _ActionTile(
-          icon: Icons.source,
-          iconColor: theme.colorScheme.primary,
-          label: l10n.repositories,
-          subtitle: 'Browse your repositories',
-          onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const RepoListPage())),
-        ),
-        _ActionTile(
-          icon: Icons.bug_report_outlined,
-          iconColor: theme.colorScheme.tertiary,
-          label: l10n.issues,
-          subtitle: 'View and manage issues',
-          onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const IssueListPage())),
-        ),
-        _ActionTile(
-          icon: Icons.notifications_outlined,
-          iconColor: theme.colorScheme.error,
-          label: l10n.notifications,
-          subtitle: 'Check your notifications',
-          onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const NotificationPage())),
-        ),
-        _ActionTile(
-          icon: Icons.star_outline,
-          iconColor: Colors.amber.shade700,
-          label: l10n.starredRepos,
-          subtitle: 'Your starred repositories',
-          onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const StarredReposPage())),
-        ),
-        _ActionTile(
-          icon: Icons.assignment_ind_outlined,
-          iconColor: theme.colorScheme.secondary,
-          label: 'My Issues',
-          subtitle: 'Issues assigned to you',
-          onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => IssueListPage(initialFilter: 'assigned'))),
-        ),
-        _ActionTile(
-          icon: Icons.business_outlined,
-          iconColor: theme.colorScheme.primary,
-          label: l10n.organisations,
-          subtitle: 'Your organizations',
-          onTap: () => Navigator.of(context).push(MaterialPageRoute(
-            builder: (_) => const ProfilePage(),
-          )),
-        ),
-      ],
-    );
-  }
-}
-
-class _ActionTile extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor;
-  final String label;
-  final String subtitle;
-  final VoidCallback onTap;
-
-  const _ActionTile({
-    required this.icon,
-    required this.iconColor,
-    required this.label,
-    required this.subtitle,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Card(
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: BorderSide(color: theme.colorScheme.outlineVariant),
-        ),
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: iconColor.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(icon, color: iconColor, size: 22),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        label,
-                        style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        subtitle,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Icon(Icons.chevron_right, color: theme.colorScheme.onSurfaceVariant),
-              ],
-            ),
-          ),
-        ),
-      ),
-      );
-    }
-  }
-
-
 
 class _RepoSummary extends StatelessWidget {
   final AppLocalizations l10n;
@@ -399,6 +256,169 @@ class _RepoSummary extends StatelessWidget {
           }).toList(),
         );
       },
+    );
+  }
+}
+
+class _QuickActions extends StatelessWidget {
+  final AppLocalizations l10n;
+  final User user;
+
+  const _QuickActions({required this.l10n, required this.user});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      children: [
+        _ActionTile(
+          icon: Icons.source,
+          iconColor: theme.colorScheme.primary,
+          label: l10n.repositories,
+          subtitle: 'Browse your repositories',
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const RepoListPage())),
+        ),
+        _ActionTile(
+          icon: Icons.bug_report_outlined,
+          iconColor: theme.colorScheme.tertiary,
+          label: l10n.issues,
+          subtitle: 'View and manage issues',
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const IssueListPage())),
+        ),
+        _ActionTile(
+          icon: Icons.notifications_outlined,
+          iconColor: theme.colorScheme.error,
+          label: l10n.notifications,
+          subtitle: 'Check your notifications',
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const NotificationPage())),
+        ),
+        _ActionTile(
+          icon: Icons.history,
+          iconColor: theme.colorScheme.secondary,
+          label: l10n.recentActivity,
+          subtitle: 'Track your recent activity',
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => ActivityPage(user: user))),
+        ),
+        _ActionTile(
+          icon: Icons.star_outline,
+          iconColor: Colors.amber.shade700,
+          label: l10n.starredRepos,
+          subtitle: 'Your starred repositories',
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const StarredReposPage())),
+        ),
+        _ActionTile(
+          icon: Icons.assignment_ind_outlined,
+          iconColor: theme.colorScheme.secondary,
+          label: 'My Issues',
+          subtitle: 'Issues assigned to you',
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => IssueListPage(initialFilter: 'assigned'))),
+        ),
+        _ActionTile(
+          icon: Icons.business_outlined,
+          iconColor: theme.colorScheme.primary,
+          label: l10n.organisations,
+          subtitle: 'Your organizations',
+          onTap: () async {
+            final result = await Injection.listCurrentUserOrgsUseCase();
+            if (result is Right<Failure, List<Organization>>) {
+              if (context.mounted) {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (_) => OrganizationsListPage(orgs: result.value),
+                ));
+              }
+            }
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class _ActionTile extends StatelessWidget {
+  final IconData icon;
+  final Color iconColor;
+  final String label;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  const _ActionTile({
+    required this.icon,
+    required this.iconColor,
+    required this.label,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Card(
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(color: theme.colorScheme.outlineVariant),
+        ),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: iconColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(icon, color: iconColor, size: 22),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        label,
+                        style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        subtitle,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(Icons.chevron_right, color: theme.colorScheme.onSurfaceVariant),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ActivityPage extends StatefulWidget {
+  final User user;
+  const ActivityPage({super.key, required this.user});
+
+  @override
+  State<ActivityPage> createState() => _ActivityPageState();
+}
+
+class _ActivityPageState extends State<ActivityPage> {
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return Scaffold(
+      appBar: AppBar(title: Text(l10n.recentActivity)),
+      body: _ActivityFeed(user: widget.user),
     );
   }
 }
