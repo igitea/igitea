@@ -19,6 +19,8 @@
 
 ## [Unreleased]
 
+## [0.33.0] - 2026-05-11
+
 ### Added
 - **Dashboard redesign**: quick actions now a vertical list with quick-access tiles (Repos, Issues, Activity, Starred, Orgs)
 - **Dedicated Activity page**: tap "Recent Activity" tile to open full-screen activity feed
