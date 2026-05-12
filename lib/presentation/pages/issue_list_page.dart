@@ -14,7 +14,9 @@ import '../../domain/services/saved_filter_service.dart';
 import '../../domain/models/saved_filter.dart';
 
 class IssueListPage extends StatefulWidget {
-  const IssueListPage({super.key});
+  final String? initialFilter;
+
+  const IssueListPage({super.key, this.initialFilter});
 
   @override
   State<IssueListPage> createState() => _IssueListPageState();
@@ -35,7 +37,11 @@ class _IssueListPageState extends State<IssueListPage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final notifier = Injection.issueNotifier;
       if (notifier.issuesListState is! IssuesListLoaded) {
-        notifier.searchIssues('', state: notifier.issuesListFilter ?? 'open');
+        if (widget.initialFilter == 'assigned') {
+          notifier.searchIssues('', assigned: true);
+        } else {
+          notifier.searchIssues('', state: notifier.issuesListFilter ?? 'open');
+        }
       }
     });
     _loadSavedFilters();
@@ -49,10 +55,11 @@ class _IssueListPageState extends State<IssueListPage> {
 
   void _forceReload() {
     final notifier = Injection.issueNotifier;
-    notifier.searchIssues(
-      _searchQuery,
-      state: notifier.issuesListFilter ?? 'open',
-    );
+    if (widget.initialFilter == 'assigned') {
+      notifier.searchIssues(_searchQuery, assigned: true);
+    } else {
+      notifier.searchIssues(_searchQuery, state: notifier.issuesListFilter ?? 'open');
+    }
   }
 
   void _navigateToIssue(String owner, String repo, int index) {
@@ -162,6 +169,7 @@ class _IssueListPageState extends State<IssueListPage> {
                   Injection.issueNotifier.searchIssues(
                     _searchQuery,
                     state: state,
+                    assigned: widget.initialFilter == 'assigned' ? true : null,
                   );
                 },
                 l10n: l10n,

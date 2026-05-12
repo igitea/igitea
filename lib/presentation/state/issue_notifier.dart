@@ -485,6 +485,7 @@ _listMilestonesUseCase = listMilestonesUseCase;
     String? state,
     String? labels,
     String? milestones,
+    bool? assigned,
   }) async {
     _issuesListFilter = state;
     _currentPage = 1;
@@ -498,6 +499,7 @@ _listMilestonesUseCase = listMilestonesUseCase;
         state: state,
         labels: labels,
         milestones: milestones,
+        assigned: assigned,
         page: _currentPage,
         limit: _pageSize,
       ),

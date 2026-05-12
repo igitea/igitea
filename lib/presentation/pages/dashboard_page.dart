@@ -12,8 +12,10 @@ import 'issue_list_page.dart';
 import 'issue_detail_page.dart';
 import 'notification_page.dart';
 import 'pr_detail_page.dart';
+import 'profile_page.dart';
 import 'repo_detail_page.dart';
 import 'repo_list_page.dart';
+import 'starred_repos_page.dart';
 import 'user_profile_page.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -177,78 +179,129 @@ class _QuickActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    final theme = Theme.of(context);
+    return Column(
       children: [
-        Expanded(
-          child: FadeInWrapper(
-            delay: const Duration(milliseconds: 200),
-            child: _ActionCard(
-              icon: Icons.source,
-              label: l10n.repositories,
-              onTap: () => Navigator.of(
-                context,
-              ).push(MaterialPageRoute(builder: (_) => const RepoListPage())),
-            ),
-          ),
+        _ActionTile(
+          icon: Icons.source,
+          iconColor: theme.colorScheme.primary,
+          label: l10n.repositories,
+          subtitle: 'Browse your repositories',
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const RepoListPage())),
         ),
-        const SizedBox(width: UIConstants.sm),
-        Expanded(
-          child: FadeInWrapper(
-            delay: const Duration(milliseconds: 230),
-            child: _ActionCard(
-              icon: Icons.error_outline,
-              label: l10n.issues,
-              onTap: () => Navigator.of(
-                context,
-              ).push(MaterialPageRoute(builder: (_) => const IssueListPage())),
-            ),
-          ),
+        _ActionTile(
+          icon: Icons.bug_report_outlined,
+          iconColor: theme.colorScheme.tertiary,
+          label: l10n.issues,
+          subtitle: 'View and manage issues',
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const IssueListPage())),
         ),
-        const SizedBox(width: UIConstants.sm),
-        Expanded(
-          child: FadeInWrapper(
-            delay: const Duration(milliseconds: 260),
-            child: _ActionCard(
-              icon: Icons.notifications,
-              label: l10n.notifications,
-              onTap: () => Navigator.of(
-                context,
-              ).push(MaterialPageRoute(builder: (_) => const NotificationPage())),
-            ),
-          ),
+        _ActionTile(
+          icon: Icons.notifications_outlined,
+          iconColor: theme.colorScheme.error,
+          label: l10n.notifications,
+          subtitle: 'Check your notifications',
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const NotificationPage())),
+        ),
+        _ActionTile(
+          icon: Icons.star_outline,
+          iconColor: Colors.amber.shade700,
+          label: l10n.starredRepos,
+          subtitle: 'Your starred repositories',
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const StarredReposPage())),
+        ),
+        _ActionTile(
+          icon: Icons.assignment_ind_outlined,
+          iconColor: theme.colorScheme.secondary,
+          label: 'My Issues',
+          subtitle: 'Issues assigned to you',
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => IssueListPage(initialFilter: 'assigned'))),
+        ),
+        _ActionTile(
+          icon: Icons.business_outlined,
+          iconColor: theme.colorScheme.primary,
+          label: l10n.organisations,
+          subtitle: 'Your organizations',
+          onTap: () => Navigator.of(context).push(MaterialPageRoute(
+            builder: (_) => const ProfilePage(),
+          )),
         ),
       ],
     );
   }
 }
 
-class _ActionCard extends StatelessWidget {
+class _ActionTile extends StatelessWidget {
   final IconData icon;
+  final Color iconColor;
   final String label;
+  final String subtitle;
   final VoidCallback onTap;
 
-  const _ActionCard({
+  const _ActionTile({
     required this.icon,
+    required this.iconColor,
     required this.label,
+    required this.subtitle,
     required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return PremiumCard(
-      onTap: onTap,
-      padding: const EdgeInsets.symmetric(vertical: UIConstants.md, horizontal: UIConstants.sm),
-      child: Column(
-        children: [
-          Icon(icon, size: UIConstants.iconLg, color: theme.colorScheme.primary),
-          const SizedBox(height: UIConstants.sm),
-          Text(label, style: theme.textTheme.labelLarge),
-        ],
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Card(
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(color: theme.colorScheme.outlineVariant),
+        ),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: iconColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(icon, color: iconColor, size: 22),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        label,
+                        style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        subtitle,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(Icons.chevron_right, color: theme.colorScheme.onSurfaceVariant),
+              ],
+            ),
+          ),
+        ),
       ),
-    );
+      );
+    }
   }
-}
+
+
 
 class _RepoSummary extends StatelessWidget {
   final AppLocalizations l10n;
