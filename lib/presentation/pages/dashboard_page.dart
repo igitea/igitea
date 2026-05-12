@@ -454,58 +454,63 @@ class _ActivityFeedState extends State<_ActivityFeed> {
         final activities = Injection.userNotifier.activities;
 
         if (activities.isEmpty) {
-          return PremiumCard(
-            child: Center(child: Text(l10n.noActivity)),
-          );
+          return Center(child: Text(l10n.noActivity));
         }
 
-        return Column(
-          children: [
-            ...activities.asMap().entries.map((entry) {
-              final index = entry.key;
-              final activity = entry.value;
-            return FadeInWrapper(
-              delay: Duration(milliseconds: index * 30),
-              child: PremiumListCard(
-                onTap: () => _navigateToActivity(activity, context),
-                child: Row(
-                  children: [
-                    activity.act_user != null
-                        ? UserAvatar(user: activity.act_user!, radius: UIConstants.avatarMd)
-                        : Container(
-                            padding: const EdgeInsets.all(UIConstants.xs),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(_activityIcon(activity.op_type), size: UIConstants.iconMd),
-                          ),
-                    const SizedBox(width: UIConstants.md),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            _activityDescription(activity, l10n),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.bodyMedium,
-                          ),
-                          if (activity.created != null)
-                            Text(
-                              _formatDate(activity.created!, l10n),
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ],
+        final items = <Widget>[
+          ...activities.asMap().entries.map((entry) {
+            final activity = entry.value;
+            return Card(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                elevation: 0,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  side: BorderSide(color: theme.colorScheme.outlineVariant),
                 ),
-              ),
-            );
-          }).toList(),
+                child: InkWell(
+                  onTap: () => _navigateToActivity(activity, context),
+                  borderRadius: BorderRadius.circular(12),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Row(
+                      children: [
+                        activity.act_user != null
+                            ? UserAvatar(user: activity.act_user!, radius: 18)
+                            : Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(_activityIcon(activity.op_type), size: 16),
+                              ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                _activityDescription(activity, l10n),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.bodyMedium,
+                              ),
+                              if (activity.created != null)
+                                Text(
+                                  _formatDate(activity.created!, l10n),
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+          );
+          }),
           if (Injection.userNotifier.activitiesHasMore)
             Center(
               child: Padding(
@@ -518,7 +523,11 @@ class _ActivityFeedState extends State<_ActivityFeed> {
                       ),
               ),
             ),
-        ],
+        ];
+
+        return ListView(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          children: items,
         );
       },
     );

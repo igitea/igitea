@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+### Added
+- **Dashboard 重构**：快速操作改为竖排 7 项列表（Repo、Issues、通知、动态、星标、我的 Issue、组织）
+- **独立动态页面**：点击"动态活动"卡片进入全屏活动列表
+- **我的 Issue 筛选**：`IssueListPage` 支持 `initialFilter: 'assigned'` 参数过滤指派给我的 Issue
+- **Issue 按负责人搜索**：`searchIssues` 新增 `assigned` 参数
+
+### Fixed
+- Dashboard 动态页面像素溢出（改用 ListView 包裹）
+- 动态列表动画与加载更多冲突（移除 FadeInWrapper）
+- 组织入口缺少返回按钮（改用 OrganizationsListPage 导航）
+- 恢复意外的类删除（_WelcomeCard、_RepoSummary、_QuickActions）
+
 ## [0.32.0] - 2026-05-11
 
 ### Added

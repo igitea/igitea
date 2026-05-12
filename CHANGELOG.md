@@ -19,6 +19,18 @@
 
 ## [Unreleased]
 
+### Added
+- **Dashboard redesign**: quick actions now a vertical list with 7 entries (Repos, Issues, Notifications, Activity, Starred, My Issues, Orgs)
+- **Dedicated Activity page**: tap "Recent Activity" tile to open full-screen activity feed
+- **My Issues filter**: `IssueListPage` supports `initialFilter: 'assigned'` to show issues assigned to current user
+- **Issue search by assignee**: `searchIssues` now takes `assigned` parameter
+
+### Fixed
+- Dashboard pixel overflow in activity page (wrapped in ListView)
+- Activity list animation conflicting with load more (removed FadeInWrapper)
+- Organizations tile missing back button (now navigates through OrganizationsListPage)
+- Restored missing `_WelcomeCard`, `_RepoSummary`, `_QuickActions` classes after accidental deletion
+
 ## [0.32.0] - 2026-05-11
 
 ### Added
