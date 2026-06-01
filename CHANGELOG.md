@@ -19,6 +19,8 @@
 
 ## [Unreleased]
 
+## [0.34.1] - 2026-06-01
+
 ### Added
 - **Pull-to-refresh**: Issue detail and PR detail pages now support pull-to-refresh to reload issue/PR details, comments, repo info, subscription status, and reactions
 - **Recent activities infinite scroll**: Dashboard recent activities now auto-load more when scrolling to the bottom (no-sense pagination)
