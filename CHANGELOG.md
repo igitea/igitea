@@ -19,6 +19,13 @@
 
 ## [Unreleased]
 
+## [0.34.2] - 2026-06-01
+
+### Fixed
+- **Login page form spacing**: Increased spacing to prevent label/hint overlap in login form fields
+
+## [0.34.1] - 2026-05-26
+
 ### Added
 - **Pull-to-refresh**: Issue detail and PR detail pages now support pull-to-refresh to reload issue/PR details, comments, repo info, subscription status, and reactions
 - **Recent activities infinite scroll**: Dashboard recent activities now auto-load more when scrolling to the bottom (no-sense pagination)
