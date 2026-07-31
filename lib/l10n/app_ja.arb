@@ -155,6 +155,7 @@
   "restoringSession": "セッションを復元中...",
   "pleaseEnterServerUrl": "サーバーURLを入力してください",
   "pleaseEnterValidUrl": "有効なURLを入力してください",
+  "requireHttps": "HTTPS URLを使用してください",
   "connectToGitea": "Giteaインスタンスに接続",
   "usernamePassword": "ユーザー名とパスワード",
   "serverUrl": "サーバーURL",

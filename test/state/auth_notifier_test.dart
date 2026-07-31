@@ -305,7 +305,6 @@ void main() {
         expect(authState.baseUrl, 'https://gitea.example.com');
         expect(authState.method, AuthMethod.basic);
         expect(authState.username, 'testuser');
-        expect(authState.password, 'testpass');
       });
 
       test('sets isAuthenticated to true after basic auth login', () async {

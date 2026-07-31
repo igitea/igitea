@@ -155,6 +155,7 @@
   "restoringSession": "正在恢复会话...",
   "pleaseEnterServerUrl": "请输入服务器地址",
   "pleaseEnterValidUrl": "请输入有效的 URL",
+  "requireHttps": "請使用 HTTPS 地址",
   "connectToGitea": "连接到你的 Gitea 实例",
   "usernamePassword": "用户名和密码",
   "serverUrl": "服务器地址",

@@ -155,6 +155,7 @@
   "restoringSession": "세션 복원 중...",
   "pleaseEnterServerUrl": "서버 URL을 입력하세요",
   "pleaseEnterValidUrl": "유효한 URL을 입력하세요",
+  "requireHttps": "HTTPS URL을 사용하세요",
   "connectToGitea": "Gitea 인스턴스에 연결",
   "usernamePassword": "사용자 이름 및 비밀번호",
   "serverUrl": "서버 URL",

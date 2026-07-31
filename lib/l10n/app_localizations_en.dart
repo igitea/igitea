@@ -562,6 +562,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pleaseEnterValidUrl => 'Please enter a valid URL';
 
   @override
+  String get requireHttps => 'Please use an HTTPS URL';
+
+  @override
   String get connectToGitea => 'Connect to your Gitea instance';
 
   @override

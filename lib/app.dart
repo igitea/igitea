@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'core/di/injection.dart';
+import 'core/storage/auth_method_storage.dart';
 import 'core/storage/auth_storage.dart';
 import 'domain/entities/auth_state.dart';
 import 'l10n/app_localizations.dart';
@@ -25,8 +26,7 @@ class IGiteaApp extends StatefulWidget {
 class _IGiteaAppState extends State<IGiteaApp> {
   String? _lastBaseUrl;
   String? _lastToken;
-  String? _lastUsername;
-  String? _lastPassword;
+  AuthMethod? _lastMethod;
 
   @override
   void initState() {
@@ -43,6 +43,7 @@ class _IGiteaAppState extends State<IGiteaApp> {
       _applyAuth(
         baseUrl: saved.baseUrl,
         token: saved.token,
+        method: saved.method,
         username: saved.username,
         password: saved.password,
       );
@@ -53,19 +54,16 @@ class _IGiteaAppState extends State<IGiteaApp> {
   void _applyAuth({
     required String baseUrl,
     String? token,
+    AuthMethod? method,
     String? username,
     String? password,
   }) {
-    if (baseUrl == _lastBaseUrl &&
-        token == _lastToken &&
-        username == _lastUsername &&
-        password == _lastPassword) {
+    if (baseUrl == _lastBaseUrl && token == _lastToken && method == _lastMethod) {
       return;
     }
     _lastBaseUrl = baseUrl;
     _lastToken = token;
-    _lastUsername = username;
-    _lastPassword = password;
+    _lastMethod = method;
     Injection.updateAuth(
       baseUrl: baseUrl,
       token: token,
@@ -85,8 +83,8 @@ class _IGiteaAppState extends State<IGiteaApp> {
           _applyAuth(
             baseUrl: state.baseUrl,
             token: state.token,
+            method: state.method,
             username: state.username,
-            password: state.password,
           );
         }
 

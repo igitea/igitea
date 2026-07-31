@@ -31,9 +31,8 @@ void main() {
       final client = ApiClient(
         baseUrl: 'https://gitea.example.com',
         client: mock,
-        username: 'user',
-        password: 'pass',
       );
+      client.setBasicAuth('user', 'pass');
       await client.get('/user');
     });
 

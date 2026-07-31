@@ -155,6 +155,7 @@
   "restoringSession": "Восстановление сеанса...",
   "pleaseEnterServerUrl": "Пожалуйста, введите URL сервера",
   "pleaseEnterValidUrl": "Пожалуйста, введите действительный URL",
+  "requireHttps": "Пожалуйста, используйте HTTPS URL",
   "connectToGitea": "Подключитесь к вашему экземпляру Gitea",
   "usernamePassword": "Имя пользователя и пароль",
   "serverUrl": "URL сервера",

@@ -1109,6 +1109,12 @@ abstract class AppLocalizations {
   /// **'Please enter a valid URL'**
   String get pleaseEnterValidUrl;
 
+  /// No description provided for @requireHttps.
+  ///
+  /// In en, this message translates to:
+  /// **'Please use an HTTPS URL'**
+  String get requireHttps;
+
   /// No description provided for @connectToGitea.
   ///
   /// In en, this message translates to:

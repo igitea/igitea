@@ -560,13 +560,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get pleaseEnterServerUrl => 'Veuillez saisir une URL de serveur';
 
   @override
-  String get pleaseEnterValidUrl => 'Veuillez saisir une URL valide';
+  String get pleaseEnterValidUrl => 'Veuillez entrer une URL valide';
+
+  @override
+  String get requireHttps => 'Veuillez utiliser une URL HTTPS';
 
   @override
   String get connectToGitea => 'Connectez-vous à votre instance Gitea';
 
   @override
-  String get usernamePassword => 'Identifiant et Mot de passe';
+  String get usernamePassword => 'Nom d\'utilisateur et Mot de passe';
 
   @override
   String get serverUrl => 'URL du serveur';

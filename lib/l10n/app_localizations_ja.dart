@@ -559,6 +559,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get pleaseEnterValidUrl => '有効なURLを入力してください';
 
   @override
+  String get requireHttps => 'HTTPS URLを使用してください';
+
+  @override
   String get connectToGitea => 'Giteaインスタンスに接続';
 
   @override

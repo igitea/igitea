@@ -559,6 +559,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get pleaseEnterValidUrl => '유효한 URL을 입력하세요';
 
   @override
+  String get requireHttps => 'HTTPS URL을 사용하세요';
+
+  @override
   String get connectToGitea => 'Gitea 인스턴스에 연결';
 
   @override

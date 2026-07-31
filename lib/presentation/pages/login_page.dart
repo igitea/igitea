@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/constants/ui_constants.dart';
@@ -89,7 +90,36 @@ class _LoginPageState extends State<LoginPage>
     if (uri == null || !uri.hasScheme || !uri.hasAuthority) {
       return l10n.pleaseEnterValidUrl;
     }
+    if (uri.scheme != 'https') {
+      if (kDebugMode && _isLocalOrPrivateHost(uri.host)) {
+        return null;
+      }
+      return l10n.requireHttps;
+    }
     return null;
+  }
+
+  bool _isLocalOrPrivateHost(String host) {
+    return host == 'localhost' ||
+           host == '127.0.0.1' ||
+           host.startsWith('192.168.') ||
+           host.startsWith('10.') ||
+           host.startsWith('172.16.') ||
+           host.startsWith('172.17.') ||
+           host.startsWith('172.18.') ||
+           host.startsWith('172.19.') ||
+           host.startsWith('172.20.') ||
+           host.startsWith('172.21.') ||
+           host.startsWith('172.22.') ||
+           host.startsWith('172.23.') ||
+           host.startsWith('172.24.') ||
+           host.startsWith('172.25.') ||
+           host.startsWith('172.26.') ||
+           host.startsWith('172.27.') ||
+           host.startsWith('172.28.') ||
+           host.startsWith('172.29.') ||
+           host.startsWith('172.30.') ||
+           host.startsWith('172.31.');
   }
 
   Future<void> _loginWithBasicAuth() async {
@@ -184,6 +214,7 @@ class _LoginPageState extends State<LoginPage>
       }
     } finally {
       if (mounted) setState(() => _oauthCodeExchanging = false);
+      _oauthClientSecretController.clear();
     }
   }
 

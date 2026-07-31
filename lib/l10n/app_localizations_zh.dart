@@ -559,6 +559,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get pleaseEnterValidUrl => '请输入有效的 URL';
 
   @override
+  String get requireHttps => '请使用 HTTPS 地址';
+
+  @override
   String get connectToGitea => '连接到你的 Gitea 实例';
 
   @override
@@ -2880,6 +2883,9 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get pleaseEnterValidUrl => '请输入有效的 URL';
+
+  @override
+  String get requireHttps => '請使用 HTTPS 地址';
 
   @override
   String get connectToGitea => '连接到你的 Gitea 实例';

@@ -563,6 +563,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get pleaseEnterValidUrl => 'Пожалуйста, введите действительный URL';
 
   @override
+  String get requireHttps => 'Пожалуйста, используйте HTTPS URL';
+
+  @override
   String get connectToGitea => 'Подключитесь к вашему экземпляру Gitea';
 
   @override

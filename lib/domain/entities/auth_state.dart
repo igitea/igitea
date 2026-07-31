@@ -18,7 +18,6 @@ class AuthAuthenticated extends AuthState {
   final AuthMethod method;
   final String? token;
   final String? username;
-  final String? password;
   final String? refreshToken;
   final User user;
 
@@ -28,7 +27,6 @@ class AuthAuthenticated extends AuthState {
     required this.user,
     this.token,
     this.username,
-    this.password,
     this.refreshToken,
   });
 }

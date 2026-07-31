@@ -13,8 +13,7 @@ class ApiClient {
   final http.Client _client;
   final String baseUrl;
   String? _token;
-  String? _username;
-  String? _password;
+  String? _basicAuthHeader;
 
   /// Simple in-memory response cache keyed by URL.
   final Map<String, _CachedResponse> _cache = {};
@@ -23,19 +22,21 @@ class ApiClient {
     required this.baseUrl,
     http.Client? client,
     String? token,
-    String? username,
-    String? password,
   }) : _client = client ?? http.Client(),
-       _token = token,
-       _username = username,
-       _password = password;
+       _token = token;
 
   set token(String? value) => _token = value;
 
-  void setBasicAuth(String? username, String? password) {
-    _username = username;
-    _password = password;
+  /// Set Basic Auth from username:password. The password is used only to
+  /// compute the Authorization header and is immediately discarded — it is
+  /// never stored in memory as a class member.
+  void setBasicAuth(String username, String password) {
+    final credentials = base64Encode(utf8.encode('$username:$password'));
+    _basicAuthHeader = 'Basic $credentials';
   }
+
+  /// Clear the Basic Auth header (e.g. on logout or switch to token auth).
+  void clearBasicAuth() => _basicAuthHeader = null;
 
   Future<http.Response> _retryGet(Uri uri) async {
     Object lastError = const NetworkException('Request failed');
@@ -277,9 +278,8 @@ class ApiClient {
     };
     if (_token != null && _token!.isNotEmpty) {
       headers['Authorization'] = 'token $_token';
-    } else if (_username != null && _password != null) {
-      final credentials = base64Encode(utf8.encode('$_username:$_password'));
-      headers['Authorization'] = 'Basic $credentials';
+    } else if (_basicAuthHeader != null) {
+      headers['Authorization'] = _basicAuthHeader!;
     }
     return headers;
   }

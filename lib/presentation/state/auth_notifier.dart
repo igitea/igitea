@@ -89,7 +89,6 @@ class AuthNotifier extends ChangeNotifier {
           baseUrl: baseUrl,
           method: AuthMethod.basic,
           username: username,
-          password: password,
           user: value,
         );
         notifyListeners();
@@ -182,6 +181,11 @@ class AuthNotifier extends ChangeNotifier {
 
   Future<void> logout() async {
     await _storage.clear();
+    try {
+      Injection.apiClient.clearBasicAuth();
+    } catch (_) {
+      // apiClient may not be initialized in test or early-logout scenarios
+    }
     _state = const AuthInitial();
     notifyListeners();
   }

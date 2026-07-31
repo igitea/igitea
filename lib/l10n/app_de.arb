@@ -155,6 +155,7 @@
   "restoringSession": "Sitzung wird wiederhergestellt...",
   "pleaseEnterServerUrl": "Bitte geben Sie eine Server-URL ein",
   "pleaseEnterValidUrl": "Bitte geben Sie eine gültige URL ein",
+  "requireHttps": "Bitte verwenden Sie eine HTTPS-URL",
   "connectToGitea": "Mit Ihrer Gitea-Instanz verbinden",
   "usernamePassword": "Benutzername & Passwort",
   "serverUrl": "Server-URL",

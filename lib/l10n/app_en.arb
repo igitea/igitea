@@ -165,6 +165,7 @@
   "restoringSession": "Restoring session...",
   "pleaseEnterServerUrl": "Please enter a server URL",
   "pleaseEnterValidUrl": "Please enter a valid URL",
+  "requireHttps": "Please use an HTTPS URL",
   "connectToGitea": "Connect to your Gitea instance",
   "usernamePassword": "Username & Password",
   "serverUrl": "Server URL",

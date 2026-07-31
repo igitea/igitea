@@ -670,9 +670,10 @@ class Injection {
     apiClient = ApiClient(
       baseUrl: baseUrl ?? '',
       token: token,
-      username: username,
-      password: password,
     );
+    if (username != null && password != null) {
+      apiClient.setBasicAuth(username, password);
+    }
     apiService = GiteaApiService(client: apiClient);
 
     _initRepositories();
@@ -843,9 +844,10 @@ class Injection {
     apiClient = ApiClient(
       baseUrl: baseUrl ?? '',
       token: token,
-      username: username,
-      password: password,
     );
+    if (username != null && password != null) {
+      apiClient.setBasicAuth(username, password);
+    }
     apiService = GiteaApiService(client: apiClient);
 
     _initRepositories();

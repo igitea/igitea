@@ -1,4 +1,4 @@
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'auth_method_storage.dart';
 
@@ -10,6 +10,11 @@ class AuthStorage {
   static const _keyPassword = 'auth_password';
   static const _keyRefreshToken = 'auth_refresh_token';
 
+  final FlutterSecureStorage _secureStorage;
+
+  AuthStorage({FlutterSecureStorage? secureStorage})
+      : _secureStorage = secureStorage ?? const FlutterSecureStorage();
+
   Future<void> saveCredentials({
     required String baseUrl,
     required AuthMethod method,
@@ -18,37 +23,35 @@ class AuthStorage {
     String? password,
     String? refreshToken,
   }) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(_keyBaseUrl, baseUrl);
-    await prefs.setString(_keyAuthMethod, method.name);
+    await _secureStorage.write(key: _keyBaseUrl, value: baseUrl);
+    await _secureStorage.write(key: _keyAuthMethod, value: method.name);
     if (token != null) {
-      await prefs.setString(_keyToken, token);
+      await _secureStorage.write(key: _keyToken, value: token);
     } else {
-      await prefs.remove(_keyToken);
+      await _secureStorage.delete(key: _keyToken);
     }
     if (username != null) {
-      await prefs.setString(_keyUsername, username);
+      await _secureStorage.write(key: _keyUsername, value: username);
     } else {
-      await prefs.remove(_keyUsername);
+      await _secureStorage.delete(key: _keyUsername);
     }
     if (password != null) {
-      await prefs.setString(_keyPassword, password);
+      await _secureStorage.write(key: _keyPassword, value: password);
     } else {
-      await prefs.remove(_keyPassword);
+      await _secureStorage.delete(key: _keyPassword);
     }
     if (refreshToken != null) {
-      await prefs.setString(_keyRefreshToken, refreshToken);
+      await _secureStorage.write(key: _keyRefreshToken, value: refreshToken);
     } else {
-      await prefs.remove(_keyRefreshToken);
+      await _secureStorage.delete(key: _keyRefreshToken);
     }
   }
 
   Future<SavedCredentials?> loadCredentials() async {
-    final prefs = await SharedPreferences.getInstance();
-    final baseUrl = prefs.getString(_keyBaseUrl);
+    final baseUrl = await _secureStorage.read(key: _keyBaseUrl);
     if (baseUrl == null) return null;
 
-    final methodStr = prefs.getString(_keyAuthMethod);
+    final methodStr = await _secureStorage.read(key: _keyAuthMethod);
     if (methodStr == null) return null;
 
     final method = AuthMethod.values.firstWhere(
@@ -59,21 +62,20 @@ class AuthStorage {
     return SavedCredentials(
       baseUrl: baseUrl,
       method: method,
-      token: prefs.getString(_keyToken),
-      username: prefs.getString(_keyUsername),
-      password: prefs.getString(_keyPassword),
-      refreshToken: prefs.getString(_keyRefreshToken),
+      token: await _secureStorage.read(key: _keyToken),
+      username: await _secureStorage.read(key: _keyUsername),
+      password: await _secureStorage.read(key: _keyPassword),
+      refreshToken: await _secureStorage.read(key: _keyRefreshToken),
     );
   }
 
   Future<void> clear() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(_keyBaseUrl);
-    await prefs.remove(_keyAuthMethod);
-    await prefs.remove(_keyToken);
-    await prefs.remove(_keyUsername);
-    await prefs.remove(_keyPassword);
-    await prefs.remove(_keyRefreshToken);
+    await _secureStorage.delete(key: _keyBaseUrl);
+    await _secureStorage.delete(key: _keyAuthMethod);
+    await _secureStorage.delete(key: _keyToken);
+    await _secureStorage.delete(key: _keyUsername);
+    await _secureStorage.delete(key: _keyPassword);
+    await _secureStorage.delete(key: _keyRefreshToken);
   }
 }
 
