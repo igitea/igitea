@@ -19,6 +19,13 @@
 
 ## [Unreleased]
 
+### Added
+- **GitHub Mobile-style home page**: four-section dashboard (My Work shortcuts / Favorites = my repos / Shortcuts = mentioned + review requested / Recent = notifications) with pull-to-refresh
+- **Bottom navigation rename**: Home / Inbox / Explore / Profile tabs with avatar in app bar
+- **Issue filter `reviewRequested`**: `IssueFilterState` + notifier wiring, `IssueListPage` accepts `initialFilter` for pre-filtered shortcuts
+- **Home widgets**: `HomeSectionCard`, `HomeIconTile`, `HomeRepoTile`, `HomeRecentTile` (dumb components, Material 3 tokens)
+- **New l10n keys**: myWork, favorites, shortcuts, recent, mentioned, reviewRequested, recentEmpty, home, inbox, explore, topRepositories (all 10 locales)
+
 ### Docs
 - **Home page redesign spec**: `docs/igitea-home-redesign-spec.md` — implementation guide for a GitHub Mobile-style home page (section layout, API mapping, component specs, l10n keys, step-by-step build order, test plan, DoD)
 

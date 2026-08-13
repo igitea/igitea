@@ -6,20 +6,22 @@ import '../../core/errors/failures.dart';
 import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
-import '../state/user_notifier.dart';
-import '../widgets/empty_state.dart';
-import '../widgets/premium_card.dart';
-import '../widgets/user_avatar.dart';
-import 'issue_list_page.dart';
+import '../models/issue_filter_state.dart';
+import '../state/notification_notifier.dart';
+import '../widgets/home/home_icon_tile.dart';
+import '../widgets/home/home_recent_tile.dart';
+import '../widgets/home/home_repo_tile.dart';
+import '../widgets/home/home_section_card.dart';
 import 'issue_detail_page.dart';
-import 'notification_page.dart';
+import 'issue_list_page.dart';
 import 'organizations_list_page.dart';
 import 'pr_detail_page.dart';
 import 'repo_detail_page.dart';
 import 'repo_list_page.dart';
 import 'starred_repos_page.dart';
-import 'user_profile_page.dart';
 
+/// 首页（GitHub Mobile 风格）：
+/// Section A 我的工作 → Section B 收藏 → Section C 快捷方式 → Section D 最近。
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
 
@@ -32,706 +34,213 @@ class _DashboardPageState extends State<DashboardPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Injection.userNotifier.loadCurrentUser();
+      _loadAll();
     });
   }
 
+  Future<void> _loadAll() async {
+    await Future.wait([
+      Injection.userNotifier.loadCurrentUser(),
+      Injection.userNotifier.listCurrentUserRepos(limit: 3),
+      Injection.notificationNotifier.listNotifications(limit: 10),
+    ]);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      body: ListenableBuilder(
-        listenable: Injection.userNotifier,
-        builder: (context, child) {
-          final state = Injection.userNotifier.state;
-          return switch (state) {
-            UserLoading() => const Center(child: CircularProgressIndicator()),
-            UserError(:final message) => Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text('${l10n.error}: $message'),
-                  const SizedBox(height: UIConstants.md),
-                  FilledButton(
-                    onPressed: () => Injection.userNotifier.loadCurrentUser(),
-                    child: Text(l10n.retry),
-                  ),
-                ],
-              ),
-            ),
-            UserLoaded(:final user) => _buildDashboard(context, user, l10n),
-            _ => _buildWelcome(context, l10n),
-          };
-        },
-      ),
-    );
-  }
-
-  Widget _buildWelcome(BuildContext context, AppLocalizations l10n) {
-    return EmptyState(
-      icon: Icons.code,
-      title: l10n.welcomeToIgitea,
-      subtitle: l10n.signInToGetStarted,
-    );
-  }
-
-  Widget _buildDashboard(BuildContext context, User user, AppLocalizations l10n) {
-    return RefreshIndicator(
-      onRefresh: () => Injection.userNotifier.loadCurrentUser(),
-      child: ListView(
-        padding: const EdgeInsets.all(UIConstants.md),
-        children: [
-          FadeInWrapper(child: _WelcomeCard(user: user)),
-          const SizedBox(height: UIConstants.md),
-          _CollapsibleSection(
-            title: l10n.quickActions,
-            initiallyExpanded: true,
-            child: _QuickActions(l10n: l10n, user: user),
-          ),
-          const SizedBox(height: UIConstants.md),
-        ],
-      ),
-    );
-  }
-}
-
-class _WelcomeCard extends StatelessWidget {
-  final User user;
-
-  const _WelcomeCard({required this.user});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context)!;
-    return PremiumCard(
-      child: Row(
-        children: [
-          UserAvatar(user: user, radius: UIConstants.avatarXl),
-          const SizedBox(width: UIConstants.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l10n.helloParams(user.full_name ?? user.login ?? l10n.user),
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                if (user.login != null)
-                  Text(
-                    '@${user.login}',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _RepoSummary extends StatelessWidget {
-  final AppLocalizations l10n;
-
-  const _RepoSummary({required this.l10n});
-
-  @override
-  Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: Injection.userNotifier,
+      listenable: Listenable.merge([
+        Injection.userNotifier,
+        Injection.notificationNotifier,
+      ]),
       builder: (context, _) {
-        final repos = Injection.userNotifier.repos;
-        if (repos.isEmpty) {
-          return PremiumCard(
-            child: Text(l10n.noRepositoriesFound),
-          );
-        }
-        return Column(
-          children: repos.take(5).toList().asMap().entries.map((entry) {
-            final index = entry.key;
-            final repo = entry.value;
-            return FadeInWrapper(
-              delay: Duration(milliseconds: index * 40),
-              child: PremiumListCard(
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (_) => RepoDetailPage(
-                      owner: repo.owner?.login ?? '',
-                      repo: repo.name ?? '',
-                    ),
-                  ));
-                },
-                child: Row(
-                  children: [
-                    repo.owner != null
-                        ? UserAvatar(user: repo.owner!, radius: UIConstants.avatarMd)
-                        : Icon(
-                            repo.private == true ? Icons.lock : Icons.public,
-                            color: Theme.of(context).colorScheme.primary,
-                            size: UIConstants.iconMd,
-                          ),
-                    const SizedBox(width: UIConstants.md),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            repo.full_name ?? repo.name ?? '',
-                          style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                          ),
-                          if (repo.description != null && repo.description!.isNotEmpty)
-                            Text(
-                              repo.description!,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: Theme.of(context).colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (repo.language != null) ...[
-                          Text(
-                            repo.language!,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-                            ),
-                          ),
-                          const SizedBox(width: UIConstants.sm),
-                        ],
-                        Icon(
-                          Icons.star_outline,
-                          size: UIConstants.iconSm,
-                          color: Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
-                        const SizedBox(width: UIConstants.xs),
-                        Text(
-                          '${repo.stars_count ?? 0}',
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+        return RefreshIndicator(
+          onRefresh: _loadAll,
+          child: ListView(
+            padding: const EdgeInsets.all(UIConstants.md),
+            children: [
+              FadeInWrapper(child: _buildMyWork(context, l10n)),
+              const SizedBox(height: UIConstants.lg),
+              FadeInWrapper(
+                delay: const Duration(milliseconds: 50),
+                child: _buildFavorites(context, l10n),
               ),
-            );
-          }).toList(),
+              const SizedBox(height: UIConstants.lg),
+              FadeInWrapper(
+                delay: const Duration(milliseconds: 100),
+                child: _buildShortcuts(context, l10n),
+              ),
+              const SizedBox(height: UIConstants.lg),
+              FadeInWrapper(
+                delay: const Duration(milliseconds: 150),
+                child: _buildRecent(context, l10n),
+              ),
+            ],
+          ),
         );
       },
     );
   }
-}
 
-class _CollapsibleSection extends StatefulWidget {
-  final String title;
-  final Widget child;
-  final bool initiallyExpanded;
+  // ── Section A: 我的工作 ────────────────────────────────────────────────
 
-  const _CollapsibleSection({
-    required this.title,
-    required this.child,
-    this.initiallyExpanded = true,
-  });
-
-  @override
-  State<_CollapsibleSection> createState() => _CollapsibleSectionState();
-}
-
-class _CollapsibleSectionState extends State<_CollapsibleSection>
-    with SingleTickerProviderStateMixin {
-  late bool _expanded;
-  late AnimationController _controller;
-  late Animation<double> _heightFactor;
-
-  @override
-  void initState() {
-    super.initState();
-    _expanded = widget.initiallyExpanded;
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 250),
-      vsync: this,
-    );
-    _heightFactor = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
-    );
-    if (_expanded) _controller.value = 1.0;
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (MediaQuery.of(context).disableAnimations) {
-      _controller.value = _expanded ? 1.0 : 0.0;
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _toggle() {
-    setState(() => _expanded = !_expanded);
-    if (MediaQuery.of(context).disableAnimations) {
-      _controller.value = _expanded ? 1.0 : 0.0;
-    } else {
-      if (_expanded) {
-        _controller.forward();
-      } else {
-        _controller.reverse();
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: theme.colorScheme.outlineVariant),
-      ),
-      child: Column(
-        children: [
-          InkWell(
-            onTap: _toggle,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(16, 14, 12, 14),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      widget.title,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: theme.colorScheme.onSurface,
-                      ),
-                    ),
-                  ),
-                  AnimatedRotation(
-                    turns: _expanded ? 0.5 : 0.0,
-                    duration: const Duration(milliseconds: 200),
-                    child: Icon(Icons.expand_more, color: theme.colorScheme.onSurfaceVariant),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          ClipRect(
-            child: AnimatedBuilder(
-              animation: _heightFactor,
-              builder: (context, child) => Align(
-                heightFactor: _heightFactor.value,
-                child: child,
-              ),
-              child: _expanded ? widget.child : const SizedBox.shrink(),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _QuickActions extends StatelessWidget {
-  final AppLocalizations l10n;
-  final User user;
-
-  const _QuickActions({required this.l10n, required this.user});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Column(
+  Widget _buildMyWork(BuildContext context, AppLocalizations l10n) {
+    return HomeSectionCard(
+      title: '',
+      showHeader: false,
       children: [
-        _ActionTile(
-          icon: Icons.source,
-          iconColor: theme.colorScheme.primary,
-          label: l10n.repositories,
-          subtitle: l10n.browseRepositories,
-          onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const RepoListPage())),
-        ),
-        _ActionTile(
+        HomeIconTile(
+          iconBg: const Color(0xFF2EA043),
           icon: Icons.bug_report_outlined,
-          iconColor: theme.colorScheme.tertiary,
-          label: l10n.issues,
-          subtitle: l10n.viewIssues,
-          onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const IssueListPage())),
+          title: l10n.issues,
+          onTap: () => _openIssues(context,
+              const IssueFilterState(type: 'issues')),
         ),
-        _ActionTile(
-          icon: Icons.history,
-          iconColor: theme.colorScheme.secondary,
-          label: l10n.recentActivity,
-          subtitle: l10n.recentActivitySubtitle,
-          onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => ActivityPage(user: user))),
+        HomeIconTile(
+          iconBg: const Color(0xFF0969DA),
+          icon: Icons.merge_type,
+          title: l10n.pullRequests,
+          onTap: () => _openIssues(context,
+              const IssueFilterState(type: 'pulls')),
         ),
-        _ActionTile(
-          icon: Icons.star_outline,
-          iconColor: Colors.amber.shade700,
-          label: l10n.starredRepos,
-          subtitle: l10n.yourStarredRepos,
-          onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => const StarredReposPage())),
+        HomeIconTile(
+          iconBg: const Color(0xFF57606A),
+          icon: Icons.trending_up,
+          title: l10n.topRepositories,
+          onTap: () => _push(context, const RepoListPage()),
         ),
-        _ActionTile(
+        HomeIconTile(
+          iconBg: const Color(0xFFBC4C00),
           icon: Icons.business_outlined,
-          iconColor: theme.colorScheme.primary,
-          label: l10n.organisations,
-          subtitle: l10n.yourOrganizations,
-          onTap: () async {
-            final result = await Injection.listCurrentUserOrgsUseCase();
-            if (result is Right<Failure, List<Organization>>) {
-              if (context.mounted) {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (_) => OrganizationsListPage(orgs: result.value),
-                ));
-              }
-            }
-          },
+          title: l10n.organisations,
+          onTap: () => _openOrganizations(context),
+        ),
+        HomeIconTile(
+          iconBg: const Color(0xFFBF8700),
+          icon: Icons.star_outline,
+          title: l10n.starredRepos,
+          onTap: () => _push(context, const StarredReposPage()),
         ),
       ],
     );
   }
-}
 
-class _ActionTile extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor;
-  final String label;
-  final String subtitle;
-  final VoidCallback onTap;
+  // ── Section B: 收藏（我的仓库 top3）──────────────────────────────────
 
-  const _ActionTile({
-    required this.icon,
-    required this.iconColor,
-    required this.label,
-    required this.subtitle,
-    required this.onTap,
-  });
+  Widget _buildFavorites(BuildContext context, AppLocalizations l10n) {
+    final repos = Injection.userNotifier.repos;
+    if (repos.isEmpty) {
+      return HomeSectionCard(
+        title: l10n.favorites,
+        children: [
+          _HomePlaceholder(text: l10n.noRepositoriesFound),
+        ],
+      );
+    }
+    return HomeSectionCard(
+      title: l10n.favorites,
+      children: repos.take(3).map((repo) {
+        return HomeRepoTile(
+          repo: repo,
+          onTap: () {
+            final owner = repo.owner?.login ?? repo.full_name?.split('/').firstOrNull ?? '';
+            final name = repo.name ?? repo.full_name?.split('/').lastOrNull ?? '';
+            if (owner.isNotEmpty && name.isNotEmpty) {
+              _push(context, RepoDetailPage(owner: owner, repo: name));
+            }
+          },
+        );
+      }).toList(),
+    );
+  }
 
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Card(
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: BorderSide(color: theme.colorScheme.outlineVariant),
-        ),
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: iconColor.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(icon, color: iconColor, size: 22),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        label,
-                        style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        subtitle,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Semantics(excludeSemantics: true, child: Icon(Icons.chevron_right, color: theme.colorScheme.onSurfaceVariant)),
-              ],
-            ),
+  // ── Section C: 快捷方式 ────────────────────────────────────────────────
+
+  Widget _buildShortcuts(BuildContext context, AppLocalizations l10n) {
+    return HomeSectionCard(
+      title: l10n.shortcuts,
+      children: [
+        HomeIconTile(
+          iconBg: const Color(0xFF2EA043),
+          icon: Icons.alternate_email,
+          title: l10n.issues,
+          subtitle: l10n.mentioned,
+          onTap: () => _openIssues(
+            context,
+            const IssueFilterState(type: 'issues', mentionedMe: true),
           ),
         ),
-      ),
+        HomeIconTile(
+          iconBg: const Color(0xFF0969DA),
+          icon: Icons.rate_review_outlined,
+          title: l10n.pullRequests,
+          subtitle: l10n.reviewRequested,
+          onTap: () => _openIssues(
+            context,
+            const IssueFilterState(type: 'pulls', reviewRequested: true),
+          ),
+        ),
+      ],
     );
   }
-}
 
-class ActivityPage extends StatefulWidget {
-  final User user;
-  const ActivityPage({super.key, required this.user});
+  // ── Section D: 最近（通知流 top5）────────────────────────────────────
 
-  @override
-  State<ActivityPage> createState() => _ActivityPageState();
-}
-
-class _ActivityPageState extends State<ActivityPage> {
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.recentActivity)),
-      body: _ActivityFeed(user: widget.user),
-    );
-  }
-}
-
-class _ActivityFeed extends StatefulWidget {
-  final User user;
-
-  const _ActivityFeed({required this.user});
-
-  @override
-  State<_ActivityFeed> createState() => _ActivityFeedState();
-}
-
-class _ActivityFeedState extends State<_ActivityFeed> {
-  final _scrollController = ScrollController();
-
-  @override
-  void initState() {
-    super.initState();
-    _scrollController.addListener(_onScroll);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.user.login != null) {
-        Injection.userNotifier.getUserActivities(widget.user.login!);
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _scrollController.removeListener(_onScroll);
-    _scrollController.dispose();
-    super.dispose();
-  }
-
-  void _onScroll() {
-    if (!_scrollController.hasClients) return;
-    final maxScroll = _scrollController.position.maxScrollExtent;
-    final currentScroll = _scrollController.position.pixels;
-    if (currentScroll >= maxScroll - 200) {
-      Injection.userNotifier.loadMoreActivities(widget.user.login!);
+  Widget _buildRecent(BuildContext context, AppLocalizations l10n) {
+    final state = Injection.notificationNotifier.state;
+    if (state is NotificationLoading) {
+      return HomeSectionCard(
+        title: l10n.recent,
+        children: const [
+          _HomePlaceholder(text: null, showProgress: true),
+        ],
+      );
     }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-
-    return ListenableBuilder(
-      listenable: Injection.userNotifier,
-      builder: (context, _) {
-        final activities = Injection.userNotifier.activities;
-
-        if (activities.isEmpty) {
-          return Center(child: Text(l10n.noActivity));
-        }
-
-        final items = <Widget>[
-          ...activities.asMap().entries.map((entry) {
-            final activity = entry.value;
-            return Card(
-                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  side: BorderSide(color: theme.colorScheme.outlineVariant),
-                ),
-                child: InkWell(
-                  onTap: () => _navigateToActivity(activity, context),
-                  borderRadius: BorderRadius.circular(12),
-                  child: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Row(
-                      children: [
-                        activity.act_user != null
-                            ? UserAvatar(user: activity.act_user!, radius: 18)
-                            : Container(
-                                padding: const EdgeInsets.all(8),
-                                decoration: BoxDecoration(
-                                  color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(_activityIcon(activity.op_type), size: 16),
-                              ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                _activityDescription(activity, l10n),
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: theme.textTheme.bodyMedium,
-                              ),
-                              if (activity.created != null)
-                                Text(
-                                  _formatDate(activity.created!, l10n),
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-          );
-          }),
-          if (Injection.userNotifier.activitiesHasMore)
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: Injection.userNotifier.activitiesLoadingMore
-                    ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(strokeWidth: 2))
-                    : TextButton(
-                        onPressed: () => Injection.userNotifier.loadMoreActivities(widget.user.login!),
-                        child: Text(l10n.loadMoreActivity),
-                      ),
-              ),
-            ),
-        ];
-
-        return ListView(
-          controller: _scrollController,
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          children: items,
+    if (state is NotificationError) {
+      return HomeSectionCard(
+        title: l10n.recent,
+        children: [
+          _HomePlaceholder(
+            text: '${l10n.error}: ${state.message}',
+            onRetry: () => Injection.notificationNotifier.listNotifications(limit: 10),
+          ),
+        ],
+      );
+    }
+    final notifications =
+        state is NotificationListLoaded ? state.notifications : const <NotificationThread>[];
+    if (notifications.isEmpty) {
+      return HomeSectionCard(
+        title: l10n.recent,
+        children: [
+          _HomePlaceholder(text: l10n.recentEmpty),
+        ],
+      );
+    }
+    return HomeSectionCard(
+      title: l10n.recent,
+      children: notifications.take(5).map((n) {
+        return HomeRecentTile(
+          thread: n,
+          timeText: _formatDate(n.updated_at, l10n),
+          statusText: _notificationStatus(n, l10n),
+          onTap: () => _openNotification(context, n),
         );
-      },
+      }).toList(),
     );
   }
 
-  IconData _activityIcon(String? opType) {
-    switch (opType) {
-      case 'create_repo':
-        return Icons.create_new_folder;
-      case 'push_tag':
-      case 'delete_tag':
-        return Icons.tag;
-      case 'create_issue':
-      case 'close_issue':
-      case 'reopen_issue':
-        return Icons.error_outline;
-      case 'create_pull_request':
-      case 'merge_pull_request':
-      case 'close_pull_request':
-        return Icons.merge_type;
-      case 'comment_issue':
-      case 'comment_pull_request':
-        return Icons.comment;
-      case 'fork_repo':
-        return Icons.fork_right;
-      case 'transfer_repo':
-        return Icons.swap_horiz;
-      case 'delete_repo':
-        return Icons.delete;
-      case 'wiki_page':
-        return Icons.book;
-      default:
-        return Icons.circle;
-    }
+  String _notificationStatus(NotificationThread n, AppLocalizations l10n) {
+    final type = n.subject?.type?.value?.toLowerCase() ?? '';
+    if (type.contains('pull')) return l10n.pullRequests;
+    if (type.contains('commit')) return l10n.commits;
+    return l10n.issues;
   }
 
-  String _activityDescription(Activity activity, AppLocalizations l10n) {
-    final user = activity.act_user?.login ?? l10n.unknown;
-    final repo = activity.repo?.full_name ?? l10n.unknown;
-    final opType = activity.op_type ?? '';
-
-    switch (opType) {
-      case 'create_repo':
-        return '$user ${l10n.createdRepo} $repo';
-      case 'commit_repo':
-        return '$user ${l10n.commitRepo} $repo';
-      case 'rename_repo':
-        return '$user ${l10n.renameRepo} $repo';
-      case 'star_repo':
-        return '$user ${l10n.starRepo} $repo';
-      case 'watch_repo':
-        return '$user ${l10n.watchRepo} $repo';
-      case 'push_tag':
-        return '$user ${l10n.pushedTag} ${activity.ref_name ?? ''} ${l10n.to} $repo';
-      case 'delete_tag':
-        return '$user ${l10n.deletedTag} ${activity.ref_name ?? ''} ${l10n.from} $repo';
-      case 'delete_branch':
-        return '$user ${l10n.deleteBranch} ${activity.ref_name ?? ''} ${l10n.from} $repo';
-      case 'create_issue':
-        return '$user ${l10n.createdIssue} #${activity.content ?? ''} ${l10n.inRepo} $repo';
-      case 'close_issue':
-        return '$user ${l10n.closedIssue} #${activity.content ?? ''} ${l10n.inRepo} $repo';
-      case 'reopen_issue':
-        return '$user ${l10n.reopenedIssue} #${activity.content ?? ''} ${l10n.inRepo} $repo';
-      case 'create_pull_request':
-        return '$user ${l10n.createdPR} #${activity.content ?? ''} ${l10n.inRepo} $repo';
-      case 'merge_pull_request':
-        return '$user ${l10n.mergedPR} #${activity.content ?? ''} ${l10n.inRepo} $repo';
-      case 'close_pull_request':
-        return '$user ${l10n.closedPR} #${activity.content ?? ''} ${l10n.inRepo} $repo';
-      case 'reopen_pull_request':
-        return '$user ${l10n.reopenPR} #${activity.content ?? ''} ${l10n.inRepo} $repo';
-      case 'comment_issue':
-        return '$user ${l10n.commentedOnIssue} #${activity.content ?? ''} ${l10n.inRepo} $repo';
-      case 'comment_pull':
-        return '$user ${l10n.commentedOnPR} #${activity.content ?? ''} ${l10n.inRepo} $repo';
-      case 'fork_repo':
-        return '$user ${l10n.forkedRepo} $repo';
-      case 'transfer_repo':
-        return '$user ${l10n.transferredRepo} $repo';
-      case 'delete_repo':
-        return '$user ${l10n.deletedRepo} $repo';
-      case 'wiki_page':
-        return '$user ${l10n.updatedWiki} ${l10n.inRepo} $repo';
-      case 'publish_release':
-        return '$user ${l10n.publishRelease} ${l10n.inRepo} $repo';
-      case 'approve_pull_request':
-        return '$user ${l10n.approvePR} #${activity.content ?? ''} ${l10n.inRepo} $repo';
-      case 'reject_pull_request':
-        return '$user ${l10n.rejectPR} #${activity.content ?? ''} ${l10n.inRepo} $repo';
-      case 'pull_review_dismissed':
-        return '$user ${l10n.pullReviewDismissed} ${l10n.inRepo} $repo';
-      case 'pull_request_ready_for_review':
-        return '$user ${l10n.pullRequestReady} ${l10n.inRepo} $repo';
-      case 'auto_merge_pull_request':
-        return '$user ${l10n.autoMergePR} #${activity.content ?? ''} ${l10n.inRepo} $repo';
-      case 'mirror_sync_push':
-        return '$user ${l10n.mirrorSyncPush} $repo';
-      case 'mirror_sync_create':
-        return '$user ${l10n.mirrorSyncCreate} $repo';
-      case 'mirror_sync_delete':
-        return '$user ${l10n.mirrorSyncDelete} $repo';
-      default:
-        return '$user ${l10n.performedAction} $opType ${l10n.inRepo} $repo';
-    }
-  }
-
-  String _formatDate(DateTime date, AppLocalizations l10n) {
+  String _formatDate(DateTime? date, AppLocalizations l10n) {
+    if (date == null) return '';
     final now = DateTime.now();
     final diff = now.difference(date);
     if (diff.inDays > 365) return l10n.ago('${diff.inDays ~/ 365}y');
@@ -742,66 +251,107 @@ class _ActivityFeedState extends State<_ActivityFeed> {
     return l10n.justNow;
   }
 
-  void _navigateToActivity(Activity activity, BuildContext context) {
-    final repo = activity.repo;
-    final owner = repo?.owner?.login ?? repo?.full_name?.split('/').firstOrNull ?? '';
-    final repoName = repo?.name ?? repo?.full_name?.split('/').lastOrNull ?? '';
+  // ── 导航 ────────────────────────────────────────────────────────────────
 
-    final opType = activity.op_type ?? '';
-    final content = activity.content ?? '';
+  void _openIssues(BuildContext context, IssueFilterState filter) {
+    _push(context, IssueListPage(initialFilter: filter));
+  }
 
-    // Try to extract issue/PR number from content (handles plain "3" or "issue #3" formats)
-    final parsedIndex = int.tryParse(content);
-    final index = parsedIndex ?? (() { final m = RegExp(r'#?(\d+)').firstMatch(content); return m != null ? int.tryParse(m.group(1)!) : null; })();
-
-    // User-related: navigate to user profile
-    if (opType == 'follow' || opType == 'follow_user') {
-      final username = activity.ref_name ?? content;
-      if (username.isNotEmpty) {
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (_) => UserProfilePage(username: username),
-        ));
-        return;
+  Future<void> _openOrganizations(BuildContext context) async {
+    final result = await Injection.listCurrentUserOrgsUseCase();
+    if (result is Right<Failure, List<Organization>>) {
+      if (context.mounted) {
+        _push(context, OrganizationsListPage(orgs: result.value));
       }
     }
+  }
 
-    // Issue-related: navigate to issue detail
-    if (opType == 'create_issue' ||
-        opType == 'close_issue' ||
-        opType == 'reopen_issue' ||
-        opType == 'comment_issue' ||
-        opType == 'approve_pull_request' ||
-        opType == 'reject_pull_request') {
+  void _openNotification(BuildContext context, NotificationThread n) {
+    final subject = n.subject;
+    final typeValue = subject?.type?.value?.toLowerCase() ?? '';
+    final repo = n.repository;
+    final owner =
+        repo?.owner?.login ?? repo?.full_name?.split('/').firstOrNull ?? '';
+    final repoName =
+        repo?.name ?? repo?.full_name?.split('/').lastOrNull ?? '';
+    final urlMatch = _parseSubjectUrl(subject?.url ?? '');
+    final index =
+        urlMatch != null ? int.tryParse(urlMatch.group(1)!) : null;
+
+    if (typeValue.contains('pull')) {
       if (index != null && owner.isNotEmpty && repoName.isNotEmpty) {
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (_) => IssueDetailPage(owner: owner, repo: repoName, index: index),
-        ));
+        _push(context, PRDetailPage(owner: owner, repo: repoName, index: index));
         return;
       }
-    }
-
-    // PR-related: navigate to PR detail
-    if (opType == 'create_pull_request' ||
-        opType == 'merge_pull_request' ||
-        opType == 'close_pull_request' ||
-        opType == 'reopen_pull_request' ||
-        opType == 'comment_pull' ||
-        opType == 'pull_request_ready_for_review' ||
-        opType == 'auto_merge_pull_request' ||
-        opType == 'pull_review_dismissed') {
+    } else if (typeValue.contains('issue')) {
       if (index != null && owner.isNotEmpty && repoName.isNotEmpty) {
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (_) => PRDetailPage(owner: owner, repo: repoName, index: index),
-        ));
+        _push(context, IssueDetailPage(owner: owner, repo: repoName, index: index));
         return;
       }
     }
-
-    // Fallback: navigate to repo (requires owner+repoName)
     if (owner.isNotEmpty && repoName.isNotEmpty) {
-      Navigator.of(context).push(MaterialPageRoute(
-        builder: (_) => RepoDetailPage(owner: owner, repo: repoName),
-      ));
+      _push(context, RepoDetailPage(owner: owner, repo: repoName));
     }
+  }
+
+  /// 从 subject URL 提取 (编号, owner, repo)。
+  RegExpMatch? _parseSubjectUrl(String url) {
+    final patterns = [
+      RegExp(r'/repos/([^/]+)/([^/]+)/(?:issues|pulls)/(\d+)$'),
+      RegExp(r'/([^/]+)/([^/]+)/(?:issues|pulls)/(\d+)$'),
+    ];
+    for (final pattern in patterns) {
+      final match = pattern.firstMatch(url);
+      if (match != null) return match;
+    }
+    return null;
+  }
+
+  void _push(BuildContext context, Widget page) {
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => page));
+  }
+}
+
+/// 区块内的占位行：空态提示 / 加载指示 / 错误重试。
+class _HomePlaceholder extends StatelessWidget {
+  final String? text;
+  final bool showProgress;
+  final VoidCallback? onRetry;
+
+  const _HomePlaceholder({this.text, this.showProgress = false, this.onRetry});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    if (showProgress) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: 20),
+        child: Center(
+          child: SizedBox(
+            width: 24,
+            height: 24,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+        ),
+      );
+    }
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        children: [
+          Text(
+            text ?? '',
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          if (onRetry != null) ...[
+            const SizedBox(height: UIConstants.sm),
+            TextButton(onPressed: onRetry, child: Text(AppLocalizations.of(context)!.retry)),
+          ],
+        ],
+      ),
+    );
   }
 }

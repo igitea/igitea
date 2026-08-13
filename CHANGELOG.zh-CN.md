@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+### Added
+- **GitHub Mobile 风格首页**：四区块仪表盘（我的工作快捷入口 / 收藏=我的仓库 / 快捷方式=已提及+已请求审核 / 最近=通知），支持下拉刷新
+- **底部导航改名**：主页 / 收件箱 / 探索 / 个人资料，AppBar 带头像
+- **议题过滤 `reviewRequested`**：`IssueFilterState` + notifier 接线，`IssueListPage` 支持 `initialFilter` 预过滤快捷跳转
+- **首页组件**：`HomeSectionCard`、`HomeIconTile`、`HomeRepoTile`、`HomeRecentTile`（哑组件，Material 3 token）
+- **新增 l10n key**：myWork、favorites、shortcuts、recent、mentioned、reviewRequested、recentEmpty、home、inbox、explore、topRepositories（10 种语言）
+
 ### Docs
 - **首页改造实施规格**：`docs/igitea-home-redesign-spec.md` —— 参照 GitHub Mobile 风格的新首页实施指南（区块结构、API 映射、组件规格、l10n key、分步实施顺序、测试计划、验收标准）
 

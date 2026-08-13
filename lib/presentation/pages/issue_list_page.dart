@@ -18,7 +18,7 @@ import '../../domain/services/saved_filter_service.dart';
 import '../../domain/models/saved_filter.dart';
 
 class IssueListPage extends StatefulWidget {
-  final String? initialFilter;
+  final IssueFilterState? initialFilter;
 
   const IssueListPage({super.key, this.initialFilter});
 
@@ -43,8 +43,15 @@ class _IssueListPageState extends State<IssueListPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final notifier = Injection.issueNotifier;
+      if (widget.initialFilter != null) {
+        _filterState.value = widget.initialFilter!;
+      }
       if (notifier.issuesListState is! IssuesListLoaded) {
-        notifier.searchIssues('', state: notifier.issuesListFilter ?? 'open');
+        notifier.searchIssues(
+          '',
+          state: notifier.issuesListFilter ?? 'open',
+          filters: _filterState.value,
+        );
       }
     });
     _loadSavedFilters();
@@ -501,7 +508,6 @@ class _IssueListState extends State<_IssueList> {
           return FadeInWrapper(
             delay: Duration(milliseconds: (index * 40).clamp(0, 300)),
             child: _IssueCard(issue: issue, l10n: widget.l10n, onTap: () {
-              final repoFullName = issue.repository?.full_name ?? '';
               final owner = issue.repository?.owner ?? '';
               final repo = issue.repository?.name ?? '';
               if (owner.isNotEmpty && repo.isNotEmpty && issue.number != null) {

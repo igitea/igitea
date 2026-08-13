@@ -5,6 +5,7 @@ class IssueFilterState {
   final bool assignedToMe;
   final bool createdByMe;
   final bool mentionedMe;
+  final bool reviewRequested;
 
   const IssueFilterState({
     this.labels = const {},
@@ -13,6 +14,7 @@ class IssueFilterState {
     this.assignedToMe = false,
     this.createdByMe = false,
     this.mentionedMe = false,
+    this.reviewRequested = false,
   });
 
   bool get hasFilters =>
@@ -21,7 +23,8 @@ class IssueFilterState {
       type != null ||
       assignedToMe ||
       createdByMe ||
-      mentionedMe;
+      mentionedMe ||
+      reviewRequested;
 
   String? get labelsParam => labels.isEmpty ? null : labels.join(',');
   String? get milestonesParam => milestones.isEmpty ? null : milestones.join(',');
@@ -33,6 +36,7 @@ class IssueFilterState {
     bool? assignedToMe,
     bool? createdByMe,
     bool? mentionedMe,
+    bool? reviewRequested,
     bool clearType = false,
   }) {
     return IssueFilterState(
@@ -42,6 +46,7 @@ class IssueFilterState {
       assignedToMe: assignedToMe ?? this.assignedToMe,
       createdByMe: createdByMe ?? this.createdByMe,
       mentionedMe: mentionedMe ?? this.mentionedMe,
+      reviewRequested: reviewRequested ?? this.reviewRequested,
     );
   }
 
@@ -55,7 +60,8 @@ class IssueFilterState {
           type == other.type &&
           assignedToMe == other.assignedToMe &&
           createdByMe == other.createdByMe &&
-          mentionedMe == other.mentionedMe;
+          mentionedMe == other.mentionedMe &&
+          reviewRequested == other.reviewRequested;
 
   @override
   int get hashCode =>
@@ -64,5 +70,6 @@ class IssueFilterState {
       type.hashCode ^
       assignedToMe.hashCode ^
       createdByMe.hashCode ^
-      mentionedMe.hashCode;
+      mentionedMe.hashCode ^
+      reviewRequested.hashCode;
 }

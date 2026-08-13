@@ -30,6 +30,36 @@ class AppLocalizationsZh extends AppLocalizations {
   String get dashboard => '仪表盘';
 
   @override
+  String get myWork => '我的工作';
+
+  @override
+  String get favorites => '收藏';
+
+  @override
+  String get shortcuts => '快捷方式';
+
+  @override
+  String get recent => '最近';
+
+  @override
+  String get mentioned => '已提及';
+
+  @override
+  String get reviewRequested => '已请求审核';
+
+  @override
+  String get recentEmpty => '您最近交互的议题和拉取请求将显示在这里。';
+
+  @override
+  String get home => '主页';
+
+  @override
+  String get inbox => '收件箱';
+
+  @override
+  String get explore => '探索';
+
+  @override
   String get signOut => '退出登录';
 
   @override
@@ -109,6 +139,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get repositories => '仓库';
+
+  @override
+  String get topRepositories => '排名靠前的存储库';
 
   @override
   String get repositorySections => '仓库区块';
@@ -2396,6 +2429,37 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get dashboard => '儀表板';
 
   @override
+  String get myWork => 'My Work';
+
+  @override
+  String get favorites => 'Favorites';
+
+  @override
+  String get shortcuts => 'Shortcuts';
+
+  @override
+  String get recent => 'Recent';
+
+  @override
+  String get mentioned => 'Mentioned';
+
+  @override
+  String get reviewRequested => 'Review requested';
+
+  @override
+  String get recentEmpty =>
+      'Issues and pull requests you\'ve interacted with will appear here.';
+
+  @override
+  String get home => 'Home';
+
+  @override
+  String get inbox => 'Inbox';
+
+  @override
+  String get explore => 'Explore';
+
+  @override
   String get signOut => '登出';
 
   @override
@@ -2475,6 +2539,9 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get repositories => '倉庫';
+
+  @override
+  String get topRepositories => 'Top repositories';
 
   @override
   String get repositorySections => '倉庫区块';

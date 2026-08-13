@@ -34,19 +34,20 @@ void main() {
       await tester.pumpWidget(testWidget());
       await tester.pumpAndSettle();
 
-      expect(find.text('Dashboard'), findsAtLeast(1));
-      expect(find.text('Search'), findsAtLeast(1));
-      expect(find.text('Notifications'), findsAtLeast(1));
+      expect(find.text('Home'), findsAtLeast(1));
+      expect(find.text('Inbox'), findsAtLeast(1));
+      expect(find.text('Explore'), findsAtLeast(1));
       expect(find.text('Profile'), findsAtLeast(1));
     });
 
-    testWidgets('shows logged in user name in app bar', (tester) async {
+    testWidgets('shows my work title and avatar in app bar', (tester) async {
       Injection.authNotifier.state = testAuthState;
 
       await tester.pumpWidget(testWidget());
       await tester.pumpAndSettle();
 
-      expect(find.text('testuser'), findsOneWidget);
+      expect(find.text('My Work'), findsOneWidget);
+      expect(find.byType(CircleAvatar), findsAtLeast(1));
     });
 
     testWidgets('shows dashboard as default tab', (tester) async {

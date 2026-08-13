@@ -121,6 +121,10 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 - Dashboard shows recent activities
 - Supports: create/delete repo, push/delete tag, create/close/reopen issues and PRs, comments, fork, transfer
 
+### Home Page (GitHub Mobile style)
+- Four-section dashboard: My Work shortcuts, Favorites (my repos), Shortcuts (mentioned / review requested), Recent (notifications)
+- Bottom navigation: Home / Inbox / Explore / Profile
+
 ### Notifications
 - List notifications with unread badge
 - Mark single or all as read

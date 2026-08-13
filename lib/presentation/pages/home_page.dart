@@ -4,6 +4,7 @@ import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../domain/entities/auth_state.dart';
 import '../../l10n/app_localizations.dart';
+import '../widgets/user_avatar.dart';
 import 'dashboard_page.dart';
 import 'search_page.dart';
 import 'notification_page.dart';
@@ -19,10 +20,11 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
 
+  // Tab order: 主页 / 收件箱 / 探索 / 个人资料
   static const _pages = <Widget>[
     DashboardPage(key: ValueKey('dashboard')),
-    SearchPage(key: ValueKey('search')),
     NotificationPage(key: ValueKey('notifications')),
+    SearchPage(key: ValueKey('search')),
     ProfilePage(key: ValueKey('profile')),
   ];
 
@@ -49,7 +51,26 @@ class _HomePageState extends State<HomePage> {
         final isWide = MediaQuery.of(context).size.width >= 600;
 
         return Scaffold(
-          appBar: AppBar(title: Text(user.login ?? l10n.appTitle)),
+          appBar: AppBar(
+            leading: Padding(
+              padding: const EdgeInsets.only(left: UIConstants.sm),
+              child: InkWell(
+                onTap: () => _onDestinationSelected(3),
+                borderRadius: BorderRadius.circular(20),
+                child: Center(
+                  child: UserAvatar(user: user, radius: UIConstants.avatarLg),
+                ),
+              ),
+            ),
+            title: Text(l10n.myWork),
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.search),
+                tooltip: l10n.explore,
+                onPressed: () => _onDestinationSelected(2),
+              ),
+            ],
+          ),
           body: Row(
             children: [
               if (isWide) _buildNavigationRail(l10n),
@@ -87,19 +108,19 @@ class _HomePageState extends State<HomePage> {
       ),
       destinations: [
         NavigationRailDestination(
-          icon: const Icon(Icons.dashboard_outlined),
-          selectedIcon: const Icon(Icons.dashboard),
-          label: Text(l10n.dashboard),
+          icon: const Icon(Icons.home_outlined),
+          selectedIcon: const Icon(Icons.home),
+          label: Text(l10n.home),
         ),
         NavigationRailDestination(
-          icon: const Icon(Icons.search_outlined),
-          selectedIcon: const Icon(Icons.search),
-          label: Text(l10n.search),
+          icon: const Icon(Icons.inbox_outlined),
+          selectedIcon: const Icon(Icons.inbox),
+          label: Text(l10n.inbox),
         ),
         NavigationRailDestination(
-          icon: const Icon(Icons.notifications_outlined),
-          selectedIcon: const Icon(Icons.notifications),
-          label: Text(l10n.notifications),
+          icon: const Icon(Icons.explore_outlined),
+          selectedIcon: const Icon(Icons.explore),
+          label: Text(l10n.explore),
         ),
         NavigationRailDestination(
           icon: const Icon(Icons.person_outline),
@@ -116,19 +137,19 @@ class _HomePageState extends State<HomePage> {
       onDestinationSelected: _onDestinationSelected,
       destinations: [
         NavigationDestination(
-          icon: const Icon(Icons.dashboard_outlined),
-          selectedIcon: const Icon(Icons.dashboard),
-          label: l10n.dashboard,
+          icon: const Icon(Icons.home_outlined),
+          selectedIcon: const Icon(Icons.home),
+          label: l10n.home,
         ),
         NavigationDestination(
-          icon: const Icon(Icons.search_outlined),
-          selectedIcon: const Icon(Icons.search),
-          label: l10n.search,
+          icon: const Icon(Icons.inbox_outlined),
+          selectedIcon: const Icon(Icons.inbox),
+          label: l10n.inbox,
         ),
         NavigationDestination(
-          icon: const Icon(Icons.notifications_outlined),
-          selectedIcon: const Icon(Icons.notifications),
-          label: l10n.notifications,
+          icon: const Icon(Icons.explore_outlined),
+          selectedIcon: const Icon(Icons.explore),
+          label: l10n.explore,
         ),
         NavigationDestination(
           icon: const Icon(Icons.person_outline),

@@ -155,6 +155,66 @@ abstract class AppLocalizations {
   /// **'Dashboard'**
   String get dashboard;
 
+  /// No description provided for @myWork.
+  ///
+  /// In en, this message translates to:
+  /// **'My Work'**
+  String get myWork;
+
+  /// No description provided for @favorites.
+  ///
+  /// In en, this message translates to:
+  /// **'Favorites'**
+  String get favorites;
+
+  /// No description provided for @shortcuts.
+  ///
+  /// In en, this message translates to:
+  /// **'Shortcuts'**
+  String get shortcuts;
+
+  /// No description provided for @recent.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent'**
+  String get recent;
+
+  /// No description provided for @mentioned.
+  ///
+  /// In en, this message translates to:
+  /// **'Mentioned'**
+  String get mentioned;
+
+  /// No description provided for @reviewRequested.
+  ///
+  /// In en, this message translates to:
+  /// **'Review requested'**
+  String get reviewRequested;
+
+  /// No description provided for @recentEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Issues and pull requests you\'ve interacted with will appear here.'**
+  String get recentEmpty;
+
+  /// No description provided for @home.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get home;
+
+  /// No description provided for @inbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Inbox'**
+  String get inbox;
+
+  /// No description provided for @explore.
+  ///
+  /// In en, this message translates to:
+  /// **'Explore'**
+  String get explore;
+
   /// No description provided for @signOut.
   ///
   /// In en, this message translates to:
@@ -316,6 +376,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Repositories'**
   String get repositories;
+
+  /// No description provided for @topRepositories.
+  ///
+  /// In en, this message translates to:
+  /// **'Top repositories'**
+  String get topRepositories;
 
   /// No description provided for @repositorySections.
   ///

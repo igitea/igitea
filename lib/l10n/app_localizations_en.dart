@@ -30,6 +30,37 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboard => 'Dashboard';
 
   @override
+  String get myWork => 'My Work';
+
+  @override
+  String get favorites => 'Favorites';
+
+  @override
+  String get shortcuts => 'Shortcuts';
+
+  @override
+  String get recent => 'Recent';
+
+  @override
+  String get mentioned => 'Mentioned';
+
+  @override
+  String get reviewRequested => 'Review requested';
+
+  @override
+  String get recentEmpty =>
+      'Issues and pull requests you\'ve interacted with will appear here.';
+
+  @override
+  String get home => 'Home';
+
+  @override
+  String get inbox => 'Inbox';
+
+  @override
+  String get explore => 'Explore';
+
+  @override
   String get signOut => 'Sign Out';
 
   @override
@@ -109,6 +140,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get repositories => 'Repositories';
+
+  @override
+  String get topRepositories => 'Top repositories';
 
   @override
   String get repositorySections => 'Repository Sections';
