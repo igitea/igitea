@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Docs
+- **首页改造实施规格**：`docs/igitea-home-redesign-spec.md` —— 参照 GitHub Mobile 风格的新首页实施指南（区块结构、API 映射、组件规格、l10n key、分步实施顺序、测试计划、验收标准）
+
 ## [0.34.2] - 2026-06-01
 
 ### Fixed

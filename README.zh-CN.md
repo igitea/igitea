@@ -20,6 +20,7 @@
 - 120+ 个数据模型，基于 OpenAPI 规范自动生成
 - 49+ 个领域用例，采用 `Either<Failure, T>` 模式
 - 270 个测试通过，`flutter analyze` 无错误
+- 首页改造（GitHub Mobile 风格）：实施规格见 `docs/igitea-home-redesign-spec.md`
 
 ### 认证
 - 用户名/密码登录（主要方式）

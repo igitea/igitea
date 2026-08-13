@@ -20,6 +20,7 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 - 120+ data models auto-generated from OpenAPI spec
 - 49+ domain use cases with `Either<Failure, T>` pattern
 - 270+ tests passing, `flutter analyze` clean
+- Home page redesign (GitHub Mobile style): implementation spec in `docs/igitea-home-redesign-spec.md`
 
 ### Authentication
 - Username/password login (primary)

@@ -19,6 +19,9 @@
 
 ## [Unreleased]
 
+### Docs
+- **Home page redesign spec**: `docs/igitea-home-redesign-spec.md` — implementation guide for a GitHub Mobile-style home page (section layout, API mapping, component specs, l10n keys, step-by-step build order, test plan, DoD)
+
 ## [0.34.2] - 2026-06-01
 
 ### Fixed
