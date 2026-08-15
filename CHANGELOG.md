@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.36.0] - 2026-08-16
+
+### Changed
+- **Allow HTTP server URLs**: login no longer forces HTTPS, so Gitea instances without TLS can be used
+- **Revert to SharedPreferences storage**: remove `flutter_secure_storage` dependency (kept out of the app until native keystore/credentials are available)
+
 ## [0.35.0] - 2026-08-15
 
 ### Added

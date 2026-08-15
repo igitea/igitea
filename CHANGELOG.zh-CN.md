@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+## [0.36.0] - 2026-08-16
+
+### Changed
+- **允许 HTTP 服务器地址**：登录不再强制 HTTPS，支持没有 TLS 证书的 Gitea 实例
+- **存储回退到 SharedPreferences**：移除 `flutter_secure_storage` 依赖（在原生钥匙串/凭据可用前暂不使用）
+
 ## [0.35.0] - 2026-08-15
 
 ### Added
