@@ -1,23 +1,8 @@
 # Changelog
 
-## [0.30.0] - 2026-05-05
-
-### Added
-- **Webhook editing**: full edit form (URL, content type, events, active toggle) via `CreateWebhookPage` with pre-filled fields
-  - Repository: `editHook` method, `EditHookUseCase`, RepoNotifier `editHook()`
-- **Organization Webhook CRUD**: list, create, edit, and delete org-level webhooks
-  - Use cases: `ListOrgHooksUseCase`, `CreateOrgHookUseCase`, `EditOrgHookUseCase`, `DeleteOrgHookUseCase`
-  - Tap to edit hook, full form with URL/secret/content-type/active fields
-- **PR Review enhancement**: typed `PullReview` model, review summary badges (approved/changes count)
-- Releases/Issues/PRs tabs: FABs now respect repo permissions (requires push/admin access)
-- Releases: also checks `has_releases` flag
-- Issues: also checks `has_issues` flag
-- PRs: also checks `has_pull_requests` flag
-- **Use case layers**: added repository + use cases for issue subscriptions, dependencies, timeline, deadlines, comment edit/delete (10 new use cases)
-- issue_detail_page: all 11 direct `Injection.apiService` calls replaced with use cases
-- user_profile_page: 6 direct calls replaced (userGet, orgListUserOrgs, userListRepos, follow/unfollow/check)
-
 ## [Unreleased]
+
+## [0.35.0] - 2026-08-15
 
 ### Added
 - **GitHub Mobile-style home page**: four-section dashboard (My Work shortcuts / Favorites = my repos / Shortcuts = mentioned + review requested / Recent = notifications) with pull-to-refresh
@@ -155,6 +140,23 @@
 - Due date: only refreshes due date data silently (no full page loading flash)
 - Issue detail page: restored missing initState causing infinite loading
 - Timeline: filtered out comment events (already shown in dedicated comments section)
+
+## [0.30.0] - 2026-05-05
+
+### Added
+- **Webhook editing**: full edit form (URL, content type, events, active toggle) via `CreateWebhookPage` with pre-filled fields
+  - Repository: `editHook` method, `EditHookUseCase`, RepoNotifier `editHook()`
+- **Organization Webhook CRUD**: list, create, edit, and delete org-level webhooks
+  - Use cases: `ListOrgHooksUseCase`, `CreateOrgHookUseCase`, `EditOrgHookUseCase`, `DeleteOrgHookUseCase`
+  - Tap to edit hook, full form with URL/secret/content-type/active fields
+- **PR Review enhancement**: typed `PullReview` model, review summary badges (approved/changes count)
+- Releases/Issues/PRs tabs: FABs now respect repo permissions (requires push/admin access)
+- Releases: also checks `has_releases` flag
+- Issues: also checks `has_issues` flag
+- PRs: also checks `has_pull_requests` flag
+- **Use case layers**: added repository + use cases for issue subscriptions, dependencies, timeline, deadlines, comment edit/delete (10 new use cases)
+- issue_detail_page: all 11 direct `Injection.apiService` calls replaced with use cases
+- user_profile_page: 6 direct calls replaced (userGet, orgListUserOrgs, userListRepos, follow/unfollow/check)
 
 ## [0.29.0] - 2026-05-05
 
