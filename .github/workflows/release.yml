@@ -182,6 +182,9 @@ jobs:
         with:
           path: merged-artifacts
 
+      - name: Extract release notes from CHANGELOG.md
+        run: node scripts/release-notes.mjs "${{ github.ref_name }}" --out release-notes.md
+
       - name: Create Release and Upload Assets
         uses: softprops/action-gh-release@v2
         with:
@@ -193,7 +196,7 @@ jobs:
             merged-artifacts/**/*.AppImage
             merged-artifacts/**/*.zip
             merged-artifacts/**/*.msix
-          generate_release_notes: true
+          body_path: release-notes.md
           draft: false
           prerelease: false
         env:

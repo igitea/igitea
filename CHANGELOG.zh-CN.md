@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Changed
+- **Release 正文取自 CHANGELOG.md**：`create-release` 任务改为用 `scripts/release-notes.mjs` 提取对应版本的更新日志段落，不再用 GitHub 自动生成的 notes
+
 ## [0.36.0] - 2026-08-16
 
 ### Changed
