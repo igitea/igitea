@@ -118,6 +118,10 @@ app.*.symbols
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 !/dev/ci/**/Gemfile.lock
 .claude/
+# WorkBuddy local memory
+.workbuddy/
+# IntelliJ module file (IDE-managed)
+igitea.iml
 #ignore mac os stored file
 *.DS_Store
 .DS_Store
