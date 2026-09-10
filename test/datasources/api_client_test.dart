@@ -178,4 +178,35 @@ void main() {
       );
     });
   });
+
+  group('response cache', () {
+    test('evicts oldest entry once the cache reaches 100 entries', () {
+      final client = ApiClient(baseUrl: 'https://gitea.example.com');
+      for (var i = 0; i < 150; i++) {
+        client.setCached('key-$i', 'body-$i');
+      }
+      // Oldest entry is gone, most recent ones are retained.
+      expect(client.getCachedBody('key-0'), isNull);
+      expect(client.getCachedBody('key-49'), isNull);
+      expect(client.getCachedBody('key-50'), 'body-50');
+      expect(client.getCachedBody('key-149'), 'body-149');
+    });
+
+    test('updating an existing key does not evict', () {
+      final client = ApiClient(baseUrl: 'https://gitea.example.com');
+      for (var i = 0; i < 100; i++) {
+        client.setCached('key-$i', 'body-$i');
+      }
+      client.setCached('key-0', 'body-0-updated');
+      expect(client.getCachedBody('key-0'), 'body-0-updated');
+      expect(client.getCachedBody('key-1'), 'body-1');
+    });
+
+    test('expired entries are not returned', () {
+      final client = ApiClient(baseUrl: 'https://gitea.example.com');
+      client.setCached('stale', 'old',
+          maxAge: const Duration(milliseconds: -1));
+      expect(client.getCachedBody('stale'), isNull);
+    });
+  });
 }

@@ -5,6 +5,19 @@
 ### Changed
 - **Release notes from CHANGELOG.md**: `create-release` job now extracts the version's changelog section (`scripts/release-notes.mjs`) instead of GitHub auto-generated notes
 
+### Performance
+- **Tiered request timeouts**: regular API requests time out after 15s (was 30s), binary downloads after 45s; GET retries reduced to a single attempt and 5xx responses no longer retry, so a slow/failing server surfaces an error in ~15–35s instead of up to ~93s
+- **Background JSON decoding**: response bodies larger than 64KB are decoded on a background isolate (`compute`) in `GiteaApiService`, keeping the UI thread free during large responses
+- **Lazy diff rendering**: PR diff viewer flattens diff lines into rows built on demand by `ListView.builder`; diff parsing now runs on a background isolate (also in commit detail and file compare); files with more than 3000 diff lines are truncated with a "Show entire diff" expander
+- **Chunked code viewer**: source files are rendered in 500-line chunks instead of one giant `HighlightView` + line-number column, and the expensive `IntrinsicHeight` layout is gone
+- **File size guards**: text files over 1MB and Markdown documents over 512KB are no longer rendered inline (a size notice with browser/download options is shown instead); editing files over 1MB is blocked
+- **Cached avatars**: `UserAvatar`/`OrgAvatar` now use `cached_network_image` with disk cache and downscaling (`maxWidthDiskCache`/`memCacheWidth`), removing repeated downloads and avatar flicker on slow networks; file image preview and admin badge images are downsampled via `cacheWidth`/`cacheHeight`
+- **Bounded response cache**: `ApiClient` in-memory cache now evicts the oldest entry once it reaches 100 entries, preventing unbounded memory growth during long sessions
+
+### Added
+- **Slow-network hint**: a new `SlowLoadingIndicator` shows a "network seems slow" message after 10s on the repo detail, issue detail, and file pages so long waits no longer look like a frozen app
+- **New l10n keys**: stillLoading, showEntireDiff, fileTooLargeParams, previewTruncatedParams, documentTooLarge (en / zh / zh_TW)
+
 ## [0.36.0] - 2026-08-16
 
 ### Changed

@@ -4744,6 +4744,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save Filter'**
   String get saveFilter;
+
+  /// No description provided for @stillLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Still loading… the network seems slow'**
+  String get stillLoading;
+
+  /// No description provided for @showEntireDiff.
+  ///
+  /// In en, this message translates to:
+  /// **'Show entire diff'**
+  String get showEntireDiff;
+
+  /// No description provided for @fileTooLargeParams.
+  ///
+  /// In en, this message translates to:
+  /// **'File is too large to preview ({size})'**
+  String fileTooLargeParams(Object size);
+
+  /// No description provided for @previewTruncatedParams.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing first {count} lines only'**
+  String previewTruncatedParams(Object count);
+
+  /// No description provided for @documentTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'This document is too large to preview'**
+  String get documentTooLarge;
 }
 
 class _AppLocalizationsDelegate

@@ -2439,4 +2439,23 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get saveFilter => 'Save Filter';
+
+  @override
+  String get stillLoading => 'Still loading… the network seems slow';
+
+  @override
+  String get showEntireDiff => 'Show entire diff';
+
+  @override
+  String fileTooLargeParams(Object size) {
+    return 'File is too large to preview ($size)';
+  }
+
+  @override
+  String previewTruncatedParams(Object count) {
+    return 'Showing first $count lines only';
+  }
+
+  @override
+  String get documentTooLarge => 'This document is too large to preview';
 }

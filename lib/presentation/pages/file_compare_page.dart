@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/constants/ui_constants.dart';
@@ -59,7 +60,7 @@ class _FileComparePageState extends State<FileComparePage> {
       if (matched.isEmpty) {
         final rawDiff = result['diff'] as String? ?? '';
         if (rawDiff.isNotEmpty) {
-          final allFiles = DiffParser.parse(rawDiff);
+          final allFiles = await compute(DiffParser.parse, rawDiff);
           setState(() {
             _files = allFiles.where((f) =>
               f.newPath == widget.path || f.oldPath == widget.path

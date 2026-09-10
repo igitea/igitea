@@ -760,5 +760,10 @@
   "includeArchived": "包含归档仓库",
   "templatesOnly": "仅模板",
   "loadMore": "加载更多",
-  "saveFilter": "保存筛选"
+  "saveFilter": "保存筛选",
+  "stillLoading": "仍在加载…网络似乎较慢",
+  "showEntireDiff": "显示完整 diff",
+  "fileTooLargeParams": "文件过大，无法预览（{size}）",
+  "previewTruncatedParams": "仅显示前 {count} 行",
+  "documentTooLarge": "文档过大，无法预览"
 }

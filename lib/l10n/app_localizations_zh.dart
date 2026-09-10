@@ -2401,6 +2401,25 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get saveFilter => '保存筛选';
+
+  @override
+  String get stillLoading => '仍在加载…网络似乎较慢';
+
+  @override
+  String get showEntireDiff => '显示完整 diff';
+
+  @override
+  String fileTooLargeParams(Object size) {
+    return '文件过大，无法预览（$size）';
+  }
+
+  @override
+  String previewTruncatedParams(Object count) {
+    return '仅显示前 $count 行';
+  }
+
+  @override
+  String get documentTooLarge => '文档过大，无法预览';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -4653,4 +4672,23 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get loadMoreActivity => '載入更多動態';
+
+  @override
+  String get stillLoading => '仍在載入…網路似乎較慢';
+
+  @override
+  String get showEntireDiff => '顯示完整 diff';
+
+  @override
+  String fileTooLargeParams(Object size) {
+    return '檔案過大，無法預覽（$size）';
+  }
+
+  @override
+  String previewTruncatedParams(Object count) {
+    return '僅顯示前 $count 行';
+  }
+
+  @override
+  String get documentTooLarge => '文件過大，無法預覽';
 }

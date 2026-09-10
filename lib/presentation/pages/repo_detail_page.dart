@@ -23,6 +23,7 @@ import '../widgets/empty_state.dart';
 import '../widgets/premium_card.dart';
 import '../widgets/user_avatar.dart';
 import '../widgets/file_icon.dart';
+import '../widgets/slow_loading_indicator.dart';
 import 'commit_detail_page.dart';
 import 'create_release_page.dart';
 import 'branch_protection_page.dart';
@@ -113,7 +114,7 @@ class _RepoDetailPageState extends State<RepoDetailPage> {
         builder: (context, _) {
           final state = Injection.repoNotifier.state;
           return switch (state) {
-            RepoLoading() => const Center(child: CircularProgressIndicator()),
+            RepoLoading() => const SlowLoadingIndicator(),
             RepoError(:final message) => _ErrorView(
                 message: message,
                 onRetry: () =>

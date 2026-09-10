@@ -5,6 +5,19 @@
 ### Changed
 - **Release 正文取自 CHANGELOG.md**：`create-release` 任务改为用 `scripts/release-notes.mjs` 提取对应版本的更新日志段落，不再用 GitHub 自动生成的 notes
 
+### Performance
+- **请求超时分级**：常规 API 请求超时 15 秒（原 30 秒），二进制下载 45 秒；GET 重试收敛为 1 次且 5xx 不再重试——慢/失败的服务器现在 ~15–35 秒内报错，不再傻等最多 ~93 秒
+- **后台 JSON 解码**：`GiteaApiService` 中超过 64KB 的响应体改在后台 isolate 解码（`compute`），大响应到达时不再卡 UI 线程
+- **Diff 懒加载**：PR diff 查看器将 diff 行展平为行模型，由 `ListView.builder` 按需构建；diff 解析移到后台 isolate（commit 详情与文件对比页同样处理）；单文件超过 3000 行时截断显示并提供「显示完整 diff」按钮
+- **代码查看器分块渲染**：源码文件按每 500 行分块渲染，不再一次性构建整棵 `HighlightView` + 行号列的 widget 树，并移除了昂贵的 `IntrinsicHeight` 布局
+- **文件大小守卫**：超过 1MB 的文本文件和超过 512KB 的 Markdown 文档不再内联渲染（改为显示大小提示和浏览器/下载入口）；超过 1MB 的文件禁止进入编辑
+- **头像缓存**：`UserAvatar`/`OrgAvatar` 改用 `cached_network_image`，带磁盘缓存与降采样（`maxWidthDiskCache`/`memCacheWidth`），弱网下不再重复下载、头像不再闪烁；文件图片预览与管理徽章图片通过 `cacheWidth`/`cacheHeight` 降采样
+- **响应缓存限容**：`ApiClient` 内存缓存达到 100 条后驱逐最旧条目，避免长时间使用内存无限增长
+
+### Added
+- **弱网提示**：新增 `SlowLoadingIndicator` 组件，仓库详情、issue 详情、文件页加载超过 10 秒后显示「网络似乎较慢」提示，长时间等待不再像应用卡死
+- **新增 l10n key**：stillLoading、showEntireDiff、fileTooLargeParams、previewTruncatedParams、documentTooLarge（en / zh / zh_TW）
+
 ## [0.36.0] - 2026-08-16
 
 ### Changed

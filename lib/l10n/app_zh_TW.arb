@@ -726,5 +726,10 @@
   "recentActivitySubtitle": "檢視最近的動態",
   "yourStarredRepos": "你收藏的儲存庫",
   "yourOrganizations": "你的組織",
-  "loadMoreActivity": "載入更多動態"
+  "loadMoreActivity": "載入更多動態",
+  "stillLoading": "仍在載入…網路似乎較慢",
+  "showEntireDiff": "顯示完整 diff",
+  "fileTooLargeParams": "檔案過大，無法預覽（{size}）",
+  "previewTruncatedParams": "僅顯示前 {count} 行",
+  "documentTooLarge": "文件過大，無法預覽"
 }

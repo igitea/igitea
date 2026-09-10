@@ -770,5 +770,10 @@
   "includeArchived": "Include archived",
   "templatesOnly": "Templates only",
   "loadMore": "Load more",
-  "saveFilter": "Save Filter"
+  "saveFilter": "Save Filter",
+  "stillLoading": "Still loading… the network seems slow",
+  "showEntireDiff": "Show entire diff",
+  "fileTooLargeParams": "File is too large to preview ({size})",
+  "previewTruncatedParams": "Showing first {count} lines only",
+  "documentTooLarge": "This document is too large to preview"
 }

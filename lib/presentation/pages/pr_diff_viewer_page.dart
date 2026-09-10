@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/constants/ui_constants.dart';
@@ -23,9 +24,11 @@ class PrDiffViewerPage extends StatefulWidget {
 
 class _PrDiffViewerPageState extends State<PrDiffViewerPage> {
   List<DiffFile> _files = [];
+  List<DiffRow> _rows = const [];
   bool _loading = true;
   String? _error;
   bool _splitView = false;
+  bool _showAll = false;
 
   @override
   void initState() {
@@ -44,9 +47,13 @@ class _PrDiffViewerPageState extends State<PrDiffViewerPage> {
         repo: widget.repo,
         index: widget.index,
       );
+      // Parse on a background isolate — large diffs would otherwise
+      // block the UI thread when the response arrives.
+      final files = await compute(DiffParser.parse, raw);
       if (mounted) {
         setState(() {
-          _files = DiffParser.parse(raw);
+          _files = files;
+          _rows = flattenDiffRows(files, showAll: _showAll);
           _loading = false;
         });
       }
@@ -58,6 +65,13 @@ class _PrDiffViewerPageState extends State<PrDiffViewerPage> {
         });
       }
     }
+  }
+
+  void _expandAll() {
+    setState(() {
+      _showAll = true;
+      _rows = flattenDiffRows(_files, showAll: true);
+    });
   }
 
   @override
@@ -103,36 +117,45 @@ class _PrDiffViewerPageState extends State<PrDiffViewerPage> {
     }
     return ListView.builder(
       padding: const EdgeInsets.all(UIConstants.md),
-      itemCount: _files.length,
+      itemCount: _rows.length,
       itemBuilder: (context, index) {
-        final file = _files[index];
-        return Card(
-          margin: const EdgeInsets.only(bottom: UIConstants.md),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _buildFileHeader(file, l10n),
-              ...file.hunks.expand((hunk) => [
-                _buildHunkHeader(hunk),
-                ...hunk.lines.map((line) => _buildDiffLine(line)),
-              ]),
-            ],
-          ),
-        );
+        return switch (_rows[index]) {
+          DiffFileHeaderRow(:final file) => _buildFileHeader(file, l10n),
+          DiffHunkHeaderRow(:final hunk) => _buildHunkHeader(hunk),
+          DiffLineRow(:final line) => _buildDiffLine(line),
+          DiffTruncatedRow(:final hiddenLineCount) => _buildTruncated(
+              hiddenLineCount, l10n),
+        };
       },
+    );
+  }
+
+  Widget _buildTruncated(int hiddenLineCount, AppLocalizations l10n) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: UIConstants.sm),
+      child: Center(
+        child: OutlinedButton.icon(
+          onPressed: _expandAll,
+          icon: const Icon(Icons.unfold_more),
+          label: Text(
+            '${l10n.showEntireDiff} (+$hiddenLineCount)',
+          ),
+        ),
+      ),
     );
   }
 
   Widget _buildFileHeader(DiffFile file, AppLocalizations l10n) {
     final theme = Theme.of(context);
     return Container(
+      margin: const EdgeInsets.only(
+        top: UIConstants.sm,
+        bottom: UIConstants.xs,
+      ),
       padding: const EdgeInsets.all(UIConstants.sm),
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerHighest,
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(UIConstants.cardRadius),
-          topRight: Radius.circular(UIConstants.cardRadius),
-        ),
+        borderRadius: BorderRadius.circular(UIConstants.cardRadius),
       ),
       child: Row(
         children: [

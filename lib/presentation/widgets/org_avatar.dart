@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
@@ -29,19 +30,16 @@ class OrgAvatar extends StatelessWidget {
     }
 
     return ClipOval(
-      child: Image.network(
-        avatarUrl,
+      child: CachedNetworkImage(
+        imageUrl: avatarUrl,
         width: radius * 2,
         height: radius * 2,
         fit: BoxFit.cover,
-        semanticLabel: org.username,
-        errorBuilder: (context, error, stackTrace) {
-          return _buildFallback(theme, fallbackInitial);
-        },
-        loadingBuilder: (context, child, loadingProgress) {
-          if (loadingProgress == null) return child;
-          return _buildFallback(theme, fallbackInitial);
-        },
+        maxWidthDiskCache: 256,
+        memCacheWidth: (radius * 6).round(),
+        fadeInDuration: Duration.zero,
+        placeholder: (_, _) => _buildFallback(theme, fallbackInitial),
+        errorWidget: (_, _, _) => _buildFallback(theme, fallbackInitial),
       ),
     );
   }

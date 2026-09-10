@@ -6,8 +6,9 @@ import 'package:http/http.dart' as http;
 import '../../../core/constants/api_constants.dart';
 import '../../../core/errors/exceptions.dart';
 
-const _maxRetries = 2;
+const _maxRetries = 1;
 const _retryDelay = Duration(seconds: 1);
+const _maxCacheEntries = 100;
 
 class ApiClient {
   final http.Client _client;
@@ -44,34 +45,40 @@ class ApiClient {
       try {
         final response = await _client
             .get(uri, headers: _headers)
-            .timeout(const Duration(seconds: defaultTimeoutSeconds));
-        if (response.statusCode >= 500 && i < _maxRetries) {
-          lastError = response;
-          await Future.delayed(_retryDelay * (i + 1));
-          continue;
-        }
+            .timeout(const Duration(seconds: requestTimeoutSeconds));
+        // 5xx and 4xx are surfaced immediately by _processResponse —
+        // retrying server errors only doubles the perceived latency.
         return _processResponse(response);
-      } on NetworkException catch (e) {
-        lastError = e;
-        if (i < _maxRetries) {
-          await Future.delayed(_retryDelay * (i + 1));
-          continue;
-        }
-      } on http.ClientException catch (e) {
-        lastError = NetworkException(e.message.isNotEmpty ? e.message : 'Network error');
-        if (i < _maxRetries) {
-          await Future.delayed(_retryDelay * (i + 1));
-          continue;
-        }
       } on TimeoutException catch (_) {
         lastError = const NetworkException('Request timed out');
         if (i < _maxRetries) {
           await Future.delayed(_retryDelay * (i + 1));
           continue;
         }
+      } on http.ClientException catch (e) {
+        lastError = NetworkException(
+          e.message.isNotEmpty ? e.message : 'Network error',
+        );
+        if (i < _maxRetries) {
+          await Future.delayed(_retryDelay * (i + 1));
+          continue;
+        }
+      } on NetworkException catch (e) {
+        lastError = e;
+        if (i < _maxRetries) {
+          await Future.delayed(_retryDelay * (i + 1));
+          continue;
+        }
+      } on AuthenticationException {
+        rethrow;
+      } on ServerException {
+        rethrow;
+      } catch (e) {
+        // SocketException and other IO errors (dart:io not importable on
+        // web) — do not retry, wrap immediately.
+        throw NetworkException('$e');
       }
     }
-    if (lastError is http.Response) throw ServerException('Server error: HTTP ${lastError.statusCode}');
     if (lastError is NetworkException) throw lastError;
     throw NetworkException('$lastError');
   }
@@ -97,7 +104,7 @@ class ApiClient {
     try {
       final response = await _client
           .get(uri, headers: _headers)
-          .timeout(const Duration(seconds: defaultTimeoutSeconds * 3));
+          .timeout(const Duration(seconds: binaryTimeoutSeconds));
       _processResponse(response);
       return response.bodyBytes.toList();
     } on http.ClientException catch (e) {
@@ -120,7 +127,7 @@ class ApiClient {
     try {
       final response = await _client
           .get(uri, headers: _headers)
-          .timeout(const Duration(seconds: defaultTimeoutSeconds));
+          .timeout(const Duration(seconds: requestTimeoutSeconds));
       _processResponse(response);
       return response.body;
     } on http.ClientException catch (e) {
@@ -147,7 +154,7 @@ class ApiClient {
             headers: _headers,
             body: body != null ? jsonEncode(body) : null,
           )
-          .timeout(const Duration(seconds: defaultTimeoutSeconds));
+          .timeout(const Duration(seconds: requestTimeoutSeconds));
       return _processResponse(response);
     } on http.ClientException catch (e) {
       throw NetworkException(
@@ -174,7 +181,7 @@ class ApiClient {
             headers: {'Content-Type': 'application/json'},
             body: body != null ? jsonEncode(body) : null,
           )
-          .timeout(const Duration(seconds: defaultTimeoutSeconds));
+          .timeout(const Duration(seconds: requestTimeoutSeconds));
       return response;
     } on http.ClientException catch (e) {
       throw NetworkException(
@@ -200,7 +207,7 @@ class ApiClient {
             headers: _headers,
             body: body != null ? jsonEncode(body) : null,
           )
-          .timeout(const Duration(seconds: defaultTimeoutSeconds));
+          .timeout(const Duration(seconds: requestTimeoutSeconds));
       return _processResponse(response);
     } on http.ClientException catch (e) {
       throw NetworkException(
@@ -226,7 +233,7 @@ class ApiClient {
             headers: _headers,
             body: body != null ? jsonEncode(body) : null,
           )
-          .timeout(const Duration(seconds: defaultTimeoutSeconds));
+          .timeout(const Duration(seconds: requestTimeoutSeconds));
       return _processResponse(response);
     } on http.ClientException catch (e) {
       throw NetworkException(
@@ -252,7 +259,7 @@ class ApiClient {
             headers: _headers,
             body: body != null ? jsonEncode(body) : null,
           )
-          .timeout(const Duration(seconds: defaultTimeoutSeconds));
+          .timeout(const Duration(seconds: requestTimeoutSeconds));
       return _processResponse(response);
     } on http.ClientException catch (e) {
       throw NetworkException(
@@ -292,8 +299,12 @@ class ApiClient {
     return null;
   }
 
-  /// Store response body in cache.
+  /// Store response body in cache. Evicts the oldest entry once the cache
+  /// reaches [_maxCacheEntries] so memory stays bounded during long sessions.
   void setCached(String cacheKey, String body, {Duration maxAge = const Duration(minutes: 5)}) {
+    if (!_cache.containsKey(cacheKey) && _cache.length >= _maxCacheEntries) {
+      _cache.remove(_cache.keys.first);
+    }
     _cache[cacheKey] = _CachedResponse(body: body, expiry: DateTime.now().add(maxAge));
   }
 

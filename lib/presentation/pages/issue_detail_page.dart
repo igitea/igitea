@@ -13,6 +13,7 @@ import '../../l10n/app_localizations.dart';
 import '../../presentation/state/issue_notifier.dart';
 import '../../presentation/state/repo_notifier.dart';
 import '../../presentation/state/user_notifier.dart';
+import '../widgets/slow_loading_indicator.dart';
 import '../widgets/user_avatar.dart';
 import 'edit_issue_page.dart';
 
@@ -254,7 +255,7 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
           builder: (context, _) {
             final state = Injection.issueNotifier.state;
             return switch (state) {
-              IssueLoading() => const Center(child: CircularProgressIndicator()),
+              IssueLoading() => const SlowLoadingIndicator(),
               IssueError(:final message) => Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,

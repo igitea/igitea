@@ -17,6 +17,7 @@ import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../domain/usecases/repo_usecases.dart';
 import '../../l10n/app_localizations.dart';
+import '../widgets/slow_loading_indicator.dart';
 import 'file_history_page.dart';
 import 'file_compare_page.dart';
 import 'file_blame_page.dart';
@@ -46,6 +47,17 @@ class RepoFilePage extends StatefulWidget {
 }
 
 class _RepoFilePageState extends State<RepoFilePage> {
+  /// Files larger than 1MB are not rendered inline — syntax highlighting a
+  /// multi-MB document in one TextSpan tree freezes the UI thread.
+  static const _maxPreviewBytes = 1 << 20;
+
+  /// Markdown documents larger than 512KB are not rendered inline.
+  static const _maxMarkdownBytes = 512 << 10;
+
+  /// Code previews are chunked into blocks of this many lines so
+  /// ListView.builder can build them lazily.
+  static const _linesPerChunk = 500;
+
   bool _loading = true;
   String? _error;
   String? _decodedContent;
@@ -308,7 +320,7 @@ class _RepoFilePageState extends State<RepoFilePage> {
           ],
         ),
         body: _loading
-            ? const Center(child: CircularProgressIndicator())
+            ? const SlowLoadingIndicator()
             : _error != null
                 ? _buildError(theme, l10n)
                 : _buildContent(theme),
@@ -319,9 +331,17 @@ class _RepoFilePageState extends State<RepoFilePage> {
   void _toggleEditMode() {
     final newEditing = !_isEditing;
     if (newEditing) {
+      final content = _decodedContent ?? '';
+      if (content.length > _maxPreviewBytes) {
+        _showError(
+          AppLocalizations.of(context)!
+              .fileTooLargeParams(_formatSize(content.length)),
+        );
+        return;
+      }
       _editController?.dispose();
       _editController = CodeController(
-        text: _decodedContent ?? '',
+        text: content,
         language: _getHighlightLanguage(_fileExtension),
       );
       _editController!.addListener(_onTextChanged);
@@ -477,9 +497,12 @@ class _RepoFilePageState extends State<RepoFilePage> {
     final l10n = AppLocalizations.of(context)!;
     if (_isImage) {
       if (widget.downloadUrl != null) {
+        final dpr = MediaQuery.devicePixelRatioOf(context);
         return Center(
           child: Image.network(
             widget.downloadUrl!,
+            cacheWidth: (MediaQuery.sizeOf(context).width * dpr).round(),
+            cacheHeight: (MediaQuery.sizeOf(context).height * dpr).round(),
             semanticLabel: 'Image preview',
             errorBuilder: (context, error, stackTrace) => _buildFallback(theme, l10n),
           ),
@@ -489,6 +512,9 @@ class _RepoFilePageState extends State<RepoFilePage> {
     }
 
     if (_isMarkdown && _decodedContent != null && !_isEditing) {
+      if (_decodedContent!.length > _maxMarkdownBytes) {
+        return _buildTooLarge(theme, l10n, isMarkdown: true);
+      }
       return SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: MarkdownBody(data: _decodedContent!),
@@ -496,6 +522,9 @@ class _RepoFilePageState extends State<RepoFilePage> {
     }
 
     if (_decodedContent != null) {
+      if (_decodedContent!.length > _maxPreviewBytes) {
+        return _buildTooLarge(theme, l10n, isMarkdown: false);
+      }
       if (_isEditing) {
         return _buildEditor(theme);
       }
@@ -503,6 +532,47 @@ class _RepoFilePageState extends State<RepoFilePage> {
     }
 
     return _buildFallback(theme, l10n);
+  }
+
+  Widget _buildTooLarge(ThemeData theme, AppLocalizations l10n,
+      {required bool isMarkdown}) {
+    final size = _decodedContent!.length;
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.description_outlined, size: 64,
+              color: theme.colorScheme.onSurfaceVariant),
+          const SizedBox(height: 16),
+          Text(widget.name, style: theme.textTheme.titleMedium),
+          const SizedBox(height: 8),
+          Text(
+            isMarkdown
+                ? l10n.documentTooLarge
+                : l10n.fileTooLargeParams(_formatSize(size)),
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant),
+          ),
+          if (widget.htmlUrl != null) ...[
+            const SizedBox(height: 24),
+            FilledButton.icon(
+              onPressed: () => _launchUrl(widget.htmlUrl!),
+              icon: const Icon(Icons.open_in_new),
+              label: Text(l10n.openInBrowser),
+            ),
+          ],
+          if (widget.downloadUrl != null) ...[
+            const SizedBox(height: 8),
+            OutlinedButton.icon(
+              onPressed: () => _launchUrl(widget.downloadUrl!),
+              icon: const Icon(Icons.download),
+              label: Text(l10n.download),
+            ),
+          ],
+        ],
+      ),
+    );
   }
 
   Widget _buildEditor(ThemeData theme) {
@@ -554,92 +624,89 @@ class _RepoFilePageState extends State<RepoFilePage> {
     final lines = content.split('\n');
     final lineCount = lines.length;
     final lineNumberWidth = (lineCount.toString().length * 10.0) + 16;
+    final chunkCount = (lineCount / _linesPerChunk).ceil();
 
-    Widget codeWidget;
-    try {
-      codeWidget = HighlightView(
-        content,
-        language: lang,
-        theme: codeTheme,
-        padding: const EdgeInsets.all(12),
-        textStyle: const TextStyle(
-          fontSize: 13,
-          height: 1.4,
-          fontFamily: 'monospace',
-        ),
-      );
-    } catch (e) {
-      codeWidget = Padding(
-        padding: const EdgeInsets.all(12),
-        child: SelectableText(
-          content,
-          style: TextStyle(
-            fontSize: 13,
-            height: 1.4,
-            fontFamily: 'monospace',
-            color: isDark ? const Color(0xFFD4D4D4) : const Color(0xFF24292E),
-          ),
-        ),
-      );
-    }
-
+    // Render the file in chunks of [_linesPerChunk] lines so ListView.builder
+    // only builds what's on screen — a single HighlightView over a huge file
+    // builds one giant TextSpan tree and freezes the UI.
     return Container(
       color: isDark ? const Color(0xFF1E1E1E) : const Color(0xFFF5F5F5),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
+      child: ListView.builder(
+        itemCount: chunkCount,
+        itemBuilder: (context, chunkIndex) {
+          final start = chunkIndex * _linesPerChunk;
+          final end = (start + _linesPerChunk) > lineCount
+              ? lineCount
+              : start + _linesPerChunk;
+          final chunkLines = lines.sublist(start, end);
+          final chunkText = chunkLines.join('\n');
+
+          Widget codeWidget;
+          try {
+            codeWidget = HighlightView(
+              chunkText,
+              language: lang,
+              theme: codeTheme,
+              padding: const EdgeInsets.all(12),
+              textStyle: const TextStyle(
+                fontSize: 13,
+                height: 1.4,
+                fontFamily: 'monospace',
+              ),
+            );
+          } catch (e) {
+            codeWidget = Padding(
+              padding: const EdgeInsets.all(12),
+              child: SelectableText(
+                chunkText,
+                style: TextStyle(
+                  fontSize: 13,
+                  height: 1.4,
+                  fontFamily: 'monospace',
+                  color: isDark
+                      ? const Color(0xFFD4D4D4)
+                      : const Color(0xFF24292E),
+                ),
+              ),
+            );
+          }
+
           return SingleChildScrollView(
             primary: false,
-            child: SingleChildScrollView(
-              primary: false,
-              scrollDirection: Axis.horizontal,
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minWidth: constraints.maxWidth,
-                  minHeight: constraints.maxHeight,
-                ),
-                child: IntrinsicHeight(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Line numbers
-                      Container(
-                        width: lineNumberWidth,
-                        color: isDark
-                            ? const Color(0xFF252526)
-                            : const Color(0xFFEEEEEE),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: List.generate(
-                            lineCount,
-                            (index) => Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 8),
-                              child: Text(
-                                '${index + 1}',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  height: 1.4,
-                                  fontFamily: 'monospace',
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ),
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Line numbers
+                Container(
+                  width: lineNumberWidth,
+                  color: isDark
+                      ? const Color(0xFF252526)
+                      : const Color(0xFFEEEEEE),
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: List.generate(
+                      chunkLines.length,
+                      (index) => Padding(
+                        padding:
+                            const EdgeInsets.symmetric(horizontal: 8),
+                        child: Text(
+                          '${start + index + 1}',
+                          style: TextStyle(
+                            fontSize: 13,
+                            height: 1.4,
+                            fontFamily: 'monospace',
+                            color: theme.colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ),
-                      // Code with syntax highlighting
-                      ConstrainedBox(
-                        constraints: BoxConstraints(
-                          minWidth: (constraints.maxWidth - lineNumberWidth)
-                              .clamp(0, double.infinity),
-                        ),
-                        child: codeWidget,
-                      ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
+                // Code with syntax highlighting
+                codeWidget,
+              ],
             ),
           );
         },

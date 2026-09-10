@@ -88,7 +88,7 @@ class _AdminBadgesPageState extends State<AdminBadgesPage> {
                             margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                             child: ListTile(
                               leading: badge.image_url != null
-                                ? Image.network(badge.image_url!, width: 40, height: 40, loadingBuilder: (context, child, loadingProgress) => loadingProgress != null ? const SizedBox(width: 40, height: 40, child: Center(child: CircularProgressIndicator(strokeWidth: 2))) : child, errorBuilder: (context, error, stackTrace) => const Icon(Icons.badge))
+                                ? Image.network(badge.image_url!, width: 40, height: 40, cacheWidth: 80, cacheHeight: 80, loadingBuilder: (context, child, loadingProgress) => loadingProgress != null ? const SizedBox(width: 40, height: 40, child: Center(child: CircularProgressIndicator(strokeWidth: 2))) : child, errorBuilder: (context, error, stackTrace) => const Icon(Icons.badge))
                                 : const Icon(Icons.badge),
                               title: Text(badge.slug ?? l10n.unknown),
                               subtitle: badge.description != null ? Text(badge.description!) : null,

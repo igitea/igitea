@@ -149,3 +149,66 @@ class DiffParser {
     );
   }
 }
+
+/// Default per-file line cap for lazy diff rendering. Files with more
+/// diff lines are truncated until the user asks to see everything.
+const int kMaxDiffLinesPerFile = 3000;
+
+/// A single row in a flattened, lazily-rendered diff list.
+sealed class DiffRow {
+  const DiffRow();
+}
+
+class DiffFileHeaderRow extends DiffRow {
+  final DiffFile file;
+  const DiffFileHeaderRow(this.file);
+}
+
+class DiffHunkHeaderRow extends DiffRow {
+  final DiffHunk hunk;
+  const DiffHunkHeaderRow(this.hunk);
+}
+
+class DiffLineRow extends DiffRow {
+  final DiffLine line;
+  const DiffLineRow(this.line);
+}
+
+/// Marks the tail of a truncated file; [hiddenLineCount] counts the lines
+/// that were not flattened because the file exceeded the line cap.
+class DiffTruncatedRow extends DiffRow {
+  final DiffFile file;
+  final int hiddenLineCount;
+  const DiffTruncatedRow(this.file, this.hiddenLineCount);
+}
+
+/// Flatten parsed diff files into a row list suitable for
+/// `ListView.builder`. Files with more than [maxLinesPerFile] diff lines
+/// are truncated (unless [showAll] is true) and get a [DiffTruncatedRow]
+/// appended instead of their remaining lines.
+List<DiffRow> flattenDiffRows(
+  List<DiffFile> files, {
+  int maxLinesPerFile = kMaxDiffLinesPerFile,
+  bool showAll = false,
+}) {
+  final rows = <DiffRow>[];
+  for (final file in files) {
+    rows.add(DiffFileHeaderRow(file));
+    final totalLines = file.hunks.fold<int>(0, (sum, h) => sum + h.lines.length);
+    final isTruncated = !showAll && totalLines > maxLinesPerFile;
+    var emitted = 0;
+    for (final hunk in file.hunks) {
+      if (isTruncated && emitted >= maxLinesPerFile) break;
+      rows.add(DiffHunkHeaderRow(hunk));
+      for (final line in hunk.lines) {
+        if (isTruncated && emitted >= maxLinesPerFile) break;
+        rows.add(DiffLineRow(line));
+        emitted++;
+      }
+    }
+    if (isTruncated) {
+      rows.add(DiffTruncatedRow(file, totalLines - emitted));
+    }
+  }
+  return rows;
+}

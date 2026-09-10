@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -49,7 +50,7 @@ class _CommitDetailPageState extends State<CommitDetailPage> {
         repo: widget.repo,
         sha: widget.sha,
       );
-      final files = DiffParser.parse(raw);
+      final files = await compute(DiffParser.parse, raw);
       final fileMap = <String, List<DiffFile>>{};
       for (final f in files) {
         final key = f.newPath.isNotEmpty ? f.newPath : f.oldPath;
