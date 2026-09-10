@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.37.0] - 2026-09-10
+
 ### Changed
 - **Release notes from CHANGELOG.md**: `create-release` job now extracts the version's changelog section (`scripts/release-notes.mjs`) instead of GitHub auto-generated notes
 

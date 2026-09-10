@@ -19,7 +19,7 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 - Consistent 4px spacing grid and typography hierarchy across all pages
 - 120+ data models auto-generated from OpenAPI spec
 - 49+ domain use cases with `Either<Failure, T>` pattern
-- 270+ tests passing, `flutter analyze` clean
+- 298 tests passing, `flutter analyze` clean
 - Home page redesign (GitHub Mobile style): implementation spec in `docs/igitea-home-redesign-spec.md`
 
 ### Authentication
@@ -118,11 +118,12 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 - Watch/unwatch with toggle button
 
 ### Activity Feed
-- Dashboard shows recent activities
+- Dedicated activity feed page with infinite scroll, loading/error/empty states
+- Activity rows show op-type icon + localized action text + repo + relative time; tap opens the repo
 - Supports: create/delete repo, push/delete tag, create/close/reopen issues and PRs, comments, fork, transfer
 
 ### Home Page (GitHub Mobile style)
-- Four-section dashboard: My Work shortcuts, Favorites (my repos), Shortcuts (mentioned / review requested), Recent (notifications)
+- Four-section dashboard: My Work shortcuts, Favorites (my repos, with loading/error/retry states), Shortcuts (mentioned / review requested), Recent (activity feed top 5 + View all)
 - Bottom navigation: Home / Inbox / Explore / Profile
 
 ### Notifications
