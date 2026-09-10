@@ -17,6 +17,15 @@
 ### Added
 - **Slow-network hint**: a new `SlowLoadingIndicator` shows a "network seems slow" message after 10s on the repo detail, issue detail, and file pages so long waits no longer look like a frozen app
 - **New l10n keys**: stillLoading, showEntireDiff, fileTooLargeParams, previewTruncatedParams, documentTooLarge (en / zh / zh_TW)
+- **Activity feed page**: `ActivityPage` shows the user's full activity feed (`/users/{username}/activities/feeds`) with infinite-scroll pagination, loading/error/empty states, and tap-to-open the related repository
+- **Activity tiles**: new `ActivityTile` widget maps Gitea `op_type` values (push, issue, PR, merge, release, branch, star, fork, review, …) to icons and localized action text
+- **Home "Recent" shows real activity**: the home page's recent section now lists the 5 most recent activities (previously notification threads) with a "View all" button that opens the activity feed page
+- **New l10n keys**: viewAll, activityCreatedRepo, activityPushed, activityOpenedIssue, activityOpenedPr, activityMergedPr, activityCommentedIssue, activityCommentedPr, activityPublishedRelease, activityCreatedBranch, activityDeletedBranch, activityStarred, activityForked, activityApprovedPr, activityRequestedChanges (en / zh / zh_TW)
+
+### Fixed
+- **Home loading states**: the Favorites section now shows a progress indicator while loading and an error message with retry on failure (previously an empty state was shown silently on failure)
+- **Shared-state pollution**: home page Favorites and Recent lists are now kept in local page state instead of the shared `UserNotifier`, so the home page no longer overwrites the profile page's full repo list or the activity feed's pagination
+- **UserNotifier**: activities loading/error and repos loading flags are now exposed (`activitiesLoading`, `activitiesError`, `reposLoading`)
 
 ## [0.36.0] - 2026-08-16
 

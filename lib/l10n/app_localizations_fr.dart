@@ -2457,4 +2457,49 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get documentTooLarge => 'This document is too large to preview';
+
+  @override
+  String get viewAll => 'View all';
+
+  @override
+  String get activityCreatedRepo => 'created a repository';
+
+  @override
+  String get activityPushed => 'pushed commits';
+
+  @override
+  String get activityOpenedIssue => 'opened an issue';
+
+  @override
+  String get activityOpenedPr => 'opened a pull request';
+
+  @override
+  String get activityMergedPr => 'merged a pull request';
+
+  @override
+  String get activityCommentedIssue => 'commented on an issue';
+
+  @override
+  String get activityCommentedPr => 'commented on a pull request';
+
+  @override
+  String get activityPublishedRelease => 'published a release';
+
+  @override
+  String get activityCreatedBranch => 'created a branch';
+
+  @override
+  String get activityDeletedBranch => 'deleted a branch';
+
+  @override
+  String get activityStarred => 'starred';
+
+  @override
+  String get activityForked => 'forked';
+
+  @override
+  String get activityApprovedPr => 'approved a pull request';
+
+  @override
+  String get activityRequestedChanges => 'requested changes on a pull request';
 }

@@ -256,7 +256,9 @@ void main() {
 
         await notifier.listCurrentUserRepos();
 
-        expect(notificationCount, 1);
+        // Once for loading start, once for completion.
+        expect(notificationCount, 2);
+        expect(notifier.reposLoading, isFalse);
       });
 
       test('notifies listeners on failure', () async {
@@ -269,7 +271,9 @@ void main() {
 
         await notifier.listCurrentUserRepos();
 
-        expect(notificationCount, 1);
+        // Once for loading start, once for completion.
+        expect(notificationCount, 2);
+        expect(notifier.reposLoading, isFalse);
       });
     });
   });

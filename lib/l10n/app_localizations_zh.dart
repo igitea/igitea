@@ -2420,6 +2420,51 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get documentTooLarge => '文档过大，无法预览';
+
+  @override
+  String get viewAll => '查看全部';
+
+  @override
+  String get activityCreatedRepo => '创建了仓库';
+
+  @override
+  String get activityPushed => '推送了提交';
+
+  @override
+  String get activityOpenedIssue => '创建了 issue';
+
+  @override
+  String get activityOpenedPr => '创建了 PR';
+
+  @override
+  String get activityMergedPr => '合并了 PR';
+
+  @override
+  String get activityCommentedIssue => '评论了 issue';
+
+  @override
+  String get activityCommentedPr => '评论了 PR';
+
+  @override
+  String get activityPublishedRelease => '发布了 Release';
+
+  @override
+  String get activityCreatedBranch => '创建了分支';
+
+  @override
+  String get activityDeletedBranch => '删除了分支';
+
+  @override
+  String get activityStarred => '收藏了';
+
+  @override
+  String get activityForked => 'Fork 了';
+
+  @override
+  String get activityApprovedPr => '通过了 PR 审查';
+
+  @override
+  String get activityRequestedChanges => '对 PR 提出了修改意见';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -4691,4 +4736,49 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get documentTooLarge => '文件過大，無法預覽';
+
+  @override
+  String get viewAll => '檢視全部';
+
+  @override
+  String get activityCreatedRepo => '建立了儲存庫';
+
+  @override
+  String get activityPushed => '推送了提交';
+
+  @override
+  String get activityOpenedIssue => '建立了 issue';
+
+  @override
+  String get activityOpenedPr => '建立了 PR';
+
+  @override
+  String get activityMergedPr => '合併了 PR';
+
+  @override
+  String get activityCommentedIssue => '評論了 issue';
+
+  @override
+  String get activityCommentedPr => '評論了 PR';
+
+  @override
+  String get activityPublishedRelease => '發佈了 Release';
+
+  @override
+  String get activityCreatedBranch => '建立了分支';
+
+  @override
+  String get activityDeletedBranch => '刪除了分支';
+
+  @override
+  String get activityStarred => '收藏了';
+
+  @override
+  String get activityForked => 'Fork 了';
+
+  @override
+  String get activityApprovedPr => '通過了 PR 審查';
+
+  @override
+  String get activityRequestedChanges => '對 PR 提出了修改意見';
 }

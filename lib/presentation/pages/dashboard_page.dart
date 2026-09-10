@@ -5,17 +5,17 @@ import '../../core/di/injection.dart';
 import '../../core/errors/failures.dart';
 import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
+import '../../domain/entities/auth_state.dart';
+import '../../domain/usecases/user_usecases.dart';
 import '../../l10n/app_localizations.dart';
 import '../models/issue_filter_state.dart';
-import '../state/notification_notifier.dart';
+import '../widgets/activity_tile.dart';
 import '../widgets/home/home_icon_tile.dart';
-import '../widgets/home/home_recent_tile.dart';
 import '../widgets/home/home_repo_tile.dart';
 import '../widgets/home/home_section_card.dart';
-import 'issue_detail_page.dart';
+import 'activity_page.dart';
 import 'issue_list_page.dart';
 import 'organizations_list_page.dart';
-import 'pr_detail_page.dart';
 import 'repo_detail_page.dart';
 import 'repo_list_page.dart';
 import 'starred_repos_page.dart';
@@ -30,6 +30,17 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
+  // Favorites and recent activities are kept in local state so this page
+  // never clobbers the shared UserNotifier lists used elsewhere
+  // (profile page repos, ActivityPage pagination).
+  List<Repository> _favRepos = [];
+  bool _favLoading = true;
+  String? _favError;
+
+  List<Activity> _recentActivities = [];
+  bool _recentLoading = true;
+  String? _recentError;
+
   @override
   void initState() {
     super.initState();
@@ -38,49 +49,100 @@ class _DashboardPageState extends State<DashboardPage> {
     });
   }
 
+  String? get _username {
+    final authState = Injection.authNotifier.state;
+    if (authState is AuthAuthenticated) return authState.user.login;
+    return null;
+  }
+
   Future<void> _loadAll() async {
     await Future.wait([
       Injection.userNotifier.loadCurrentUser(),
-      Injection.userNotifier.listCurrentUserRepos(limit: 3),
-      Injection.notificationNotifier.listNotifications(limit: 10),
+      _loadFavorites(),
+      _loadRecent(),
     ]);
+  }
+
+  Future<void> _loadFavorites() async {
+    setState(() {
+      _favLoading = true;
+      _favError = null;
+    });
+    final result = await Injection.listCurrentUserReposUseCase(
+      const ListCurrentUserReposParams(limit: 3),
+    );
+    if (!mounted) return;
+    switch (result) {
+      case Left<Failure, List<Repository>>(:final value):
+        setState(() {
+          _favError = value.message;
+          _favLoading = false;
+        });
+      case Right<Failure, List<Repository>>(:final value):
+        setState(() {
+          _favRepos = value;
+          _favError = null;
+          _favLoading = false;
+        });
+    }
+  }
+
+  Future<void> _loadRecent() async {
+    final username = _username;
+    if (username == null) {
+      setState(() => _recentLoading = false);
+      return;
+    }
+    setState(() {
+      _recentLoading = true;
+      _recentError = null;
+    });
+    final result = await Injection.getUserActivitiesUseCase(
+      GetUserActivitiesParams(username: username, page: 1, limit: 5),
+    );
+    if (!mounted) return;
+    switch (result) {
+      case Left<Failure, List<Activity>>(:final value):
+        setState(() {
+          _recentError = value.message;
+          _recentLoading = false;
+        });
+      case Right<Failure, List<Activity>>(:final value):
+        setState(() {
+          _recentActivities = value;
+          _recentError = null;
+          _recentLoading = false;
+        });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return ListenableBuilder(
-      listenable: Listenable.merge([
-        Injection.userNotifier,
-        Injection.notificationNotifier,
-      ]),
-      builder: (context, _) {
-        return RefreshIndicator(
-          onRefresh: _loadAll,
-          child: ListView(
-            padding: const EdgeInsets.all(UIConstants.md),
-            children: [
-              FadeInWrapper(child: _buildMyWork(context, l10n)),
-              const SizedBox(height: UIConstants.lg),
-              FadeInWrapper(
-                delay: const Duration(milliseconds: 50),
-                child: _buildFavorites(context, l10n),
-              ),
-              const SizedBox(height: UIConstants.lg),
-              FadeInWrapper(
-                delay: const Duration(milliseconds: 100),
-                child: _buildShortcuts(context, l10n),
-              ),
-              const SizedBox(height: UIConstants.lg),
-              FadeInWrapper(
-                delay: const Duration(milliseconds: 150),
-                child: _buildRecent(context, l10n),
-              ),
-            ],
+    return RefreshIndicator(
+      onRefresh: _loadAll,
+      child: ListView(
+        padding: const EdgeInsets.all(UIConstants.md),
+        children: [
+          FadeInWrapper(child: _buildMyWork(context, l10n)),
+          const SizedBox(height: UIConstants.lg),
+          FadeInWrapper(
+            delay: const Duration(milliseconds: 50),
+            child: _buildFavorites(context, l10n),
           ),
-        );
-      },
+          const SizedBox(height: UIConstants.lg),
+          FadeInWrapper(
+            delay: const Duration(milliseconds: 100),
+            child: _buildShortcuts(context, l10n),
+          ),
+          const SizedBox(height: UIConstants.lg),
+          FadeInWrapper(
+            delay: const Duration(milliseconds: 150),
+            child: _buildRecent(context, l10n),
+          ),
+        ],
+      ),
     );
   }
 
@@ -130,8 +192,26 @@ class _DashboardPageState extends State<DashboardPage> {
   // ── Section B: 收藏（我的仓库 top3）──────────────────────────────────
 
   Widget _buildFavorites(BuildContext context, AppLocalizations l10n) {
-    final repos = Injection.userNotifier.repos;
-    if (repos.isEmpty) {
+    if (_favLoading) {
+      return HomeSectionCard(
+        title: l10n.favorites,
+        children: const [
+          _HomePlaceholder(text: null, showProgress: true),
+        ],
+      );
+    }
+    if (_favError != null) {
+      return HomeSectionCard(
+        title: l10n.favorites,
+        children: [
+          _HomePlaceholder(
+            text: '${l10n.error}: $_favError',
+            onRetry: _loadFavorites,
+          ),
+        ],
+      );
+    }
+    if (_favRepos.isEmpty) {
       return HomeSectionCard(
         title: l10n.favorites,
         children: [
@@ -141,7 +221,7 @@ class _DashboardPageState extends State<DashboardPage> {
     }
     return HomeSectionCard(
       title: l10n.favorites,
-      children: repos.take(3).map((repo) {
+      children: _favRepos.take(3).map((repo) {
         return HomeRepoTile(
           repo: repo,
           onTap: () {
@@ -186,11 +266,21 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // ── Section D: 最近（通知流 top5）────────────────────────────────────
+  // ── Section D: 近期活动（activities top5 + 查看全部）──────────────────
 
   Widget _buildRecent(BuildContext context, AppLocalizations l10n) {
-    final state = Injection.notificationNotifier.state;
-    if (state is NotificationLoading) {
+    final username = _username;
+    final viewAllButton = username == null
+        ? null
+        : TextButton(
+            onPressed: () => _push(
+              context,
+              ActivityPage(username: username),
+            ),
+            child: Text(l10n.viewAll),
+          );
+
+    if (_recentLoading) {
       return HomeSectionCard(
         title: l10n.recent,
         children: const [
@@ -198,45 +288,48 @@ class _DashboardPageState extends State<DashboardPage> {
         ],
       );
     }
-    if (state is NotificationError) {
+    if (_recentError != null) {
       return HomeSectionCard(
         title: l10n.recent,
+        trailing: viewAllButton,
         children: [
           _HomePlaceholder(
-            text: '${l10n.error}: ${state.message}',
-            onRetry: () => Injection.notificationNotifier.listNotifications(limit: 10),
+            text: '${l10n.error}: $_recentError',
+            onRetry: _loadRecent,
           ),
         ],
       );
     }
-    final notifications =
-        state is NotificationListLoaded ? state.notifications : const <NotificationThread>[];
-    if (notifications.isEmpty) {
+    if (_recentActivities.isEmpty) {
       return HomeSectionCard(
         title: l10n.recent,
+        trailing: viewAllButton,
         children: [
-          _HomePlaceholder(text: l10n.recentEmpty),
+          _HomePlaceholder(text: l10n.noActivity),
         ],
       );
     }
     return HomeSectionCard(
       title: l10n.recent,
-      children: notifications.take(5).map((n) {
-        return HomeRecentTile(
-          thread: n,
-          timeText: _formatDate(n.updated_at, l10n),
-          statusText: _notificationStatus(n, l10n),
-          onTap: () => _openNotification(context, n),
+      trailing: viewAllButton,
+      children: _recentActivities.take(5).map((activity) {
+        return ActivityTile(
+          activity: activity,
+          timeText: _formatDate(activity.created, l10n),
+          onTap: () => _openActivityRepo(context, activity),
         );
       }).toList(),
     );
   }
 
-  String _notificationStatus(NotificationThread n, AppLocalizations l10n) {
-    final type = n.subject?.type?.value?.toLowerCase() ?? '';
-    if (type.contains('pull')) return l10n.pullRequests;
-    if (type.contains('commit')) return l10n.commits;
-    return l10n.issues;
+  void _openActivityRepo(BuildContext context, Activity activity) {
+    final repo = activity.repo;
+    final owner =
+        repo?.owner?.login ?? repo?.full_name?.split('/').firstOrNull ?? '';
+    final name = repo?.name ?? repo?.full_name?.split('/').lastOrNull ?? '';
+    if (owner.isNotEmpty && name.isNotEmpty) {
+      _push(context, RepoDetailPage(owner: owner, repo: name));
+    }
   }
 
   String _formatDate(DateTime? date, AppLocalizations l10n) {
@@ -264,47 +357,6 @@ class _DashboardPageState extends State<DashboardPage> {
         _push(context, OrganizationsListPage(orgs: result.value));
       }
     }
-  }
-
-  void _openNotification(BuildContext context, NotificationThread n) {
-    final subject = n.subject;
-    final typeValue = subject?.type?.value?.toLowerCase() ?? '';
-    final repo = n.repository;
-    final owner =
-        repo?.owner?.login ?? repo?.full_name?.split('/').firstOrNull ?? '';
-    final repoName =
-        repo?.name ?? repo?.full_name?.split('/').lastOrNull ?? '';
-    final urlMatch = _parseSubjectUrl(subject?.url ?? '');
-    final index =
-        urlMatch != null ? int.tryParse(urlMatch.group(1)!) : null;
-
-    if (typeValue.contains('pull')) {
-      if (index != null && owner.isNotEmpty && repoName.isNotEmpty) {
-        _push(context, PRDetailPage(owner: owner, repo: repoName, index: index));
-        return;
-      }
-    } else if (typeValue.contains('issue')) {
-      if (index != null && owner.isNotEmpty && repoName.isNotEmpty) {
-        _push(context, IssueDetailPage(owner: owner, repo: repoName, index: index));
-        return;
-      }
-    }
-    if (owner.isNotEmpty && repoName.isNotEmpty) {
-      _push(context, RepoDetailPage(owner: owner, repo: repoName));
-    }
-  }
-
-  /// 从 subject URL 提取 (编号, owner, repo)。
-  RegExpMatch? _parseSubjectUrl(String url) {
-    final patterns = [
-      RegExp(r'/repos/([^/]+)/([^/]+)/(?:issues|pulls)/(\d+)$'),
-      RegExp(r'/([^/]+)/([^/]+)/(?:issues|pulls)/(\d+)$'),
-    ];
-    for (final pattern in patterns) {
-      final match = pattern.firstMatch(url);
-      if (match != null) return match;
-    }
-    return null;
   }
 
   void _push(BuildContext context, Widget page) {

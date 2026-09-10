@@ -731,5 +731,20 @@
   "showEntireDiff": "顯示完整 diff",
   "fileTooLargeParams": "檔案過大，無法預覽（{size}）",
   "previewTruncatedParams": "僅顯示前 {count} 行",
-  "documentTooLarge": "文件過大，無法預覽"
+  "documentTooLarge": "文件過大，無法預覽",
+  "viewAll": "檢視全部",
+  "activityCreatedRepo": "建立了儲存庫",
+  "activityPushed": "推送了提交",
+  "activityOpenedIssue": "建立了 issue",
+  "activityOpenedPr": "建立了 PR",
+  "activityMergedPr": "合併了 PR",
+  "activityCommentedIssue": "評論了 issue",
+  "activityCommentedPr": "評論了 PR",
+  "activityPublishedRelease": "發佈了 Release",
+  "activityCreatedBranch": "建立了分支",
+  "activityDeletedBranch": "刪除了分支",
+  "activityStarred": "收藏了",
+  "activityForked": "Fork 了",
+  "activityApprovedPr": "通過了 PR 審查",
+  "activityRequestedChanges": "對 PR 提出了修改意見"
 }

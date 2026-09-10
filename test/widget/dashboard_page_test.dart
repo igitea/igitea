@@ -46,6 +46,11 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(seconds: 1));
 
+    // The recent section sits below the fold — scroll it into view first.
+    await tester.drag(find.byType(ListView), const Offset(0, -400));
+    await tester.pumpAndSettle();
+
     expect(find.text('Recent'), findsOneWidget);
+    expect(find.text('No recent activity'), findsOneWidget);
   });
 }

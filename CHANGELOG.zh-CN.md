@@ -17,6 +17,15 @@
 ### Added
 - **弱网提示**：新增 `SlowLoadingIndicator` 组件，仓库详情、issue 详情、文件页加载超过 10 秒后显示「网络似乎较慢」提示，长时间等待不再像应用卡死
 - **新增 l10n key**：stillLoading、showEntireDiff、fileTooLargeParams、previewTruncatedParams、documentTooLarge（en / zh / zh_TW）
+- **活动流页面**：新增 `ActivityPage`，展示用户完整活动流（`/users/{username}/activities/feeds`），支持滚动到底自动分页加载，加载/错误/空态完整，点击可跳转相关仓库
+- **活动行组件**：新增 `ActivityTile`，将 Gitea `op_type`（push、issue、PR、合并、Release、分支、收藏、Fork、审查等）映射为图标与本地化动作文案
+- **首页「最近」改为真实活动**：首页最近区块现在展示 5 条最新活动（原先是通知流），并提供「查看全部」入口跳转活动流页面
+- **新增 l10n key**：viewAll、activityCreatedRepo、activityPushed、activityOpenedIssue、activityOpenedPr、activityMergedPr、activityCommentedIssue、activityCommentedPr、activityPublishedRelease、activityCreatedBranch、activityDeletedBranch、activityStarred、activityForked、activityApprovedPr、activityRequestedChanges（en / zh / zh_TW）
+
+### Fixed
+- **首页加载状态补全**：收藏区块现在有加载中的进度指示和失败后的错误提示+重试（原先失败时静默显示空态，无法区分「加载失败」与「真的没有仓库」）
+- **共享状态污染修复**：首页收藏与最近活动列表改为页面本地状态，不再写入共享的 `UserNotifier`——首页不再覆盖个人资料页的完整仓库列表和活动流分页数据
+- **UserNotifier 状态补全**：新增 `activitiesLoading`、`activitiesError`、`reposLoading` 状态字段
 
 ## [0.36.0] - 2026-08-16
 

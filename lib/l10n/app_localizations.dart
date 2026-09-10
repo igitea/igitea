@@ -4774,6 +4774,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This document is too large to preview'**
   String get documentTooLarge;
+
+  /// No description provided for @viewAll.
+  ///
+  /// In en, this message translates to:
+  /// **'View all'**
+  String get viewAll;
+
+  /// No description provided for @activityCreatedRepo.
+  ///
+  /// In en, this message translates to:
+  /// **'created a repository'**
+  String get activityCreatedRepo;
+
+  /// No description provided for @activityPushed.
+  ///
+  /// In en, this message translates to:
+  /// **'pushed commits'**
+  String get activityPushed;
+
+  /// No description provided for @activityOpenedIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'opened an issue'**
+  String get activityOpenedIssue;
+
+  /// No description provided for @activityOpenedPr.
+  ///
+  /// In en, this message translates to:
+  /// **'opened a pull request'**
+  String get activityOpenedPr;
+
+  /// No description provided for @activityMergedPr.
+  ///
+  /// In en, this message translates to:
+  /// **'merged a pull request'**
+  String get activityMergedPr;
+
+  /// No description provided for @activityCommentedIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'commented on an issue'**
+  String get activityCommentedIssue;
+
+  /// No description provided for @activityCommentedPr.
+  ///
+  /// In en, this message translates to:
+  /// **'commented on a pull request'**
+  String get activityCommentedPr;
+
+  /// No description provided for @activityPublishedRelease.
+  ///
+  /// In en, this message translates to:
+  /// **'published a release'**
+  String get activityPublishedRelease;
+
+  /// No description provided for @activityCreatedBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'created a branch'**
+  String get activityCreatedBranch;
+
+  /// No description provided for @activityDeletedBranch.
+  ///
+  /// In en, this message translates to:
+  /// **'deleted a branch'**
+  String get activityDeletedBranch;
+
+  /// No description provided for @activityStarred.
+  ///
+  /// In en, this message translates to:
+  /// **'starred'**
+  String get activityStarred;
+
+  /// No description provided for @activityForked.
+  ///
+  /// In en, this message translates to:
+  /// **'forked'**
+  String get activityForked;
+
+  /// No description provided for @activityApprovedPr.
+  ///
+  /// In en, this message translates to:
+  /// **'approved a pull request'**
+  String get activityApprovedPr;
+
+  /// No description provided for @activityRequestedChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'requested changes on a pull request'**
+  String get activityRequestedChanges;
 }
 
 class _AppLocalizationsDelegate

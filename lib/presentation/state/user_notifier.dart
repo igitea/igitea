@@ -44,6 +44,10 @@ class UserNotifier extends ChangeNotifier {
   int _activitiesPage = 1;
   bool _activitiesLoadingMore = false;
   bool get activitiesLoadingMore => _activitiesLoadingMore;
+  bool _activitiesLoading = false;
+  bool get activitiesLoading => _activitiesLoading;
+  String? _activitiesError;
+  String? get activitiesError => _activitiesError;
   static const int _activitiesLimit = 20;
 
   List<Repository> _starredRepos = [];
@@ -111,33 +115,46 @@ class UserNotifier extends ChangeNotifier {
   String? _reposError;
   String? get reposError => _reposError;
 
+  bool _reposLoading = false;
+  bool get reposLoading => _reposLoading;
+
   Future<void> listCurrentUserRepos({int? page, int? limit}) async {
+    _reposLoading = true;
+    notifyListeners();
     final result = await _listCurrentUserReposUseCase.call(
       ListCurrentUserReposParams(page: page, limit: limit),
     );
     switch (result) {
       case Left<Failure, List<Repository>>(:final value):
         _reposError = value.message;
+        _reposLoading = false;
         notifyListeners();
       case Right<Failure, List<Repository>>(:final value):
         _repos = value;
         _reposError = null;
+        _reposLoading = false;
         notifyListeners();
     }
   }
 
   Future<void> getUserActivities(String username, {int? page, int? limit}) async {
     _activitiesPage = 1;
+    _activitiesLoading = true;
+    _activitiesError = null;
+    notifyListeners();
     final result = await _getUserActivitiesUseCase.call(
       GetUserActivitiesParams(username: username, page: page ?? 1, limit: limit ?? _activitiesLimit),
     );
     switch (result) {
-      case Left<Failure, List<Activity>>():
-        _activities = [];
+      case Left<Failure, List<Activity>>(:final value):
+        _activitiesError = value.message;
+        _activitiesLoading = false;
         notifyListeners();
       case Right<Failure, List<Activity>>(:final value):
         _activities = value;
         _activitiesHasMore = value.length >= _activitiesLimit;
+        _activitiesLoading = false;
+        _activitiesError = null;
         notifyListeners();
     }
   }

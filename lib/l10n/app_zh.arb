@@ -765,5 +765,20 @@
   "showEntireDiff": "显示完整 diff",
   "fileTooLargeParams": "文件过大，无法预览（{size}）",
   "previewTruncatedParams": "仅显示前 {count} 行",
-  "documentTooLarge": "文档过大，无法预览"
+  "documentTooLarge": "文档过大，无法预览",
+  "viewAll": "查看全部",
+  "activityCreatedRepo": "创建了仓库",
+  "activityPushed": "推送了提交",
+  "activityOpenedIssue": "创建了 issue",
+  "activityOpenedPr": "创建了 PR",
+  "activityMergedPr": "合并了 PR",
+  "activityCommentedIssue": "评论了 issue",
+  "activityCommentedPr": "评论了 PR",
+  "activityPublishedRelease": "发布了 Release",
+  "activityCreatedBranch": "创建了分支",
+  "activityDeletedBranch": "删除了分支",
+  "activityStarred": "收藏了",
+  "activityForked": "Fork 了",
+  "activityApprovedPr": "通过了 PR 审查",
+  "activityRequestedChanges": "对 PR 提出了修改意见"
 }
