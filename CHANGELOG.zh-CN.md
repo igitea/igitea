@@ -35,6 +35,7 @@
 - **清除最后的 Material 外壳**：团队/组织详情改为 `AppPage` + `FTabs`（去掉折叠式 Material 头部与可滑动 `TabBarView`），组织的溢出操作收进 `FPopoverMenu`
 - **一致性收尾**：新建/编辑表单中剩余的 `SwitchListTile`/`CheckboxListTile` 改为 `FSwitch`/`FCheckbox`，剩余筛选 `Chip` 改为 `AppFilterChip`，最后一批 Material 图标与 SnackBar 也替换完毕
 - **打磨**：`Wrap` 中的标签型 `FButton` 改为内容宽度、页面列改为拉伸使筛选行左对齐、头像回退改用 `FAvatar`，并用 Forui 新界面刷新了 README 截图
+- **macOS 窗口**：桌面窗口现在以合适尺寸打开（最大 1200×860 并居中，最小 420×640），不再沿用很小的历史窗口尺寸，侧栏布局有足够空间
 
 ### Added
 - `AppTheme`（品牌色板、亮/暗 Forui 主题、触屏/桌面密度）

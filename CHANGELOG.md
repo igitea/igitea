@@ -35,6 +35,7 @@
 - **Last Material chrome removed**: team and organization detail pages now use `AppPage` + `FTabs` (collapsing Material headers and swipeable `TabBarView`s are gone), organization overflow actions live in an `FPopoverMenu`
 - **Consistency pass**: remaining `SwitchListTile`/`CheckboxListTile` in create/edit forms replaced with `FSwitch`/`FCheckbox`, remaining filter `Chip`s with `AppFilterChip`, and the last Material icons/snackbars replaced
 - **Polish**: chip-style `FButton`s now size to their content inside `Wrap`s, page columns stretch so filter rows align left, avatars fall back to `FAvatar`, and README screenshots were refreshed with the Forui UI
+- **macOS window**: the desktop window now opens at a comfortable size (up to 1200×860, centered) with a 420×640 minimum instead of the tiny restored frame, so the sidebar layout has room to breathe
 
 ### Added
 - `AppTheme` (brand palette, light/dark Forui themes, touch/desktop density)
