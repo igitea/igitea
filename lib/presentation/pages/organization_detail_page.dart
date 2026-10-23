@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../../core/animations/animated_wrapper.dart';
 import '../../core/di/injection.dart';
@@ -6,6 +7,7 @@ import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/organization_notifier.dart';
 import '../widgets/empty_state.dart';
+import '../widgets/forui/app_state_views.dart';
 import '../widgets/org_avatar.dart';
 import '../widgets/premium_card.dart';
 import 'edit_org_page.dart';
@@ -19,10 +21,7 @@ import 'create_team_page.dart';
 class OrganizationDetailPage extends StatefulWidget {
   final String orgName;
 
-  const OrganizationDetailPage({
-    super.key,
-    required this.orgName,
-  });
+  const OrganizationDetailPage({super.key, required this.orgName});
 
   @override
   State<OrganizationDetailPage> createState() => _OrganizationDetailPageState();
@@ -56,21 +55,25 @@ class _OrganizationDetailPageState extends State<OrganizationDetailPage>
         builder: (context, _) {
           final state = Injection.organizationNotifier.state;
           return switch (state) {
-            OrgLoading() => const Center(child: CircularProgressIndicator()),
+            OrgLoading() => const AppLoading(),
             OrgError(:final message) => _ErrorView(
-                message: message,
-                onRetry: () =>
-                    Injection.organizationNotifier.getOrg(widget.orgName),
-              ),
+              message: message,
+              onRetry: () =>
+                  Injection.organizationNotifier.getOrg(widget.orgName),
+            ),
             OrgLoaded(:final org) => _buildContent(context, org, l10n),
-            _ => const Center(child: CircularProgressIndicator()),
+            _ => const AppLoading(),
           };
         },
       ),
     );
   }
 
-  Widget _buildContent(BuildContext context, Organization org, AppLocalizations l10n) {
+  Widget _buildContent(
+    BuildContext context,
+    Organization org,
+    AppLocalizations l10n,
+  ) {
     return NestedScrollView(
       headerSliverBuilder: (context, innerBoxIsScrolled) {
         return [
@@ -80,60 +83,89 @@ class _OrganizationDetailPageState extends State<OrganizationDetailPage>
             floating: true,
             forceElevated: innerBoxIsScrolled,
             actions: [
-              IconButton(
-                icon: const Icon(Icons.edit),
-                onPressed: () {
+              FTappable(
+                onPress: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (_) => EditOrgPage(org: org),
-                    ),
+                    MaterialPageRoute(builder: (_) => EditOrgPage(org: org)),
                   ).then((result) {
                     if (result == true) {
                       Injection.organizationNotifier.getOrg(widget.orgName);
                     }
                   });
                 },
+                semanticsLabel: l10n.edit,
+                child: const Padding(
+                  padding: EdgeInsets.all(12),
+                  child: Icon(FIcons.pencilLine),
+                ),
               ),
-              IconButton(
-                icon: const Icon(Icons.delete_outline),
-                tooltip: l10n.deleteOrganization,
-                onPressed: () => _confirmDeleteOrg(context, org.name ?? widget.orgName),
+              FTappable(
+                onPress: () => _confirmDeleteOrg(org.name ?? widget.orgName),
+                semanticsLabel: l10n.deleteOrganization,
+                child: const Padding(
+                  padding: EdgeInsets.all(12),
+                  child: Icon(FIcons.trash2),
+                ),
               ),
-              IconButton(
-                icon: const Icon(Icons.webhook),
-                tooltip: l10n.webhooks,
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => OrgWebhookListPage(org: org.name ?? '')));
+              FTappable(
+                onPress: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => OrgWebhookListPage(org: org.name ?? ''),
+                    ),
+                  );
                 },
+                semanticsLabel: l10n.webhooks,
+                child: const Padding(
+                  padding: EdgeInsets.all(12),
+                  child: Icon(FIcons.webhook),
+                ),
               ),
-              IconButton(
-                icon: const Icon(Icons.lock),
-                tooltip: l10n.actionsSecretsTitle,
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => OrgActionsSecretsPage(org: org.name ?? '')));
+              FTappable(
+                onPress: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          OrgActionsSecretsPage(org: org.name ?? ''),
+                    ),
+                  );
                 },
+                semanticsLabel: l10n.actionsSecretsTitle,
+                child: const Padding(
+                  padding: EdgeInsets.all(12),
+                  child: Icon(FIcons.lock),
+                ),
               ),
-              IconButton(
-                icon: const Icon(Icons.code),
-                tooltip: l10n.actionsVariablesTitle,
-                onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (_) => OrgActionsVariablesPage(org: org.name ?? '')));
+              FTappable(
+                onPress: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          OrgActionsVariablesPage(org: org.name ?? ''),
+                    ),
+                  );
                 },
+                semanticsLabel: l10n.actionsVariablesTitle,
+                child: const Padding(
+                  padding: EdgeInsets.all(12),
+                  child: Icon(FIcons.code),
+                ),
               ),
             ],
           ),
-          SliverToBoxAdapter(
-            child: _OrgHeader(org: org),
-          ),
+          SliverToBoxAdapter(child: _OrgHeader(org: org)),
           SliverPersistentHeader(
             delegate: _SliverTabBarDelegate(
               TabBar(
                 controller: _tabController,
                 tabs: [
-                  Tab(icon: const Icon(Icons.info_outline), text: l10n.info),
-                  Tab(icon: const Icon(Icons.folder_outlined), text: l10n.repositories),
-                  Tab(icon: const Icon(Icons.people_outline), text: l10n.teams),
+                  Tab(icon: const Icon(FIcons.info), text: l10n.info),
+                  Tab(icon: const Icon(FIcons.folder), text: l10n.repositories),
+                  Tab(icon: const Icon(FIcons.users), text: l10n.teams),
                 ],
               ),
             ),
@@ -152,20 +184,22 @@ class _OrganizationDetailPageState extends State<OrganizationDetailPage>
     );
   }
 
-  Future<void> _confirmDeleteOrg(BuildContext context, String orgName) async {
+  Future<void> _confirmDeleteOrg(String orgName) async {
     final l10n = AppLocalizations.of(context)!;
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showFDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx, style, animation) => FDialog(
         title: Text(l10n.deleteOrganization),
-        content: Text(l10n.deleteOrganizationConfirm),
+        body: Text(l10n.deleteOrganizationConfirm),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(ctx).colorScheme.error,
-            ),
+          FButton(
+            variant: .outline,
+            onPress: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          FButton(
+            variant: .destructive,
+            onPress: () => Navigator.pop(ctx, true),
             child: Text(l10n.delete),
           ),
         ],
@@ -178,13 +212,13 @@ class _OrganizationDetailPageState extends State<OrganizationDetailPage>
     if (!mounted) return;
 
     if (success) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.organizationDeleted)),
-      );
+      showFToast(context: context, title: Text(l10n.organizationDeleted));
       Navigator.of(context).pop();
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${l10n.error}: ${l10n.unknownError}')),
+      showFToast(
+        context: context,
+        variant: .destructive,
+        title: Text('${l10n.error}: ${l10n.unknownError}'),
       );
     }
   }
@@ -263,53 +297,70 @@ class _InfoTab extends StatelessWidget {
               if (org.description != null && org.description!.isNotEmpty) ...[
                 _buildInfoRow(
                   context,
-                  icon: Icons.description_outlined,
+                  icon: FIcons.fileText,
                   label: l10n.description,
                   value: org.description!,
                 ),
-                const Divider(height: 24),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  child: FDivider(),
+                ),
               ],
               if (org.location != null && org.location!.isNotEmpty) ...[
                 _buildInfoRow(
                   context,
-                  icon: Icons.location_on_outlined,
+                  icon: FIcons.mapPin,
                   label: l10n.location,
                   value: org.location!,
                 ),
-                const Divider(height: 24),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  child: FDivider(),
+                ),
               ],
               if (org.email != null && org.email!.isNotEmpty) ...[
                 _buildInfoRow(
                   context,
-                  icon: Icons.email_outlined,
+                  icon: FIcons.mail,
                   label: l10n.email,
                   value: org.email!,
                 ),
-                const Divider(height: 24),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  child: FDivider(),
+                ),
               ],
               if (org.website != null && org.website!.isNotEmpty) ...[
                 _buildInfoRow(
                   context,
-                  icon: Icons.link,
+                  icon: FIcons.link2,
                   label: l10n.website,
                   value: org.website!,
                   isLink: true,
                 ),
-                const Divider(height: 24),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  child: FDivider(),
+                ),
               ],
               _buildInfoRow(
                 context,
-                icon: Icons.visibility_outlined,
+                icon: FIcons.eye,
                 label: l10n.visibility,
                 value: org.visibility ?? 'public',
               ),
               if (org.repo_admin_change_team_access != null) ...[
-                const Divider(height: 24),
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  child: FDivider(),
+                ),
                 _buildInfoRow(
                   context,
-                  icon: Icons.admin_panel_settings_outlined,
+                  icon: FIcons.shieldCheck,
                   label: l10n.teamAdminAccess,
-                  value: org.repo_admin_change_team_access! ? l10n.yes : l10n.no,
+                  value: org.repo_admin_change_team_access!
+                      ? l10n.yes
+                      : l10n.no,
                 ),
               ],
             ],
@@ -375,7 +426,7 @@ class _OrgStatsCard extends StatelessWidget {
         children: [
           Expanded(
             child: _StatItem(
-              icon: Icons.folder_outlined,
+              icon: FIcons.folder,
               label: l10n.id,
               value: '#${org.id ?? 0}',
             ),
@@ -387,7 +438,7 @@ class _OrgStatsCard extends StatelessWidget {
           ),
           Expanded(
             child: _StatItem(
-              icon: Icons.alternate_email,
+              icon: FIcons.atSign,
               label: l10n.username,
               value: org.username ?? '-',
             ),
@@ -465,11 +516,12 @@ class _ReposTabState extends State<_ReposTab> {
           final repos = state.repos;
           if (repos.isEmpty) {
             return RefreshIndicator(
-              onRefresh: () => Injection.organizationNotifier.listOrgRepos(widget.orgName),
+              onRefresh: () =>
+                  Injection.organizationNotifier.listOrgRepos(widget.orgName),
               child: ListView(
                 children: [
                   EmptyState(
-                    icon: Icons.folder_outlined,
+                    icon: FIcons.folderOpen,
                     title: l10n.noRepositoriesFound,
                   ),
                 ],
@@ -477,7 +529,8 @@ class _ReposTabState extends State<_ReposTab> {
             );
           }
           return RefreshIndicator(
-            onRefresh: () => Injection.organizationNotifier.listOrgRepos(widget.orgName),
+            onRefresh: () =>
+                Injection.organizationNotifier.listOrgRepos(widget.orgName),
             child: ListView.builder(
               padding: const EdgeInsets.all(16),
               itemCount: repos.length + (state.hasMore ? 1 : 0),
@@ -487,9 +540,12 @@ class _ReposTabState extends State<_ReposTab> {
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Injection.organizationNotifier.reposLoadingMore
-                          ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(strokeWidth: 2))
-                          : TextButton(
-                              onPressed: () => Injection.organizationNotifier.loadMoreOrgRepos(widget.orgName),
+                          ? const FCircularProgress(size: .sm)
+                          : FButton(
+                              variant: .ghost,
+                              size: .sm,
+                              onPress: () => Injection.organizationNotifier
+                                  .loadMoreOrgRepos(widget.orgName),
                               child: const Text('Load more repositories'),
                             ),
                     ),
@@ -513,7 +569,7 @@ class _ReposTabState extends State<_ReposTab> {
                     child: Row(
                       children: [
                         Icon(
-                          repo.private == true ? Icons.lock : Icons.public,
+                          repo.private == true ? FIcons.lock : FIcons.globe,
                           size: 20,
                           color: theme.colorScheme.primary,
                         ),
@@ -545,21 +601,24 @@ class _ReposTabState extends State<_ReposTab> {
                                 children: [
                                   if (repo.language != null) ...[
                                     Icon(
-                                      Icons.code,
+                                      FIcons.code,
                                       size: 14,
                                       color: theme.colorScheme.onSurfaceVariant,
                                     ),
                                     const SizedBox(width: 4),
                                     Text(
                                       repo.language!,
-                                      style: theme.textTheme.bodySmall?.copyWith(
-                                        color: theme.colorScheme.onSurfaceVariant,
-                                      ),
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            color: theme
+                                                .colorScheme
+                                                .onSurfaceVariant,
+                                          ),
                                     ),
                                     const SizedBox(width: 12),
                                   ],
                                   Icon(
-                                    Icons.star_outline,
+                                    FIcons.star,
                                     size: 14,
                                     color: theme.colorScheme.onSurfaceVariant,
                                   ),
@@ -572,7 +631,7 @@ class _ReposTabState extends State<_ReposTab> {
                                   ),
                                   const SizedBox(width: 12),
                                   Icon(
-                                    Icons.call_split,
+                                    FIcons.split,
                                     size: 14,
                                     color: theme.colorScheme.onSurfaceVariant,
                                   ),
@@ -589,8 +648,10 @@ class _ReposTabState extends State<_ReposTab> {
                           ),
                         ),
                         Icon(
-                          Icons.chevron_right,
-                          color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                          FIcons.chevronRight,
+                          color: theme.colorScheme.onSurfaceVariant.withValues(
+                            alpha: 0.5,
+                          ),
                         ),
                       ],
                     ),
@@ -601,14 +662,17 @@ class _ReposTabState extends State<_ReposTab> {
           );
         } else if (state is OrgError) {
           return RefreshIndicator(
-            onRefresh: () => Injection.organizationNotifier.listOrgRepos(widget.orgName),
+            onRefresh: () =>
+                Injection.organizationNotifier.listOrgRepos(widget.orgName),
             child: ListView(
               children: [
                 EmptyState(
-                  icon: Icons.error_outline,
+                  icon: FIcons.circleAlert,
                   title: state.message,
-                  action: FilledButton(
-                    onPressed: () => Injection.organizationNotifier.listOrgRepos(widget.orgName),
+                  action: FButton(
+                    onPress: () => Injection.organizationNotifier.listOrgRepos(
+                      widget.orgName,
+                    ),
                     child: Text(l10n.retry),
                   ),
                 ),
@@ -616,7 +680,7 @@ class _ReposTabState extends State<_ReposTab> {
             ),
           );
         }
-        return const Center(child: CircularProgressIndicator());
+        return const AppLoading();
       },
     );
   }
@@ -658,135 +722,145 @@ class _TeamsTabState extends State<_TeamsTab> {
     return Stack(
       children: [
         ListenableBuilder(
-      listenable: Injection.organizationNotifier,
-      builder: (context, _) {
-        final state = Injection.organizationNotifier.teamsState;
-        if (state is OrgTeamsLoaded) {
-          final teams = state.teams;
-          if (teams.isEmpty) {
-            return RefreshIndicator(
-              onRefresh: () => Injection.organizationNotifier.listOrgTeams(widget.orgName),
-              child: ListView(
-                children: [
-                  EmptyState(
-                    icon: Icons.people_outline,
-                    title: l10n.noTeams,
+          listenable: Injection.organizationNotifier,
+          builder: (context, _) {
+            final state = Injection.organizationNotifier.teamsState;
+            if (state is OrgTeamsLoaded) {
+              final teams = state.teams;
+              if (teams.isEmpty) {
+                return RefreshIndicator(
+                  onRefresh: () => Injection.organizationNotifier.listOrgTeams(
+                    widget.orgName,
                   ),
-                ],
-              ),
-            );
-          }
-          return RefreshIndicator(
-            onRefresh: () => Injection.organizationNotifier.listOrgTeams(widget.orgName),
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: teams.length,
-              itemBuilder: (context, index) {
-                final team = teams[index];
-                return FadeInWrapper(
-                  delay: Duration(milliseconds: index * 30),
-                  child: PremiumListCard(
-                    onTap: () {
-                      if (team.id != null) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => TeamDetailPage(teamId: team.id!),
-                          ),
-                        );
-                      }
-                    },
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 20,
-                          backgroundColor: theme.colorScheme.primaryContainer,
-                          child: Icon(
-                            Icons.people,
-                            size: 20,
-                            color: theme.colorScheme.onPrimaryContainer,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                team.name ?? '',
-                                style: theme.textTheme.titleSmall?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              if (team.description != null &&
-                                  team.description!.isNotEmpty) ...[
-                                const SizedBox(height: 4),
-                                Text(
-                                  team.description!,
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: theme.textTheme.bodySmall?.copyWith(
-                                    color: theme.colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                              ],
-                              const SizedBox(height: 4),
-                              Wrap(
-                                spacing: 8,
-                                children: [
-                                  if (team.permission != null)
-                                    _TeamBadge(
-                                      icon: Icons.security,
-                                      label: team.permission!,
-                                    ),
-                                  if (team.includes_all_repositories == true)
-                                    _TeamBadge(
-                                      icon: Icons.folder_copy,
-                                      label: l10n.allRepos,
-                                    ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        Icon(
-                          Icons.chevron_right,
-                          color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
-                        ),
-                      ],
-                    ),
+                  child: ListView(
+                    children: [
+                      EmptyState(icon: FIcons.users, title: l10n.noTeams),
+                    ],
                   ),
                 );
-              },
-            ),
-          );
-        } else if (state is OrgError) {
-          return RefreshIndicator(
-            onRefresh: () => Injection.organizationNotifier.listOrgTeams(widget.orgName),
-            child: ListView(
-              children: [
-                EmptyState(
-                  icon: Icons.error_outline,
-                  title: state.message,
-                  action: FilledButton(
-                    onPressed: () => Injection.organizationNotifier.listOrgTeams(widget.orgName),
-                    child: Text(l10n.retry),
-                  ),
+              }
+              return RefreshIndicator(
+                onRefresh: () =>
+                    Injection.organizationNotifier.listOrgTeams(widget.orgName),
+                child: ListView.builder(
+                  padding: const EdgeInsets.all(16),
+                  itemCount: teams.length,
+                  itemBuilder: (context, index) {
+                    final team = teams[index];
+                    return FadeInWrapper(
+                      delay: Duration(milliseconds: index * 30),
+                      child: PremiumListCard(
+                        onTap: () {
+                          if (team.id != null) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    TeamDetailPage(teamId: team.id!),
+                              ),
+                            );
+                          }
+                        },
+                        child: Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 20,
+                              backgroundColor:
+                                  theme.colorScheme.primaryContainer,
+                              child: Icon(
+                                FIcons.users,
+                                size: 20,
+                                color: theme.colorScheme.onPrimaryContainer,
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    team.name ?? '',
+                                    style: theme.textTheme.titleSmall?.copyWith(
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  if (team.description != null &&
+                                      team.description!.isNotEmpty) ...[
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      team.description!,
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                            color: theme
+                                                .colorScheme
+                                                .onSurfaceVariant,
+                                          ),
+                                    ),
+                                  ],
+                                  const SizedBox(height: 4),
+                                  Wrap(
+                                    spacing: 8,
+                                    children: [
+                                      if (team.permission != null)
+                                        _TeamBadge(
+                                          icon: FIcons.shieldCheck,
+                                          label: team.permission!,
+                                        ),
+                                      if (team.includes_all_repositories ==
+                                          true)
+                                        _TeamBadge(
+                                          icon: FIcons.folder,
+                                          label: l10n.allRepos,
+                                        ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Icon(
+                              FIcons.chevronRight,
+                              color: theme.colorScheme.onSurfaceVariant
+                                  .withValues(alpha: 0.5),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
                 ),
-              ],
-            ),
-          );
-        }
-        return const Center(child: CircularProgressIndicator());
-      },
-    ),
+              );
+            } else if (state is OrgError) {
+              return RefreshIndicator(
+                onRefresh: () =>
+                    Injection.organizationNotifier.listOrgTeams(widget.orgName),
+                child: ListView(
+                  children: [
+                    EmptyState(
+                      icon: FIcons.circleAlert,
+                      title: state.message,
+                      action: FButton(
+                        onPress: () => Injection.organizationNotifier
+                            .listOrgTeams(widget.orgName),
+                        child: Text(l10n.retry),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+            return const AppLoading();
+          },
+        ),
         Positioned(
           right: 16,
           bottom: 16,
-          child: FloatingActionButton.extended(
-            onPressed: _createTeam,
-            icon: const Icon(Icons.add),
-            label: Text(l10n.createTeam),
+          child: FButton(
+            mainAxisSize: MainAxisSize.min,
+            prefix: const Icon(FIcons.plus, size: 18),
+            onPress: _createTeam,
+            child: Text(l10n.createTeam),
           ),
         ),
       ],
@@ -798,10 +872,7 @@ class _TeamBadge extends StatelessWidget {
   final IconData icon;
   final String label;
 
-  const _TeamBadge({
-    required this.icon,
-    required this.label,
-  });
+  const _TeamBadge({required this.icon, required this.label});
 
   @override
   Widget build(BuildContext context) {
@@ -815,11 +886,7 @@ class _TeamBadge extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(
-            icon,
-            size: 12,
-            color: theme.colorScheme.onPrimaryContainer,
-          ),
+          Icon(icon, size: 12, color: theme.colorScheme.onPrimaryContainer),
           const SizedBox(width: 4),
           Text(
             label,
@@ -838,10 +905,7 @@ class _ErrorView extends StatelessWidget {
   final String message;
   final VoidCallback onRetry;
 
-  const _ErrorView({
-    required this.message,
-    required this.onRetry,
-  });
+  const _ErrorView({required this.message, required this.onRetry});
 
   @override
   Widget build(BuildContext context) {
@@ -852,10 +916,7 @@ class _ErrorView extends StatelessWidget {
         children: [
           Text(message),
           const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: onRetry,
-            child: Text(l10n.retry),
-          ),
+          FButton(onPress: onRetry, child: Text(l10n.retry)),
         ],
       ),
     );

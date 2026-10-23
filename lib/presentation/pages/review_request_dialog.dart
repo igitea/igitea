@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 import '../../core/di/injection.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -34,7 +35,11 @@ class _ReviewRequestDialogState extends State<ReviewRequestDialog> {
     } catch (e) {
       if (mounted) {
         setState(() => _submitting = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l10n.error}: $e')));
+        showFToast(
+          context: context,
+          variant: .destructive,
+          title: Text('${l10n.error}: $e'),
+        );
       }
     }
   }
@@ -42,59 +47,82 @@ class _ReviewRequestDialogState extends State<ReviewRequestDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return AlertDialog(
+    return FDialog(
       title: Text(l10n.requestReviewers),
-      content: Column(
+      body: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Row(
             children: [
               Expanded(
-                child: TextField(
-                  controller: _controller,
-                  decoration: InputDecoration(
-                    hintText: l10n.addReviewerHint,
-                    border: const OutlineInputBorder(),
-                    isDense: true,
-                  ),
+                child: FTextField(
+                  control: FTextFieldControl.managed(controller: _controller),
+                  hint: l10n.addReviewerHint,
                   textInputAction: TextInputAction.done,
-                  onSubmitted: (v) {
+                  onSubmit: (v) {
                     if (v.trim().isNotEmpty) {
-                      setState(() { _reviewers.add(v.trim()); _controller.clear(); });
+                      setState(() {
+                        _reviewers.add(v.trim());
+                        _controller.clear();
+                      });
                     }
                   },
                 ),
               ),
               const SizedBox(width: 8),
-              IconButton(
-                icon: const Icon(Icons.add),
-                onPressed: () {
+              FTappable(
+                onPress: () {
                   if (_controller.text.trim().isNotEmpty) {
-                    setState(() { _reviewers.add(_controller.text.trim()); _controller.clear(); });
+                    setState(() {
+                      _reviewers.add(_controller.text.trim());
+                      _controller.clear();
+                    });
                   }
                 },
+                child: const Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Icon(FIcons.plus, size: 16),
+                ),
               ),
             ],
           ),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 4,
-            runSpacing: 4,
-            children: _reviewers.map((r) => Chip(
-              label: Text(r, style: const TextStyle(fontSize: 12)),
-              onDeleted: () => setState(() => _reviewers.remove(r)),
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              visualDensity: VisualDensity.compact,
-            )).toList(),
+          const SizedBox(height: 12),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Wrap(
+              spacing: 6,
+              runSpacing: 6,
+              children: _reviewers
+                  .map(
+                    (r) => FBadge(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(r),
+                          const SizedBox(width: 4),
+                          FTappable(
+                            onPress: () => setState(() => _reviewers.remove(r)),
+                            child: const Icon(FIcons.x, size: 12),
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
           ),
         ],
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
-        FilledButton(
-          onPressed: _submitting || _reviewers.isEmpty ? null : _submit,
+        FButton(
+          variant: .outline,
+          onPress: () => Navigator.pop(context),
+          child: Text(l10n.cancel),
+        ),
+        FButton(
+          onPress: _submitting || _reviewers.isEmpty ? null : _submit,
           child: _submitting
-              ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+              ? const FCircularProgress(size: .sm)
               : Text(l10n.requestReviewers),
         ),
       ],

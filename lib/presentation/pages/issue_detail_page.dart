@@ -16,6 +16,7 @@ import '../../presentation/state/repo_notifier.dart';
 import '../../presentation/state/user_notifier.dart';
 import '../widgets/forui/app_page.dart';
 import '../widgets/forui/app_state_views.dart';
+import '../widgets/forui/app_tile.dart';
 import '../widgets/slow_loading_indicator.dart';
 import '../widgets/user_avatar.dart';
 import 'edit_issue_page.dart';
@@ -188,39 +189,39 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
           _isSubscribed = !_isSubscribed;
           _subscriptionLoading = false;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(_isSubscribed ? l10n.subscribed : l10n.unsubscribed),
-          ),
+        showFToast(
+          context: context,
+          title: Text(_isSubscribed ? l10n.subscribed : l10n.unsubscribed),
         );
       }
     } catch (e) {
       if (mounted) {
         setState(() => _subscriptionLoading = false);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('${l10n.error}: $e')));
+        showFToast(
+          context: context,
+          variant: .destructive,
+          title: Text('${l10n.error}: $e'),
+        );
       }
     }
   }
 
   Future<void> _confirmDeleteIssue() async {
     final l10n = AppLocalizations.of(context)!;
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showFDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx, style, animation) => FDialog(
         title: Text(l10n.deleteIssue),
-        content: Text(l10n.deleteIssueConfirm),
+        body: Text(l10n.deleteIssueConfirm),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
+          FButton(
+            variant: .outline,
+            onPress: () => Navigator.pop(ctx, false),
             child: Text(l10n.cancel),
           ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
+          FButton(
+            variant: .destructive,
+            onPress: () => Navigator.pop(ctx, true),
             child: Text(l10n.delete),
           ),
         ],
@@ -236,14 +237,14 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
     if (!mounted) return;
     switch (result) {
       case Left<Failure, void>(:final value):
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.error}: ${value.message}')),
+        showFToast(
+          context: context,
+          variant: .destructive,
+          title: Text('${l10n.error}: ${value.message}'),
         );
       case Right<Failure, void>():
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(l10n.issueDeleted)));
+        showFToast(context: context, title: Text(l10n.issueDeleted));
     }
   }
 
@@ -335,7 +336,7 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
                 onToggleReaction: _toggleIssueReaction,
                 canEdit: _canEdit(),
               ),
-              _ => const Center(child: CircularProgressIndicator()),
+              _ => const Center(child: FCircularProgress(size: .sm)),
             };
           },
         ),
@@ -448,25 +449,29 @@ class _IssueContent extends StatelessWidget {
             runSpacing: 8,
             children: [
               ...(issue.labels ?? []).map((label) {
-                return Chip(
-                  label: Text(label.name ?? ''),
-                  backgroundColor:
-                      _parseColor(label.color)?.withValues(alpha: 0.2) ??
-                      theme.colorScheme.primaryContainer,
-                  labelStyle: theme.textTheme.labelSmall?.copyWith(
-                    color:
-                        _parseColor(label.color) ??
-                        theme.colorScheme.onPrimaryContainer,
+                final color = _parseColor(label.color);
+                return FBadge(
+                  style: .delta(
+                    decoration: .boxDelta(
+                      color:
+                          color?.withValues(alpha: 0.2) ??
+                          theme.colorScheme.primaryContainer,
+                    ),
+                    contentStyle: .delta(
+                      labelTextStyle: .delta(
+                        color: color ?? theme.colorScheme.onPrimaryContainer,
+                      ),
+                    ),
                   ),
-                  padding: EdgeInsets.zero,
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  child: Text(label.name ?? ''),
                 );
               }),
               if (canEdit)
-                ActionChip(
-                  label: Text(l10n.edit),
-                  avatar: const Icon(Icons.edit, size: 16),
-                  onPressed: () async {
+                FButton(
+                  variant: .outline,
+                  size: .xs,
+                  prefix: const Icon(FIcons.pencilLine, size: 16),
+                  onPress: () async {
                     final edited = await Navigator.of(context).push<bool>(
                       MaterialPageRoute(
                         builder: (_) => EditIssuePage(
@@ -483,16 +488,17 @@ class _IssueContent extends StatelessWidget {
                       Navigator.pop(context, true);
                     }
                   },
+                  child: Text(l10n.edit),
                 ),
-              ActionChip(
-                label: Text(isSubscribed ? l10n.unsubscribe : l10n.subscribe),
-                avatar: Icon(
-                  isSubscribed
-                      ? Icons.notifications_off_outlined
-                      : Icons.notifications_outlined,
+              FButton(
+                variant: .outline,
+                size: .xs,
+                prefix: Icon(
+                  isSubscribed ? FIcons.bellOff : FIcons.bell,
                   size: 16,
                 ),
-                onPressed: subscriptionLoading ? null : onToggleSubscription,
+                onPress: subscriptionLoading ? null : onToggleSubscription,
+                child: Text(isSubscribed ? l10n.unsubscribe : l10n.subscribe),
               ),
             ],
           ),
@@ -501,7 +507,7 @@ class _IssueContent extends StatelessWidget {
           if (issue.assignee != null)
             _buildInfoRow(
               context,
-              icon: Icons.person_outline,
+              icon: FIcons.userRound,
               label: l10n.assignee,
               semanticsLabel:
                   '${l10n.assignee}: ${issue.assignee!.login ?? ''}',
@@ -518,7 +524,7 @@ class _IssueContent extends StatelessWidget {
           if (issue.milestone != null)
             _buildInfoRow(
               context,
-              icon: Icons.flag_outlined,
+              icon: FIcons.flag,
               label: l10n.milestone,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
@@ -526,17 +532,15 @@ class _IssueContent extends StatelessWidget {
                   Text(issue.milestone!.title ?? ''),
                   if (canEdit) ...[
                     const SizedBox(width: 8),
-                    Tooltip(
-                      message: l10n.editMilestone,
-                      child: InkWell(
-                        onTap: () => _showMilestoneEditor(context, issue),
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Icon(
-                            Icons.edit,
-                            size: 16,
-                            color: theme.colorScheme.primary,
-                          ),
+                    FTappable(
+                      onPress: () => _showMilestoneEditor(context, issue),
+                      semanticsLabel: l10n.editMilestone,
+                      child: Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Icon(
+                          FIcons.pencilLine,
+                          size: 16,
+                          color: theme.colorScheme.primary,
                         ),
                       ),
                     ),
@@ -547,14 +551,14 @@ class _IssueContent extends StatelessWidget {
 
           _buildInfoRow(
             context,
-            icon: Icons.calendar_today,
+            icon: FIcons.calendarDays,
             label: l10n.dueDate,
             child: issue.due_date != null
                 ? Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        '${issue.due_date!.toLocal().toString().split(' ')[0]}',
+                        issue.due_date!.toLocal().toString().split(' ')[0],
                         style: _isOverdue(issue)
                             ? TextStyle(
                                 color: theme.colorScheme.error,
@@ -565,7 +569,7 @@ class _IssueContent extends StatelessWidget {
                       if (_isOverdue(issue)) ...[
                         const SizedBox(width: 4),
                         Icon(
-                          Icons.warning_amber_rounded,
+                          FIcons.triangleAlert,
                           size: 14,
                           color: theme.colorScheme.error,
                         ),
@@ -579,32 +583,28 @@ class _IssueContent extends StatelessWidget {
                       ],
                       if (canEdit) ...[
                         const SizedBox(width: 8),
-                        Tooltip(
-                          message: l10n.editDueDate,
-                          child: InkWell(
-                            onTap: () => _editDueDate(context, issue),
-                            child: Padding(
-                              padding: const EdgeInsets.all(12),
-                              child: Icon(
-                                Icons.edit,
-                                size: 16,
-                                color: theme.colorScheme.primary,
-                              ),
+                        FTappable(
+                          onPress: () => _editDueDate(context, issue),
+                          semanticsLabel: l10n.editDueDate,
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Icon(
+                              FIcons.pencilLine,
+                              size: 16,
+                              color: theme.colorScheme.primary,
                             ),
                           ),
                         ),
                         const SizedBox(width: 4),
-                        Tooltip(
-                          message: l10n.clearDueDate,
-                          child: InkWell(
-                            onTap: () => _clearDueDate(),
-                            child: Padding(
-                              padding: const EdgeInsets.all(12),
-                              child: Icon(
-                                Icons.clear,
-                                size: 16,
-                                color: theme.colorScheme.error,
-                              ),
+                        FTappable(
+                          onPress: () => _clearDueDate(),
+                          semanticsLabel: l10n.clearDueDate,
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Icon(
+                              FIcons.x,
+                              size: 16,
+                              color: theme.colorScheme.error,
                             ),
                           ),
                         ),
@@ -612,8 +612,8 @@ class _IssueContent extends StatelessWidget {
                     ],
                   )
                 : canEdit
-                ? InkWell(
-                    onTap: () => _editDueDate(context, issue),
+                ? FTappable(
+                    onPress: () => _editDueDate(context, issue),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -633,8 +633,8 @@ class _IssueContent extends StatelessWidget {
           const SizedBox(height: 8),
           Row(
             children: [
-              FilledButton.tonal(
-                onPressed: () {
+              FButton(
+                onPress: () {
                   Injection.issueNotifier.editIssue(owner, repo, index, {
                     'state': isOpen ? 'closed' : 'open',
                   });
@@ -644,7 +644,10 @@ class _IssueContent extends StatelessWidget {
             ],
           ),
 
-          const Divider(height: 32),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 16),
+            child: FDivider(),
+          ),
 
           if (issue.body != null && issue.body!.isNotEmpty)
             MarkdownBody(
@@ -684,13 +687,15 @@ class _IssueContent extends StatelessWidget {
               final commentsState = Injection.issueNotifier.commentsState;
               return switch (commentsState) {
                 CommentsLoading() => const Center(
-                  child: CircularProgressIndicator(),
+                  child: FCircularProgress(size: .sm),
                 ),
                 CommentsError(:final message) => Column(
                   children: [
                     Text('${l10n.failedToLoadComments}: $message'),
-                    TextButton(
-                      onPressed: () => Injection.issueNotifier.listComments(
+                    FButton(
+                      variant: .ghost,
+                      size: .sm,
+                      onPress: () => Injection.issueNotifier.listComments(
                         owner,
                         repo,
                         index,
@@ -712,14 +717,16 @@ class _IssueContent extends StatelessWidget {
           ),
 
           const SizedBox(height: 16),
-          TextField(
-            controller: commentController,
-            decoration: InputDecoration(
-              hintText: l10n.writeComment,
-              border: const OutlineInputBorder(),
-              suffixIcon: IconButton(
-                icon: const Icon(Icons.send),
-                onPressed: () {
+          FTextField(
+            control: FTextFieldControl.managed(controller: commentController),
+            hint: l10n.writeComment,
+            textCapitalization: TextCapitalization.sentences,
+            maxLines: 3,
+            minLines: 1,
+            suffixBuilder: (context, style, variants) => Padding(
+              padding: const EdgeInsets.only(right: 6),
+              child: FTappable(
+                onPress: () {
                   final text = commentController.text.trim();
                   if (text.isNotEmpty) {
                     Injection.issueNotifier.createComment(owner, repo, index, {
@@ -728,11 +735,17 @@ class _IssueContent extends StatelessWidget {
                     commentController.clear();
                   }
                 },
+                semanticsLabel: l10n.comment,
+                child: Padding(
+                  padding: const EdgeInsets.all(6),
+                  child: Icon(
+                    FIcons.send,
+                    size: 18,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
               ),
             ),
-            textCapitalization: TextCapitalization.sentences,
-            maxLines: 3,
-            minLines: 1,
           ),
 
           const SizedBox(height: 16),
@@ -740,7 +753,7 @@ class _IssueContent extends StatelessWidget {
           Row(
             children: [
               Icon(
-                Icons.comment_outlined,
+                FIcons.messageCircle,
                 size: 16,
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -751,7 +764,7 @@ class _IssueContent extends StatelessWidget {
               ),
               const SizedBox(width: 16),
               Icon(
-                Icons.update,
+                FIcons.history,
                 size: 16,
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -820,12 +833,13 @@ class _IssueContent extends StatelessWidget {
     final theme = Theme.of(context);
     return Builder(
       builder: (ctx) {
-        return Material(
-          color: theme.colorScheme.surfaceContainerHighest.withAlpha(128),
-          borderRadius: BorderRadius.circular(16),
-          child: InkWell(
+        return Container(
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surfaceContainerHighest.withAlpha(128),
             borderRadius: BorderRadius.circular(16),
-            onTap: () {
+          ),
+          child: FTappable(
+            onPress: () {
               final renderBox = ctx.findRenderObject() as RenderBox?;
               if (renderBox == null) return;
               final position = renderBox.localToGlobal(Offset.zero);
@@ -863,14 +877,15 @@ class _IssueContent extends StatelessWidget {
                                       r.content == content &&
                                       r.user?.login == currentUser,
                                 );
-                                return Material(
-                                  color: userReacted
-                                      ? theme.colorScheme.primaryContainer
-                                      : Colors.transparent,
-                                  borderRadius: BorderRadius.circular(20),
-                                  child: InkWell(
+                                return Container(
+                                  decoration: BoxDecoration(
+                                    color: userReacted
+                                        ? theme.colorScheme.primaryContainer
+                                        : Colors.transparent,
                                     borderRadius: BorderRadius.circular(20),
-                                    onTap: () {
+                                  ),
+                                  child: FTappable(
+                                    onPress: () {
                                       overlay.remove();
                                       onToggle(content);
                                     },
@@ -878,7 +893,7 @@ class _IssueContent extends StatelessWidget {
                                       padding: const EdgeInsets.all(10),
                                       child: Text(
                                         _reactionEmojis[content] ?? content,
-                                        style: TextStyle(fontSize: 22),
+                                        style: const TextStyle(fontSize: 22),
                                       ),
                                     ),
                                   ),
@@ -901,9 +916,9 @@ class _IssueContent extends StatelessWidget {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Icon(Icons.emoji_emotions_outlined, size: 18),
+                    Icon(FIcons.smile, size: 18),
                     SizedBox(width: 1),
-                    Icon(Icons.add, size: 10),
+                    Icon(FIcons.plus, size: 10),
                   ],
                 ),
               ),
@@ -928,15 +943,16 @@ class _IssueContent extends StatelessWidget {
     final userReacted = reactions.any(
       (r) => r.content == content && r.user?.login == currentUser,
     );
-    return Material(
+    return Container(
       key: ValueKey(content),
-      color: userReacted
-          ? theme.colorScheme.primaryContainer
-          : theme.colorScheme.surfaceContainerHighest.withAlpha(128),
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
+      decoration: BoxDecoration(
+        color: userReacted
+            ? theme.colorScheme.primaryContainer
+            : theme.colorScheme.surfaceContainerHighest.withAlpha(128),
         borderRadius: BorderRadius.circular(16),
-        onTap: () => onToggle(content),
+      ),
+      child: FTappable(
+        onPress: () => onToggle(content),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
           child: Text(
@@ -978,7 +994,7 @@ class _IssueContent extends StatelessWidget {
               child: Row(
                 children: [
                   Icon(
-                    Icons.chat_bubble_outline,
+                    FIcons.messageSquare,
                     size: 16,
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -1002,13 +1018,11 @@ class _IssueContent extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 8),
                   child: Center(
                     child: Injection.issueNotifier.commentLoadingMore
-                        ? const SizedBox(
-                            height: 24,
-                            width: 24,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : TextButton(
-                            onPressed: () => Injection.issueNotifier
+                        ? const FCircularProgress(size: .sm)
+                        : FButton(
+                            variant: .ghost,
+                            size: .sm,
+                            onPress: () => Injection.issueNotifier
                                 .loadMoreComments(owner, repo, index),
                             child: const Text('Load more comments'),
                           ),
@@ -1105,44 +1119,54 @@ class _IssueContent extends StatelessWidget {
 
     if (!context.mounted) return;
 
-    await showDialog(
+    await showFDialog<void>(
       context: context,
-      builder: (ctx) {
+      builder: (ctx, style, animation) {
         return StatefulBuilder(
-          builder: (ctx, setState) {
-            return AlertDialog(
+          builder: (ctx, setDialogState) {
+            return FDialog(
               title: Text(l10n.milestone),
-              content: SizedBox(
+              body: SizedBox(
                 width: double.maxFinite,
-                child: RadioGroup<int?>(
-                  groupValue: selectedMilestoneId,
-                  onChanged: (v) => setState(() => selectedMilestoneId = v),
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    itemCount: milestones.length + 1,
-                    itemBuilder: (ctx, index) {
-                      if (index == 0) {
-                        return RadioListTile<int?>(
-                          title: Text(l10n.noMilestones),
-                          value: null,
-                        );
-                      }
-                      final milestone = milestones[index - 1];
-                      return RadioListTile<int?>(
-                        title: Text(milestone.title ?? ''),
-                        value: milestone.id,
-                      );
-                    },
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 320),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        AppTile(
+                          title: l10n.noMilestones,
+                          showChevron: false,
+                          trailing: selectedMilestoneId == null
+                              ? const Icon(FIcons.check, size: 16)
+                              : null,
+                          onPress: () =>
+                              setDialogState(() => selectedMilestoneId = null),
+                        ),
+                        for (final milestone in milestones)
+                          AppTile(
+                            title: milestone.title ?? '',
+                            showChevron: false,
+                            trailing: selectedMilestoneId == milestone.id
+                                ? const Icon(FIcons.check, size: 16)
+                                : null,
+                            onPress: () => setDialogState(
+                              () => selectedMilestoneId = milestone.id,
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
                 ),
               ),
               actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(ctx).pop(),
+                FButton(
+                  variant: .outline,
+                  onPress: () => Navigator.of(ctx).pop(),
                   child: Text(l10n.cancel),
                 ),
-                FilledButton(
-                  onPressed: () async {
+                FButton(
+                  onPress: () async {
                     Navigator.of(ctx).pop();
                     await Injection.issueNotifier.editIssue(
                       owner,
@@ -1253,6 +1277,7 @@ class _CommentItemState extends State<_CommentItem> {
     if (mounted) setState(() {});
   }
 
+  // ignore: unused_element
   Future<void> _toggleCommentReaction(String content) async {
     if (widget.comment.id == null) return;
     final currentUser = Injection.authNotifier.state is AuthAuthenticated
@@ -1319,30 +1344,31 @@ class _CommentItemState extends State<_CommentItem> {
     } catch (e) {
       if (mounted) {
         setState(() => _saving = false);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('${l10n.error}: $e')));
+        showFToast(
+          context: context,
+          variant: .destructive,
+          title: Text('${l10n.error}: $e'),
+        );
       }
     }
   }
 
   Future<void> _delete() async {
     final l10n = AppLocalizations.of(context)!;
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showFDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx, style, animation) => FDialog(
         title: Text(l10n.deleteComment),
-        content: Text(l10n.deleteCommentConfirm),
+        body: Text(l10n.deleteCommentConfirm),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
+          FButton(
+            variant: .outline,
+            onPress: () => Navigator.pop(ctx, false),
             child: Text(l10n.cancel),
           ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
+          FButton(
+            variant: .destructive,
+            onPress: () => Navigator.pop(ctx, true),
             child: Text(l10n.delete),
           ),
         ],
@@ -1365,9 +1391,11 @@ class _CommentItemState extends State<_CommentItem> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('${l10n.error}: $e')));
+        showFToast(
+          context: context,
+          variant: .destructive,
+          title: Text('${l10n.error}: $e'),
+        );
       }
     }
   }
@@ -1398,7 +1426,7 @@ class _CommentItemState extends State<_CommentItem> {
                   ? UserAvatar(user: widget.comment.user!, radius: 18)
                   : CircleAvatar(
                       radius: 18,
-                      child: Icon(Icons.person, size: 18),
+                      child: Icon(FIcons.user, size: 18),
                     ),
             ),
           if (!isMe) const SizedBox(width: 10),
@@ -1462,11 +1490,9 @@ class _CommentItemState extends State<_CommentItem> {
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              TextField(
-                                controller: _editController,
-                                decoration: const InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  isDense: true,
+                              FTextField(
+                                control: FTextFieldControl.managed(
+                                  controller: _editController,
                                 ),
                                 textInputAction: TextInputAction.done,
                                 maxLines: 5,
@@ -1476,8 +1502,10 @@ class _CommentItemState extends State<_CommentItem> {
                               Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  TextButton(
-                                    onPressed: () => setState(() {
+                                  FButton(
+                                    variant: .ghost,
+                                    size: .sm,
+                                    onPress: () => setState(() {
                                       _editing = false;
                                       _editController.text =
                                           widget.comment.body ?? '';
@@ -1485,16 +1513,11 @@ class _CommentItemState extends State<_CommentItem> {
                                     child: Text(l10n.cancel),
                                   ),
                                   const SizedBox(width: 4),
-                                  FilledButton(
-                                    onPressed: _saving ? null : _saveEdit,
+                                  FButton(
+                                    size: .sm,
+                                    onPress: _saving ? null : _saveEdit,
                                     child: _saving
-                                        ? const SizedBox(
-                                            width: 16,
-                                            height: 16,
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 2,
-                                            ),
-                                          )
+                                        ? const FCircularProgress(size: .xs)
                                         : Text(l10n.save),
                                   ),
                                 ],
@@ -1539,7 +1562,7 @@ class _CommentItemState extends State<_CommentItem> {
                       child: PopupMenuButton<String>(
                         padding: EdgeInsets.zero,
                         icon: Icon(
-                          Icons.more_horiz,
+                          FIcons.ellipsis,
                           size: 14,
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
@@ -1565,7 +1588,7 @@ class _CommentItemState extends State<_CommentItem> {
             if (widget.comment.user != null)
               UserAvatar(user: widget.comment.user!, radius: 16)
             else
-              CircleAvatar(radius: 16, child: Icon(Icons.person, size: 16)),
+              CircleAvatar(radius: 16, child: Icon(FIcons.user, size: 16)),
           ],
         ],
       ),
@@ -1630,59 +1653,52 @@ class _TimelineSectionState extends State<_TimelineSection> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: theme.colorScheme.outlineVariant),
-      ),
-      child: ExpansionTile(
-        leading: Icon(Icons.timeline, color: theme.colorScheme.primary),
-        title: Text(
-          l10n.timeline,
-          style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        subtitle: Text(
-          '${_timeline.length} ${l10n.events}',
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-        ),
-        initiallyExpanded: _expanded,
-        onExpansionChanged: (v) => setState(() => _expanded = v),
+    return FCard.raw(
+      child: Column(
         children: [
-          if (_loading)
-            const Padding(
-              padding: EdgeInsets.all(16),
-              child: Center(
-                child: SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-              ),
-            )
-          else if (_timeline.isEmpty)
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text(
-                l10n.noData,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-            )
-          else
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-              child: Column(
-                children: _timeline.map((item) {
-                  return _TimelineItem(timeline: item);
-                }).toList(),
-              ),
+          AppTile(
+            leading: Icon(
+              FIcons.listTree,
+              size: 18,
+              color: theme.colorScheme.primary,
             ),
+            title: l10n.timeline,
+            subtitle: '${_timeline.length} ${l10n.events}',
+            showChevron: false,
+            trailing: Icon(
+              _expanded ? FIcons.chevronUp : FIcons.chevronDown,
+              size: 16,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+            onPress: () => setState(() => _expanded = !_expanded),
+          ),
+          if (_expanded) ...[
+            const FDivider(),
+            if (_loading)
+              const Padding(
+                padding: EdgeInsets.all(16),
+                child: Center(child: FCircularProgress(size: .sm)),
+              )
+            else if (_timeline.isEmpty)
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(
+                  l10n.noData,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              )
+            else
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                child: Column(
+                  children: _timeline.map((item) {
+                    return _TimelineItem(timeline: item);
+                  }).toList(),
+                ),
+              ),
+          ],
         ],
       ),
     );
@@ -1704,28 +1720,28 @@ class _TimelineItem extends StatelessWidget {
     String text;
     switch (type) {
       case 'comment':
-        icon = Icons.chat_bubble_outline;
+        icon = FIcons.messageSquare;
         text = timeline.body ?? l10n.commented;
       case 'label':
-        icon = Icons.label_outline;
+        icon = FIcons.tag;
         text = timeline.label?.name ?? l10n.labelUpdated;
       case 'milestone':
-        icon = Icons.flag_outlined;
+        icon = FIcons.flag;
         text = timeline.milestone?.title ?? l10n.milestoneUpdated;
       case 'assignee':
-        icon = Icons.person_outline;
+        icon = FIcons.userRound;
         text = timeline.assignee?.login ?? l10n.assigneeUpdated;
       case 'close':
-        icon = Icons.check_circle_outline;
+        icon = FIcons.circleCheck;
         text = l10n.closed;
       case 'reopen':
-        icon = Icons.refresh;
+        icon = FIcons.refreshCw;
         text = l10n.reopened;
       case 'title':
-        icon = Icons.title;
+        icon = FIcons.textCursorInput;
         text = '${timeline.old_title ?? ''} → ${timeline.new_title ?? ''}';
       default:
-        icon = Icons.info_outline;
+        icon = FIcons.info;
         text = type;
     }
 
@@ -1815,30 +1831,33 @@ class _DependenciesSectionState extends State<_DependenciesSection> {
   Future<void> _add() async {
     final l10n = AppLocalizations.of(context)!;
     final ctrl = TextEditingController();
-    final number = await showDialog<String>(
+    final number = await showFDialog<String>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text(l10n.addDependency),
-        content: TextField(
-          controller: ctrl,
-          decoration: InputDecoration(
-            labelText: l10n.issueNumberHint,
-            border: const OutlineInputBorder(),
+      builder: (ctx, style, animation) => StatefulBuilder(
+        builder: (ctx, setDialogState) => FDialog(
+          title: Text(l10n.addDependency),
+          body: FTextField(
+            control: FTextFieldControl.managed(
+              controller: ctrl,
+              onChange: (_) => setDialogState(() {}),
+            ),
+            label: Text(l10n.issueNumberHint),
+            keyboardType: TextInputType.number,
           ),
-          keyboardType: TextInputType.number,
+          actions: [
+            FButton(
+              variant: .outline,
+              onPress: () => Navigator.pop(ctx),
+              child: Text(l10n.cancel),
+            ),
+            FButton(
+              onPress: ctrl.text.trim().isEmpty
+                  ? null
+                  : () => Navigator.pop(ctx, ctrl.text.trim()),
+              child: Text(l10n.add),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n.cancel),
-          ),
-          FilledButton(
-            onPressed: ctrl.text.trim().isEmpty
-                ? null
-                : () => Navigator.pop(ctx, ctrl.text.trim()),
-            child: Text(l10n.add),
-          ),
-        ],
       ),
     );
     if (number != null && mounted) {
@@ -1852,14 +1871,14 @@ class _DependenciesSectionState extends State<_DependenciesSection> {
         );
         if (mounted) {
           if (result is Right<Failure, void>) {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(l10n.dependencyAdded)));
+            showFToast(context: context, title: Text(l10n.dependencyAdded));
             _load();
           } else {
-            ScaffoldMessenger.of(
-              context,
-            ).showSnackBar(SnackBar(content: Text(l10n.error)));
+            showFToast(
+              context: context,
+              variant: .destructive,
+              title: Text(l10n.error),
+            );
           }
         }
       }
@@ -1868,18 +1887,20 @@ class _DependenciesSectionState extends State<_DependenciesSection> {
 
   Future<void> _remove(Issue dep) async {
     final l10n = AppLocalizations.of(context)!;
-    final ok = await showDialog<bool>(
+    final ok = await showFDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx, style, animation) => FDialog(
         title: Text(l10n.removeDependency),
-        content: Text(l10n.removeDependencyConfirm),
+        body: Text(l10n.removeDependencyConfirm),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
+          FButton(
+            variant: .outline,
+            onPress: () => Navigator.pop(ctx, false),
             child: Text(l10n.cancel),
           ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
+          FButton(
+            variant: .destructive,
+            onPress: () => Navigator.pop(ctx, true),
             child: Text(l10n.delete),
           ),
         ],
@@ -1894,14 +1915,14 @@ class _DependenciesSectionState extends State<_DependenciesSection> {
       );
       if (mounted) {
         if (result is Right<Failure, void>) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(l10n.dependencyRemoved)));
+          showFToast(context: context, title: Text(l10n.dependencyRemoved));
           _load();
         } else {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(l10n.error)));
+          showFToast(
+            context: context,
+            variant: .destructive,
+            title: Text(l10n.error),
+          );
         }
       }
     }
@@ -1912,98 +1933,106 @@ class _DependenciesSectionState extends State<_DependenciesSection> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: theme.colorScheme.outlineVariant),
-      ),
-      child: ExpansionTile(
-        leading: Icon(Icons.link, color: theme.colorScheme.primary),
-        title: Text(
-          l10n.dependencies,
-          style: theme.textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        subtitle: Text(
-          '${_dependencies.length} ${l10n.items}',
-          style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-        ),
-        initiallyExpanded: _expanded,
-        onExpansionChanged: (v) => setState(() => _expanded = v),
-        trailing: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(icon: const Icon(Icons.add, size: 20), onPressed: _add),
-            const Icon(Icons.expand_more),
-          ],
-        ),
+    return FCard.raw(
+      child: Column(
         children: [
-          if (_loading)
-            const Padding(
-              padding: EdgeInsets.all(16),
-              child: Center(
-                child: SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
+          AppTile(
+            leading: Icon(
+              FIcons.link2,
+              size: 18,
+              color: theme.colorScheme.primary,
+            ),
+            title: l10n.dependencies,
+            subtitle: '${_dependencies.length} ${l10n.items}',
+            showChevron: false,
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                FTappable(
+                  onPress: _add,
+                  semanticsLabel: l10n.addDependency,
+                  child: Padding(
+                    padding: const EdgeInsets.all(6),
+                    child: Icon(
+                      FIcons.plus,
+                      size: 18,
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
                 ),
-              ),
-            )
-          else if (_dependencies.isEmpty)
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text(
-                l10n.noDependencies,
-                style: theme.textTheme.bodyMedium?.copyWith(
+                const SizedBox(width: 4),
+                Icon(
+                  _expanded ? FIcons.chevronUp : FIcons.chevronDown,
+                  size: 16,
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
-              ),
-            )
-          else
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-              child: Column(
-                children: _dependencies.map((dep) {
-                  return ListTile(
-                    dense: true,
-                    contentPadding: EdgeInsets.zero,
-                    leading: Container(
-                      width: 8,
-                      height: 8,
-                      decoration: BoxDecoration(
-                        color: dep.state?.value == 'open'
-                            ? Colors.green
-                            : Colors.purple,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                    title: Text(
-                      '#${dep.number} ${dep.title ?? ''}',
-                      style: theme.textTheme.bodySmall,
-                    ),
-                    onTap: dep.number != null
-                        ? () => Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => IssueDetailPage(
-                                owner: dep.repository?.owner ?? widget.owner,
-                                repo: dep.repository?.name ?? widget.repo,
-                                index: dep.number!,
-                              ),
-                            ),
-                          )
-                        : null,
-                    trailing: IconButton(
-                      icon: const Icon(Icons.link_off, size: 18),
-                      onPressed: () => _remove(dep),
-                    ),
-                  );
-                }).toList(),
-              ),
+              ],
             ),
+            onPress: () => setState(() => _expanded = !_expanded),
+          ),
+          if (_expanded) ...[
+            const FDivider(),
+            if (_loading)
+              const Padding(
+                padding: EdgeInsets.all(16),
+                child: Center(child: FCircularProgress(size: .sm)),
+              )
+            else if (_dependencies.isEmpty)
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Text(
+                  l10n.noDependencies,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              )
+            else
+              Padding(
+                padding: const EdgeInsets.fromLTRB(8, 4, 8, 12),
+                child: Column(
+                  children: _dependencies.map((dep) {
+                    return AppTile(
+                      leading: Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: dep.state?.value == 'open'
+                              ? Colors.green
+                              : Colors.purple,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      title: '#${dep.number} ${dep.title ?? ''}',
+                      showChevron: false,
+                      onPress: dep.number != null
+                          ? () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => IssueDetailPage(
+                                  owner: dep.repository?.owner ?? widget.owner,
+                                  repo: dep.repository?.name ?? widget.repo,
+                                  index: dep.number!,
+                                ),
+                              ),
+                            )
+                          : null,
+                      trailing: FTappable(
+                        onPress: () => _remove(dep),
+                        semanticsLabel: l10n.removeDependency,
+                        child: Padding(
+                          padding: const EdgeInsets.all(6),
+                          child: Icon(
+                            FIcons.unlink,
+                            size: 18,
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+          ],
         ],
       ),
     );

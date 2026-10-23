@@ -69,9 +69,10 @@ class _SearchPageState extends State<SearchPage> {
     _isRepoFilterSheetOpen = true;
 
     try {
-      final result = await showModalBottomSheet<RepoFilterState>(
+      final result = await showFSheet<RepoFilterState>(
         context: context,
-        isScrollControlled: true,
+        side: FLayout.btt,
+        mainAxisMaxRatio: 0.85,
         builder: (_) =>
             RepoFilterBottomSheet(initialState: _repoFilterState.value),
       );
@@ -90,9 +91,10 @@ class _SearchPageState extends State<SearchPage> {
     _isIssueFilterSheetOpen = true;
 
     try {
-      final result = await showModalBottomSheet<IssueFilterState>(
+      final result = await showFSheet<IssueFilterState>(
         context: context,
-        isScrollControlled: true,
+        side: FLayout.btt,
+        mainAxisMaxRatio: 0.85,
         builder: (_) => IssueFilterBottomSheet(
           initialState: _issueFilterState.value,
           availableLabels: const [],
@@ -464,7 +466,7 @@ class _SearchRepoCardState extends State<_SearchRepoCard> {
                 UserAvatar(user: repo.owner!, radius: UIConstants.avatarSm)
               else
                 Icon(
-                  repo.private == true ? Icons.lock : Icons.public,
+                  repo.private == true ? FIcons.lock : FIcons.globe,
                   size: UIConstants.iconMd,
                   color: theme.colorScheme.primary,
                 ),
@@ -529,7 +531,7 @@ class _SearchRepoCardState extends State<_SearchRepoCard> {
                 const SizedBox(width: UIConstants.md),
               ],
               Icon(
-                Icons.star_outline,
+                FIcons.star,
                 size: UIConstants.iconSm,
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -540,7 +542,7 @@ class _SearchRepoCardState extends State<_SearchRepoCard> {
               ),
               const SizedBox(width: UIConstants.md),
               Icon(
-                Icons.call_split,
+                FIcons.gitFork,
                 size: UIConstants.iconSm,
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -701,7 +703,7 @@ class _SearchIssueCardState extends State<_SearchIssueCard> {
               const Spacer(),
               if (issue.comments != null) ...[
                 Icon(
-                  Icons.comment_outlined,
+                  FIcons.messageSquare,
                   size: UIConstants.iconXs,
                   color: theme.colorScheme.onSurfaceVariant,
                 ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/animations/animated_wrapper.dart';
@@ -11,7 +12,9 @@ import '../../domain/usecases/user_usecases.dart';
 import '../../l10n/app_localizations.dart';
 import '../widgets/org_avatar.dart';
 import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_section.dart';
 import '../widgets/forui/app_state_views.dart';
+import '../widgets/forui/app_tile.dart';
 import '../widgets/premium_card.dart';
 import '../widgets/user_avatar.dart';
 import 'follow_page.dart';
@@ -63,7 +66,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
       _repos = repoResult.value;
     }
 
-    final followResult = await Injection.checkUserFollowUseCase(widget.username);
+    final followResult = await Injection.checkUserFollowUseCase(
+      widget.username,
+    );
     if (followResult is Right<Failure, bool>) {
       _isFollowing = followResult.value;
     }
@@ -91,51 +96,57 @@ class _UserProfilePageState extends State<UserProfilePage> {
       child: _loading
           ? _buildSkeleton()
           : _user == null
-              ? _buildError(l10n)
-              : RefreshIndicator(
-                  onRefresh: _load,
-                  child: ListView(
-                    padding: const EdgeInsets.only(bottom: UIConstants.xl),
-                    children: [
-                      FadeInWrapper(
-                        child: _UserHeader(
-                          user: _user!,
-                          isFollowing: _isFollowing,
-                          followLoading: _followLoading,
-                          onToggleFollow: _toggleFollow,
-                        ),
-                      ),
-                      const SizedBox(height: UIConstants.md),
-                      Padding(
-                        padding: UIConstants.pagePadding,
-                        child: _StatsRow(
-                          user: _user!,
-                          reposCount: _repos.length,
-                          username: widget.username,
-                        ),
-                      ),
-                      const SizedBox(height: UIConstants.md),
-                      _InfoCards(user: _user!, l10n: l10n),
-                      if (_orgs.isNotEmpty) ...[
-                        const SizedBox(height: UIConstants.md),
-                        _OrgsSection(orgs: _orgs, l10n: l10n),
-                      ],
-                      const SizedBox(height: UIConstants.md),
-                      Padding(
-                        padding: UIConstants.pagePadding,
-                        child: Text(
-                          l10n.repositories,
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
-                        ),
-                      ),
-                      const SizedBox(height: UIConstants.sm),
-                      ..._repos.take(5).map((r) => Padding(
-                            padding: UIConstants.pagePadding,
-                            child: FadeInWrapper(child: _RepoItem(repo: r)),
-                          )),
-                    ],
+          ? _buildError(l10n)
+          : RefreshIndicator(
+              onRefresh: _load,
+              child: ListView(
+                padding: const EdgeInsets.only(bottom: UIConstants.xl),
+                children: [
+                  FadeInWrapper(
+                    child: _UserHeader(
+                      user: _user!,
+                      isFollowing: _isFollowing,
+                      followLoading: _followLoading,
+                      onToggleFollow: _toggleFollow,
+                    ),
                   ),
-                ),
+                  const SizedBox(height: UIConstants.md),
+                  Padding(
+                    padding: UIConstants.pagePadding,
+                    child: _StatsRow(
+                      user: _user!,
+                      reposCount: _repos.length,
+                      username: widget.username,
+                    ),
+                  ),
+                  const SizedBox(height: UIConstants.md),
+                  _InfoCards(user: _user!, l10n: l10n),
+                  if (_orgs.isNotEmpty) ...[
+                    const SizedBox(height: UIConstants.md),
+                    _OrgsSection(orgs: _orgs, l10n: l10n),
+                  ],
+                  const SizedBox(height: UIConstants.md),
+                  Padding(
+                    padding: UIConstants.pagePadding,
+                    child: Text(
+                      l10n.repositories,
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: UIConstants.sm),
+                  ..._repos
+                      .take(5)
+                      .map(
+                        (r) => Padding(
+                          padding: UIConstants.pagePadding,
+                          child: FadeInWrapper(child: _RepoItem(repo: r)),
+                        ),
+                      ),
+                ],
+              ),
+            ),
     );
   }
 
@@ -158,13 +169,16 @@ class _UserProfilePageState extends State<UserProfilePage> {
             padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
             child: Column(
               children: [
-                CircleAvatar(
-                  radius: 40,
-                  backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                FAvatar.raw(
+                  size: 80,
+                  style: .delta(
+                    backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                  ),
                 ),
                 const SizedBox(height: 12),
                 Container(
-                  width: 140, height: 16,
+                  width: 140,
+                  height: 16,
                   decoration: BoxDecoration(
                     color: theme.colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(4),
@@ -172,7 +186,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 ),
                 const SizedBox(height: 8),
                 Container(
-                  width: 100, height: 12,
+                  width: 100,
+                  height: 12,
                   decoration: BoxDecoration(
                     color: theme.colorScheme.surfaceContainerHighest,
                     borderRadius: BorderRadius.circular(4),
@@ -186,78 +201,77 @@ class _UserProfilePageState extends State<UserProfilePage> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Row(
-            children: List.generate(4, (i) => Expanded(
-              child: Padding(
-                padding: EdgeInsets.only(left: i > 0 ? 8 : 0),
-                child: Card(
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(color: theme.colorScheme.outlineVariant),
+            children: List.generate(
+              4,
+              (i) => Expanded(
+                child: Padding(
+                  padding: EdgeInsets.only(left: i > 0 ? 8 : 0),
+                  child: FCard.raw(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: Column(
+                        children: [
+                          Container(
+                            width: 32,
+                            height: 16,
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.surfaceContainerHighest,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Container(
+                            width: 48,
+                            height: 10,
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.surfaceContainerHighest,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    child: Column(
+                ),
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: FCard.raw(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: List.generate(
+                  2,
+                  (i) => Padding(
+                    padding: EdgeInsets.only(bottom: i < 1 ? 12 : 0),
+                    child: Row(
                       children: [
                         Container(
-                          width: 32, height: 16,
+                          width: 20,
+                          height: 20,
                           decoration: BoxDecoration(
                             color: theme.colorScheme.surfaceContainerHighest,
                             borderRadius: BorderRadius.circular(4),
                           ),
                         ),
-                        const SizedBox(height: 6),
-                        Container(
-                          width: 48, height: 10,
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.surfaceContainerHighest,
-                            borderRadius: BorderRadius.circular(4),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Container(
+                            height: 14,
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.surfaceContainerHighest,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
                 ),
-              ),
-            )),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Card(
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-              side: BorderSide(color: theme.colorScheme.outlineVariant),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: List.generate(2, (i) => Padding(
-                  padding: EdgeInsets.only(bottom: i < 1 ? 12 : 0),
-                  child: Row(
-                    children: [
-                      Container(
-                        width: 20, height: 20,
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.surfaceContainerHighest,
-                          borderRadius: BorderRadius.circular(4),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Container(
-                          height: 14,
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.surfaceContainerHighest,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                )),
               ),
             ),
           ),
@@ -266,7 +280,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Container(
-            width: 100, height: 14,
+            width: 100,
+            height: 14,
             decoration: BoxDecoration(
               color: theme.colorScheme.surfaceContainerHighest,
               borderRadius: BorderRadius.circular(4),
@@ -274,53 +289,54 @@ class _UserProfilePageState extends State<UserProfilePage> {
           ),
         ),
         const SizedBox(height: 12),
-        ...List.generate(3, (i) => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          child: Card(
-            elevation: 0,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-              side: BorderSide(color: theme.colorScheme.outlineVariant),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Row(
-                children: [
-                  Container(
-                    width: 20, height: 20,
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(4),
+        ...List.generate(
+          3,
+          (i) => Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            child: FCard.raw(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 20,
+                      height: 20,
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          width: 120, height: 14,
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.surfaceContainerHighest,
-                            borderRadius: BorderRadius.circular(4),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: 120,
+                            height: 14,
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.surfaceContainerHighest,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 6),
-                        Container(
-                          width: 180, height: 10,
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.surfaceContainerHighest,
-                            borderRadius: BorderRadius.circular(4),
+                          const SizedBox(height: 6),
+                          Container(
+                            width: 180,
+                            height: 10,
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.surfaceContainerHighest,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
-        )),
+        ),
       ],
     );
   }
@@ -396,44 +412,21 @@ class _UserHeader extends StatelessWidget {
                             height: 28,
                             child: Padding(
                               padding: EdgeInsets.all(4),
-                              child: CircularProgressIndicator(strokeWidth: 2),
+                              child: FCircularProgress(size: .xs),
                             ),
                           )
                         : isFollowing
-                            ? OutlinedButton(
-                                onPressed: onToggleFollow,
-                                style: OutlinedButton.styleFrom(
-                                  minimumSize: Size.zero,
-                                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                  visualDensity: VisualDensity.compact,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(100),
-                                  ),
-                                ),
-                                child: Text(
-                                  l10n.unfollow,
-                                  style: theme.textTheme.labelSmall,
-                                ),
-                              )
-                            : FilledButton(
-                                onPressed: onToggleFollow,
-                                style: FilledButton.styleFrom(
-                                  minimumSize: Size.zero,
-                                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                  visualDensity: VisualDensity.compact,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(100),
-                                  ),
-                                ),
-                                child: Text(
-                                  l10n.follow,
-                                  style: theme.textTheme.labelSmall?.copyWith(
-                                    color: theme.colorScheme.onPrimary,
-                                  ),
-                                ),
-                              ),
+                        ? FButton(
+                            variant: .outline,
+                            size: .xs,
+                            onPress: onToggleFollow,
+                            child: Text(l10n.unfollow),
+                          )
+                        : FButton(
+                            size: .xs,
+                            onPress: onToggleFollow,
+                            child: Text(l10n.follow),
+                          ),
                   ),
                 ],
               ),
@@ -450,15 +443,16 @@ class _UserHeader extends StatelessWidget {
             ],
             if (user.is_admin == true) ...[
               const SizedBox(height: UIConstants.sm),
-              Chip(
-                label: Text(l10n.admin),
-                avatar: Icon(
-                  Icons.shield,
-                  size: UIConstants.iconSm,
-                  color: theme.colorScheme.onError,
+              FBadge(
+                variant: .primary,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(FIcons.shield, size: UIConstants.iconSm),
+                    const SizedBox(width: 4),
+                    Text(l10n.admin),
+                  ],
                 ),
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                visualDensity: VisualDensity.compact,
               ),
             ],
           ],
@@ -589,24 +583,19 @@ class _InfoCards extends StatelessWidget {
     if (user.email != null && user.email!.isNotEmpty) {
       items.add(
         _InfoTile(
-          icon: Icons.email_outlined,
+          icon: FIcons.mail,
           label: user.email!,
           onTap: () => _launchUrl('mailto:${user.email!}'),
         ),
       );
     }
     if (user.location != null && user.location!.isNotEmpty) {
-      items.add(
-        _InfoTile(
-          icon: Icons.location_on_outlined,
-          label: user.location!,
-        ),
-      );
+      items.add(_InfoTile(icon: FIcons.mapPin, label: user.location!));
     }
     if (user.website != null && user.website!.isNotEmpty) {
       items.add(
         _InfoTile(
-          icon: Icons.language,
+          icon: FIcons.globe,
           label: user.website!,
           onTap: () => _launchUrl(user.website!),
         ),
@@ -615,7 +604,7 @@ class _InfoCards extends StatelessWidget {
     if (user.created != null) {
       items.add(
         _InfoTile(
-          icon: Icons.calendar_today_outlined,
+          icon: FIcons.calendar,
           label: l10n.joinedOnParams(_formatDate(user.created!)),
         ),
       );
@@ -625,10 +614,7 @@ class _InfoCards extends StatelessWidget {
 
     return Padding(
       padding: UIConstants.pagePadding,
-      child: PremiumCard(
-        padding: EdgeInsets.zero,
-        child: Column(children: items),
-      ),
+      child: AppSection(title: '', showHeader: false, children: items),
     );
   }
 
@@ -657,18 +643,18 @@ class _InfoTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return ListTile(
+    return AppTile(
       leading: Icon(
         icon,
         size: UIConstants.iconMd,
         color: theme.colorScheme.primary,
       ),
-      title: Text(label, style: theme.textTheme.bodyMedium),
-      dense: true,
+      title: label,
+      showChevron: false,
       trailing: onTap != null
-          ? const Icon(Icons.open_in_new, size: UIConstants.iconSm)
+          ? const Icon(FIcons.externalLink, size: UIConstants.iconSm)
           : null,
-      onTap: onTap,
+      onPress: onTap,
     );
   }
 }
@@ -687,8 +673,8 @@ class _OrgsSection extends StatelessWidget {
       children: [
         Padding(
           padding: UIConstants.pagePadding,
-          child: InkWell(
-            onTap: () {
+          child: FTappable(
+            onPress: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -696,7 +682,6 @@ class _OrgsSection extends StatelessWidget {
                 ),
               );
             },
-            borderRadius: BorderRadius.circular(4),
             child: Row(
               children: [
                 Text(
@@ -707,7 +692,7 @@ class _OrgsSection extends StatelessWidget {
                 ),
                 const SizedBox(width: UIConstants.xs),
                 Icon(
-                  Icons.chevron_right,
+                  FIcons.chevronRight,
                   size: 18,
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
@@ -727,29 +712,31 @@ class _OrgsSection extends StatelessWidget {
               final org = orgs[index];
               return FadeInWrapper(
                 delay: Duration(milliseconds: index * 30),
-                child: Tooltip(
-                  message: [org.full_name, org.name, org.username]
-                    .whereType<String>()
-                    .where((s) => s.isNotEmpty)
-                    .firstOrNull ?? '',
-                  child: GestureDetector(
-                    onTap: () {
+                child: FTooltip(
+                  tipBuilder: (context, controller) => Text(
+                    [org.full_name, org.name, org.username]
+                            .whereType<String>()
+                            .where((s) => s.isNotEmpty)
+                            .firstOrNull ??
+                        '',
+                  ),
+                  child: FTappable(
+                    onPress: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) => OrganizationDetailPage(
-                            orgName: [org.username, org.name]
-                              .whereType<String>()
-                              .where((s) => s.isNotEmpty)
-                              .firstOrNull ?? '',
+                            orgName:
+                                [org.username, org.name]
+                                    .whereType<String>()
+                                    .where((s) => s.isNotEmpty)
+                                    .firstOrNull ??
+                                '',
                           ),
                         ),
                       );
                     },
-                    child: OrgAvatar(
-                      org: org,
-                      radius: UIConstants.avatarXl,
-                    ),
+                    child: OrgAvatar(org: org, radius: UIConstants.avatarXl),
                   ),
                 ),
               );
@@ -783,7 +770,7 @@ class _RepoItem extends StatelessWidget {
       child: Row(
         children: [
           Icon(
-            repo.private == true ? Icons.lock : Icons.public,
+            repo.private == true ? FIcons.lock : FIcons.globe,
             size: 20,
             color: theme.colorScheme.primary,
           ),
@@ -810,7 +797,7 @@ class _RepoItem extends StatelessWidget {
               ],
             ),
           ),
-          const Icon(Icons.chevron_right, size: 18),
+          const Icon(FIcons.chevronRight, size: 18),
         ],
       ),
     );

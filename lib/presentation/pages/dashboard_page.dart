@@ -157,29 +157,29 @@ class _DashboardPageState extends State<DashboardPage> {
       showHeader: false,
       children: [
         AppTile(
-          leading: const _IconBox(color: Color(0xFF2EA043), icon: Icons.bug_report_outlined),
+          leading: const _IconBox(color: Color(0xFF2EA043), icon: FIcons.circleDot),
           title: l10n.issues,
           onPress: () =>
               _openIssues(context, const IssueFilterState(type: 'issues')),
         ),
         AppTile(
-          leading: const _IconBox(color: Color(0xFF0969DA), icon: Icons.merge_type),
+          leading: const _IconBox(color: Color(0xFF0969DA), icon: FIcons.gitPullRequest),
           title: l10n.pullRequests,
           onPress: () =>
               _openIssues(context, const IssueFilterState(type: 'pulls')),
         ),
         AppTile(
-          leading: const _IconBox(color: Color(0xFF57606A), icon: Icons.trending_up),
+          leading: const _IconBox(color: Color(0xFF57606A), icon: FIcons.trendingUp),
           title: l10n.topRepositories,
           onPress: () => _push(context, const RepoListPage()),
         ),
         AppTile(
-          leading: const _IconBox(color: Color(0xFFBC4C00), icon: Icons.business_outlined),
+          leading: const _IconBox(color: Color(0xFFBC4C00), icon: FIcons.building2),
           title: l10n.organisations,
           onPress: () => _openOrganizations(context),
         ),
         AppTile(
-          leading: const _IconBox(color: Color(0xFFBF8700), icon: Icons.star_outline),
+          leading: const _IconBox(color: Color(0xFFBF8700), icon: FIcons.star),
           title: l10n.starredRepos,
           onPress: () => _push(context, const StarredReposPage()),
         ),
@@ -248,7 +248,7 @@ class _DashboardPageState extends State<DashboardPage> {
       title: l10n.shortcuts,
       children: [
         AppTile(
-          leading: const _IconBox(color: Color(0xFF2EA043), icon: Icons.alternate_email),
+          leading: const _IconBox(color: Color(0xFF2EA043), icon: FIcons.atSign),
           title: l10n.issues,
           subtitle: l10n.mentioned,
           onPress: () => _openIssues(
@@ -257,7 +257,7 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
         ),
         AppTile(
-          leading: const _IconBox(color: Color(0xFF0969DA), icon: Icons.rate_review_outlined),
+          leading: const _IconBox(color: Color(0xFF0969DA), icon: FIcons.messageSquare),
           title: l10n.pullRequests,
           subtitle: l10n.reviewRequested,
           onPress: () => _openIssues(

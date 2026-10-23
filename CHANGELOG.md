@@ -30,6 +30,8 @@
 - **Actions / webhook / wiki / package pages**: workflow runs (with `FPopoverMenu` filters), run detail, repo/org secrets & variables, webhook lists (incl. `FSelect`/`FSwitch` create dialog), wiki list/detail/edit, package list/detail — all on Forui widgets
 - **Activity & profile**: activity feed uses `AppPage` with Forui rows and `FIcons` glyphs; other-user profile uses `AppPage` and `AppError`
 - **Filter sheets**: issue and repository filter bottom sheets rebuilt with Forui chips (`FButton`), checkboxes (`FCheckbox`) and segmented type/order controls
+- **Final Material sweep**: issue/team/organization detail, issue list, profiles, repo detail, PR detail and create-repo pages no longer use Material cards, tiles, text fields, buttons, chips, dialogs or icons; save-filter, topics, fork and dependency dialogs are `FDialog`s
+- **Filter sheets on `FSheet`**: issue and repository filters now open as Forui modal sheets (`showFSheet`) from the issue list, repository detail and search pages
 
 ### Added
 - `AppTheme` (brand palette, light/dark Forui themes, touch/desktop density)

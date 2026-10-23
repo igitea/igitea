@@ -13,6 +13,7 @@ import '../../core/animations/animated_wrapper.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/org_avatar.dart';
 import '../widgets/forui/app_section.dart';
+import '../widgets/forui/app_state_views.dart';
 import '../widgets/forui/app_tile.dart';
 import '../widgets/premium_card.dart';
 import '../widgets/user_avatar.dart';
@@ -85,27 +86,25 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: ListenableBuilder(
-        listenable: Injection.userNotifier,
-        builder: (context, _) {
-          final state = Injection.userNotifier.state;
-          return switch (state) {
-            UserLoading() => const _LoadingView(),
-            UserError(:final message) => _ErrorView(
-              message: message,
-              onRetry: _refresh,
-            ),
-            UserLoaded(:final user) => _ProfileContent(
-              user: user,
-              orgs: _orgs,
-              orgsLoading: _orgsLoading,
-              onRefresh: _refresh,
-            ),
-            _ => const _LoadingView(),
-          };
-        },
-      ),
+    return ListenableBuilder(
+      listenable: Injection.userNotifier,
+      builder: (context, _) {
+        final state = Injection.userNotifier.state;
+        return switch (state) {
+          UserLoading() => const _LoadingView(),
+          UserError(:final message) => _ErrorView(
+            message: message,
+            onRetry: _refresh,
+          ),
+          UserLoaded(:final user) => _ProfileContent(
+            user: user,
+            orgs: _orgs,
+            orgsLoading: _orgsLoading,
+            onRefresh: _refresh,
+          ),
+          _ => const _LoadingView(),
+        };
+      },
     );
   }
 }
@@ -115,7 +114,7 @@ class _LoadingView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(child: CircularProgressIndicator());
+    return const AppLoading();
   }
 }
 
@@ -129,13 +128,14 @@ class _ErrorView extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return EmptyState(
-      icon: Icons.error_outline,
+      icon: FIcons.circleAlert,
       title: l10n.failedToLoadProfile,
       subtitle: message,
-      action: FilledButton.icon(
-        onPressed: onRetry,
-        icon: const Icon(Icons.refresh),
-        label: Text(l10n.retry),
+      action: FButton(
+        variant: .outline,
+        prefix: const Icon(FIcons.refreshCw),
+        onPress: onRetry,
+        child: Text(l10n.retry),
       ),
     );
   }
@@ -440,21 +440,19 @@ class _InfoCards extends StatelessWidget {
     if (user.email != null && user.email!.isNotEmpty) {
       items.add(
         _InfoTile(
-          icon: Icons.email_outlined,
+          icon: FIcons.mail,
           label: user.email!,
           onTap: () => _launchUrl('mailto:${user.email!}'),
         ),
       );
     }
     if (user.location != null && user.location!.isNotEmpty) {
-      items.add(
-        _InfoTile(icon: Icons.location_on_outlined, label: user.location!),
-      );
+      items.add(_InfoTile(icon: FIcons.mapPin, label: user.location!));
     }
     if (user.website != null && user.website!.isNotEmpty) {
       items.add(
         _InfoTile(
-          icon: Icons.language,
+          icon: FIcons.globe,
           label: user.website!,
           onTap: () => _launchUrl(user.website!),
         ),
@@ -463,7 +461,7 @@ class _InfoCards extends StatelessWidget {
     if (user.created != null) {
       items.add(
         _InfoTile(
-          icon: Icons.calendar_today_outlined,
+          icon: FIcons.calendar,
           label: l10n.joinedOnParams(_formatDate(user.created!)),
         ),
       );
@@ -473,10 +471,7 @@ class _InfoCards extends StatelessWidget {
 
     return Padding(
       padding: UIConstants.pagePadding,
-      child: PremiumCard(
-        padding: EdgeInsets.zero,
-        child: Column(children: items),
-      ),
+      child: AppSection(title: '', showHeader: false, children: items),
     );
   }
 
@@ -539,8 +534,8 @@ class _OrgsSection extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              InkWell(
-                onTap: () {
+              FTappable(
+                onPress: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -548,7 +543,6 @@ class _OrgsSection extends StatelessWidget {
                     ),
                   );
                 },
-                borderRadius: BorderRadius.circular(4),
                 child: Row(
                   children: [
                     Text(
@@ -561,7 +555,7 @@ class _OrgsSection extends StatelessWidget {
                     Semantics(
                       excludeSemantics: true,
                       child: Icon(
-                        Icons.chevron_right,
+                        FIcons.chevronRight,
                         size: 18,
                         color: theme.colorScheme.onSurfaceVariant,
                       ),
@@ -569,14 +563,17 @@ class _OrgsSection extends StatelessWidget {
                   ],
                 ),
               ),
-              IconButton(
-                icon: const Icon(Icons.add),
-                onPressed: () {
+              FTappable(
+                onPress: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const CreateOrgPage()),
                   );
                 },
+                child: const Padding(
+                  padding: EdgeInsets.all(6),
+                  child: Icon(FIcons.plus),
+                ),
               ),
             ],
           ),
@@ -593,15 +590,16 @@ class _OrgsSection extends StatelessWidget {
               final org = orgs[index];
               return FadeInWrapper(
                 delay: Duration(milliseconds: index * 30),
-                child: Tooltip(
-                  message:
-                      [org.full_name, org.name, org.username]
-                          .whereType<String>()
-                          .where((s) => s.isNotEmpty)
-                          .firstOrNull ??
-                      '',
-                  child: GestureDetector(
-                    onTap: () {
+                child: FTooltip(
+                  tipBuilder: (context, controller) => Text(
+                    [org.full_name, org.name, org.username]
+                            .whereType<String>()
+                            .where((s) => s.isNotEmpty)
+                            .firstOrNull ??
+                        '',
+                  ),
+                  child: FTappable(
+                    onPress: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(

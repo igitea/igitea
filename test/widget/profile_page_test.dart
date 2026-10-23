@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:forui/forui.dart';
 import 'package:igitea/core/di/injection.dart';
 import 'package:igitea/core/storage/auth_method_storage.dart';
 import 'package:igitea/data/models/generated/generated_models.dart';
@@ -23,6 +24,8 @@ void main() {
     await tester.pump();
     await tester.pump(const Duration(seconds: 1));
 
-    expect(find.byType(Scaffold), findsOneWidget);
+    expect(find.byType(Scaffold), findsNothing);
+    expect(find.text('Failed to load profile'), findsOneWidget);
+    expect(find.byType(FButton), findsOneWidget);
   });
 }

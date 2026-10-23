@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../../core/animations/animated_wrapper.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/organization_notifier.dart';
+import '../widgets/forui/app_state_views.dart';
+import '../widgets/forui/app_tile.dart';
 import '../widgets/user_avatar.dart';
-import 'repo_detail_page.dart';
 import 'edit_team_page.dart';
+import 'repo_detail_page.dart';
 
 class TeamDetailPage extends StatefulWidget {
   final int teamId;
 
-  const TeamDetailPage({
-    super.key,
-    required this.teamId,
-  });
+  const TeamDetailPage({super.key, required this.teamId});
 
   @override
   State<TeamDetailPage> createState() => _TeamDetailPageState();
@@ -47,17 +47,21 @@ class _TeamDetailPageState extends State<TeamDetailPage>
       body: ListenableBuilder(
         listenable: Injection.organizationNotifier,
         builder: (context, _) {
-        final state = Injection.organizationNotifier.teamDetailState;
-        return switch (state) {
-          OrgLoading() => const Center(child: CircularProgressIndicator()),
-          OrgError(:final message) => _ErrorView(
+          final state = Injection.organizationNotifier.teamDetailState;
+          return switch (state) {
+            OrgLoading() => const AppLoading(),
+            OrgError(:final message) => _ErrorView(
               message: message,
               onRetry: () =>
                   Injection.organizationNotifier.getTeam(widget.teamId),
             ),
-          OrgTeamDetailLoaded(:final team) => _buildContent(context, team, l10n),
-          _ => const Center(child: CircularProgressIndicator()),
-        };
+            OrgTeamDetailLoaded(:final team) => _buildContent(
+              context,
+              team,
+              l10n,
+            ),
+            _ => const AppLoading(),
+          };
         },
       ),
     );
@@ -73,10 +77,8 @@ class _TeamDetailPageState extends State<TeamDetailPage>
             floating: true,
             forceElevated: innerBoxIsScrolled,
             actions: [
-              IconButton(
-                icon: const Icon(Icons.edit_outlined),
-                tooltip: l10n.editTeam,
-                onPressed: () async {
+              FTappable(
+                onPress: () async {
                   final result = await Navigator.push<bool>(
                     context,
                     MaterialPageRoute(builder: (_) => EditTeamPage(team: team)),
@@ -85,25 +87,31 @@ class _TeamDetailPageState extends State<TeamDetailPage>
                     Injection.organizationNotifier.getTeam(widget.teamId);
                   }
                 },
+                semanticsLabel: l10n.editTeam,
+                child: const Padding(
+                  padding: EdgeInsets.all(12),
+                  child: Icon(FIcons.pencilLine),
+                ),
               ),
-              IconButton(
-                icon: const Icon(Icons.delete_outline),
-                tooltip: l10n.deleteTeam,
-                onPressed: () => _deleteTeam(team, l10n),
+              FTappable(
+                onPress: () => _deleteTeam(team, l10n),
+                semanticsLabel: l10n.deleteTeam,
+                child: const Padding(
+                  padding: EdgeInsets.all(12),
+                  child: Icon(FIcons.trash2),
+                ),
               ),
             ],
           ),
-          SliverToBoxAdapter(
-            child: _TeamHeader(team: team),
-          ),
+          SliverToBoxAdapter(child: _TeamHeader(team: team)),
           SliverPersistentHeader(
             delegate: _SliverTabBarDelegate(
               TabBar(
                 controller: _tabController,
                 tabs: [
-                  Tab(icon: const Icon(Icons.info_outline), text: l10n.info),
-                  Tab(icon: const Icon(Icons.people_outline), text: l10n.members),
-                  Tab(icon: const Icon(Icons.folder_outlined), text: l10n.repositories),
+                  Tab(icon: const Icon(FIcons.info), text: l10n.info),
+                  Tab(icon: const Icon(FIcons.users), text: l10n.members),
+                  Tab(icon: const Icon(FIcons.folder), text: l10n.repositories),
                 ],
               ),
             ),
@@ -123,25 +131,31 @@ class _TeamDetailPageState extends State<TeamDetailPage>
   }
 
   Future<void> _deleteTeam(Team team, AppLocalizations l10n) async {
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showFDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx, style, animation) => FDialog(
         title: Text(l10n.deleteTeam),
-        content: Text(l10n.deleteTeamConfirm),
+        body: Text(l10n.deleteTeamConfirm),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
+          FButton(
+            variant: .outline,
+            onPress: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          FButton(
+            variant: .destructive,
+            onPress: () => Navigator.pop(ctx, true),
             child: Text(l10n.delete),
           ),
         ],
       ),
     );
     if (confirmed == true && mounted) {
-      final success = await Injection.organizationNotifier.deleteTeam(id: team.id!);
+      final success = await Injection.organizationNotifier.deleteTeam(
+        id: team.id!,
+      );
       if (mounted && success) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.teamDeleted)));
+        showFToast(context: context, title: Text(l10n.teamDeleted));
         Navigator.pop(context, true);
       }
     }
@@ -167,7 +181,7 @@ class _TeamHeader extends StatelessWidget {
                 radius: 24,
                 backgroundColor: theme.colorScheme.primaryContainer,
                 child: Icon(
-                  Icons.people,
+                  FIcons.users,
                   color: theme.colorScheme.onPrimaryContainer,
                 ),
               ),
@@ -182,7 +196,8 @@ class _TeamHeader extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    if (team.description != null && team.description!.isNotEmpty)
+                    if (team.description != null &&
+                        team.description!.isNotEmpty)
                       Text(
                         team.description!,
                         style: theme.textTheme.bodyMedium?.copyWith(
@@ -199,14 +214,11 @@ class _TeamHeader extends StatelessWidget {
             spacing: 8,
             children: [
               if (team.permission != null)
-                Chip(
-                  label: Text(team.permission!),
-                  visualDensity: VisualDensity.compact,
-                ),
+                FBadge(variant: .outline, child: Text(team.permission!)),
               if (team.includes_all_repositories == true)
-                Chip(
-                  label: Text(AppLocalizations.of(context)!.allRepos),
-                  visualDensity: VisualDensity.compact,
+                FBadge(
+                  variant: .outline,
+                  child: Text(AppLocalizations.of(context)!.allRepos),
                 ),
             ],
           ),
@@ -251,27 +263,24 @@ class _InfoTab extends StatelessWidget {
             spacing: 8,
             runSpacing: 4,
             children: team.units!
-                .map((unit) => Chip(
-                      label: Text(unit),
-                      visualDensity: VisualDensity.compact,
-                    ))
+                .map((unit) => FBadge(variant: .outline, child: Text(unit)))
                 .toList(),
           ),
           const SizedBox(height: 16),
         ],
         _InfoRow(
-          icon: Icons.security,
+          icon: FIcons.shieldCheck,
           label: l10n.permission,
           value: team.permission ?? '-',
         ),
         _InfoRow(
-          icon: Icons.folder_copy,
+          icon: FIcons.folder,
           label: l10n.allRepos,
           value: team.includes_all_repositories == true ? l10n.yes : l10n.no,
         ),
         if (team.can_create_org_repo == true)
           _InfoRow(
-            icon: Icons.add_circle_outline,
+            icon: FIcons.circlePlus,
             label: 'Can Create Org Repo',
             value: 'Yes',
           ),
@@ -344,50 +353,70 @@ class _MembersTabState extends State<_MembersTab> {
     List<User> results = [];
     bool searching = false;
 
-    final username = await showDialog<String>(
+    final username = await showFDialog<String>(
       context: context,
-      builder: (ctx) => StatefulBuilder(
-        builder: (ctx, setDialogState) => AlertDialog(
+      builder: (ctx, style, animation) => StatefulBuilder(
+        builder: (ctx, setDialogState) => FDialog(
           title: Text(l10n.addMember),
-          content: Column(
+          body: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              TextField(
-                controller: controller,
-                decoration: InputDecoration(
-                  hintText: l10n.searchMembers,
-                  border: const OutlineInputBorder(),
+              FTextField(
+                control: FTextFieldControl.managed(
+                  controller: controller,
+                  onChange: (value) async {
+                    final q = value.text;
+                    if (q.trim().isEmpty) {
+                      setDialogState(() => results = []);
+                      return;
+                    }
+                    setDialogState(() => searching = true);
+                    try {
+                      results = await Injection.apiService.adminSearchUsers(
+                        login_name: q.trim(),
+                      );
+                    } catch (_) {
+                      results = [];
+                    }
+                    setDialogState(() => searching = false);
+                  },
                 ),
-                onChanged: (q) async {
-                  if (q.trim().isEmpty) {
-                    setDialogState(() => results = []);
-                    return;
-                  }
-                  setDialogState(() => searching = true);
-                  try {
-                    results = await Injection.apiService.adminSearchUsers(login_name: q.trim());
-                  } catch (_) {
-                    results = [];
-                  }
-                  setDialogState(() => searching = false);
-                },
+                hint: l10n.searchMembers,
               ),
               const SizedBox(height: 12),
               if (searching)
-                const CircularProgressIndicator(strokeWidth: 2)
+                const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 12),
+                  child: FCircularProgress(size: .sm),
+                )
               else if (results.isEmpty && controller.text.trim().isNotEmpty)
                 Text(l10n.noSearchResults)
               else
-                ...results.map((u) => ListTile(
-                  leading: UserAvatar(user: u, radius: 14),
-                  title: Text(u.login ?? ''),
-                  dense: true,
-                  onTap: () => Navigator.pop(ctx, u.login),
-                )),
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxHeight: 260),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        for (final u in results)
+                          AppTile(
+                            leading: UserAvatar(user: u, radius: 14),
+                            title: u.login ?? '',
+                            showChevron: false,
+                            onPress: () => Navigator.pop(ctx, u.login),
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
             ],
           ),
           actions: [
-            TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l10n.cancel)),
+            FButton(
+              variant: .outline,
+              onPress: () => Navigator.pop(ctx),
+              child: Text(l10n.cancel),
+            ),
           ],
         ),
       ),
@@ -399,7 +428,7 @@ class _MembersTabState extends State<_MembersTab> {
         username: username,
       );
       if (mounted && success) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.memberAdded)));
+        showFToast(context: context, title: Text(l10n.memberAdded));
         Injection.organizationNotifier.listTeamMembers(widget.teamId);
       }
     }
@@ -407,14 +436,22 @@ class _MembersTabState extends State<_MembersTab> {
 
   Future<void> _removeMember(String username) async {
     final l10n = AppLocalizations.of(context)!;
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showFDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx, style, animation) => FDialog(
         title: Text(l10n.removeMember),
-        content: Text(l10n.removeMemberConfirmParams(username)),
+        body: Text(l10n.removeMemberConfirmParams(username)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(l10n.removeMember)),
+          FButton(
+            variant: .outline,
+            onPress: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          FButton(
+            variant: .destructive,
+            onPress: () => Navigator.pop(ctx, true),
+            child: Text(l10n.removeMember),
+          ),
         ],
       ),
     );
@@ -424,7 +461,7 @@ class _MembersTabState extends State<_MembersTab> {
         username: username,
       );
       if (mounted && success) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.memberRemoved)));
+        showFToast(context: context, title: Text(l10n.memberRemoved));
         Injection.organizationNotifier.listTeamMembers(widget.teamId);
       }
     }
@@ -433,17 +470,16 @@ class _MembersTabState extends State<_MembersTab> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
     return Column(
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          child: SizedBox(
-            width: double.infinity,
-            child: OutlinedButton.icon(
-              onPressed: _addMember,
-              icon: const Icon(Icons.person_add_outlined, size: 18),
-              label: Text(l10n.addMember),
-            ),
+          child: FButton(
+            variant: .outline,
+            prefix: const Icon(FIcons.userPlus, size: 18),
+            onPress: _addMember,
+            child: Text(l10n.addMember),
           ),
         ),
         Expanded(
@@ -455,26 +491,47 @@ class _MembersTabState extends State<_MembersTab> {
                 final members = state.members;
                 if (members.isEmpty) {
                   return RefreshIndicator(
-                    onRefresh: () => Injection.organizationNotifier.listTeamMembers(widget.teamId),
-                    child: ListView(children: [Center(child: Text(l10n.noMembers))]),
+                    onRefresh: () => Injection.organizationNotifier
+                        .listTeamMembers(widget.teamId),
+                    child: ListView(
+                      children: [
+                        AppEmpty(icon: FIcons.users, title: l10n.noMembers),
+                      ],
+                    ),
                   );
                 }
                 return RefreshIndicator(
-                  onRefresh: () => Injection.organizationNotifier.listTeamMembers(widget.teamId),
+                  onRefresh: () => Injection.organizationNotifier
+                      .listTeamMembers(widget.teamId),
                   child: ListView.builder(
+                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
                     itemCount: members.length,
                     itemBuilder: (context, index) {
                       final member = members[index];
                       return FadeInWrapper(
                         delay: Duration(milliseconds: index * 30),
-                        child: ListTile(
-                          leading: UserAvatar(user: member, radius: 16),
-                          title: Text(member.login ?? member.full_name ?? ''),
-                          subtitle: member.full_name != null ? Text(member.full_name!) : null,
-                          trailing: IconButton(
-                            icon: const Icon(Icons.remove_circle_outline),
-                            tooltip: l10n.removeMember,
-                            onPressed: () => _removeMember(member.login ?? ''),
+                        child: Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: FCard.raw(
+                            child: AppTile(
+                              leading: UserAvatar(user: member, radius: 16),
+                              title: member.login ?? member.full_name ?? '',
+                              subtitle: member.full_name,
+                              showChevron: false,
+                              trailing: FTappable(
+                                onPress: () =>
+                                    _removeMember(member.login ?? ''),
+                                semanticsLabel: l10n.removeMember,
+                                child: Padding(
+                                  padding: const EdgeInsets.all(6),
+                                  child: Icon(
+                                    FIcons.circleMinus,
+                                    size: 18,
+                                    color: theme.colorScheme.error,
+                                  ),
+                                ),
+                              ),
+                            ),
                           ),
                         ),
                       );
@@ -483,11 +540,16 @@ class _MembersTabState extends State<_MembersTab> {
                 );
               } else if (state is OrgError) {
                 return RefreshIndicator(
-                  onRefresh: () => Injection.organizationNotifier.listTeamMembers(widget.teamId),
-                  child: ListView(children: [Center(child: Text(state.message))]),
+                  onRefresh: () => Injection.organizationNotifier
+                      .listTeamMembers(widget.teamId),
+                  child: ListView(
+                    children: [
+                      AppEmpty(icon: FIcons.circleAlert, title: state.message),
+                    ],
+                  ),
                 );
               }
-              return const Center(child: CircularProgressIndicator());
+              return const AppLoading();
             },
           ),
         ),
@@ -525,41 +587,45 @@ class _ReposTabState extends State<_ReposTab> {
           final repos = state.repos;
           if (repos.isEmpty) {
             return RefreshIndicator(
-              onRefresh: () => Injection.organizationNotifier.listTeamRepos(widget.teamId),
+              onRefresh: () =>
+                  Injection.organizationNotifier.listTeamRepos(widget.teamId),
               child: ListView(
-                children: [Center(child: Text(l10n.noData))],
+                children: [
+                  AppEmpty(icon: FIcons.folderOpen, title: l10n.noData),
+                ],
               ),
             );
           }
           return RefreshIndicator(
-            onRefresh: () => Injection.organizationNotifier.listTeamRepos(widget.teamId),
+            onRefresh: () =>
+                Injection.organizationNotifier.listTeamRepos(widget.teamId),
             child: ListView.builder(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
               itemCount: repos.length,
               itemBuilder: (context, index) {
                 final repo = repos[index];
                 return FadeInWrapper(
                   delay: Duration(milliseconds: index * 30),
-                  child: ListTile(
-                    leading: const Icon(Icons.folder_outlined),
-                    title: Text(repo.name ?? ''),
-                    subtitle: repo.description != null
-                        ? Text(
-                            repo.description!,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          )
-                        : null,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => RepoDetailPage(
-                            owner: repo.owner?.login ?? '',
-                            repo: repo.name ?? '',
-                          ),
-                        ),
-                      );
-                    },
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: FCard.raw(
+                      child: AppTile(
+                        leading: const Icon(FIcons.folder, size: 18),
+                        title: repo.name ?? '',
+                        subtitle: repo.description,
+                        onPress: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => RepoDetailPage(
+                                owner: repo.owner?.login ?? '',
+                                repo: repo.name ?? '',
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
                   ),
                 );
               },
@@ -567,13 +633,16 @@ class _ReposTabState extends State<_ReposTab> {
           );
         } else if (state is OrgError) {
           return RefreshIndicator(
-            onRefresh: () => Injection.organizationNotifier.listTeamRepos(widget.teamId),
+            onRefresh: () =>
+                Injection.organizationNotifier.listTeamRepos(widget.teamId),
             child: ListView(
-              children: [Center(child: Text(state.message))],
+              children: [
+                AppEmpty(icon: FIcons.circleAlert, title: state.message),
+              ],
             ),
           );
         }
-        return const Center(child: CircularProgressIndicator());
+        return const AppLoading();
       },
     );
   }
@@ -583,10 +652,7 @@ class _ErrorView extends StatelessWidget {
   final String message;
   final VoidCallback onRetry;
 
-  const _ErrorView({
-    required this.message,
-    required this.onRetry,
-  });
+  const _ErrorView({required this.message, required this.onRetry});
 
   @override
   Widget build(BuildContext context) {
@@ -597,10 +663,7 @@ class _ErrorView extends StatelessWidget {
         children: [
           Text(message),
           const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: onRetry,
-            child: Text(l10n.retry),
-          ),
+          FButton(onPress: onRetry, child: Text(l10n.retry)),
         ],
       ),
     );

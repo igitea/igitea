@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:flutter/services.dart';
 
 import '../../core/animations/animated_wrapper.dart';
 import '../../core/animations/app_animations.dart';
@@ -12,7 +11,6 @@ import '../../core/errors/failures.dart';
 import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../domain/usecases/issue_usecases.dart';
-import '../../domain/usecases/repo_usecases.dart';
 import '../../domain/entities/auth_state.dart';
 import '../../domain/entities/issue_state.dart';
 import '../../l10n/app_localizations.dart';
@@ -21,6 +19,7 @@ import '../state/issue_notifier.dart';
 import '../models/issue_filter_state.dart';
 import '../widgets/issue_filter_bottom_sheet.dart';
 import '../widgets/empty_state.dart';
+import '../widgets/forui/app_filter_chip.dart';
 import '../widgets/forui/app_page.dart';
 import '../widgets/forui/app_section.dart';
 import '../widgets/forui/app_state_views.dart';
@@ -347,18 +346,19 @@ class _RepoDetailPageState extends State<RepoDetailPage> {
     BuildContext context,
     AppLocalizations l10n,
   ) async {
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showFDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context, style, animation) => FDialog(
         title: Text(l10n.forks),
-        content: Text('${l10n.forkRepoConfirm} ${widget.owner}/${widget.repo}'),
+        body: Text('${l10n.forkRepoConfirm} ${widget.owner}/${widget.repo}'),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
+          FButton(
+            variant: .outline,
+            onPress: () => Navigator.of(context).pop(false),
             child: Text(l10n.cancel),
           ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
+          FButton(
+            onPress: () => Navigator.of(context).pop(true),
             child: Text(l10n.confirm),
           ),
         ],
@@ -374,16 +374,15 @@ class _RepoDetailPageState extends State<RepoDetailPage> {
     if (!context.mounted) return;
     switch (result) {
       case Left<Failure, Repository>(:final value):
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.error}: ${value.message}')),
+        showFToast(
+          context: context,
+          variant: .destructive,
+          title: Text('${l10n.error}: ${value.message}'),
         );
       case Right<Failure, Repository>(:final value):
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              '${l10n.forked}: ${value.full_name ?? value.name ?? ''}',
-            ),
-          ),
+        showFToast(
+          context: context,
+          title: Text('${l10n.forked}: ${value.full_name ?? value.name ?? ''}'),
         );
     }
   }
@@ -431,11 +430,13 @@ class _RepoHeader extends StatelessWidget {
                 if (repo.owner != null)
                   UserAvatar(user: repo.owner!, radius: UIConstants.avatarXl)
                 else
-                  CircleAvatar(
-                    radius: UIConstants.avatarXl,
-                    backgroundColor: colorScheme.primaryContainer,
+                  FAvatar.raw(
+                    size: UIConstants.avatarXl * 2,
+                    style: .delta(
+                      backgroundColor: colorScheme.primaryContainer,
+                    ),
                     child: Icon(
-                      Icons.source,
+                      FIcons.folderGit2,
                       color: colorScheme.onPrimaryContainer,
                     ),
                   ),
@@ -512,7 +513,7 @@ class _RepoHeader extends StatelessWidget {
                   _LanguageBadge(language: repo.language!),
                 if (repo.default_branch != null)
                   _Badge(
-                    icon: Icons.call_split,
+                    icon: FIcons.gitBranch,
                     label: repo.default_branch!,
                     color: colorScheme.primary,
                     backgroundColor: colorScheme.primaryContainer,
@@ -529,10 +530,11 @@ class _RepoHeader extends StatelessWidget {
                   ),
                 ),
                 const Spacer(),
-                Tooltip(
-                  message: '${l10n.edit} ${l10n.topics}',
-                  child: InkWell(
-                    onTap: () => showTopicEditDialog(
+                FTooltip(
+                  tipBuilder: (context, controller) =>
+                      Text('${l10n.edit} ${l10n.topics}'),
+                  child: FTappable(
+                    onPress: () => showTopicEditDialog(
                       context,
                       owner,
                       repoName,
@@ -541,7 +543,7 @@ class _RepoHeader extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(4),
                       child: Icon(
-                        Icons.edit,
+                        FIcons.pencil,
                         size: 14,
                         color: theme.colorScheme.primary,
                       ),
@@ -557,10 +559,9 @@ class _RepoHeader extends StatelessWidget {
                 runSpacing: UIConstants.xs,
                 children: repo.topics!
                     .map(
-                      (t) => Chip(
-                        label: Text(t, style: const TextStyle(fontSize: 11)),
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        visualDensity: VisualDensity.compact,
+                      (t) => FBadge(
+                        variant: .outline,
+                        child: Text(t, style: const TextStyle(fontSize: 11)),
                       ),
                     )
                     .toList(),
@@ -603,7 +604,7 @@ class _StatsGrid extends StatelessWidget {
       children: [
         Expanded(
           child: _StatCard(
-            icon: Icons.star_outline,
+            icon: FIcons.star,
             value: '${repo.stars_count ?? 0}',
             label: l10n.stars,
             onTap: () => Navigator.of(context).push(
@@ -617,7 +618,7 @@ class _StatsGrid extends StatelessWidget {
         const SizedBox(width: UIConstants.sm),
         Expanded(
           child: _StatCard(
-            icon: Icons.fork_right,
+            icon: FIcons.gitFork,
             value: '${repo.forks_count ?? 0}',
             label: l10n.forks,
           ),
@@ -625,7 +626,7 @@ class _StatsGrid extends StatelessWidget {
         const SizedBox(width: UIConstants.sm),
         Expanded(
           child: _StatCard(
-            icon: Icons.visibility_outlined,
+            icon: FIcons.eye,
             value: '${repo.watchers_count ?? 0}',
             label: l10n.watchers,
             onTap: () => Navigator.of(context).push(
@@ -639,7 +640,7 @@ class _StatsGrid extends StatelessWidget {
         const SizedBox(width: UIConstants.sm),
         Expanded(
           child: _StatCard(
-            icon: Icons.bug_report_outlined,
+            icon: FIcons.bug,
             value: '${repo.open_issues_count ?? 0}',
             label: l10n.issues,
           ),
@@ -698,11 +699,7 @@ class _StatCard extends StatelessWidget {
       ),
     );
     if (onTap != null) {
-      return InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
-        child: child,
-      );
+      return FTappable(onPress: onTap, child: child);
     }
     return child;
   }
@@ -950,10 +947,12 @@ class _CodeTabState extends State<_CodeTab> {
             ),
             child: Row(
               children: [
-                IconButton(
-                  icon: const Icon(Icons.arrow_back, size: UIConstants.iconMd),
-                  onPressed: _navigateUp,
-                  visualDensity: VisualDensity.compact,
+                FTappable(
+                  onPress: _navigateUp,
+                  child: const Padding(
+                    padding: EdgeInsets.all(4),
+                    child: Icon(FIcons.arrowLeft, size: UIConstants.iconMd),
+                  ),
                 ),
                 Expanded(
                   child: Text(
@@ -973,17 +972,16 @@ class _CodeTabState extends State<_CodeTab> {
             builder: (context, _) {
               final state = Injection.repoNotifier.contentsState;
               return switch (state) {
-                ContentsLoading() => const Center(
-                  child: CircularProgressIndicator(),
-                ),
+                ContentsLoading() => const AppLoading(),
                 ContentsError(:final message) => Center(
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text('${l10n.error}: $message'),
                       const SizedBox(height: UIConstants.md),
-                      FilledButton(
-                        onPressed: () => Injection.repoNotifier.loadContents(
+                      FButton(
+                        variant: .outline,
+                        onPress: () => Injection.repoNotifier.loadContents(
                           widget.owner,
                           widget.repo,
                           path: _currentPath.isEmpty ? null : _currentPath,
@@ -999,7 +997,7 @@ class _CodeTabState extends State<_CodeTab> {
                   theme,
                   l10n,
                 ),
-                _ => const Center(child: CircularProgressIndicator()),
+                _ => const AppLoading(),
               };
             },
           ),
@@ -1022,7 +1020,7 @@ class _CodeTabState extends State<_CodeTab> {
     AppLocalizations l10n,
   ) {
     if (contents.isEmpty) {
-      return EmptyState(icon: Icons.folder_open, title: l10n.emptyDirectory);
+      return EmptyState(icon: FIcons.folderOpen, title: l10n.emptyDirectory);
     }
     final dirs = contents.where((c) => c.type == 'dir').toList();
     final files = contents.where((c) => c.type != 'dir').toList();
@@ -1072,14 +1070,14 @@ class _FileItem extends StatelessWidget {
           width: 0.5,
         ),
       ),
-      child: ListTile(
-        dense: true,
+      child: AppTile(
         leading: Icon(
-          isDir ? Icons.folder : fileIcon(item.type, item.name),
+          isDir ? FIcons.folder : fileIcon(item.type, item.name),
           size: UIConstants.iconMd,
           color: isDir ? Colors.blue : theme.colorScheme.onSurfaceVariant,
         ),
-        title: Text(item.name ?? '', style: theme.textTheme.bodyMedium),
+        title: item.name ?? '',
+        showChevron: false,
         trailing: item.size != null && !isDir
             ? Text(
                 _formatSize(item.size!),
@@ -1091,7 +1089,7 @@ class _FileItem extends StatelessWidget {
                 ),
               )
             : null,
-        onTap: onTap,
+        onPress: onTap,
       ),
     );
   }
@@ -1186,9 +1184,10 @@ class _IssuesTabState extends State<_IssuesTab> {
 
       if (!mounted) return;
 
-      final result = await showModalBottomSheet<IssueFilterState>(
+      final result = await showFSheet<IssueFilterState>(
         context: context,
-        isScrollControlled: true,
+        side: FLayout.btt,
+        mainAxisMaxRatio: 0.85,
         builder: (_) => IssueFilterBottomSheet(
           initialState: _filterState.value,
           availableLabels: labels,
@@ -1237,73 +1236,62 @@ class _IssuesTabState extends State<_IssuesTab> {
                       Row(
                         children: [
                           Expanded(
-                            child: SearchBar(
-                              controller: _searchController,
-                              hintText: widget.l10n.searchIssues,
-                              leading: const Icon(Icons.search),
-                              trailing: [
-                                if (_searchQuery.isNotEmpty)
-                                  IconButton(
-                                    icon: const Icon(Icons.clear),
-                                    onPressed: () {
-                                      _searchController.clear();
-                                      setState(() => _searchQuery = '');
-                                      _loadIssues();
-                                    },
-                                  ),
-                              ],
-                              onChanged: (query) {
-                                setState(() => _searchQuery = query);
-                                _debounceTimer?.cancel();
-                                _debounceTimer = Timer(
-                                  const Duration(milliseconds: 300),
-                                  _loadIssues,
-                                );
-                              },
-                              padding: const WidgetStatePropertyAll(
-                                EdgeInsets.symmetric(
-                                  horizontal: UIConstants.md,
-                                ),
+                            child: FTextField(
+                              control: FTextFieldControl.managed(
+                                controller: _searchController,
+                                onChange: (value) {
+                                  setState(() => _searchQuery = value.text);
+                                  _debounceTimer?.cancel();
+                                  _debounceTimer = Timer(
+                                    const Duration(milliseconds: 300),
+                                    _loadIssues,
+                                  );
+                                },
                               ),
+                              hint: widget.l10n.searchIssues,
+                              prefixBuilder: (context, style, variants) =>
+                                  const Padding(
+                                    padding: EdgeInsets.only(left: 12),
+                                    child: Icon(FIcons.search, size: 16),
+                                  ),
+                              clearable: (value) => value.text.isNotEmpty,
                             ),
                           ),
                           const SizedBox(width: UIConstants.sm),
-                          IconButton(
-                            icon: const Icon(Icons.filter_list),
-                            tooltip: widget.l10n.moreFilters,
-                            onPressed: _showFilterSheet,
+                          FTooltip(
+                            tipBuilder: (context, controller) =>
+                                Text(widget.l10n.moreFilters),
+                            child: FTappable(
+                              onPress: _showFilterSheet,
+                              semanticsLabel: widget.l10n.moreFilters,
+                              child: const Padding(
+                                padding: EdgeInsets.all(8),
+                                child: Icon(FIcons.listFilter),
+                              ),
+                            ),
                           ),
                         ],
                       ),
                       const SizedBox(height: UIConstants.sm),
-                      Row(
+                      Wrap(
+                        spacing: UIConstants.sm,
                         children: [
-                          FilterChip(
-                            label: Text(widget.l10n.open),
-                            selected: _selectedFilter == 'open',
-                            onSelected: (_) => setState(() {
-                              _selectedFilter = 'open';
-                              _loadIssues();
-                            }),
-                          ),
-                          const SizedBox(width: UIConstants.sm),
-                          FilterChip(
-                            label: Text(widget.l10n.closed),
-                            selected: _selectedFilter == 'closed',
-                            onSelected: (_) => setState(() {
-                              _selectedFilter = 'closed';
-                              _loadIssues();
-                            }),
-                          ),
-                          const SizedBox(width: UIConstants.sm),
-                          FilterChip(
-                            label: Text(widget.l10n.all),
-                            selected: _selectedFilter == 'all',
-                            onSelected: (_) => setState(() {
-                              _selectedFilter = 'all';
-                              _loadIssues();
-                            }),
-                          ),
+                          for (final option in [
+                            ('open', widget.l10n.open),
+                            ('closed', widget.l10n.closed),
+                            ('all', widget.l10n.all),
+                          ])
+                            FButton(
+                              variant: _selectedFilter == option.$1
+                                  ? .primary
+                                  : .outline,
+                              size: .xs,
+                              onPress: () => setState(() {
+                                _selectedFilter = option.$1;
+                                _loadIssues();
+                              }),
+                              child: Text(option.$2),
+                            ),
                         ],
                       ),
                       ValueListenableBuilder<IssueFilterState>(
@@ -1319,9 +1307,9 @@ class _IssuesTabState extends State<_IssuesTab> {
                               runSpacing: UIConstants.sm,
                               children: [
                                 ...filter.labels.map(
-                                  (label) => Chip(
-                                    label: Text(label),
-                                    onDeleted: () {
+                                  (label) => AppFilterChip(
+                                    label: label,
+                                    onRemove: () {
                                       _filterState.value = filter.copyWith(
                                         labels: filter.labels.difference({
                                           label,
@@ -1332,9 +1320,9 @@ class _IssuesTabState extends State<_IssuesTab> {
                                   ),
                                 ),
                                 ...filter.milestones.map(
-                                  (m) => Chip(
-                                    label: Text(m),
-                                    onDeleted: () {
+                                  (m) => AppFilterChip(
+                                    label: m,
+                                    onRemove: () {
                                       _filterState.value = filter.copyWith(
                                         milestones: filter.milestones
                                             .difference({m}),
@@ -1344,9 +1332,9 @@ class _IssuesTabState extends State<_IssuesTab> {
                                   ),
                                 ),
                                 if (filter.type != null)
-                                  Chip(
-                                    label: Text(filter.type!),
-                                    onDeleted: () {
+                                  AppFilterChip(
+                                    label: filter.type!,
+                                    onRemove: () {
                                       _filterState.value = filter.copyWith(
                                         clearType: true,
                                       );
@@ -1354,9 +1342,9 @@ class _IssuesTabState extends State<_IssuesTab> {
                                     },
                                   ),
                                 if (filter.assignedToMe)
-                                  Chip(
-                                    label: Text(widget.l10n.assignedToMe),
-                                    onDeleted: () {
+                                  AppFilterChip(
+                                    label: widget.l10n.assignedToMe,
+                                    onRemove: () {
                                       _filterState.value = filter.copyWith(
                                         assignedToMe: false,
                                       );
@@ -1364,9 +1352,9 @@ class _IssuesTabState extends State<_IssuesTab> {
                                     },
                                   ),
                                 if (filter.createdByMe)
-                                  Chip(
-                                    label: Text(widget.l10n.createdByMe),
-                                    onDeleted: () {
+                                  AppFilterChip(
+                                    label: widget.l10n.createdByMe,
+                                    onRemove: () {
                                       _filterState.value = filter.copyWith(
                                         createdByMe: false,
                                       );
@@ -1374,9 +1362,9 @@ class _IssuesTabState extends State<_IssuesTab> {
                                     },
                                   ),
                                 if (filter.mentionedMe)
-                                  Chip(
-                                    label: Text(widget.l10n.mentionedMe),
-                                    onDeleted: () {
+                                  AppFilterChip(
+                                    label: widget.l10n.mentionedMe,
+                                    onRemove: () {
                                       _filterState.value = filter.copyWith(
                                         mentionedMe: false,
                                       );
@@ -1393,17 +1381,16 @@ class _IssuesTabState extends State<_IssuesTab> {
                 ),
                 Expanded(
                   child: switch (issuesState) {
-                    IssuesListLoading() => const Center(
-                      child: CircularProgressIndicator(),
-                    ),
+                    IssuesListLoading() => const AppLoading(),
                     IssuesListError(:final message) => Center(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text('${widget.l10n.error}: $message'),
                           const SizedBox(height: UIConstants.md),
-                          FilledButton(
-                            onPressed: _loadIssues,
+                          FButton(
+                            variant: .outline,
+                            onPress: _loadIssues,
                             child: Text(widget.l10n.retry),
                           ),
                         ],
@@ -1412,7 +1399,7 @@ class _IssuesTabState extends State<_IssuesTab> {
                     IssuesListLoaded(:final issues) =>
                       issues.isEmpty
                           ? EmptyState(
-                              icon: Icons.bug_report_outlined,
+                              icon: FIcons.bug,
                               title: widget.l10n.noIssues,
                             )
                           : RefreshIndicator(
@@ -1442,7 +1429,7 @@ class _IssuesTabState extends State<_IssuesTab> {
                               ),
                             ),
                     _ => EmptyState(
-                      icon: Icons.bug_report_outlined,
+                      icon: FIcons.bug,
                       title: widget.l10n.noIssues,
                     ),
                   },
@@ -1453,8 +1440,9 @@ class _IssuesTabState extends State<_IssuesTab> {
               right: UIConstants.md,
               bottom: UIConstants.md,
               child: _canCreateIssue()
-                  ? FloatingActionButton(
-                      onPressed: () async {
+                  ? FButton.icon(
+                      variant: .primary,
+                      onPress: () async {
                         final result = await Navigator.of(context).push<Issue>(
                           MaterialPageRoute(
                             builder: (_) => CreateIssuePage(
@@ -1468,7 +1456,7 @@ class _IssuesTabState extends State<_IssuesTab> {
                           _loadIssues();
                         }
                       },
-                      child: const Icon(Icons.add),
+                      child: const Icon(FIcons.plus),
                     )
                   : const SizedBox.shrink(),
             ),
@@ -1498,7 +1486,7 @@ class _IssueItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isOpen = issue.state?.isOpen == true;
-    final stateIcon = isOpen ? Icons.error_outline : Icons.check_circle;
+    final stateIcon = isOpen ? FIcons.circleAlert : FIcons.circleCheck;
     final stateColor = isOpen ? Colors.green : Colors.purple;
 
     return PremiumListCard(
@@ -1724,50 +1712,40 @@ class _PullRequestsTabState extends State<_PullRequestsTab> {
                   padding:
                       UIConstants.pagePadding +
                       const EdgeInsets.only(top: UIConstants.sm),
-                  child: Row(
+                  child: Wrap(
+                    spacing: UIConstants.sm,
                     children: [
-                      FilterChip(
-                        label: Text(widget.l10n.open),
-                        selected: _selectedFilter == 'open',
-                        onSelected: (_) => setState(() {
-                          _selectedFilter = 'open';
-                          _loadPullRequests();
-                        }),
-                      ),
-                      const SizedBox(width: UIConstants.sm),
-                      FilterChip(
-                        label: Text(widget.l10n.closed),
-                        selected: _selectedFilter == 'closed',
-                        onSelected: (_) => setState(() {
-                          _selectedFilter = 'closed';
-                          _loadPullRequests();
-                        }),
-                      ),
-                      const SizedBox(width: UIConstants.sm),
-                      FilterChip(
-                        label: Text(widget.l10n.all),
-                        selected: _selectedFilter == 'all',
-                        onSelected: (_) => setState(() {
-                          _selectedFilter = 'all';
-                          _loadPullRequests();
-                        }),
-                      ),
+                      for (final option in [
+                        ('open', widget.l10n.open),
+                        ('closed', widget.l10n.closed),
+                        ('all', widget.l10n.all),
+                      ])
+                        FButton(
+                          variant: _selectedFilter == option.$1
+                              ? .primary
+                              : .outline,
+                          size: .xs,
+                          onPress: () => setState(() {
+                            _selectedFilter = option.$1;
+                            _loadPullRequests();
+                          }),
+                          child: Text(option.$2),
+                        ),
                     ],
                   ),
                 ),
                 Expanded(
                   child: switch (state) {
-                    PullRequestsLoading() => const Center(
-                      child: CircularProgressIndicator(),
-                    ),
+                    PullRequestsLoading() => const AppLoading(),
                     PullRequestsError(:final message) => Center(
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text('${widget.l10n.error}: $message'),
                           const SizedBox(height: UIConstants.md),
-                          FilledButton(
-                            onPressed: _loadPullRequests,
+                          FButton(
+                            variant: .outline,
+                            onPress: _loadPullRequests,
                             child: Text(widget.l10n.retry),
                           ),
                         ],
@@ -1776,7 +1754,7 @@ class _PullRequestsTabState extends State<_PullRequestsTab> {
                     PullRequestsLoaded(:final pullRequests, :final hasMore) =>
                       pullRequests.isEmpty
                           ? EmptyState(
-                              icon: Icons.merge_type,
+                              icon: FIcons.gitMerge,
                               title: widget.l10n.noPullRequests,
                             )
                           : RefreshIndicator(
@@ -1799,13 +1777,14 @@ class _PullRequestsTabState extends State<_PullRequestsTab> {
                                             ? const SizedBox(
                                                 height: 24,
                                                 width: 24,
-                                                child:
-                                                    CircularProgressIndicator(
-                                                      strokeWidth: 2,
-                                                    ),
+                                                child: FCircularProgress(
+                                                  size: .xs,
+                                                ),
                                               )
-                                            : TextButton(
-                                                onPressed: () => Injection
+                                            : FButton(
+                                                variant: .ghost,
+                                                size: .sm,
+                                                onPress: () => Injection
                                                     .repoNotifier
                                                     .loadMorePullRequests(
                                                       widget.owner,
@@ -1832,7 +1811,7 @@ class _PullRequestsTabState extends State<_PullRequestsTab> {
                               ),
                             ),
                     _ => EmptyState(
-                      icon: Icons.merge_type,
+                      icon: FIcons.gitMerge,
                       title: widget.l10n.noPullRequests,
                     ),
                   },
@@ -1843,8 +1822,9 @@ class _PullRequestsTabState extends State<_PullRequestsTab> {
               right: UIConstants.md,
               bottom: UIConstants.md,
               child: _canCreatePR()
-                  ? FloatingActionButton(
-                      onPressed: () async {
+                  ? FButton.icon(
+                      variant: .primary,
+                      onPress: () async {
                         final result = await Navigator.of(context)
                             .push<PullRequest>(
                               MaterialPageRoute(
@@ -1859,7 +1839,7 @@ class _PullRequestsTabState extends State<_PullRequestsTab> {
                           _loadPullRequests();
                         }
                       },
-                      child: const Icon(Icons.add),
+                      child: const Icon(FIcons.plus),
                     )
                   : const SizedBox.shrink(),
             ),
@@ -1891,13 +1871,13 @@ class _PRItem extends StatelessWidget {
     IconData stateIcon;
     Color stateColor;
     if (pr.merged == true) {
-      stateIcon = Icons.merge_type;
+      stateIcon = FIcons.gitMerge;
       stateColor = Colors.purple;
     } else if (pr.draft == true) {
-      stateIcon = Icons.edit_note;
+      stateIcon = FIcons.filePenLine;
       stateColor = Colors.grey;
     } else {
-      stateIcon = Icons.merge_type;
+      stateIcon = FIcons.gitMerge;
       stateColor = Colors.green;
     }
 
@@ -2062,17 +2042,16 @@ class _ReleasesTabState extends State<_ReleasesTab> {
           builder: (context, _) {
             final state = Injection.repoNotifier.releasesState;
             return switch (state) {
-              ReleasesLoading() => const Center(
-                child: CircularProgressIndicator(),
-              ),
+              ReleasesLoading() => const AppLoading(),
               ReleasesError(:final message) => Center(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text('${widget.l10n.error}: $message'),
                     const SizedBox(height: UIConstants.md),
-                    FilledButton(
-                      onPressed: () => Injection.repoNotifier.listReleases(
+                    FButton(
+                      variant: .outline,
+                      onPress: () => Injection.repoNotifier.listReleases(
                         widget.owner,
                         widget.repo,
                       ),
@@ -2084,7 +2063,7 @@ class _ReleasesTabState extends State<_ReleasesTab> {
               ReleasesLoaded(:final releases, :final hasMore) =>
                 releases.isEmpty
                     ? EmptyState(
-                        icon: Icons.new_releases_outlined,
+                        icon: FIcons.rocket,
                         title: widget.l10n.noReleases,
                       )
                     : ListView.builder(
@@ -2102,12 +2081,12 @@ class _ReleasesTabState extends State<_ReleasesTab> {
                                     ? const SizedBox(
                                         height: 24,
                                         width: 24,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                        ),
+                                        child: FCircularProgress(size: .xs),
                                       )
-                                    : TextButton(
-                                        onPressed: () => Injection.repoNotifier
+                                    : FButton(
+                                        variant: .ghost,
+                                        size: .sm,
+                                        onPress: () => Injection.repoNotifier
                                             .loadMoreReleases(
                                               widget.owner,
                                               widget.repo,
@@ -2130,7 +2109,7 @@ class _ReleasesTabState extends State<_ReleasesTab> {
                         },
                       ),
               _ => EmptyState(
-                icon: Icons.new_releases_outlined,
+                icon: FIcons.rocket,
                 title: widget.l10n.noReleases,
               ),
             };
@@ -2140,10 +2119,10 @@ class _ReleasesTabState extends State<_ReleasesTab> {
           right: UIConstants.md,
           bottom: UIConstants.md,
           child: _canCreateRelease()
-              ? FloatingActionButton.extended(
-                  onPressed: _createRelease,
-                  icon: const Icon(Icons.add),
-                  label: Text(widget.l10n.createRelease),
+              ? FButton(
+                  prefix: const Icon(FIcons.plus),
+                  onPress: _createRelease,
+                  child: Text(widget.l10n.createRelease),
                 )
               : const SizedBox.shrink(),
         ),
@@ -2187,7 +2166,7 @@ class _ReleaseItem extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             child: Icon(
-              Icons.new_releases_outlined,
+              FIcons.rocket,
               size: UIConstants.iconMd,
               color: theme.colorScheme.primary,
             ),
@@ -2299,10 +2278,7 @@ class _RepoSectionPage extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final title = _getTitle(l10n);
 
-    return AppPage(
-      title: title,
-      child: _buildSection(l10n),
-    );
+    return AppPage(title: title, child: _buildSection(l10n));
   }
 
   String _getTitle(AppLocalizations l10n) {
@@ -2378,15 +2354,16 @@ class _CommitsTabState extends State<_CommitsTab> {
       builder: (context, _) {
         final state = Injection.repoNotifier.commitsState;
         return switch (state) {
-          CommitsLoading() => const Center(child: CircularProgressIndicator()),
+          CommitsLoading() => const AppLoading(),
           CommitsError(:final message) => Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text('${widget.l10n.error}: $message'),
                 const SizedBox(height: UIConstants.md),
-                FilledButton(
-                  onPressed: () => Injection.repoNotifier.listCommits(
+                FButton(
+                  variant: .outline,
+                  onPress: () => Injection.repoNotifier.listCommits(
                     widget.owner,
                     widget.repo,
                   ),
@@ -2397,7 +2374,10 @@ class _CommitsTabState extends State<_CommitsTab> {
           ),
           CommitsLoaded(:final commits) =>
             commits.isEmpty
-                ? EmptyState(icon: Icons.commit, title: widget.l10n.noCommits)
+                ? EmptyState(
+                    icon: FIcons.gitCommitVertical,
+                    title: widget.l10n.noCommits,
+                  )
                 : ListView.builder(
                     padding:
                         UIConstants.pagePadding +
@@ -2416,7 +2396,10 @@ class _CommitsTabState extends State<_CommitsTab> {
                       );
                     },
                   ),
-          _ => EmptyState(icon: Icons.commit, title: widget.l10n.noCommits),
+          _ => EmptyState(
+            icon: FIcons.gitCommitVertical,
+            title: widget.l10n.noCommits,
+          ),
         };
       },
     );
@@ -2460,7 +2443,7 @@ class _CommitItem extends StatelessWidget {
                     color: theme.colorScheme.surfaceContainerHighest,
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(Icons.person_outline, size: UIConstants.iconMd),
+                  child: Icon(FIcons.user, size: UIConstants.iconMd),
                 ),
           const SizedBox(width: UIConstants.md),
           Expanded(
@@ -2567,15 +2550,16 @@ class _BranchesTabState extends State<_BranchesTab> {
       builder: (context, _) {
         final state = Injection.repoNotifier.branchesState;
         return switch (state) {
-          BranchesLoading() => const Center(child: CircularProgressIndicator()),
+          BranchesLoading() => const AppLoading(),
           BranchesError(:final message) => Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text('${l10n.error}: $message'),
                 const SizedBox(height: UIConstants.md),
-                FilledButton(
-                  onPressed: () => Injection.repoNotifier.listBranches(
+                FButton(
+                  variant: .outline,
+                  onPress: () => Injection.repoNotifier.listBranches(
                     widget.owner,
                     widget.repo,
                   ),
@@ -2586,7 +2570,7 @@ class _BranchesTabState extends State<_BranchesTab> {
           ),
           BranchesLoaded(:final branches) =>
             branches.isEmpty
-                ? EmptyState(icon: Icons.call_split, title: l10n.noBranches)
+                ? EmptyState(icon: FIcons.gitBranch, title: l10n.noBranches)
                 : ListView.builder(
                     padding:
                         UIConstants.pagePadding +
@@ -2613,7 +2597,7 @@ class _BranchesTabState extends State<_BranchesTab> {
                           child: Row(
                             children: [
                               Icon(
-                                Icons.call_split,
+                                FIcons.gitBranch,
                                 size: UIConstants.iconMd,
                                 color: isDefault
                                     ? Theme.of(context).colorScheme.primary
@@ -2665,7 +2649,7 @@ class _BranchesTabState extends State<_BranchesTab> {
                       );
                     },
                   ),
-          _ => EmptyState(icon: Icons.call_split, title: l10n.noBranches),
+          _ => EmptyState(icon: FIcons.gitBranch, title: l10n.noBranches),
         };
       },
     );
@@ -2717,15 +2701,16 @@ class _MilestonesTabState extends State<_MilestonesTab> {
       builder: (context, _) {
         final state = Injection.issueNotifier.state;
         return switch (state) {
-          IssueLoading() => const Center(child: CircularProgressIndicator()),
+          IssueLoading() => const AppLoading(),
           IssueError(:final message) => Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text('${widget.l10n.error}: $message'),
                 const SizedBox(height: UIConstants.md),
-                FilledButton(
-                  onPressed: () => Injection.issueNotifier.listMilestones(
+                FButton(
+                  variant: .outline,
+                  onPress: () => Injection.issueNotifier.listMilestones(
                     widget.owner,
                     widget.repo,
                   ),
@@ -2738,7 +2723,7 @@ class _MilestonesTabState extends State<_MilestonesTab> {
             milestones,
             theme,
           ),
-          _ => EmptyState(icon: Icons.flag, title: widget.l10n.noMilestones),
+          _ => EmptyState(icon: FIcons.flag, title: widget.l10n.noMilestones),
         };
       },
     );
@@ -2748,7 +2733,7 @@ class _MilestonesTabState extends State<_MilestonesTab> {
     return Stack(
       children: [
         if (milestones.isEmpty)
-          EmptyState(icon: Icons.flag, title: widget.l10n.noMilestones)
+          EmptyState(icon: FIcons.flag, title: widget.l10n.noMilestones)
         else
           ListView.builder(
             padding: EdgeInsets.only(
@@ -2803,22 +2788,7 @@ class _MilestonesTabState extends State<_MilestonesTab> {
                         ],
                       ),
                       const SizedBox(height: UIConstants.sm),
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(
-                          UIConstants.badgeRadius,
-                        ),
-                        child: LinearProgressIndicator(
-                          value: progress,
-                          minHeight: 6,
-                          backgroundColor:
-                              theme.colorScheme.surfaceContainerHighest,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            progress >= 1.0
-                                ? Colors.green
-                                : theme.colorScheme.primary,
-                          ),
-                        ),
-                      ),
+                      FDeterminateProgress(value: progress),
                       const SizedBox(height: UIConstants.xs),
                       Row(
                         children: [
@@ -2848,10 +2818,10 @@ class _MilestonesTabState extends State<_MilestonesTab> {
         Positioned(
           right: UIConstants.md,
           bottom: UIConstants.md,
-          child: FloatingActionButton(
-            heroTag: 'create_milestone',
-            onPressed: _createMilestone,
-            child: const Icon(Icons.add),
+          child: FButton.icon(
+            variant: .primary,
+            onPress: _createMilestone,
+            child: const Icon(FIcons.plus),
           ),
         ),
       ],
@@ -2896,15 +2866,16 @@ class _TagsTabState extends State<_TagsTab> {
       builder: (context, _) {
         final state = Injection.repoNotifier.tagsState;
         return switch (state) {
-          TagsLoading() => const Center(child: CircularProgressIndicator()),
+          TagsLoading() => const AppLoading(),
           TagsError(:final message) => Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text('${widget.l10n.error}: $message'),
                 const SizedBox(height: UIConstants.md),
-                FilledButton(
-                  onPressed: () => Injection.repoNotifier.listTags(
+                FButton(
+                  variant: .outline,
+                  onPress: () => Injection.repoNotifier.listTags(
                     widget.owner,
                     widget.repo,
                   ),
@@ -2915,7 +2886,7 @@ class _TagsTabState extends State<_TagsTab> {
           ),
           TagsLoaded(:final tags) =>
             tags.isEmpty
-                ? EmptyState(icon: Icons.label, title: widget.l10n.noTags)
+                ? EmptyState(icon: FIcons.tag, title: widget.l10n.noTags)
                 : ListView.builder(
                     padding:
                         UIConstants.pagePadding +
@@ -2945,7 +2916,7 @@ class _TagsTabState extends State<_TagsTab> {
                                   shape: BoxShape.circle,
                                 ),
                                 child: Icon(
-                                  Icons.label,
+                                  FIcons.tag,
                                   size: UIConstants.iconMd,
                                   color: Theme.of(context).colorScheme.primary,
                                 ),
@@ -2985,27 +2956,38 @@ class _TagsTabState extends State<_TagsTab> {
                               ),
                               if (tag.tarball_url != null ||
                                   tag.zipball_url != null)
-                                PopupMenuButton<String>(
-                                  icon: const Icon(
-                                    Icons.more_vert,
-                                    size: UIConstants.iconMd,
-                                  ),
-                                  itemBuilder: (context) => [
-                                    if (tag.tarball_url != null)
-                                      PopupMenuItem(
-                                        value: 'tarball',
-                                        child: Text(
-                                          widget.l10n.downloadTarball,
-                                        ),
-                                      ),
-                                    if (tag.zipball_url != null)
-                                      PopupMenuItem(
-                                        value: 'zipball',
-                                        child: Text(
-                                          widget.l10n.downloadZipball,
-                                        ),
-                                      ),
+                                FPopoverMenu(
+                                  menuAnchor: Alignment.topRight,
+                                  childAnchor: Alignment.bottomRight,
+                                  menuBuilder: (context, controller, _) => [
+                                    FItemGroup(
+                                      children: [
+                                        if (tag.tarball_url != null)
+                                          FItem(
+                                            title: Text(
+                                              widget.l10n.downloadTarball,
+                                            ),
+                                          ),
+                                        if (tag.zipball_url != null)
+                                          FItem(
+                                            title: Text(
+                                              widget.l10n.downloadZipball,
+                                            ),
+                                          ),
+                                      ],
+                                    ),
                                   ],
+                                  builder: (context, controller, child) =>
+                                      FTappable(
+                                        onPress: () => controller.toggle(),
+                                        child: const Padding(
+                                          padding: EdgeInsets.all(8),
+                                          child: Icon(
+                                            FIcons.ellipsisVertical,
+                                            size: UIConstants.iconMd,
+                                          ),
+                                        ),
+                                      ),
                                 ),
                             ],
                           ),
@@ -3013,7 +2995,7 @@ class _TagsTabState extends State<_TagsTab> {
                       );
                     },
                   ),
-          _ => EmptyState(icon: Icons.label, title: widget.l10n.noTags),
+          _ => EmptyState(icon: FIcons.tag, title: widget.l10n.noTags),
         };
       },
     );
@@ -3103,9 +3085,9 @@ Future<void> showTopicEditDialog(
   final topics = List<String>.from(currentTopics);
   final controller = TextEditingController();
   final l10n = AppLocalizations.of(context)!;
-  final saved = await showDialog<bool>(
+  final saved = await showFDialog<bool>(
     context: context,
-    builder: (ctx) =>
+    builder: (ctx, style, animation) =>
         _TopicEditDialog(topics: topics, controller: controller, l10n: l10n),
   );
 
@@ -3116,13 +3098,13 @@ Future<void> showTopicEditDialog(
 
   switch (result) {
     case Left<Failure, void>(:final value):
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${l10n.error}: ${value.message}')),
+      showFToast(
+        context: context,
+        variant: .destructive,
+        title: Text('${l10n.error}: ${value.message}'),
       );
     case Right<Failure, void>():
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(l10n.saved)));
+      showFToast(context: context, title: Text(l10n.saved));
       Injection.repoNotifier.getRepo(owner, repo);
   }
 }
@@ -3178,83 +3160,68 @@ class _TopicEditDialogState extends State<_TopicEditDialog> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return AlertDialog(
+    return FDialog(
       title: Text(widget.l10n.topics),
-      content: SizedBox(
-        width: double.maxFinite,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: TextField(
+      body: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: FTextField(
+                  control: FTextFieldControl.managed(
                     controller: widget.controller,
-                    decoration: InputDecoration(
-                      hintText: widget.l10n.addTopic,
-                      border: const OutlineInputBorder(),
-                      isDense: true,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 10,
-                      ),
-                    ),
-                    onSubmitted: (_) => _addTopic(),
                   ),
-                ),
-                const SizedBox(width: 8),
-                FilledButton(
-                  onPressed: widget.controller.text.trim().isEmpty
-                      ? null
-                      : _addTopic,
-                  child: Text(widget.l10n.add),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            if (_topics.isEmpty)
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 24),
-                child: Center(
-                  child: Text(
-                    widget.l10n.noTopics,
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ),
-              )
-            else
-              Flexible(
-                child: Wrap(
-                  spacing: 8,
-                  runSpacing: 8,
-                  children: _topics
-                      .map(
-                        (t) => Chip(
-                          label: Text(t),
-                          onDeleted: () => _removeTopic(t),
-                          deleteIcon: Icon(
-                            Icons.close,
-                            size: 16,
-                            color: theme.colorScheme.error,
-                          ),
-                        ),
-                      )
-                      .toList(),
+                  hint: widget.l10n.addTopic,
+                  onSubmit: (_) => _addTopic(),
                 ),
               ),
-          ],
-        ),
+              const SizedBox(width: 8),
+              FButton(
+                onPress: widget.controller.text.trim().isEmpty
+                    ? null
+                    : _addTopic,
+                child: Text(widget.l10n.add),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          if (_topics.isEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 24),
+              child: Center(
+                child: Text(
+                  widget.l10n.noTopics,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
+            )
+          else
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: _topics
+                  .map(
+                    (t) => AppFilterChip(
+                      label: t,
+                      onRemove: () => _removeTopic(t),
+                    ),
+                  )
+                  .toList(),
+            ),
+        ],
       ),
       actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context, false),
+        FButton(
+          variant: .outline,
+          onPress: () => Navigator.pop(context, false),
           child: Text(widget.l10n.cancel),
         ),
-        FilledButton(
-          onPressed: () => Navigator.pop(context, true),
+        FButton(
+          onPress: () => Navigator.pop(context, true),
           child: Text(widget.l10n.save),
         ),
       ],

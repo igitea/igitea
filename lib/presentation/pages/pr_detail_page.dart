@@ -27,7 +27,15 @@ const _reactionEmojis = {
   'eyes': '\u{1f440}',
 };
 
-const _defaultReactions = ['+1', '-1', 'laugh', 'hooray', 'confused', 'heart', 'eyes'];
+const _defaultReactions = [
+  '+1',
+  '-1',
+  'laugh',
+  'hooray',
+  'confused',
+  'heart',
+  'eyes',
+];
 
 class PRDetailPage extends StatefulWidget {
   final String owner;
@@ -56,8 +64,16 @@ class _PRDetailPageState extends State<PRDetailPage> {
     super.initState();
     _scrollController.addListener(_onScroll);
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Injection.repoNotifier.getPullRequest(widget.owner, widget.repo, widget.index);
-      Injection.issueNotifier.listComments(widget.owner, widget.repo, widget.index);
+      Injection.repoNotifier.getPullRequest(
+        widget.owner,
+        widget.repo,
+        widget.index,
+      );
+      Injection.issueNotifier.listComments(
+        widget.owner,
+        widget.repo,
+        widget.index,
+      );
       _loadReviews();
       _refreshPrReactions();
     });
@@ -68,13 +84,19 @@ class _PRDetailPageState extends State<PRDetailPage> {
     final maxScroll = _scrollController.position.maxScrollExtent;
     final currentScroll = _scrollController.position.pixels;
     if (currentScroll >= maxScroll - 200) {
-      Injection.issueNotifier.loadMoreComments(widget.owner, widget.repo, widget.index);
+      Injection.issueNotifier.loadMoreComments(
+        widget.owner,
+        widget.repo,
+        widget.index,
+      );
     }
   }
 
   Future<void> _refreshPrReactions() async {
     final result = await Injection.getIssueReactionsUseCase(
-      widget.owner, widget.repo, widget.index,
+      widget.owner,
+      widget.repo,
+      widget.index,
     );
     if (result is Right<Failure, List<Reaction>>) {
       _prReactions = result.value;
@@ -86,9 +108,9 @@ class _PRDetailPageState extends State<PRDetailPage> {
     final currentUser = Injection.authNotifier.state is AuthAuthenticated
         ? (Injection.authNotifier.state as AuthAuthenticated).user.login
         : null;
-    final existing = _prReactions.where(
-      (r) => r.content == content && r.user?.login == currentUser,
-    ).toList();
+    final existing = _prReactions
+        .where((r) => r.content == content && r.user?.login == currentUser)
+        .toList();
 
     _prReactions = List.from(_prReactions);
     if (existing.isNotEmpty) {
@@ -97,19 +119,34 @@ class _PRDetailPageState extends State<PRDetailPage> {
       );
       if (mounted) setState(() {});
       await Injection.deleteIssueReactionUseCase(
-        widget.owner, widget.repo, widget.index, content);
+        widget.owner,
+        widget.repo,
+        widget.index,
+        content,
+      );
     } else {
-      _prReactions.add(Reaction(content: content, user: User(login: currentUser)));
+      _prReactions.add(
+        Reaction(
+          content: content,
+          user: User(login: currentUser),
+        ),
+      );
       if (mounted) setState(() {});
       await Injection.addIssueReactionUseCase(
-        widget.owner, widget.repo, widget.index, content);
+        widget.owner,
+        widget.repo,
+        widget.index,
+        content,
+      );
     }
     await _refreshPrReactions();
   }
 
   Future<void> _loadReviews() async {
     final result = await Injection.listPullReviewsUseCase(
-      widget.owner, widget.repo, widget.index,
+      widget.owner,
+      widget.repo,
+      widget.index,
     );
     if (mounted) {
       _reviews = result is Right<Failure, List<PullReview>> ? result.value : [];
@@ -119,8 +156,16 @@ class _PRDetailPageState extends State<PRDetailPage> {
 
   Future<void> _onRefresh() async {
     await Future.wait([
-      Injection.repoNotifier.getPullRequest(widget.owner, widget.repo, widget.index),
-      Injection.issueNotifier.listComments(widget.owner, widget.repo, widget.index),
+      Injection.repoNotifier.getPullRequest(
+        widget.owner,
+        widget.repo,
+        widget.index,
+      ),
+      Injection.issueNotifier.listComments(
+        widget.owner,
+        widget.repo,
+        widget.index,
+      ),
     ]);
     await _loadReviews();
     await _refreshPrReactions();
@@ -162,8 +207,9 @@ class _PRDetailPageState extends State<PRDetailPage> {
           FHeaderAction(
             icon: const Icon(FIcons.externalLink),
             onPress: () {
-              final state = Injection.repoNotifier.pullRequestDetailState
-                  as PullRequestDetailDataLoaded;
+              final state =
+                  Injection.repoNotifier.pullRequestDetailState
+                      as PullRequestDetailDataLoaded;
               if (state.pullRequest.html_url != null) {
                 launchUrl(
                   Uri.parse(state.pullRequest.html_url!),
@@ -177,7 +223,10 @@ class _PRDetailPageState extends State<PRDetailPage> {
       child: RefreshIndicator(
         onRefresh: _onRefresh,
         child: ListenableBuilder(
-          listenable: Listenable.merge([Injection.repoNotifier, Injection.issueNotifier]),
+          listenable: Listenable.merge([
+            Injection.repoNotifier,
+            Injection.issueNotifier,
+          ]),
           builder: (context, _) {
             final state = Injection.repoNotifier.pullRequestDetailState;
             return switch (state) {
@@ -191,22 +240,22 @@ class _PRDetailPageState extends State<PRDetailPage> {
                 ),
               ),
               PullRequestDetailDataLoaded(:final pullRequest) => _PRContent(
-              pr: pullRequest,
-              owner: widget.owner,
-              repo: widget.repo,
-              index: widget.index,
-              commentController: _commentController,
-              scrollController: _scrollController,
-              reviews: _reviews,
-              prReactions: _prReactions,
-              onToggleReaction: _togglePrReaction,
-            ),
-            _ => const Center(child: CircularProgressIndicator()),
-          };
-        },
+                pr: pullRequest,
+                owner: widget.owner,
+                repo: widget.repo,
+                index: widget.index,
+                commentController: _commentController,
+                scrollController: _scrollController,
+                reviews: _reviews,
+                prReactions: _prReactions,
+                onToggleReaction: _togglePrReaction,
+              ),
+              _ => const AppLoading(),
+            };
+          },
+        ),
       ),
-    ),
-  );
+    );
   }
 }
 
@@ -288,7 +337,7 @@ class _PRContent extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                   l10n.openedParams(_formatDate(pr.created_at, l10n)),
+                  l10n.openedParams(_formatDate(pr.created_at, l10n)),
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -297,7 +346,9 @@ class _PRContent extends StatelessWidget {
             ),
           const SizedBox(height: 16),
 
-          if (pr.state?.isOpen == true && pr.mergeable == true && pr.merged != true)
+          if (pr.state?.isOpen == true &&
+              pr.mergeable == true &&
+              pr.merged != true)
             Row(
               children: [
                 FButton(
@@ -322,14 +373,20 @@ class _PRContent extends StatelessWidget {
                       ),
                     );
                     if (confirmed == true) {
-                      Injection.repoNotifier.mergePullRequest(owner, repo, index);
+                      Injection.repoNotifier.mergePullRequest(
+                        owner,
+                        repo,
+                        index,
+                      );
                     }
                   },
                   child: Text(l10n.mergePullRequest),
                 ),
               ],
             ),
-          if (pr.state?.isOpen == true && pr.mergeable == true && pr.merged != true)
+          if (pr.state?.isOpen == true &&
+              pr.mergeable == true &&
+              pr.merged != true)
             const SizedBox(height: 16),
           if (pr.head != null && pr.base_ != null)
             Container(
@@ -340,7 +397,11 @@ class _PRContent extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.call_split, size: 18, color: theme.colorScheme.onSurfaceVariant),
+                  Icon(
+                    FIcons.gitBranch,
+                    size: 18,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
@@ -354,26 +415,47 @@ class _PRContent extends StatelessWidget {
             ),
           const SizedBox(height: 16),
 
-          if (pr.additions != null || pr.deletions != null || pr.changed_files != null)
+          if (pr.additions != null ||
+              pr.deletions != null ||
+              pr.changed_files != null)
             Row(
               children: [
                 if (pr.additions != null) ...[
-                  Icon(Icons.add, size: 16, color: Colors.green),
-                  Text('${pr.additions}', style: theme.textTheme.bodySmall?.copyWith(color: Colors.green)),
+                  Icon(FIcons.plus, size: 16, color: Colors.green),
+                  Text(
+                    '${pr.additions}',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: Colors.green,
+                    ),
+                  ),
                   const SizedBox(width: 12),
                 ],
                 if (pr.deletions != null) ...[
-                  Icon(Icons.remove, size: 16, color: Colors.red),
-                  Text('${pr.deletions}', style: theme.textTheme.bodySmall?.copyWith(color: Colors.red)),
+                  Icon(FIcons.minus, size: 16, color: Colors.red),
+                  Text(
+                    '${pr.deletions}',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: Colors.red,
+                    ),
+                  ),
                   const SizedBox(width: 12),
                 ],
                 if (pr.changed_files != null) ...[
-                  Icon(Icons.insert_drive_file_outlined, size: 16, color: theme.colorScheme.onSurfaceVariant),
-                  Text('${pr.changed_files} ${l10n.files}', style: theme.textTheme.bodySmall),
+                  Icon(
+                    FIcons.file,
+                    size: 16,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                  Text(
+                    '${pr.changed_files} ${l10n.files}',
+                    style: theme.textTheme.bodySmall,
+                  ),
                 ],
               ],
             ),
-          if (pr.additions != null || pr.deletions != null || pr.changed_files != null)
+          if (pr.additions != null ||
+              pr.deletions != null ||
+              pr.changed_files != null)
             const SizedBox(height: 16),
 
           if (pr.labels != null && pr.labels!.isNotEmpty)
@@ -381,14 +463,15 @@ class _PRContent extends StatelessWidget {
               spacing: 8,
               runSpacing: 8,
               children: pr.labels!.map((label) {
-                return Chip(
-                  label: Text(label.name ?? ''),
-                  backgroundColor: _parseColor(label.color)?.withValues(alpha: 0.2) ?? theme.colorScheme.primaryContainer,
-                  labelStyle: theme.textTheme.labelSmall?.copyWith(
-                    color: _parseColor(label.color) ?? theme.colorScheme.onPrimaryContainer,
+                final color = _parseColor(label.color);
+                return FBadge(
+                  variant: .outline,
+                  child: Text(
+                    label.name ?? '',
+                    style: color == null
+                        ? null
+                        : theme.textTheme.labelSmall?.copyWith(color: color),
                   ),
-                  padding: EdgeInsets.zero,
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 );
               }).toList(),
             ),
@@ -398,7 +481,7 @@ class _PRContent extends StatelessWidget {
           if (pr.mergeable != null)
             _buildInfoRow(
               context,
-              icon: pr.mergeable! ? Icons.check_circle_outline : Icons.error_outline,
+              icon: pr.mergeable! ? FIcons.circleCheck : FIcons.circleAlert,
               label: l10n.mergeable,
               child: Text(
                 pr.mergeable! ? l10n.yes : l10n.no,
@@ -408,7 +491,7 @@ class _PRContent extends StatelessWidget {
               ),
             ),
 
-          const Divider(height: 32),
+          const FDivider(),
 
           if (pr.body != null && pr.body!.isNotEmpty)
             MarkdownBody(
@@ -416,7 +499,10 @@ class _PRContent extends StatelessWidget {
               selectable: true,
               onTapLink: (text, href, title) {
                 if (href != null) {
-                  launchUrl(Uri.parse(href), mode: LaunchMode.externalApplication);
+                  launchUrl(
+                    Uri.parse(href),
+                    mode: LaunchMode.externalApplication,
+                  );
                 }
               },
             )
@@ -431,7 +517,7 @@ class _PRContent extends StatelessWidget {
 
           _buildReactionRow(context, prReactions, onToggleReaction),
 
-          const Divider(height: 32),
+          const FDivider(),
 
           ListenableBuilder(
             listenable: Injection.issueNotifier,
@@ -451,14 +537,21 @@ class _PRContent extends StatelessWidget {
                       FButton(
                         variant: .outline,
                         size: .sm,
-                        onPress: () => Injection.issueNotifier
-                            .listComments(owner, repo, index),
+                        onPress: () => Injection.issueNotifier.listComments(
+                          owner,
+                          repo,
+                          index,
+                        ),
                         child: Text(l10n.retry),
                       ),
                     ],
                   ),
                 ),
-                CommentsLoaded(:final comments) => _buildCommentsList(context, comments, l10n),
+                CommentsLoaded(:final comments) => _buildCommentsList(
+                  context,
+                  comments,
+                  l10n,
+                ),
                 _ => const SizedBox.shrink(),
               };
             },
@@ -481,12 +574,9 @@ class _PRContent extends StatelessWidget {
               onPress: () {
                 final text = commentController.text.trim();
                 if (text.isNotEmpty) {
-                  Injection.issueNotifier.createComment(
-                    owner,
-                    repo,
-                    index,
-                    {'body': text},
-                  );
+                  Injection.issueNotifier.createComment(owner, repo, index, {
+                    'body': text,
+                  });
                   commentController.clear();
                 }
               },
@@ -501,14 +591,22 @@ class _PRContent extends StatelessWidget {
 
           Row(
             children: [
-              Icon(Icons.comment_outlined, size: 16, color: theme.colorScheme.onSurfaceVariant),
+              Icon(
+                FIcons.messageSquare,
+                size: 16,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
               const SizedBox(width: 4),
               Text(
                 l10n.commentsCountParams(pr.comments ?? 0),
                 style: theme.textTheme.bodySmall,
               ),
               const SizedBox(width: 16),
-              Icon(Icons.update, size: 16, color: theme.colorScheme.onSurfaceVariant),
+              Icon(
+                FIcons.history,
+                size: 16,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
               const SizedBox(width: 4),
               Text(
                 l10n.updatedParams(_formatDate(pr.updated_at, l10n)),
@@ -521,7 +619,11 @@ class _PRContent extends StatelessWidget {
     );
   }
 
-  Widget _buildReactionRow(BuildContext context, List<Reaction> reactions, Future<void> Function(String) onToggle) {
+  Widget _buildReactionRow(
+    BuildContext context,
+    List<Reaction> reactions,
+    Future<void> Function(String) onToggle,
+  ) {
     final activeReactions = _defaultReactions.where((content) {
       return reactions.any((r) => r.content == content);
     }).toList();
@@ -530,123 +632,153 @@ class _PRContent extends StatelessWidget {
       curve: Curves.easeInOut,
       alignment: Alignment.topLeft,
       child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  _buildPickReactionButton(context, reactions, onToggle),
-                  if (activeReactions.isNotEmpty) const SizedBox(width: 4),
-                  ...activeReactions.map((content) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 4),
-                      child: AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 250),
-                        transitionBuilder: (child, animation) {
-                          return ScaleTransition(
-                            scale: animation,
-                            child: FadeTransition(
-                              opacity: animation,
-                              child: child,
-                            ),
-                          );
-                        },
-                        child: _buildReactionChip(context, reactions, content, onToggle),
-                      ),
+        padding: const EdgeInsets.symmetric(vertical: 4),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _buildPickReactionButton(context, reactions, onToggle),
+            if (activeReactions.isNotEmpty) const SizedBox(width: 4),
+            ...activeReactions.map((content) {
+              return Padding(
+                padding: const EdgeInsets.only(right: 4),
+                child: AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 250),
+                  transitionBuilder: (child, animation) {
+                    return ScaleTransition(
+                      scale: animation,
+                      child: FadeTransition(opacity: animation, child: child),
                     );
-                  }),
-                ],
-              ),
-            ),
-    );
-  }
-
-  Widget _buildPickReactionButton(BuildContext context, List<Reaction> reactions, Future<void> Function(String) onToggle) {
-    final theme = Theme.of(context);
-    return Builder(
-      builder: (ctx) {
-        return Material(
-          color: theme.colorScheme.surfaceContainerHighest.withAlpha(128),
-          borderRadius: BorderRadius.circular(16),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(16),
-        onTap: () {
-          final renderBox = ctx.findRenderObject() as RenderBox?;
-          if (renderBox == null) return;
-          final position = renderBox.localToGlobal(Offset.zero);
-          final size = renderBox.size;
-          late OverlayEntry overlay;
-          overlay = OverlayEntry(
-            builder: (ctx) => GestureDetector(
-              onTap: () => overlay.remove(),
-              behavior: HitTestBehavior.opaque,
-              child: Stack(
-                children: [
-                  Positioned(
-                    left: position.dx,
-                    top: position.dy + size.height + 4,
-                    child: Material(
-                      elevation: 8,
-                      borderRadius: BorderRadius.circular(12),
-                      color: theme.colorScheme.surfaceContainerHigh,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8),
-                        child: Wrap(
-                          spacing: 2,
-                          runSpacing: 2,
-                          children: _defaultReactions.map((content) {
-                            final currentUser = Injection.authNotifier.state is AuthAuthenticated
-                                ? (Injection.authNotifier.state as AuthAuthenticated).user.login
-                                : null;
-                            final userReacted = reactions.any(
-                              (r) => r.content == content && r.user?.login == currentUser,
-                            );
-                            return Material(
-                              color: userReacted ? theme.colorScheme.primaryContainer : Colors.transparent,
-                              borderRadius: BorderRadius.circular(20),
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(20),
-                                onTap: () {
-                                  overlay.remove();
-                                  onToggle(content);
-                                },
-                                child: Padding(
-                                  padding: const EdgeInsets.all(10),
-                                  child: Text(
-                                    _reactionEmojis[content] ?? content,
-                                    style: TextStyle(fontSize: 22),
-                                  ),
-                                ),
-                              ),
-                            );
-                          }).toList(),
-                        ),
-                      ),
-                    ),
+                  },
+                  child: _buildReactionChip(
+                    context,
+                    reactions,
+                    content,
+                    onToggle,
                   ),
-                ],
-              ),
-            ),
-          );
-          Overlay.of(context).insert(overlay);
-        },
-        child: const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(Icons.emoji_emotions_outlined, size: 18),
-              SizedBox(width: 1),
-              Icon(Icons.add, size: 10),
-            ],
-          ),
+                ),
+              );
+            }),
+          ],
         ),
       ),
     );
-    },
-  );
-}
+  }
 
-  Widget _buildReactionChip(BuildContext context, List<Reaction> reactions, String content, Future<void> Function(String) onToggle) {
+  Widget _buildPickReactionButton(
+    BuildContext context,
+    List<Reaction> reactions,
+    Future<void> Function(String) onToggle,
+  ) {
+    final theme = Theme.of(context);
+    return Builder(
+      builder: (ctx) {
+        return FTappable(
+          onPress: () {
+            final renderBox = ctx.findRenderObject() as RenderBox?;
+            if (renderBox == null) return;
+            final position = renderBox.localToGlobal(Offset.zero);
+            final size = renderBox.size;
+            late OverlayEntry overlay;
+            overlay = OverlayEntry(
+              builder: (ctx) => GestureDetector(
+                onTap: () => overlay.remove(),
+                behavior: HitTestBehavior.opaque,
+                child: Stack(
+                  children: [
+                    Positioned(
+                      left: position.dx,
+                      top: position.dy + size.height + 4,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.surfaceContainerHigh,
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Color(0x33000000),
+                              blurRadius: 12,
+                              offset: Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Wrap(
+                            spacing: 2,
+                            runSpacing: 2,
+                            children: _defaultReactions.map((content) {
+                              final currentUser =
+                                  Injection.authNotifier.state
+                                      is AuthAuthenticated
+                                  ? (Injection.authNotifier.state
+                                            as AuthAuthenticated)
+                                        .user
+                                        .login
+                                  : null;
+                              final userReacted = reactions.any(
+                                (r) =>
+                                    r.content == content &&
+                                    r.user?.login == currentUser,
+                              );
+                              return DecoratedBox(
+                                decoration: BoxDecoration(
+                                  color: userReacted
+                                      ? theme.colorScheme.primaryContainer
+                                      : Colors.transparent,
+                                  borderRadius: BorderRadius.circular(20),
+                                ),
+                                child: FTappable(
+                                  onPress: () {
+                                    overlay.remove();
+                                    onToggle(content);
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10),
+                                    child: Text(
+                                      _reactionEmojis[content] ?? content,
+                                      style: const TextStyle(fontSize: 22),
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+            Overlay.of(context).insert(overlay);
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surfaceContainerHighest.withAlpha(128),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(FIcons.smile, size: 18),
+                  SizedBox(width: 1),
+                  Icon(FIcons.plus, size: 10),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildReactionChip(
+    BuildContext context,
+    List<Reaction> reactions,
+    String content,
+    Future<void> Function(String) onToggle,
+  ) {
     final theme = Theme.of(context);
     final count = reactions.where((r) => r.content == content).length;
     final currentUser = Injection.authNotifier.state is AuthAuthenticated
@@ -655,13 +787,16 @@ class _PRContent extends StatelessWidget {
     final userReacted = reactions.any(
       (r) => r.content == content && r.user?.login == currentUser,
     );
-    return Material(
+    return Container(
       key: ValueKey(content),
-      color: userReacted ? theme.colorScheme.primaryContainer : theme.colorScheme.surfaceContainerHighest.withAlpha(128),
-      borderRadius: BorderRadius.circular(16),
-      child: InkWell(
+      decoration: BoxDecoration(
+        color: userReacted
+            ? theme.colorScheme.primaryContainer
+            : theme.colorScheme.surfaceContainerHighest.withAlpha(128),
         borderRadius: BorderRadius.circular(16),
-        onTap: () => onToggle(content),
+      ),
+      child: FTappable(
+        onPress: () => onToggle(content),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 6),
           child: Text(
@@ -679,7 +814,9 @@ class _PRContent extends StatelessWidget {
   Widget _buildReviewSection(AppLocalizations l10n, ThemeData theme) {
     if (reviews.isEmpty) return const SizedBox.shrink();
     final approved = reviews.where((r) => r.state?.value == 'APPROVED').length;
-    final changes = reviews.where((r) => r.state?.value == 'REQUEST_CHANGES').length;
+    final changes = reviews
+        .where((r) => r.state?.value == 'REQUEST_CHANGES')
+        .length;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -687,28 +824,64 @@ class _PRContent extends StatelessWidget {
           padding: const EdgeInsets.only(bottom: 8),
           child: Row(
             children: [
-              Icon(Icons.rate_review_outlined, size: 16, color: theme.colorScheme.onSurfaceVariant),
-              const SizedBox(width: 4),
-              Text(l10n.reviews, style: theme.textTheme.bodySmall?.copyWith(
+              Icon(
+                FIcons.messageSquareText,
+                size: 16,
                 color: theme.colorScheme.onSurfaceVariant,
-              )),
+              ),
               const SizedBox(width: 4),
-              Text('(${reviews.length})', style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              )),
+              Text(
+                l10n.reviews,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                '(${reviews.length})',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
               const SizedBox(width: 8),
               if (approved > 0)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                  decoration: BoxDecoration(color: Colors.green.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(4)),
-                  child: Text('+$approved', style: const TextStyle(color: Colors.green, fontSize: 10, fontWeight: FontWeight.bold)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 1,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.green.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    '+$approved',
+                    style: const TextStyle(
+                      color: Colors.green,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               if (changes > 0) ...[
                 const SizedBox(width: 4),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                  decoration: BoxDecoration(color: Colors.red.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(4)),
-                  child: Text('-$changes', style: const TextStyle(color: Colors.red, fontSize: 10, fontWeight: FontWeight.bold)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 1,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    '-$changes',
+                    style: const TextStyle(
+                      color: Colors.red,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ],
             ],
@@ -719,7 +892,11 @@ class _PRContent extends StatelessWidget {
     );
   }
 
-  Widget _buildReviewCard(PullReview review, AppLocalizations l10n, ThemeData theme) {
+  Widget _buildReviewCard(
+    PullReview review,
+    AppLocalizations l10n,
+    ThemeData theme,
+  ) {
     final state = review.state?.value ?? 'comment';
     final body = review.body ?? '';
     final user = review.user;
@@ -730,48 +907,76 @@ class _PRContent extends StatelessWidget {
       _ => theme.colorScheme.primary,
     };
     final icon = switch (state) {
-      'APPROVED' => Icons.check_circle,
-      'REQUEST_CHANGES' => Icons.cancel,
-      _ => Icons.comment,
+      'APPROVED' => FIcons.circleCheck,
+      'REQUEST_CHANGES' => FIcons.circleX,
+      _ => FIcons.messageCircle,
     };
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(icon, color: color, size: 20),
-                const SizedBox(width: 8),
-                if (user?.login != null)
-                  Text(user!.login!, style: theme.textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600)),
-                const Spacer(),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                  decoration: BoxDecoration(color: color.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(4)),
-                  child: Text(state, style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.bold)),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: FCard.raw(
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(icon, color: color, size: 20),
+                  const SizedBox(width: 8),
+                  if (user?.login != null)
+                    Text(
+                      user!.login!,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  const Spacer(),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 1,
+                    ),
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.15),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      state,
+                      style: TextStyle(
+                        color: color,
+                        fontSize: 10,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              if (body.isNotEmpty) ...[
+                const SizedBox(height: 4),
+                Text(body, style: theme.textTheme.bodyMedium),
+              ],
+              if (submitted != null) ...[
+                const SizedBox(height: 4),
+                Text(
+                  _formatDate(submitted, l10n),
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                 ),
               ],
-            ),
-            if (body.isNotEmpty) ...[
-              const SizedBox(height: 4),
-              Text(body, style: theme.textTheme.bodyMedium),
             ],
-            if (submitted != null) ...[
-              const SizedBox(height: 4),
-              Text(_formatDate(submitted, l10n),
-                style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
-            ],
-          ],
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildCommentsList(BuildContext context, List<Comment> comments, AppLocalizations l10n) {
+  Widget _buildCommentsList(
+    BuildContext context,
+    List<Comment> comments,
+    AppLocalizations l10n,
+  ) {
     if (comments.isEmpty) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -787,7 +992,9 @@ class _PRContent extends StatelessWidget {
           padding: const EdgeInsets.only(bottom: 8),
           child: Text(
             l10n.commentsParams(comments.length),
-            style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+            style: theme.textTheme.titleSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         ListView.builder(
@@ -796,11 +1003,7 @@ class _PRContent extends StatelessWidget {
           itemCount: comments.length,
           itemBuilder: (context, i) => FadeInWrapper(
             delay: Duration(milliseconds: i * 30),
-            child: _CommentItem(
-              comment: comments[i],
-              owner: owner,
-              repo: repo,
-            ),
+            child: _CommentItem(comment: comments[i], owner: owner, repo: repo),
           ),
         ),
       ],
@@ -859,7 +1062,9 @@ class _PRContent extends StatelessWidget {
   Color? _parseColor(String? colorStr) {
     if (colorStr == null || colorStr.isEmpty) return null;
     try {
-      return Color(int.parse(colorStr.replaceFirst('#', ''), radix: 16) + 0xFF000000);
+      return Color(
+        int.parse(colorStr.replaceFirst('#', ''), radix: 16) + 0xFF000000,
+      );
     } catch (_) {
       return null;
     }
@@ -871,7 +1076,11 @@ class _CommentItem extends StatefulWidget {
   final String owner;
   final String repo;
 
-  const _CommentItem({required this.comment, required this.owner, required this.repo});
+  const _CommentItem({
+    required this.comment,
+    required this.owner,
+    required this.repo,
+  });
 
   @override
   State<_CommentItem> createState() => _CommentItemState();
@@ -889,7 +1098,9 @@ class _CommentItemState extends State<_CommentItem> {
   Future<void> _refreshCommentReactions() async {
     if (widget.comment.id == null) return;
     final result = await Injection.getCommentReactionsUseCase(
-      widget.owner, widget.repo, widget.comment.id!,
+      widget.owner,
+      widget.repo,
+      widget.comment.id!,
     );
     if (result is Right<Failure, List<Reaction>>) {
       _commentReactions = result.value;
@@ -902,9 +1113,9 @@ class _CommentItemState extends State<_CommentItem> {
     final currentUser = Injection.authNotifier.state is AuthAuthenticated
         ? (Injection.authNotifier.state as AuthAuthenticated).user.login
         : null;
-    final existing = _commentReactions.where(
-      (r) => r.content == content && r.user?.login == currentUser,
-    ).toList();
+    final existing = _commentReactions
+        .where((r) => r.content == content && r.user?.login == currentUser)
+        .toList();
 
     _commentReactions = List.from(_commentReactions);
     if (existing.isNotEmpty) {
@@ -913,12 +1124,25 @@ class _CommentItemState extends State<_CommentItem> {
       );
       if (mounted) setState(() {});
       await Injection.deleteCommentReactionUseCase(
-        widget.owner, widget.repo, widget.comment.id!, content);
+        widget.owner,
+        widget.repo,
+        widget.comment.id!,
+        content,
+      );
     } else {
-      _commentReactions.add(Reaction(content: content, user: User(login: currentUser)));
+      _commentReactions.add(
+        Reaction(
+          content: content,
+          user: User(login: currentUser),
+        ),
+      );
       if (mounted) setState(() {});
       await Injection.addCommentReactionUseCase(
-        widget.owner, widget.repo, widget.comment.id!, content);
+        widget.owner,
+        widget.repo,
+        widget.comment.id!,
+        content,
+      );
     }
     await _refreshCommentReactions();
   }
@@ -932,13 +1156,16 @@ class _CommentItemState extends State<_CommentItem> {
     final userReacted = _commentReactions.any(
       (r) => r.content == content && r.user?.login == currentUser,
     );
-    return Material(
+    return Container(
       key: ValueKey(content),
-      color: userReacted ? theme.colorScheme.primaryContainer : theme.colorScheme.surfaceContainerHighest.withAlpha(128),
-      borderRadius: BorderRadius.circular(12),
-      child: InkWell(
+      decoration: BoxDecoration(
+        color: userReacted
+            ? theme.colorScheme.primaryContainer
+            : theme.colorScheme.surfaceContainerHighest.withAlpha(128),
         borderRadius: BorderRadius.circular(12),
-        onTap: () => _toggleCommentReaction(content),
+      ),
+      child: FTappable(
+        onPress: () => _toggleCommentReaction(content),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
           child: Text(
@@ -957,83 +1184,96 @@ class _CommentItemState extends State<_CommentItem> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                if (widget.comment.user != null) ...[
-                  UserAvatar(user: widget.comment.user!, radius: 14),
-                  const SizedBox(width: 8),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: FCard.raw(
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  if (widget.comment.user != null) ...[
+                    UserAvatar(user: widget.comment.user!, radius: 14),
+                    const SizedBox(width: 8),
+                    Text(
+                      widget.comment.user!.login ?? '',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                  const Spacer(),
                   Text(
-                    widget.comment.user!.login ?? '',
-                    style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold),
-                  ),
-                ],
-                const Spacer(),
-                Text(
-                  _formatDate(widget.comment.created_at, l10n),
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 8),
-            if (widget.comment.body != null && widget.comment.body!.isNotEmpty)
-              MarkdownBody(
-                data: widget.comment.body!,
-                selectable: true,
-                onTapLink: (text, href, title) {
-                  if (href != null) {
-                    launchUrl(Uri.parse(href), mode: LaunchMode.externalApplication);
-                  }
-                },
-              ),
-            if (widget.comment.id != null)
-              Builder(builder: (context) {
-                final activeCommentReactions = _defaultReactions.where((content) {
-                  return _commentReactions.any((r) => r.content == content);
-                }).toList();
-                return AnimatedSize(
-                  duration: const Duration(milliseconds: 200),
-                  curve: Curves.easeInOut,
-                  alignment: Alignment.topLeft,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 4),
-                    child: Wrap(
-                      spacing: 4,
-                      runSpacing: 4,
-                      children: [
-                        _CommentPickReactionButton(
-                          commentReactions: _commentReactions,
-                          onSelect: (content) => _toggleCommentReaction(content),
-                        ),
-                        ...activeCommentReactions.map((content) {
-                          return AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 250),
-                            transitionBuilder: (child, animation) {
-                              return ScaleTransition(
-                                scale: animation,
-                                child: FadeTransition(
-                                  opacity: animation,
-                                  child: child,
-                                ),
-                              );
-                            },
-                            child: _buildCommentReactionChip(content),
-                          );
-                        }),
-                      ],
+                    _formatDate(widget.comment.created_at, l10n),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
-                );
-              }),
-          ],
+                ],
+              ),
+              const SizedBox(height: 8),
+              if (widget.comment.body != null &&
+                  widget.comment.body!.isNotEmpty)
+                MarkdownBody(
+                  data: widget.comment.body!,
+                  selectable: true,
+                  onTapLink: (text, href, title) {
+                    if (href != null) {
+                      launchUrl(
+                        Uri.parse(href),
+                        mode: LaunchMode.externalApplication,
+                      );
+                    }
+                  },
+                ),
+              if (widget.comment.id != null)
+                Builder(
+                  builder: (context) {
+                    final activeCommentReactions = _defaultReactions.where((
+                      content,
+                    ) {
+                      return _commentReactions.any((r) => r.content == content);
+                    }).toList();
+                    return AnimatedSize(
+                      duration: const Duration(milliseconds: 200),
+                      curve: Curves.easeInOut,
+                      alignment: Alignment.topLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Wrap(
+                          spacing: 4,
+                          runSpacing: 4,
+                          children: [
+                            _CommentPickReactionButton(
+                              commentReactions: _commentReactions,
+                              onSelect: (content) =>
+                                  _toggleCommentReaction(content),
+                            ),
+                            ...activeCommentReactions.map((content) {
+                              return AnimatedSwitcher(
+                                duration: const Duration(milliseconds: 250),
+                                transitionBuilder: (child, animation) {
+                                  return ScaleTransition(
+                                    scale: animation,
+                                    child: FadeTransition(
+                                      opacity: animation,
+                                      child: child,
+                                    ),
+                                  );
+                                },
+                                child: _buildCommentReactionChip(content),
+                              );
+                            }),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -1062,23 +1302,27 @@ class _CommentPickReactionButton extends StatefulWidget {
   });
 
   @override
-  State<_CommentPickReactionButton> createState() => _CommentPickReactionButtonState();
+  State<_CommentPickReactionButton> createState() =>
+      _CommentPickReactionButtonState();
 }
 
-class _CommentPickReactionButtonState extends State<_CommentPickReactionButton> {
+class _CommentPickReactionButtonState
+    extends State<_CommentPickReactionButton> {
   final GlobalKey _key = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Material(
+    return Container(
       key: _key,
-      color: theme.colorScheme.surfaceContainerHighest.withAlpha(128),
-      borderRadius: BorderRadius.circular(12),
-      child: InkWell(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest.withAlpha(128),
         borderRadius: BorderRadius.circular(12),
-        onTap: () {
-          final renderBox = _key.currentContext?.findRenderObject() as RenderBox?;
+      ),
+      child: FTappable(
+        onPress: () {
+          final renderBox =
+              _key.currentContext?.findRenderObject() as RenderBox?;
           if (renderBox == null) return;
           final position = renderBox.localToGlobal(Offset.zero);
           final size = renderBox.size;
@@ -1092,28 +1336,46 @@ class _CommentPickReactionButtonState extends State<_CommentPickReactionButton> 
                   Positioned(
                     left: position.dx,
                     top: position.dy + size.height + 4,
-                    child: Material(
-                      elevation: 8,
-                      borderRadius: BorderRadius.circular(12),
-                      color: theme.colorScheme.surfaceContainerHigh,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surfaceContainerHigh,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Color(0x33000000),
+                            blurRadius: 12,
+                            offset: Offset(0, 4),
+                          ),
+                        ],
+                      ),
                       child: Padding(
                         padding: const EdgeInsets.all(6),
                         child: Wrap(
                           spacing: 2,
                           runSpacing: 2,
                           children: _defaultReactions.map((content) {
-                            final currentUser = Injection.authNotifier.state is AuthAuthenticated
-                                ? (Injection.authNotifier.state as AuthAuthenticated).user.login
+                            final currentUser =
+                                Injection.authNotifier.state
+                                    is AuthAuthenticated
+                                ? (Injection.authNotifier.state
+                                          as AuthAuthenticated)
+                                      .user
+                                      .login
                                 : null;
                             final userReacted = widget.commentReactions.any(
-                              (r) => r.content == content && r.user?.login == currentUser,
+                              (r) =>
+                                  r.content == content &&
+                                  r.user?.login == currentUser,
                             );
-                            return Material(
-                              color: userReacted ? theme.colorScheme.primaryContainer : Colors.transparent,
-                              borderRadius: BorderRadius.circular(16),
-                              child: InkWell(
+                            return DecoratedBox(
+                              decoration: BoxDecoration(
+                                color: userReacted
+                                    ? theme.colorScheme.primaryContainer
+                                    : Colors.transparent,
                                 borderRadius: BorderRadius.circular(16),
-                                onTap: () {
+                              ),
+                              child: FTappable(
+                                onPress: () {
                                   overlay.remove();
                                   widget.onSelect(content);
                                 },
@@ -1141,7 +1403,7 @@ class _CommentPickReactionButtonState extends State<_CommentPickReactionButton> 
           label: 'Add reaction',
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
-            child: Icon(Icons.emoji_emotions_outlined, size: 16),
+            child: Icon(FIcons.smile, size: 16),
           ),
         ),
       ),

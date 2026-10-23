@@ -30,6 +30,8 @@
 - **Actions / Webhook / Wiki / 包页面**：工作流运行列表（`FPopoverMenu` 筛选）、运行详情、仓库与组织密钥/变量、Webhook 列表（创建弹窗改用 `FSelect`/`FSwitch`）、Wiki 列表/详情/编辑、包列表/详情全部 Forui 化
 - **活动流与用户主页**：活动流改用 `AppPage` + Forui 行与 `FIcons` 图标；他人主页改用 `AppPage` 与 `AppError`
 - **筛选面板**：议题与仓库筛选底部弹窗改用 Forui 标签按钮（`FButton`）、`FCheckbox` 与分段类型/排序控件
+- **Material 收尾清理**：议题/团队/组织详情、议题列表、个人主页、仓库详情、PR 详情、新建仓库页不再使用 Material 卡片/行/输入框/按钮/标签/弹窗/图标；保存筛选、Topics、Fork、依赖等弹窗统一为 `FDialog`
+- **筛选面板改用 `FSheet`**：议题与仓库筛选在议题列表、仓库详情、搜索页均以 Forui 模态面板（`showFSheet`）打开
 
 ### Added
 - `AppTheme`（品牌色板、亮/暗 Forui 主题、触屏/桌面密度）

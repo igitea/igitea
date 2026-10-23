@@ -102,9 +102,10 @@ class _IssueListPageState extends State<IssueListPage> {
     }
 
     try {
-      final result = await showModalBottomSheet<IssueFilterState>(
+      final result = await showFSheet<IssueFilterState>(
         context: context,
-        isScrollControlled: true,
+        side: FLayout.btt,
+        mainAxisMaxRatio: 0.85,
         builder: (_) => IssueFilterBottomSheet(
           initialState: _filterState.value,
           availableLabels: labels.toList()..sort(),
@@ -164,22 +165,23 @@ class _IssueListPageState extends State<IssueListPage> {
     final l10n = AppLocalizations.of(context)!;
     final filterState = notifier.issuesListFilter ?? 'open';
     final controller = TextEditingController();
-    final name = await showDialog<String>(
+    final name = await showFDialog<String>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx, style, animation) => FDialog(
         title: Text(l10n.saveFilter),
-        content: TextField(
-          controller: controller,
-          decoration: InputDecoration(hintText: l10n.filterName),
+        body: FTextField(
+          control: FTextFieldControl.managed(controller: controller),
+          hint: l10n.filterName,
           autofocus: true,
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx),
+          FButton(
+            variant: .outline,
+            onPress: () => Navigator.pop(ctx),
             child: Text(l10n.cancel),
           ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, controller.text),
+          FButton(
+            onPress: () => Navigator.pop(ctx, controller.text),
             child: Text(l10n.save),
           ),
         ],

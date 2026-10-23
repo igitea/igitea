@@ -141,16 +141,7 @@ class _CreateRepoPageState extends State<CreateRepoPage> {
               textInputAction: TextInputAction.done,
             ),
             const SizedBox(height: UIConstants.md),
-            Card(
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(UIConstants.cardRadius),
-                side: BorderSide(
-                  color: theme.colorScheme.outlineVariant.withValues(
-                    alpha: 0.5,
-                  ),
-                ),
-              ),
+            FCard.raw(
               child: Padding(
                 padding: const EdgeInsets.all(UIConstants.md),
                 child: Column(
@@ -170,7 +161,7 @@ class _CreateRepoPageState extends State<CreateRepoPage> {
                       isSelected: !_isPrivate,
                       onTap: () => setState(() => _isPrivate = false),
                     ),
-                    const Divider(),
+                    const FDivider(),
                     _VisibilityOption(
                       title: l10n.private,
                       subtitle: l10n.privateDescription,
@@ -183,17 +174,17 @@ class _CreateRepoPageState extends State<CreateRepoPage> {
               ),
             ),
             const SizedBox(height: UIConstants.md),
-            SwitchListTile(
-              title: Text(l10n.initializeWithReadme),
-              subtitle: Text(l10n.initializeWithReadmeDescription),
-              value: _autoInit,
-              onChanged: (value) => setState(() => _autoInit = value),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(UIConstants.cardRadius),
-                side: BorderSide(
-                  color: theme.colorScheme.outlineVariant.withValues(
-                    alpha: 0.5,
-                  ),
+            FCard.raw(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: UIConstants.md,
+                  vertical: UIConstants.sm,
+                ),
+                child: FSwitch(
+                  label: Text(l10n.initializeWithReadme),
+                  description: Text(l10n.initializeWithReadmeDescription),
+                  value: _autoInit,
+                  onChange: (value) => setState(() => _autoInit = value),
                 ),
               ),
             ),
@@ -222,9 +213,8 @@ class _VisibilityOption extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
+    return FTappable(
+      onPress: onTap,
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: UIConstants.sm),
         child: Row(
