@@ -9,11 +9,18 @@
 - **卡片**：`PremiumCard`/`PremiumListCard` 改为基于 `FCard`，仓库、通知、搜索、个人资料等卡片共享 Forui 的边框、圆角与按压反馈
 - **仓库列表**：搜索框改用 Forui 文本框，页面改用 `AppPage` 外壳与 `AppEmpty`/`AppError` 状态
 - **空态**：`EmptyState` 统一委托给 Forui 的 `AppEmpty`
+- **登录页**：改用 Forui 重写——账户/令牌/OAuth2 分段切换、`FTextFormField`/`FTextFormField.password`、`FButton` 提交、`FAlert` 错误提示、Toast 反馈，并在高屏上垂直居中、窄屏可滚动
+- **通知页**：改用 Forui 的加载/错误/空态，主题图标换为 `FIcons`，「加载更多」改用 Forui 按钮
+- **议题列表**：页面改用 `AppPage`，搜索框换 Forui 文本框，open/closed/all 改为分段按钮，筛选标签与已保存筛选改用 `AppFilterChip`，加载/错误态统一
+- **议题详情**：`AppPage` 头部 + Forui 的浏览器打开/删除操作，错误与加载态统一
+- **个人资料**：账户操作合并为一个 `AppSection`（`AppTile` 行），管理员标识改用 `FBadge`，退出登录确认改用 `FDialog`
+- **搜索页**：仓库/议题/用户切换由 Material `TabBar` 改为分段按钮，搜索框与状态视图改用 Forui
 
 ### Added
 - `AppTheme`（品牌色板、亮/暗 Forui 主题、触屏/桌面密度）
-- 共享 Forui 组件：`AppPage`、`AppSection`、`AppTile`、`AppLoading`、`AppEmpty`、`AppError`、`AppSectionPlaceholder`
+- 共享 Forui 组件：`AppPage`、`AppSection`、`AppTile`、`AppFilterChip`、`AppLoading`、`AppEmpty`、`AppError`、`AppSectionPlaceholder`
 - `AppSection`/`AppTile` 测试，以及「标题随 Tab 切换」的首页测试
+- i18n：新增 `savedFilters`（中/繁）与 `saveFilter`（繁中）
 
 ### Removed
 - 移除旧首页组件 `HomeIconTile`、`HomeRepoTile`、`HomeSectionCard`、`HomeRecentTile` 及其测试（由 `AppSection`/`AppTile` 取代）

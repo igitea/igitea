@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/constants/ui_constants.dart';
@@ -11,6 +12,8 @@ import '../../presentation/state/user_notifier.dart';
 import '../../core/animations/animated_wrapper.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/org_avatar.dart';
+import '../widgets/forui/app_section.dart';
+import '../widgets/forui/app_tile.dart';
 import '../widgets/premium_card.dart';
 import '../widgets/user_avatar.dart';
 import 'create_org_page.dart';
@@ -89,7 +92,10 @@ class _ProfilePageState extends State<ProfilePage> {
           final state = Injection.userNotifier.state;
           return switch (state) {
             UserLoading() => const _LoadingView(),
-            UserError(:final message) => _ErrorView(message: message, onRetry: _refresh),
+            UserError(:final message) => _ErrorView(
+              message: message,
+              onRetry: _refresh,
+            ),
             UserLoaded(:final user) => _ProfileContent(
               user: user,
               orgs: _orgs,
@@ -166,110 +172,75 @@ class _ProfileContent extends StatelessWidget {
             _OrgsSection(orgs: orgs, loading: orgsLoading, l10n: l10n),
           ],
           const SizedBox(height: UIConstants.md),
-          PremiumCard(
-            onTap: () async {
-              final result = await Navigator.of(context).push<bool>(
-                MaterialPageRoute(builder: (_) => const CreateRepoPage()),
-              );
-              if (result == true && context.mounted) {
-                await Injection.userNotifier.listCurrentUserRepos();
-              }
-            },
-            child: Row(
+          const SizedBox(height: UIConstants.md),
+          Padding(
+            padding: UIConstants.pagePadding,
+            child: AppSection(
+              title: l10n.account,
               children: [
-                Icon(Icons.add, color: Theme.of(context).colorScheme.primary),
-                const SizedBox(width: UIConstants.md),
-                Expanded(child: Text(l10n.createRepository)),
-                const Icon(Icons.chevron_right),
-              ],
-            ),
-          ),
-          PremiumCard(
-            onTap: () async {
-              final result = await Navigator.of(context).push<bool>(
-                MaterialPageRoute(builder: (_) => const MigrateRepoPage()),
-              );
-              if (result == true && context.mounted) {
-                await Injection.userNotifier.listCurrentUserRepos();
-              }
-            },
-            child: Row(
-              children: [
-                Icon(Icons.input, color: Theme.of(context).colorScheme.primary),
-                const SizedBox(width: UIConstants.md),
-                Expanded(child: Text(l10n.importRepository)),
-                const Icon(Icons.chevron_right),
-              ],
-            ),
-          ),
-          PremiumCard(
-            onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (_) => const StarredReposPage(),
-              ));
-            },
-            child: Row(
-              children: [
-                Icon(Icons.star_outline, color: Theme.of(context).colorScheme.primary),
-                const SizedBox(width: UIConstants.md),
-                Expanded(child: Text(l10n.starredRepos)),
-                const Icon(Icons.chevron_right),
-              ],
-            ),
-          ),
-          PremiumCard(
-            onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (_) => PackageListPage(owner: user.login ?? ''),
-              ));
-            },
-            child: Row(
-              children: [
-                Icon(Icons.inventory_2_outlined, color: Theme.of(context).colorScheme.primary),
-                const SizedBox(width: UIConstants.md),
-                Expanded(child: Text(l10n.packages)),
-                const Icon(Icons.chevron_right),
-              ],
-            ),
-          ),
-          PremiumCard(
-            onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (_) => const EmailsPage()));
-            },
-            child: Row(
-              children: [
-                Icon(Icons.email_outlined, color: Theme.of(context).colorScheme.primary),
-                const SizedBox(width: UIConstants.md),
-                Expanded(child: Text(l10n.emails)),
-                const Icon(Icons.chevron_right),
-              ],
-            ),
-          ),
-          PremiumCard(
-            onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(builder: (_) => const GpgKeysPage()));
-            },
-            child: Row(
-              children: [
-                Icon(Icons.vpn_key_outlined, color: Theme.of(context).colorScheme.primary),
-                const SizedBox(width: UIConstants.md),
-                Expanded(child: Text(l10n.gpgKeys)),
-                const Icon(Icons.chevron_right),
-              ],
-            ),
-          ),
-          PremiumCard(
-            onTap: () {
-              Navigator.of(context).push(MaterialPageRoute(
-                builder: (_) => const SettingsPage(),
-              ));
-            },
-            child: Row(
-              children: [
-                Icon(Icons.settings_outlined, color: Theme.of(context).colorScheme.primary),
-                const SizedBox(width: UIConstants.md),
-                Expanded(child: Text(l10n.settings)),
-                const Icon(Icons.chevron_right),
+                AppTile(
+                  leading: const Icon(FIcons.plus),
+                  title: l10n.createRepository,
+                  onPress: () async {
+                    final result = await Navigator.of(context).push<bool>(
+                      MaterialPageRoute(builder: (_) => const CreateRepoPage()),
+                    );
+                    if (result == true && context.mounted) {
+                      await Injection.userNotifier.listCurrentUserRepos();
+                    }
+                  },
+                ),
+                AppTile(
+                  leading: const Icon(FIcons.import),
+                  title: l10n.importRepository,
+                  onPress: () async {
+                    final result = await Navigator.of(context).push<bool>(
+                      MaterialPageRoute(
+                        builder: (_) => const MigrateRepoPage(),
+                      ),
+                    );
+                    if (result == true && context.mounted) {
+                      await Injection.userNotifier.listCurrentUserRepos();
+                    }
+                  },
+                ),
+                AppTile(
+                  leading: const Icon(FIcons.star),
+                  title: l10n.starredRepos,
+                  onPress: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const StarredReposPage()),
+                  ),
+                ),
+                AppTile(
+                  leading: const Icon(FIcons.package),
+                  title: l10n.packages,
+                  onPress: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => PackageListPage(owner: user.login ?? ''),
+                    ),
+                  ),
+                ),
+                AppTile(
+                  leading: const Icon(FIcons.mail),
+                  title: l10n.emails,
+                  onPress: () => Navigator.of(
+                    context,
+                  ).push(MaterialPageRoute(builder: (_) => const EmailsPage())),
+                ),
+                AppTile(
+                  leading: const Icon(FIcons.keyRound),
+                  title: l10n.gpgKeys,
+                  onPress: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const GpgKeysPage()),
+                  ),
+                ),
+                AppTile(
+                  leading: const Icon(FIcons.settings),
+                  title: l10n.settings,
+                  onPress: () => Navigator.of(context).push(
+                    MaterialPageRoute(builder: (_) => const SettingsPage()),
+                  ),
+                ),
               ],
             ),
           ),
@@ -302,16 +273,21 @@ class _UserHeader extends StatelessWidget {
         ),
       ),
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(UIConstants.lg, UIConstants.lg, UIConstants.lg, UIConstants.md),
+        padding: const EdgeInsets.fromLTRB(
+          UIConstants.lg,
+          UIConstants.lg,
+          UIConstants.lg,
+          UIConstants.md,
+        ),
         child: Column(
           children: [
             UserAvatar(user: user, radius: UIConstants.avatarXxl),
             const SizedBox(height: UIConstants.sm),
             Text(
               user.full_name ?? user.login ?? l10n.unknownUser,
-                style: theme.textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
             ),
             if (user.login != null) ...[
               const SizedBox(height: UIConstants.xs),
@@ -334,11 +310,16 @@ class _UserHeader extends StatelessWidget {
             ],
             if (user.is_admin == true) ...[
               const SizedBox(height: UIConstants.sm),
-              Chip(
-                label: Text(l10n.admin),
-                avatar: Semantics(excludeSemantics: true, child: Icon(Icons.shield, size: UIConstants.iconSm, color: theme.colorScheme.onError)),
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                visualDensity: VisualDensity.compact,
+              FBadge(
+                variant: .primary,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(FIcons.shieldCheck, size: 12),
+                    const SizedBox(width: 4),
+                    Text(l10n.admin),
+                  ],
+                ),
               ),
             ],
           ],
@@ -360,17 +341,53 @@ class _StatsRow extends StatelessWidget {
       padding: UIConstants.pagePadding,
       child: Row(
         children: [
-          Expanded(child: _StatItem(label: l10n.repos, value: '${user.starred_repos_count ?? 0}', onTap: () {
-            Navigator.of(context).push(MaterialPageRoute(builder: (_) => UserReposPage(username: user.login ?? '')));
-          })),
+          Expanded(
+            child: _StatItem(
+              label: l10n.repos,
+              value: '${user.starred_repos_count ?? 0}',
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => UserReposPage(username: user.login ?? ''),
+                  ),
+                );
+              },
+            ),
+          ),
           const SizedBox(width: UIConstants.sm),
-          Expanded(child: _StatItem(label: l10n.followers, value: '${user.followers_count ?? 0}', onTap: () {
-            Navigator.of(context).push(MaterialPageRoute(builder: (_) => FollowPage(username: user.login ?? '', type: FollowType.followers)));
-          })),
+          Expanded(
+            child: _StatItem(
+              label: l10n.followers,
+              value: '${user.followers_count ?? 0}',
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => FollowPage(
+                      username: user.login ?? '',
+                      type: FollowType.followers,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
           const SizedBox(width: UIConstants.sm),
-          Expanded(child: _StatItem(label: l10n.following, value: '${user.following_count ?? 0}', onTap: () {
-            Navigator.of(context).push(MaterialPageRoute(builder: (_) => FollowPage(username: user.login ?? '', type: FollowType.following)));
-          })),
+          Expanded(
+            child: _StatItem(
+              label: l10n.following,
+              value: '${user.following_count ?? 0}',
+              onTap: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => FollowPage(
+                      username: user.login ?? '',
+                      type: FollowType.following,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
         ],
       ),
     );
@@ -392,11 +409,19 @@ class _StatItem extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: UIConstants.md),
       child: Column(
         children: [
-          Text(value, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600)),
+          Text(
+            value,
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
           const SizedBox(height: UIConstants.xs),
-          Text(label, style: theme.textTheme.bodySmall?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
-          )),
+          Text(
+            label,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
         ],
       ),
     );
@@ -413,27 +438,35 @@ class _InfoCards extends StatelessWidget {
   Widget build(BuildContext context) {
     final items = <Widget>[];
     if (user.email != null && user.email!.isNotEmpty) {
-      items.add(_InfoTile(
-        icon: Icons.email_outlined,
-        label: user.email!,
-        onTap: () => _launchUrl('mailto:${user.email!}'),
-      ));
+      items.add(
+        _InfoTile(
+          icon: Icons.email_outlined,
+          label: user.email!,
+          onTap: () => _launchUrl('mailto:${user.email!}'),
+        ),
+      );
     }
     if (user.location != null && user.location!.isNotEmpty) {
-      items.add(_InfoTile(icon: Icons.location_on_outlined, label: user.location!));
+      items.add(
+        _InfoTile(icon: Icons.location_on_outlined, label: user.location!),
+      );
     }
     if (user.website != null && user.website!.isNotEmpty) {
-      items.add(_InfoTile(
-        icon: Icons.language,
-        label: user.website!,
-        onTap: () => _launchUrl(user.website!),
-      ));
+      items.add(
+        _InfoTile(
+          icon: Icons.language,
+          label: user.website!,
+          onTap: () => _launchUrl(user.website!),
+        ),
+      );
     }
     if (user.created != null) {
-      items.add(_InfoTile(
-        icon: Icons.calendar_today_outlined,
-        label: l10n.joinedOnParams(_formatDate(user.created!)),
-      ));
+      items.add(
+        _InfoTile(
+          icon: Icons.calendar_today_outlined,
+          label: l10n.joinedOnParams(_formatDate(user.created!)),
+        ),
+      );
     }
 
     if (items.isEmpty) return const SizedBox.shrink();
@@ -472,12 +505,14 @@ class _InfoTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return ListTile(
-      leading: Icon(icon, size: UIConstants.iconMd, color: theme.colorScheme.primary),
-      title: Text(label, style: theme.textTheme.bodyMedium),
-      dense: true,
-      trailing: onTap != null ? const Icon(Icons.open_in_new, size: UIConstants.iconSm) : null,
-      onTap: onTap,
+    return AppTile(
+      leading: Icon(icon, size: 18, color: theme.colorScheme.primary),
+      title: label,
+      showChevron: false,
+      trailing: onTap != null
+          ? const Icon(FIcons.externalLink, size: 14)
+          : null,
+      onPress: onTap,
     );
   }
 }
@@ -487,7 +522,11 @@ class _OrgsSection extends StatelessWidget {
   final bool loading;
   final AppLocalizations l10n;
 
-  const _OrgsSection({required this.orgs, required this.loading, required this.l10n});
+  const _OrgsSection({
+    required this.orgs,
+    required this.loading,
+    required this.l10n,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -514,7 +553,9 @@ class _OrgsSection extends StatelessWidget {
                   children: [
                     Text(
                       l10n.organisations,
-                      style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     const SizedBox(width: UIConstants.xs),
                     Semantics(
@@ -533,9 +574,7 @@ class _OrgsSection extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (_) => const CreateOrgPage(),
-                    ),
+                    MaterialPageRoute(builder: (_) => const CreateOrgPage()),
                   );
                 },
               ),
@@ -555,20 +594,24 @@ class _OrgsSection extends StatelessWidget {
               return FadeInWrapper(
                 delay: Duration(milliseconds: index * 30),
                 child: Tooltip(
-                  message: [org.full_name, org.name, org.username]
-                    .whereType<String>()
-                    .where((s) => s.isNotEmpty)
-                    .firstOrNull ?? '',
+                  message:
+                      [org.full_name, org.name, org.username]
+                          .whereType<String>()
+                          .where((s) => s.isNotEmpty)
+                          .firstOrNull ??
+                      '',
                   child: GestureDetector(
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) => OrganizationDetailPage(
-                            orgName: [org.username, org.name]
-                              .whereType<String>()
-                              .where((s) => s.isNotEmpty)
-                              .firstOrNull ?? '',
+                            orgName:
+                                [org.username, org.name]
+                                    .whereType<String>()
+                                    .where((s) => s.isNotEmpty)
+                                    .firstOrNull ??
+                                '',
                           ),
                         ),
                       );
@@ -588,45 +631,40 @@ class _OrgsSection extends StatelessWidget {
 class _SignOutButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     return Padding(
       padding: UIConstants.pagePadding,
-      child: FilledButton.icon(
-        onPressed: () => _handleSignOut(context),
-        icon: const Icon(Icons.logout),
-        label: Text(l10n.signOut),
-        style: FilledButton.styleFrom(
-          backgroundColor: theme.colorScheme.error,
-          foregroundColor: theme.colorScheme.onError,
-          minimumSize: const Size.fromHeight(48),
+      child: SizedBox(
+        width: double.infinity,
+        child: FButton(
+          variant: .destructive,
+          prefix: const Icon(FIcons.logOut),
+          onPress: () => _handleSignOut(context),
+          child: Text(l10n.signOut),
         ),
       ),
     );
   }
 
   void _handleSignOut(BuildContext context) {
-    final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
-    showDialog(
+    showFDialog<void>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (dialogContext, style, animation) => FDialog(
         title: Text(l10n.signOut),
-        content: Text(l10n.signOutConfirmMessage),
+        body: Text(l10n.signOutConfirmMessage),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
+          FButton(
+            variant: .outline,
+            onPress: () => Navigator.of(dialogContext).pop(),
             child: Text(l10n.cancel),
           ),
-          FilledButton(
-            onPressed: () async {
-              Navigator.of(ctx).pop();
-              await Injection.authNotifier.logout();
+          FButton(
+            variant: .destructive,
+            onPress: () {
+              Navigator.of(dialogContext).pop();
+              Injection.authNotifier.logout();
             },
-            style: FilledButton.styleFrom(
-              backgroundColor: theme.colorScheme.error,
-              foregroundColor: theme.colorScheme.onError,
-            ),
             child: Text(l10n.signOut),
           ),
         ],

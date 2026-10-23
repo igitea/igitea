@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
+
 import '../../core/animations/animated_wrapper.dart';
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
@@ -9,7 +11,7 @@ import '../../presentation/state/issue_notifier.dart';
 import '../../presentation/state/repo_notifier.dart';
 import '../models/issue_filter_state.dart';
 import '../models/repo_filter_state.dart';
-import '../widgets/empty_state.dart';
+import '../widgets/forui/app_state_views.dart';
 import '../widgets/issue_filter_bottom_sheet.dart';
 import '../widgets/premium_card.dart';
 import '../widgets/repo_filter_bottom_sheet.dart';
@@ -25,30 +27,21 @@ class SearchPage extends StatefulWidget {
   State<SearchPage> createState() => _SearchPageState();
 }
 
-class _SearchPageState extends State<SearchPage>
-    with SingleTickerProviderStateMixin {
+class _SearchPageState extends State<SearchPage> {
   final _searchController = TextEditingController();
-  late TabController _tabController;
-  final ValueNotifier<RepoFilterState> _repoFilterState = ValueNotifier(const RepoFilterState());
-  final ValueNotifier<IssueFilterState> _issueFilterState = ValueNotifier(const IssueFilterState());
+  int _tabIndex = 0;
+  final ValueNotifier<RepoFilterState> _repoFilterState = ValueNotifier(
+    const RepoFilterState(),
+  );
+  final ValueNotifier<IssueFilterState> _issueFilterState = ValueNotifier(
+    const IssueFilterState(),
+  );
   bool _isRepoFilterSheetOpen = false;
   bool _isIssueFilterSheetOpen = false;
 
   @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 3, vsync: this);
-    _tabController.addListener(() {
-      if (!_tabController.indexIsChanging) {
-        setState(() {});
-      }
-    });
-  }
-
-  @override
   void dispose() {
     _searchController.dispose();
-    _tabController.dispose();
     super.dispose();
   }
 
@@ -79,9 +72,8 @@ class _SearchPageState extends State<SearchPage>
       final result = await showModalBottomSheet<RepoFilterState>(
         context: context,
         isScrollControlled: true,
-        builder: (_) => RepoFilterBottomSheet(
-          initialState: _repoFilterState.value,
-        ),
+        builder: (_) =>
+            RepoFilterBottomSheet(initialState: _repoFilterState.value),
       );
 
       if (result != null) {
@@ -118,7 +110,7 @@ class _SearchPageState extends State<SearchPage>
   }
 
   void _showFilterSheet() {
-    switch (_tabController.index) {
+    switch (_tabIndex) {
       case 0:
         _showRepoFilterSheet();
         break;
@@ -132,7 +124,7 @@ class _SearchPageState extends State<SearchPage>
   }
 
   bool get _hasActiveFilters {
-    return switch (_tabController.index) {
+    return switch (_tabIndex) {
       0 => _repoFilterState.value.hasFilters,
       1 => _issueFilterState.value.hasFilters,
       _ => false,
@@ -146,52 +138,70 @@ class _SearchPageState extends State<SearchPage>
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
-          child: TabBar(
-            controller: _tabController,
-            tabs: [
-              Tab(icon: const Icon(Icons.source), text: l10n.repositories),
-              Tab(icon: const Icon(Icons.bug_report), text: l10n.issues),
-              Tab(icon: const Icon(Icons.person), text: l10n.users),
-            ],
-          ),
-        ),
-          Padding(
-            padding: const EdgeInsets.all(UIConstants.md),
-            child: Row(
-              children: [
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+          child: Row(
+            children: [
+              for (final (index, label) in [
+                (0, l10n.repositories),
+                (1, l10n.issues),
+                (2, l10n.users),
+              ])
                 Expanded(
-                  child: Semantics(
-                    label: l10n.search,
-                    child: SearchBar(
-                      controller: _searchController,
-                      hintText: l10n.search,
-                      leading: const Icon(Icons.search),
-                      textInputAction: TextInputAction.search,
-                      onSubmitted: (_) {
-                        _onSearch();
-                        FocusScope.of(context).unfocus();
-                      },
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 3),
+                    child: FButton(
+                      variant: _tabIndex == index ? .primary : .outline,
+                      size: .sm,
+                      onPress: () => setState(() => _tabIndex = index),
+                      child: Flexible(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(label, maxLines: 1),
+                        ),
+                      ),
                     ),
                   ),
                 ),
-                const SizedBox(width: UIConstants.sm),
-                if (_tabController.index != 2)
-                  Stack(
+            ],
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+          child: Row(
+            children: [
+              Expanded(
+                child: FTextField(
+                  control: FTextFieldControl.managed(
+                    controller: _searchController,
+                  ),
+                  hint: l10n.search,
+                  textInputAction: TextInputAction.search,
+                  onSubmit: (_) {
+                    _onSearch();
+                    FocusScope.of(context).unfocus();
+                  },
+                  clearable: (value) => value.text.isNotEmpty,
+                ),
+              ),
+              const SizedBox(width: 8),
+              if (_tabIndex != 2)
+                FTappable(
+                  onPress: _showFilterSheet,
+                  semanticsLabel: l10n.moreFilters,
+                  child: Stack(
                     clipBehavior: Clip.none,
                     children: [
-                      IconButton(
-                        icon: const Icon(Icons.filter_list),
-                        tooltip: l10n.moreFilters,
-                        onPressed: _showFilterSheet,
+                      const Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Icon(FIcons.listFilter, size: 18),
                       ),
                       if (_hasActiveFilters)
                         Positioned(
-                          right: 6,
-                          top: 6,
+                          right: 5,
+                          top: 5,
                           child: Container(
-                            width: 8,
-                            height: 8,
+                            width: 7,
+                            height: 7,
                             decoration: BoxDecoration(
                               color: Theme.of(context).colorScheme.primary,
                               shape: BoxShape.circle,
@@ -200,77 +210,89 @@ class _SearchPageState extends State<SearchPage>
                         ),
                     ],
                   ),
-              ],
-            ),
+                ),
+            ],
           ),
-          if (_tabController.index == 0)
-            ValueListenableBuilder<RepoFilterState>(
-              valueListenable: _repoFilterState,
-              builder: (context, filter, _) {
-                if (!filter.hasFilters) return const SizedBox.shrink();
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: UIConstants.md),
-                  child: Wrap(
-                    spacing: UIConstants.sm,
-                    runSpacing: UIConstants.sm,
-                    children: [
-                      if (filter.sort != null)
-                        Chip(
-                          label: Text(filter.sort!),
-                          onDeleted: () {
-                            _repoFilterState.value = filter.copyWith(clearSort: true);
-                            _onSearch();
-                          },
-                        ),
-                      if (filter.order != null)
-                        Chip(
-                          label: Text(filter.order!),
-                          onDeleted: () {
-                            _repoFilterState.value = filter.copyWith(clearOrder: true);
-                            _onSearch();
-                          },
-                        ),
-                      if (filter.private == true)
-                        Chip(
-                          label: Text(l10n.privateReposOnly),
-                          onDeleted: () {
-                            _repoFilterState.value = filter.copyWith(private: false);
-                            _onSearch();
-                          },
-                        ),
-                      if (filter.archived == true)
-                        Chip(
-                          label: Text(l10n.includeArchived),
-                          onDeleted: () {
-                            _repoFilterState.value = filter.copyWith(archived: false);
-                            _onSearch();
-                          },
-                        ),
-                      if (filter.template == true)
-                        Chip(
-                          label: Text(l10n.templatesOnly),
-                          onDeleted: () {
-                            _repoFilterState.value = filter.copyWith(template: false);
-                            _onSearch();
-                          },
-                        ),
-                    ],
-                  ),
-                );
-              },
-            )
-          else if (_tabController.index == 1)
-            ValueListenableBuilder<IssueFilterState>(
-              valueListenable: _issueFilterState,
-              builder: (context, filter, _) {
-                if (!filter.hasFilters) return const SizedBox.shrink();
-                return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: UIConstants.md),
-                  child: Wrap(
-                    spacing: UIConstants.sm,
-                    runSpacing: UIConstants.sm,
-                    children: [
-                      ...filter.labels.map((label) => Chip(
+        ),
+        if (_tabIndex == 0)
+          ValueListenableBuilder<RepoFilterState>(
+            valueListenable: _repoFilterState,
+            builder: (context, filter, _) {
+              if (!filter.hasFilters) return const SizedBox.shrink();
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: UIConstants.md),
+                child: Wrap(
+                  spacing: UIConstants.sm,
+                  runSpacing: UIConstants.sm,
+                  children: [
+                    if (filter.sort != null)
+                      Chip(
+                        label: Text(filter.sort!),
+                        onDeleted: () {
+                          _repoFilterState.value = filter.copyWith(
+                            clearSort: true,
+                          );
+                          _onSearch();
+                        },
+                      ),
+                    if (filter.order != null)
+                      Chip(
+                        label: Text(filter.order!),
+                        onDeleted: () {
+                          _repoFilterState.value = filter.copyWith(
+                            clearOrder: true,
+                          );
+                          _onSearch();
+                        },
+                      ),
+                    if (filter.private == true)
+                      Chip(
+                        label: Text(l10n.privateReposOnly),
+                        onDeleted: () {
+                          _repoFilterState.value = filter.copyWith(
+                            private: false,
+                          );
+                          _onSearch();
+                        },
+                      ),
+                    if (filter.archived == true)
+                      Chip(
+                        label: Text(l10n.includeArchived),
+                        onDeleted: () {
+                          _repoFilterState.value = filter.copyWith(
+                            archived: false,
+                          );
+                          _onSearch();
+                        },
+                      ),
+                    if (filter.template == true)
+                      Chip(
+                        label: Text(l10n.templatesOnly),
+                        onDeleted: () {
+                          _repoFilterState.value = filter.copyWith(
+                            template: false,
+                          );
+                          _onSearch();
+                        },
+                      ),
+                  ],
+                ),
+              );
+            },
+          )
+        else if (_tabIndex == 1)
+          ValueListenableBuilder<IssueFilterState>(
+            valueListenable: _issueFilterState,
+            builder: (context, filter, _) {
+              if (!filter.hasFilters) return const SizedBox.shrink();
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: UIConstants.md),
+                child: Wrap(
+                  spacing: UIConstants.sm,
+                  runSpacing: UIConstants.sm,
+                  children: [
+                    ...filter.labels.map(
+                      (label) => Chip(
                         label: Text(label),
                         onDeleted: () {
                           _issueFilterState.value = filter.copyWith(
@@ -278,8 +300,10 @@ class _SearchPageState extends State<SearchPage>
                           );
                           _onSearch();
                         },
-                      )),
-                      ...filter.milestones.map((m) => Chip(
+                      ),
+                    ),
+                    ...filter.milestones.map(
+                      (m) => Chip(
                         label: Text(m),
                         onDeleted: () {
                           _issueFilterState.value = filter.copyWith(
@@ -287,54 +311,62 @@ class _SearchPageState extends State<SearchPage>
                           );
                           _onSearch();
                         },
-                      )),
-                      if (filter.type != null)
-                        Chip(
-                          label: Text(filter.type!),
-                          onDeleted: () {
-                            _issueFilterState.value = filter.copyWith(clearType: true);
-                            _onSearch();
-                          },
-                        ),
-                      if (filter.assignedToMe)
-                        Chip(
-                          label: Text(l10n.assignedToMe),
-                          onDeleted: () {
-                            _issueFilterState.value = filter.copyWith(assignedToMe: false);
-                            _onSearch();
-                          },
-                        ),
-                      if (filter.createdByMe)
-                        Chip(
-                          label: Text(l10n.createdByMe),
-                          onDeleted: () {
-                            _issueFilterState.value = filter.copyWith(createdByMe: false);
-                            _onSearch();
-                          },
-                        ),
-                      if (filter.mentionedMe)
-                        Chip(
-                          label: Text(l10n.mentionedMe),
-                          onDeleted: () {
-                            _issueFilterState.value = filter.copyWith(mentionedMe: false);
-                            _onSearch();
-                          },
-                        ),
-                    ],
-                  ),
-                );
-              },
-            ),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                _RepoSearchResults(),
-                _IssueSearchResults(),
-                _UserSearchResults(currentQuery: _searchController.text.trim()),
-              ],
-            ),
+                      ),
+                    ),
+                    if (filter.type != null)
+                      Chip(
+                        label: Text(filter.type!),
+                        onDeleted: () {
+                          _issueFilterState.value = filter.copyWith(
+                            clearType: true,
+                          );
+                          _onSearch();
+                        },
+                      ),
+                    if (filter.assignedToMe)
+                      Chip(
+                        label: Text(l10n.assignedToMe),
+                        onDeleted: () {
+                          _issueFilterState.value = filter.copyWith(
+                            assignedToMe: false,
+                          );
+                          _onSearch();
+                        },
+                      ),
+                    if (filter.createdByMe)
+                      Chip(
+                        label: Text(l10n.createdByMe),
+                        onDeleted: () {
+                          _issueFilterState.value = filter.copyWith(
+                            createdByMe: false,
+                          );
+                          _onSearch();
+                        },
+                      ),
+                    if (filter.mentionedMe)
+                      Chip(
+                        label: Text(l10n.mentionedMe),
+                        onDeleted: () {
+                          _issueFilterState.value = filter.copyWith(
+                            mentionedMe: false,
+                          );
+                          _onSearch();
+                        },
+                      ),
+                  ],
+                ),
+              );
+            },
           ),
+        Expanded(
+          child: switch (_tabIndex) {
+            1 => _IssueSearchResults(),
+            2 => _UserSearchResults(
+              currentQuery: _searchController.text.trim(),
+            ),
+            _ => _RepoSearchResults(),
+          },
+        ),
       ],
     );
   }
@@ -350,33 +382,34 @@ class _RepoSearchResults extends StatelessWidget {
       builder: (context, _) {
         final state = Injection.repoNotifier.state;
         return switch (state) {
-          RepoLoading() => const Center(child: CircularProgressIndicator()),
-          SearchResultsLoaded(:final results) => _buildRepoList(context, results.data ?? [], l10n),
-          RepoError(:final message) => Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('${l10n.error}: $message'),
-                const SizedBox(height: UIConstants.md),
-                FilledButton(
-                  onPressed: () => Injection.repoNotifier.searchRepos(),
-                  child: Text(l10n.retry),
-                ),
-              ],
-            ),
+          RepoLoading() => const AppLoading(),
+          SearchResultsLoaded(:final results) => _buildRepoList(
+            context,
+            results.data ?? [],
+            l10n,
           ),
-          _ => EmptyState(icon: Icons.search, title: l10n.enterSearchQueryRepos),
+          RepoError(:final message) => AppError(
+            message: message,
+            onRetry: () => Injection.repoNotifier.searchRepos(),
+          ),
+          _ => AppEmpty(icon: FIcons.search, title: l10n.enterSearchQueryRepos),
         };
       },
     );
   }
 
-  Widget _buildRepoList(BuildContext context, List<Repository> repos, AppLocalizations l10n) {
+  Widget _buildRepoList(
+    BuildContext context,
+    List<Repository> repos,
+    AppLocalizations l10n,
+  ) {
     if (repos.isEmpty) {
-      return EmptyState(icon: Icons.source, title: l10n.noRepositoriesFound);
+      return AppEmpty(icon: FIcons.folderGit, title: l10n.noRepositoriesFound);
     }
     return ListView.builder(
-      padding: UIConstants.pagePadding + const EdgeInsets.symmetric(vertical: UIConstants.sm),
+      padding:
+          UIConstants.pagePadding +
+          const EdgeInsets.symmetric(vertical: UIConstants.sm),
       itemCount: repos.length,
       itemBuilder: (context, index) {
         final repo = repos[index];
@@ -411,12 +444,16 @@ class _SearchRepoCardState extends State<_SearchRepoCard> {
       onTap: () {
         if (_navigating) return;
         _navigating = true;
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (_) => RepoDetailPage(
-            owner: repo.owner?.login ?? '',
-            repo: repo.name ?? '',
-          ),
-        )).then((_) => _navigating = false);
+        Navigator.of(context)
+            .push(
+              MaterialPageRoute(
+                builder: (_) => RepoDetailPage(
+                  owner: repo.owner?.login ?? '',
+                  repo: repo.name ?? '',
+                ),
+              ),
+            )
+            .then((_) => _navigating = false);
       },
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -435,17 +472,24 @@ class _SearchRepoCardState extends State<_SearchRepoCard> {
               Expanded(
                 child: Text(
                   repo.full_name ?? repo.name ?? '',
-                  style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500),
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
               if (repo.private == true) ...[
                 const SizedBox(width: UIConstants.sm),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 1,
+                  ),
                   decoration: BoxDecoration(
                     color: theme.colorScheme.errorContainer,
-                    borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
+                    borderRadius: BorderRadius.circular(
+                      UIConstants.badgeRadius,
+                    ),
                   ),
                   child: Text(
                     l10n.private,
@@ -484,13 +528,27 @@ class _SearchRepoCardState extends State<_SearchRepoCard> {
                 Text(repo.language!, style: theme.textTheme.labelSmall),
                 const SizedBox(width: UIConstants.md),
               ],
-              Icon(Icons.star_outline, size: UIConstants.iconSm, color: theme.colorScheme.onSurfaceVariant),
+              Icon(
+                Icons.star_outline,
+                size: UIConstants.iconSm,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
               const SizedBox(width: UIConstants.xs),
-              Text('${repo.stars_count ?? 0}', style: theme.textTheme.labelSmall),
+              Text(
+                '${repo.stars_count ?? 0}',
+                style: theme.textTheme.labelSmall,
+              ),
               const SizedBox(width: UIConstants.md),
-              Icon(Icons.call_split, size: UIConstants.iconSm, color: theme.colorScheme.onSurfaceVariant),
+              Icon(
+                Icons.call_split,
+                size: UIConstants.iconSm,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
               const SizedBox(width: UIConstants.xs),
-              Text('${repo.forks_count ?? 0}', style: theme.textTheme.labelSmall),
+              Text(
+                '${repo.forks_count ?? 0}',
+                style: theme.textTheme.labelSmall,
+              ),
             ],
           ),
         ],
@@ -509,36 +567,40 @@ class _IssueSearchResults extends StatelessWidget {
       builder: (context, _) {
         final issuesState = Injection.issueNotifier.issuesListState;
         return switch (issuesState) {
-          IssuesListLoading() => const Center(child: CircularProgressIndicator()),
-          IssuesListLoaded(:final issues) => _buildIssueList(context, issues, l10n),
-          IssuesListError(:final message) => Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('${l10n.error}: $message'),
-                const SizedBox(height: UIConstants.md),
-                FilledButton(
-                  onPressed: () {
-                    final query = Injection.issueNotifier.lastSearchQuery ?? '';
-                    Injection.issueNotifier.searchIssues(query);
-                  },
-                  child: Text(l10n.retry),
-                ),
-              ],
-            ),
+          IssuesListLoading() => const AppLoading(),
+          IssuesListLoaded(:final issues) => _buildIssueList(
+            context,
+            issues,
+            l10n,
           ),
-          _ => EmptyState(icon: Icons.search, title: l10n.enterSearchQueryIssues),
+          IssuesListError(:final message) => AppError(
+            message: message,
+            onRetry: () {
+              final query = Injection.issueNotifier.lastSearchQuery ?? '';
+              Injection.issueNotifier.searchIssues(query);
+            },
+          ),
+          _ => AppEmpty(
+            icon: FIcons.search,
+            title: l10n.enterSearchQueryIssues,
+          ),
         };
       },
     );
   }
 
-  Widget _buildIssueList(BuildContext context, List<Issue> issues, AppLocalizations l10n) {
+  Widget _buildIssueList(
+    BuildContext context,
+    List<Issue> issues,
+    AppLocalizations l10n,
+  ) {
     if (issues.isEmpty) {
-      return EmptyState(icon: Icons.bug_report_outlined, title: l10n.noIssuesFound);
+      return AppEmpty(icon: FIcons.circleDot, title: l10n.noIssuesFound);
     }
     return ListView.builder(
-      padding: UIConstants.pagePadding + const EdgeInsets.symmetric(vertical: UIConstants.sm),
+      padding:
+          UIConstants.pagePadding +
+          const EdgeInsets.symmetric(vertical: UIConstants.sm),
       itemCount: issues.length,
       itemBuilder: (context, index) {
         final issue = issues[index];
@@ -579,13 +641,17 @@ class _SearchIssueCardState extends State<_SearchIssueCard> {
         final repo = parts.length > 1 ? parts[1] : '';
         if (owner.isNotEmpty && repo.isNotEmpty && issue.number != null) {
           _navigating = true;
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (_) => IssueDetailPage(
-              owner: owner,
-              repo: repo,
-              index: issue.number!,
-            ),
-          )).then((_) => _navigating = false);
+          Navigator.of(context)
+              .push(
+                MaterialPageRoute(
+                  builder: (_) => IssueDetailPage(
+                    owner: owner,
+                    repo: repo,
+                    index: issue.number!,
+                  ),
+                ),
+              )
+              .then((_) => _navigating = false);
         }
       },
       child: Column(
@@ -596,7 +662,9 @@ class _SearchIssueCardState extends State<_SearchIssueCard> {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
-                  color: isOpen ? Colors.green.withValues(alpha: 0.2) : Colors.purple.withValues(alpha: 0.2),
+                  color: isOpen
+                      ? Colors.green.withValues(alpha: 0.2)
+                      : Colors.purple.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(UIConstants.chipRadius),
                 ),
                 child: Text(
@@ -611,7 +679,9 @@ class _SearchIssueCardState extends State<_SearchIssueCard> {
               Expanded(
                 child: Text(
                   issue.title ?? l10n.untitled,
-                  style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500),
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -623,11 +693,18 @@ class _SearchIssueCardState extends State<_SearchIssueCard> {
               if (issue.user != null) ...[
                 UserAvatar(user: issue.user!, radius: UIConstants.avatarXs),
                 const SizedBox(width: UIConstants.xs),
-                Text(issue.user!.login ?? '', style: theme.textTheme.labelSmall),
+                Text(
+                  issue.user!.login ?? '',
+                  style: theme.textTheme.labelSmall,
+                ),
               ],
               const Spacer(),
               if (issue.comments != null) ...[
-                Icon(Icons.comment_outlined, size: UIConstants.iconXs, color: theme.colorScheme.onSurfaceVariant),
+                Icon(
+                  Icons.comment_outlined,
+                  size: UIConstants.iconXs,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
                 const SizedBox(width: UIConstants.xs),
                 Text('${issue.comments}', style: theme.textTheme.labelSmall),
               ],
@@ -665,28 +742,24 @@ class _UserSearchResults extends StatelessWidget {
         final error = Injection.userNotifier.searchUsersError;
 
         if (loading) {
-          return const Center(child: CircularProgressIndicator());
+          return const AppLoading();
         }
         if (error != null) {
-          return Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('${l10n.error}: $error'),
-                const SizedBox(height: UIConstants.md),
-                FilledButton(
-                  onPressed: () => Injection.userNotifier.searchUsers(currentQuery),
-                  child: Text(l10n.retry),
-                ),
-              ],
-            ),
+          return AppError(
+            message: error,
+            onRetry: () => Injection.userNotifier.searchUsers(currentQuery),
           );
         }
         if (users.isEmpty) {
-          return EmptyState(icon: Icons.search, title: l10n.enterSearchQueryUsers);
+          return AppEmpty(
+            icon: FIcons.search,
+            title: l10n.enterSearchQueryUsers,
+          );
         }
         return ListView.builder(
-          padding: UIConstants.pagePadding + const EdgeInsets.symmetric(vertical: UIConstants.sm),
+          padding:
+              UIConstants.pagePadding +
+              const EdgeInsets.symmetric(vertical: UIConstants.sm),
           itemCount: users.length,
           itemBuilder: (context, index) {
             final user = users[index];
@@ -724,9 +797,13 @@ class _SearchUserCardState extends State<_SearchUserCard> {
         final username = user.login ?? '';
         if (username.isNotEmpty) {
           _navigating = true;
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (_) => UserProfilePage(username: username),
-          )).then((_) => _navigating = false);
+          Navigator.of(context)
+              .push(
+                MaterialPageRoute(
+                  builder: (_) => UserProfilePage(username: username),
+                ),
+              )
+              .then((_) => _navigating = false);
         }
       },
       child: Row(
@@ -739,7 +816,9 @@ class _SearchUserCardState extends State<_SearchUserCard> {
               children: [
                 Text(
                   user.full_name ?? user.login ?? '',
-                  style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500),
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                   overflow: TextOverflow.ellipsis,
                 ),
                 if (user.login != null) ...[

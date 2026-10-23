@@ -2292,7 +2292,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get unwatch => 'Unwatch';
 
   @override
-  String get savedFilters => 'Saved Filters';
+  String get savedFilters => '已保存的筛选';
 
   @override
   String get saveCurrentFilter => 'Save current filter';
@@ -4701,6 +4701,9 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get deselectAll => '取消全選';
 
   @override
+  String get savedFilters => '已儲存的篩選';
+
+  @override
   String get browseRepositories => '瀏覽你的儲存庫';
 
   @override
@@ -4717,6 +4720,9 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get loadMoreActivity => '載入更多動態';
+
+  @override
+  String get saveFilter => '儲存篩選';
 
   @override
   String get stillLoading => '仍在載入…網路似乎較慢';

@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
+
 import '../../core/animations/animated_wrapper.dart';
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/notification_notifier.dart';
-import '../widgets/empty_state.dart';
+import '../widgets/forui/app_state_views.dart';
 import '../widgets/premium_card.dart';
 import '../widgets/user_avatar.dart';
 import 'commit_detail_page.dart';
@@ -36,46 +38,40 @@ class _NotificationPageState extends State<NotificationPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return ListenableBuilder(
-        listenable: Injection.notificationNotifier,
-        builder: (context, _) {
-          final state = Injection.notificationNotifier.state;
-          return switch (state) {
-            NotificationLoading() => const Center(
-              child: CircularProgressIndicator(),
+      listenable: Injection.notificationNotifier,
+      builder: (context, _) {
+        final state = Injection.notificationNotifier.state;
+        return switch (state) {
+          NotificationLoading() => const AppLoading(),
+          NotificationError(:final message) => AppError(
+            message: message,
+            onRetry: () => Injection.notificationNotifier.listNotifications(),
+          ),
+          NotificationListLoaded(:final notifications, :final hasMore) =>
+            _NotificationList(
+              notifications: notifications,
+              hasMore: hasMore,
+              l10n: l10n,
+              onNotificationTap: (n) => _navigateTo(context, n),
             ),
-            NotificationError(:final message) => Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text('${l10n.error}: $message'),
-                  const SizedBox(height: UIConstants.md),
-                  FilledButton(
-                    onPressed: () =>
-                        Injection.notificationNotifier.listNotifications(),
-                    child: Text(l10n.retry),
-                  ),
-                ],
-              ),
-            ),
-             NotificationListLoaded(:final notifications, :final hasMore) => _NotificationList(
-               notifications: notifications,
-               hasMore: hasMore,
-               l10n: l10n,
-               onNotificationTap: (n) => _navigateTo(context, n),
-             ),
-            _ => EmptyState(icon: Icons.notifications_none, title: l10n.noNotifications),
-          };
-        },
+          _ => AppEmpty(icon: FIcons.bellOff, title: l10n.noNotifications),
+        };
+      },
     );
   }
 
-  void _navigateTo(BuildContext context, NotificationThread notification) async {
+  void _navigateTo(
+    BuildContext context,
+    NotificationThread notification,
+  ) async {
     if (_isNavigating) return;
     _isNavigating = true;
 
     // Mark as read immediately
     if (notification.id != null) {
-      await Injection.notificationNotifier.markThreadRead(notification.id.toString());
+      await Injection.notificationNotifier.markThreadRead(
+        notification.id.toString(),
+      );
     }
 
     if (!context.mounted) return;
@@ -85,7 +81,8 @@ class _NotificationPageState extends State<NotificationPage> {
 
     // Parse owner/repo from repository or subject URL
     final repo = notification.repository;
-    final owner = repo?.owner?.login ?? repo?.full_name?.split('/').firstOrNull ?? '';
+    final owner =
+        repo?.owner?.login ?? repo?.full_name?.split('/').firstOrNull ?? '';
     final repoName = repo?.name ?? repo?.full_name?.split('/').lastOrNull ?? '';
 
     // Try parsing subject URL for type-specific params
@@ -96,7 +93,10 @@ class _NotificationPageState extends State<NotificationPage> {
       final ownerP = urlMatch?.group(2) ?? owner;
       final repoP = urlMatch?.group(3) ?? repoName;
       if (ownerP.isNotEmpty && repoP.isNotEmpty && index != null) {
-        _push(context, IssueDetailPage(owner: ownerP, repo: repoP, index: index));
+        _push(
+          context,
+          IssueDetailPage(owner: ownerP, repo: repoP, index: index),
+        );
         return;
       }
     }
@@ -128,14 +128,18 @@ class _NotificationPageState extends State<NotificationPage> {
       }
     }
 
-    if (typeValue.contains('repository') && owner.isNotEmpty && repoName.isNotEmpty) {
+    if (typeValue.contains('repository') &&
+        owner.isNotEmpty &&
+        repoName.isNotEmpty) {
       _push(context, RepoDetailPage(owner: owner, repo: repoName));
       return;
     }
 
     // Fallback: try to open via URL parsing for user profile etc.
     if (subjectUrl.isNotEmpty) {
-      final userMatch = RegExp(r'/api/v\d+/users/([^/]+)$').firstMatch(subjectUrl);
+      final userMatch = RegExp(
+        r'/api/v\d+/users/([^/]+)$',
+      ).firstMatch(subjectUrl);
       if (userMatch != null) {
         _push(context, UserProfilePage(username: userMatch.group(1)!));
         return;
@@ -149,7 +153,9 @@ class _NotificationPageState extends State<NotificationPage> {
   }
 
   void _push(BuildContext context, Widget page) {
-    Navigator.of(context).push(MaterialPageRoute(builder: (_) => page)).then((_) {
+    Navigator.of(context).push(MaterialPageRoute(builder: (_) => page)).then((
+      _,
+    ) {
       _isNavigating = false;
     });
   }
@@ -190,12 +196,14 @@ class _NotificationList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (notifications.isEmpty) {
-      return EmptyState(icon: Icons.notifications_none, title: l10n.noNotifications);
+      return AppEmpty(icon: FIcons.bellOff, title: l10n.noNotifications);
     }
     return RefreshIndicator(
       onRefresh: () => Injection.notificationNotifier.listNotifications(),
       child: ListView.builder(
-        padding: UIConstants.pagePadding + const EdgeInsets.symmetric(vertical: UIConstants.sm),
+        padding:
+            UIConstants.pagePadding +
+            const EdgeInsets.symmetric(vertical: UIConstants.sm),
         itemCount: notifications.length + (hasMore ? 1 : 0),
         itemBuilder: (context, index) {
           if (index == notifications.length) {
@@ -203,9 +211,12 @@ class _NotificationList extends StatelessWidget {
               child: Padding(
                 padding: const EdgeInsets.all(16),
                 child: Injection.notificationNotifier.notifLoadingMore
-                    ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(strokeWidth: 2))
-                    : TextButton(
-                        onPressed: () => Injection.notificationNotifier.loadMoreNotifications(),
+                    ? const FCircularProgress(size: .sm)
+                    : FButton(
+                        variant: .outline,
+                        size: .sm,
+                        onPress: () => Injection.notificationNotifier
+                            .loadMoreNotifications(),
                         child: Text(l10n.loadMore),
                       ),
               ),
@@ -231,7 +242,11 @@ class _NotificationCard extends StatelessWidget {
   final AppLocalizations l10n;
   final VoidCallback onTap;
 
-  const _NotificationCard({required this.notification, required this.l10n, required this.onTap});
+  const _NotificationCard({
+    required this.notification,
+    required this.l10n,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -255,7 +270,9 @@ class _NotificationCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: isUnread
                     ? theme.colorScheme.primaryContainer.withValues(alpha: 0.5)
-                    : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                    : theme.colorScheme.surfaceContainerHighest.withValues(
+                        alpha: 0.5,
+                      ),
                 shape: BoxShape.circle,
               ),
               child: Icon(
@@ -276,7 +293,9 @@ class _NotificationCard extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: isUnread
-                      ? theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)
+                      ? theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        )
                       : theme.textTheme.bodyMedium,
                 ),
                 const SizedBox(height: UIConstants.xs),
@@ -305,13 +324,13 @@ class _NotificationCard extends StatelessWidget {
   }
 
   IconData _subjectIcon(String? type) {
-    if (type == null) return Icons.notifications;
+    if (type == null) return FIcons.bell;
     final t = type.toLowerCase();
-    if (t.contains('issue')) return Icons.error_outline;
-    if (t.contains('pull')) return Icons.merge_type;
-    if (t.contains('commit')) return Icons.commit;
-    if (t.contains('release')) return Icons.new_releases;
-    if (t.contains('repository')) return Icons.source;
-    return Icons.notifications;
+    if (t.contains('issue')) return FIcons.circleDot;
+    if (t.contains('pull')) return FIcons.gitPullRequest;
+    if (t.contains('commit')) return FIcons.gitCommitHorizontal;
+    if (t.contains('release')) return FIcons.rocket;
+    if (t.contains('repository')) return FIcons.folderGit;
+    return FIcons.bell;
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/animations/animated_wrapper.dart';
@@ -13,6 +14,8 @@ import '../../l10n/app_localizations.dart';
 import '../../presentation/state/issue_notifier.dart';
 import '../../presentation/state/repo_notifier.dart';
 import '../../presentation/state/user_notifier.dart';
+import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_state_views.dart';
 import '../widgets/slow_loading_indicator.dart';
 import '../widgets/user_avatar.dart';
 import 'edit_issue_page.dart';
@@ -27,7 +30,15 @@ const _reactionEmojis = {
   'eyes': '\u{1f440}',
 };
 
-const _defaultReactions = ['+1', '-1', 'laugh', 'hooray', 'confused', 'heart', 'eyes'];
+const _defaultReactions = [
+  '+1',
+  '-1',
+  'laugh',
+  'hooray',
+  'confused',
+  'heart',
+  'eyes',
+];
 
 class IssueDetailPage extends StatefulWidget {
   final String owner;
@@ -58,7 +69,11 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
     _scrollController.addListener(_onScroll);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Injection.issueNotifier.getIssue(widget.owner, widget.repo, widget.index);
-      Injection.issueNotifier.listComments(widget.owner, widget.repo, widget.index);
+      Injection.issueNotifier.listComments(
+        widget.owner,
+        widget.repo,
+        widget.index,
+      );
       Injection.repoNotifier.getRepo(widget.owner, widget.repo);
       _checkSubscription();
       _refreshIssueReactions();
@@ -70,13 +85,19 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
     final maxScroll = _scrollController.position.maxScrollExtent;
     final currentScroll = _scrollController.position.pixels;
     if (currentScroll >= maxScroll - 200) {
-      Injection.issueNotifier.loadMoreComments(widget.owner, widget.repo, widget.index);
+      Injection.issueNotifier.loadMoreComments(
+        widget.owner,
+        widget.repo,
+        widget.index,
+      );
     }
   }
 
   Future<void> _refreshIssueReactions() async {
     final result = await Injection.getIssueReactionsUseCase(
-      widget.owner, widget.repo, widget.index,
+      widget.owner,
+      widget.repo,
+      widget.index,
     );
     if (result is Right<Failure, List<Reaction>>) {
       _issueReactions = result.value;
@@ -88,9 +109,9 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
     final currentUser = Injection.authNotifier.state is AuthAuthenticated
         ? (Injection.authNotifier.state as AuthAuthenticated).user.login
         : null;
-    final existing = _issueReactions.where(
-      (r) => r.content == content && r.user?.login == currentUser,
-    ).toList();
+    final existing = _issueReactions
+        .where((r) => r.content == content && r.user?.login == currentUser)
+        .toList();
 
     _issueReactions = List.from(_issueReactions);
     if (existing.isNotEmpty) {
@@ -99,19 +120,34 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
       );
       if (mounted) setState(() {});
       await Injection.deleteIssueReactionUseCase(
-        widget.owner, widget.repo, widget.index, content);
+        widget.owner,
+        widget.repo,
+        widget.index,
+        content,
+      );
     } else {
-      _issueReactions.add(Reaction(content: content, user: User(login: currentUser)));
+      _issueReactions.add(
+        Reaction(
+          content: content,
+          user: User(login: currentUser),
+        ),
+      );
       if (mounted) setState(() {});
       await Injection.addIssueReactionUseCase(
-        widget.owner, widget.repo, widget.index, content);
+        widget.owner,
+        widget.repo,
+        widget.index,
+        content,
+      );
     }
     await _refreshIssueReactions();
   }
 
   Future<void> _checkSubscription() async {
     final result = await Injection.checkIssueSubscriptionUseCase(
-      widget.owner, widget.repo, widget.index,
+      widget.owner,
+      widget.repo,
+      widget.index,
     );
     if (mounted) {
       setState(() {
@@ -134,11 +170,17 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
     try {
       if (_isSubscribed) {
         await Injection.deleteIssueSubscriptionUseCase(
-          widget.owner, widget.repo, widget.index, currentUser,
+          widget.owner,
+          widget.repo,
+          widget.index,
+          currentUser,
         );
       } else {
         await Injection.addIssueSubscriptionUseCase(
-          widget.owner, widget.repo, widget.index, currentUser,
+          widget.owner,
+          widget.repo,
+          widget.index,
+          currentUser,
         );
       }
       if (mounted) {
@@ -147,15 +189,17 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
           _subscriptionLoading = false;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(_isSubscribed ? l10n.subscribed : l10n.unsubscribed)),
+          SnackBar(
+            content: Text(_isSubscribed ? l10n.subscribed : l10n.unsubscribed),
+          ),
         );
       }
     } catch (e) {
       if (mounted) {
         setState(() => _subscriptionLoading = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.error}: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${l10n.error}: $e')));
       }
     }
   }
@@ -168,10 +212,15 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
         title: Text(l10n.deleteIssue),
         content: Text(l10n.deleteIssueConfirm),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
-            style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
             child: Text(l10n.delete),
           ),
         ],
@@ -179,7 +228,11 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
     );
     if (confirmed != true) return;
 
-    final result = await Injection.issueNotifier.deleteIssue(widget.owner, widget.repo, widget.index);
+    final result = await Injection.issueNotifier.deleteIssue(
+      widget.owner,
+      widget.repo,
+      widget.index,
+    );
     if (!mounted) return;
     switch (result) {
       case Left<Failure, void>(:final value):
@@ -188,9 +241,9 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
         );
       case Right<Failure, void>():
         Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.issueDeleted)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(l10n.issueDeleted)));
     }
   }
 
@@ -214,7 +267,11 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
   Future<void> _onRefresh() async {
     await Future.wait([
       Injection.issueNotifier.getIssue(widget.owner, widget.repo, widget.index),
-      Injection.issueNotifier.listComments(widget.owner, widget.repo, widget.index),
+      Injection.issueNotifier.listComments(
+        widget.owner,
+        widget.repo,
+        widget.index,
+      ),
       Injection.repoNotifier.getRepo(widget.owner, widget.repo),
     ]);
     await _checkSubscription();
@@ -224,31 +281,31 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.issueNumber(widget.index)),
-        actions: [
-          if (Injection.issueNotifier.state is IssueDetailLoaded)
-            IconButton(
-              icon: const Icon(Icons.open_in_new),
-              onPressed: () {
-                final state = Injection.issueNotifier.state as IssueDetailLoaded;
-                if (state.issue.html_url != null) {
-                  launchUrl(
-                    Uri.parse(state.issue.html_url!),
-                    mode: LaunchMode.externalApplication,
-                  );
-                }
-              },
-            ),
-          if (Injection.issueNotifier.state is IssueDetailLoaded)
-            IconButton(
-              icon: const Icon(Icons.delete_outline),
-              onPressed: _confirmDeleteIssue,
-            ),
-        ],
-      ),
-      body: RefreshIndicator(
+    return AppPage(
+      title: l10n.issueNumber(widget.index),
+      actions: [
+        if (Injection.issueNotifier.state is IssueDetailLoaded)
+          FHeaderAction(
+            icon: const Icon(FIcons.externalLink),
+            semanticsLabel: l10n.openInBrowser,
+            onPress: () {
+              final state = Injection.issueNotifier.state as IssueDetailLoaded;
+              if (state.issue.html_url != null) {
+                launchUrl(
+                  Uri.parse(state.issue.html_url!),
+                  mode: LaunchMode.externalApplication,
+                );
+              }
+            },
+          ),
+        if (Injection.issueNotifier.state is IssueDetailLoaded)
+          FHeaderAction(
+            icon: const Icon(FIcons.trash2),
+            semanticsLabel: l10n.delete,
+            onPress: _confirmDeleteIssue,
+          ),
+      ],
+      child: RefreshIndicator(
         onRefresh: _onRefresh,
         child: ListenableBuilder(
           listenable: Injection.issueNotifier,
@@ -256,43 +313,34 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
             final state = Injection.issueNotifier.state;
             return switch (state) {
               IssueLoading() => const SlowLoadingIndicator(),
-              IssueError(:final message) => Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text('${l10n.error}: $message'),
-                    const SizedBox(height: 16),
-                    FilledButton(
-                      onPressed: () => Injection.issueNotifier.getIssue(
-                        widget.owner,
-                        widget.repo,
-                        widget.index,
-                      ),
-                      child: Text(l10n.retry),
-                    ),
-                  ],
+              IssueError(:final message) => AppError(
+                message: message,
+                onRetry: () => Injection.issueNotifier.getIssue(
+                  widget.owner,
+                  widget.repo,
+                  widget.index,
                 ),
               ),
               IssueDetailLoaded(:final issue) => _IssueContent(
-              issue: issue,
-              owner: widget.owner,
-              repo: widget.repo,
-              index: widget.index,
-              commentController: _commentController,
-              scrollController: _scrollController,
-              isSubscribed: _isSubscribed,
-              subscriptionLoading: _subscriptionLoading,
-              onToggleSubscription: _toggleSubscription,
-              issueReactions: _issueReactions,
-              onToggleReaction: _toggleIssueReaction,
-              canEdit: _canEdit(),
-            ),
-            _ => const Center(child: CircularProgressIndicator()),
-          };
-        },
+                issue: issue,
+                owner: widget.owner,
+                repo: widget.repo,
+                index: widget.index,
+                commentController: _commentController,
+                scrollController: _scrollController,
+                isSubscribed: _isSubscribed,
+                subscriptionLoading: _subscriptionLoading,
+                onToggleSubscription: _toggleSubscription,
+                issueReactions: _issueReactions,
+                onToggleReaction: _toggleIssueReaction,
+                canEdit: _canEdit(),
+              ),
+              _ => const Center(child: CircularProgressIndicator()),
+            };
+          },
+        ),
       ),
-    ),
-  );
+    );
   }
 }
 
@@ -343,13 +391,19 @@ class _IssueContent extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: isOpen ? theme.colorScheme.primary.withValues(alpha: 0.12) : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.12),
+                  color: isOpen
+                      ? theme.colorScheme.primary.withValues(alpha: 0.12)
+                      : theme.colorScheme.onSurfaceVariant.withValues(
+                          alpha: 0.12,
+                        ),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
                   isOpen ? l10n.open : l10n.closed,
                   style: theme.textTheme.labelSmall?.copyWith(
-                    color: isOpen ? theme.colorScheme.primary : theme.colorScheme.onSurfaceVariant,
+                    color: isOpen
+                        ? theme.colorScheme.primary
+                        : theme.colorScheme.onSurfaceVariant,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -396,9 +450,13 @@ class _IssueContent extends StatelessWidget {
               ...(issue.labels ?? []).map((label) {
                 return Chip(
                   label: Text(label.name ?? ''),
-                  backgroundColor: _parseColor(label.color)?.withValues(alpha: 0.2) ?? theme.colorScheme.primaryContainer,
+                  backgroundColor:
+                      _parseColor(label.color)?.withValues(alpha: 0.2) ??
+                      theme.colorScheme.primaryContainer,
                   labelStyle: theme.textTheme.labelSmall?.copyWith(
-                    color: _parseColor(label.color) ?? theme.colorScheme.onPrimaryContainer,
+                    color:
+                        _parseColor(label.color) ??
+                        theme.colorScheme.onPrimaryContainer,
                   ),
                   padding: EdgeInsets.zero,
                   materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -409,27 +467,29 @@ class _IssueContent extends StatelessWidget {
                   label: Text(l10n.edit),
                   avatar: const Icon(Icons.edit, size: 16),
                   onPressed: () async {
-                  final edited = await Navigator.of(context).push<bool>(
-                    MaterialPageRoute(
-                      builder: (_) => EditIssuePage(
-                        owner: owner,
-                        repo: repo,
-                        index: index,
-                        issue: issue,
+                    final edited = await Navigator.of(context).push<bool>(
+                      MaterialPageRoute(
+                        builder: (_) => EditIssuePage(
+                          owner: owner,
+                          repo: repo,
+                          index: index,
+                          issue: issue,
+                        ),
                       ),
-                    ),
-                  );
-                  Injection.issueNotifier.getIssue(owner, repo, index);
-                  Injection.issueNotifier.listComments(owner, repo, index);
-                  if (edited == true && context.mounted) {
-                    Navigator.pop(context, true);
-                  }
-                },
-              ),
+                    );
+                    Injection.issueNotifier.getIssue(owner, repo, index);
+                    Injection.issueNotifier.listComments(owner, repo, index);
+                    if (edited == true && context.mounted) {
+                      Navigator.pop(context, true);
+                    }
+                  },
+                ),
               ActionChip(
                 label: Text(isSubscribed ? l10n.unsubscribe : l10n.subscribe),
                 avatar: Icon(
-                  isSubscribed ? Icons.notifications_off_outlined : Icons.notifications_outlined,
+                  isSubscribed
+                      ? Icons.notifications_off_outlined
+                      : Icons.notifications_outlined,
                   size: 16,
                 ),
                 onPressed: subscriptionLoading ? null : onToggleSubscription,
@@ -443,7 +503,8 @@ class _IssueContent extends StatelessWidget {
               context,
               icon: Icons.person_outline,
               label: l10n.assignee,
-              semanticsLabel: '${l10n.assignee}: ${issue.assignee!.login ?? ''}',
+              semanticsLabel:
+                  '${l10n.assignee}: ${issue.assignee!.login ?? ''}',
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -471,7 +532,11 @@ class _IssueContent extends StatelessWidget {
                         onTap: () => _showMilestoneEditor(context, issue),
                         child: Padding(
                           padding: const EdgeInsets.all(12),
-                          child: Icon(Icons.edit, size: 16, color: theme.colorScheme.primary),
+                          child: Icon(
+                            Icons.edit,
+                            size: 16,
+                            color: theme.colorScheme.primary,
+                          ),
                         ),
                       ),
                     ),
@@ -491,16 +556,25 @@ class _IssueContent extends StatelessWidget {
                       Text(
                         '${issue.due_date!.toLocal().toString().split(' ')[0]}',
                         style: _isOverdue(issue)
-                            ? TextStyle(color: theme.colorScheme.error, fontWeight: FontWeight.w600)
+                            ? TextStyle(
+                                color: theme.colorScheme.error,
+                                fontWeight: FontWeight.w600,
+                              )
                             : null,
                       ),
                       if (_isOverdue(issue)) ...[
                         const SizedBox(width: 4),
-                        Icon(Icons.warning_amber_rounded, size: 14, color: theme.colorScheme.error),
+                        Icon(
+                          Icons.warning_amber_rounded,
+                          size: 14,
+                          color: theme.colorScheme.error,
+                        ),
                         const SizedBox(width: 2),
                         Text(
                           l10n.overdue,
-                          style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.error),
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: theme.colorScheme.error,
+                          ),
                         ),
                       ],
                       if (canEdit) ...[
@@ -511,7 +585,11 @@ class _IssueContent extends StatelessWidget {
                             onTap: () => _editDueDate(context, issue),
                             child: Padding(
                               padding: const EdgeInsets.all(12),
-                              child: Icon(Icons.edit, size: 16, color: theme.colorScheme.primary),
+                              child: Icon(
+                                Icons.edit,
+                                size: 16,
+                                color: theme.colorScheme.primary,
+                              ),
                             ),
                           ),
                         ),
@@ -522,7 +600,11 @@ class _IssueContent extends StatelessWidget {
                             onTap: () => _clearDueDate(),
                             child: Padding(
                               padding: const EdgeInsets.all(12),
-                              child: Icon(Icons.clear, size: 16, color: theme.colorScheme.error),
+                              child: Icon(
+                                Icons.clear,
+                                size: 16,
+                                color: theme.colorScheme.error,
+                              ),
                             ),
                           ),
                         ),
@@ -530,7 +612,7 @@ class _IssueContent extends StatelessWidget {
                     ],
                   )
                 : canEdit
-                    ? InkWell(
+                ? InkWell(
                     onTap: () => _editDueDate(context, issue),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
@@ -544,8 +626,8 @@ class _IssueContent extends StatelessWidget {
                         ),
                       ],
                     ),
-                    )
-                  : const SizedBox.shrink(),
+                  )
+                : const SizedBox.shrink(),
           ),
 
           const SizedBox(height: 8),
@@ -553,12 +635,9 @@ class _IssueContent extends StatelessWidget {
             children: [
               FilledButton.tonal(
                 onPressed: () {
-                  Injection.issueNotifier.editIssue(
-                    owner,
-                    repo,
-                    index,
-                    {'state': isOpen ? 'closed' : 'open'},
-                  );
+                  Injection.issueNotifier.editIssue(owner, repo, index, {
+                    'state': isOpen ? 'closed' : 'open',
+                  });
                 },
                 child: Text(isOpen ? l10n.closeIssue : l10n.reopenIssue),
               ),
@@ -573,7 +652,10 @@ class _IssueContent extends StatelessWidget {
               selectable: true,
               onTapLink: (text, href, title) {
                 if (href != null) {
-                  launchUrl(Uri.parse(href), mode: LaunchMode.externalApplication);
+                  launchUrl(
+                    Uri.parse(href),
+                    mode: LaunchMode.externalApplication,
+                  );
                 }
               },
             )
@@ -601,18 +683,29 @@ class _IssueContent extends StatelessWidget {
             builder: (context, _) {
               final commentsState = Injection.issueNotifier.commentsState;
               return switch (commentsState) {
-                CommentsLoading() => const Center(child: CircularProgressIndicator()),
+                CommentsLoading() => const Center(
+                  child: CircularProgressIndicator(),
+                ),
                 CommentsError(:final message) => Column(
                   children: [
                     Text('${l10n.failedToLoadComments}: $message'),
                     TextButton(
-                      onPressed: () => Injection.issueNotifier.listComments(owner, repo, index),
+                      onPressed: () => Injection.issueNotifier.listComments(
+                        owner,
+                        repo,
+                        index,
+                      ),
                       child: Text(l10n.retry),
                     ),
                   ],
                 ),
                 CommentsLoaded(:final comments, :final hasMore) =>
-                  _buildCommentsList(context, comments, hasMore: hasMore, l10n: l10n),
+                  _buildCommentsList(
+                    context,
+                    comments,
+                    hasMore: hasMore,
+                    l10n: l10n,
+                  ),
                 _ => const SizedBox.shrink(),
               };
             },
@@ -629,12 +722,9 @@ class _IssueContent extends StatelessWidget {
                 onPressed: () {
                   final text = commentController.text.trim();
                   if (text.isNotEmpty) {
-                    Injection.issueNotifier.createComment(
-                      owner,
-                      repo,
-                      index,
-                      {'body': text},
-                    );
+                    Injection.issueNotifier.createComment(owner, repo, index, {
+                      'body': text,
+                    });
                     commentController.clear();
                   }
                 },
@@ -649,14 +739,22 @@ class _IssueContent extends StatelessWidget {
 
           Row(
             children: [
-              Icon(Icons.comment_outlined, size: 16, color: theme.colorScheme.onSurfaceVariant),
+              Icon(
+                Icons.comment_outlined,
+                size: 16,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
               const SizedBox(width: 4),
               Text(
                 l10n.commentsCountParams(issue.comments ?? 0),
                 style: theme.textTheme.bodySmall,
               ),
               const SizedBox(width: 16),
-              Icon(Icons.update, size: 16, color: theme.colorScheme.onSurfaceVariant),
+              Icon(
+                Icons.update,
+                size: 16,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
               const SizedBox(width: 4),
               Text(
                 l10n.updatedParams(_formatDate(issue.updated_at, l10n)),
@@ -669,7 +767,11 @@ class _IssueContent extends StatelessWidget {
     );
   }
 
-  Widget _buildReactionRow(BuildContext context, List<Reaction> reactions, Future<void> Function(String) onToggle) {
+  Widget _buildReactionRow(
+    BuildContext context,
+    List<Reaction> reactions,
+    Future<void> Function(String) onToggle,
+  ) {
     final activeReactions = _defaultReactions.where((content) {
       return reactions.any((r) => r.content == content);
     }).toList();
@@ -689,26 +791,32 @@ class _IssueContent extends StatelessWidget {
                 padding: const EdgeInsets.only(right: 4),
                 child: AnimatedSwitcher(
                   duration: const Duration(milliseconds: 250),
-                        transitionBuilder: (child, animation) {
-                          return ScaleTransition(
-                            scale: animation,
-                            child: FadeTransition(
-                              opacity: animation,
-                              child: child,
-                            ),
-                          );
-                        },
-                        child: _buildReactionChip(context, reactions, content, onToggle),
-                      ),
+                  transitionBuilder: (child, animation) {
+                    return ScaleTransition(
+                      scale: animation,
+                      child: FadeTransition(opacity: animation, child: child),
                     );
-                  }),
-                ],
-              ),
-            ),
+                  },
+                  child: _buildReactionChip(
+                    context,
+                    reactions,
+                    content,
+                    onToggle,
+                  ),
+                ),
+              );
+            }),
+          ],
+        ),
+      ),
     );
   }
 
-  Widget _buildPickReactionButton(BuildContext context, List<Reaction> reactions, Future<void> Function(String) onToggle) {
+  Widget _buildPickReactionButton(
+    BuildContext context,
+    List<Reaction> reactions,
+    Future<void> Function(String) onToggle,
+  ) {
     final theme = Theme.of(context);
     return Builder(
       builder: (ctx) {
@@ -742,14 +850,23 @@ class _IssueContent extends StatelessWidget {
                               spacing: 2,
                               runSpacing: 2,
                               children: _defaultReactions.map((content) {
-                                final currentUser = Injection.authNotifier.state is AuthAuthenticated
-                                    ? (Injection.authNotifier.state as AuthAuthenticated).user.login
+                                final currentUser =
+                                    Injection.authNotifier.state
+                                        is AuthAuthenticated
+                                    ? (Injection.authNotifier.state
+                                              as AuthAuthenticated)
+                                          .user
+                                          .login
                                     : null;
                                 final userReacted = reactions.any(
-                                  (r) => r.content == content && r.user?.login == currentUser,
+                                  (r) =>
+                                      r.content == content &&
+                                      r.user?.login == currentUser,
                                 );
                                 return Material(
-                                  color: userReacted ? theme.colorScheme.primaryContainer : Colors.transparent,
+                                  color: userReacted
+                                      ? theme.colorScheme.primaryContainer
+                                      : Colors.transparent,
                                   borderRadius: BorderRadius.circular(20),
                                   child: InkWell(
                                     borderRadius: BorderRadius.circular(20),
@@ -797,7 +914,12 @@ class _IssueContent extends StatelessWidget {
     );
   }
 
-  Widget _buildReactionChip(BuildContext context, List<Reaction> reactions, String content, Future<void> Function(String) onToggle) {
+  Widget _buildReactionChip(
+    BuildContext context,
+    List<Reaction> reactions,
+    String content,
+    Future<void> Function(String) onToggle,
+  ) {
     final theme = Theme.of(context);
     final count = reactions.where((r) => r.content == content).length;
     final currentUser = Injection.authNotifier.state is AuthAuthenticated
@@ -808,7 +930,9 @@ class _IssueContent extends StatelessWidget {
     );
     return Material(
       key: ValueKey(content),
-      color: userReacted ? theme.colorScheme.primaryContainer : theme.colorScheme.surfaceContainerHighest.withAlpha(128),
+      color: userReacted
+          ? theme.colorScheme.primaryContainer
+          : theme.colorScheme.surfaceContainerHighest.withAlpha(128),
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         borderRadius: BorderRadius.circular(16),
@@ -827,14 +951,21 @@ class _IssueContent extends StatelessWidget {
     );
   }
 
-  Widget _buildCommentsList(BuildContext context, List<Comment> comments, {bool hasMore = false, required AppLocalizations l10n}) {
+  Widget _buildCommentsList(
+    BuildContext context,
+    List<Comment> comments, {
+    bool hasMore = false,
+    required AppLocalizations l10n,
+  }) {
     if (comments.isEmpty) {
       return const SizedBox.shrink();
     }
 
     final theme = Theme.of(context);
     final currentUserState = Injection.userNotifier.state;
-    final currentUserId = currentUserState is UserLoaded ? currentUserState.user.id : null;
+    final currentUserId = currentUserState is UserLoaded
+        ? currentUserState.user.id
+        : null;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -846,11 +977,17 @@ class _IssueContent extends StatelessWidget {
               padding: const EdgeInsets.only(bottom: 12, top: 8),
               child: Row(
                 children: [
-                  Icon(Icons.chat_bubble_outline, size: 16, color: theme.colorScheme.onSurfaceVariant),
+                  Icon(
+                    Icons.chat_bubble_outline,
+                    size: 16,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                   const SizedBox(width: 6),
                   Text(
                     l10n.commentsParams(comments.length),
-                    style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ],
               ),
@@ -865,9 +1002,14 @@ class _IssueContent extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 8),
                   child: Center(
                     child: Injection.issueNotifier.commentLoadingMore
-                        ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(strokeWidth: 2))
+                        ? const SizedBox(
+                            height: 24,
+                            width: 24,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
                         : TextButton(
-                            onPressed: () => Injection.issueNotifier.loadMoreComments(owner, repo, index),
+                            onPressed: () => Injection.issueNotifier
+                                .loadMoreComments(owner, repo, index),
                             child: const Text('Load more comments'),
                           ),
                   ),
@@ -877,7 +1019,9 @@ class _IssueContent extends StatelessWidget {
                 delay: Duration(milliseconds: i * 30),
                 child: _CommentItem(
                   comment: comments[i],
-                  isCurrentUser: currentUserId != null && comments[i].user?.id == currentUserId,
+                  isCurrentUser:
+                      currentUserId != null &&
+                      comments[i].user?.id == currentUserId,
                   owner: owner,
                   repo: repo,
                   index: index,
@@ -934,13 +1078,16 @@ class _IssueContent extends StatelessWidget {
 
   bool _isOverdue(Issue issue) {
     if (issue.due_date == null) return false;
-    return issue.state?.isOpen == true && issue.due_date!.isBefore(DateTime.now());
+    return issue.state?.isOpen == true &&
+        issue.due_date!.isBefore(DateTime.now());
   }
 
   Color? _parseColor(String? colorStr) {
     if (colorStr == null || colorStr.isEmpty) return null;
     try {
-      return Color(int.parse(colorStr.replaceFirst('#', ''), radix: 16) + 0xFF000000);
+      return Color(
+        int.parse(colorStr.replaceFirst('#', ''), radix: 16) + 0xFF000000,
+      );
     } catch (_) {
       return null;
     }
@@ -951,7 +1098,9 @@ class _IssueContent extends StatelessWidget {
     final result = await Injection.listMilestonesUseCase.call(
       ListMilestonesParams(owner: owner, repo: repo),
     );
-    final milestones = result is Right<Failure, List<Milestone>> ? result.value : <Milestone>[];
+    final milestones = result is Right<Failure, List<Milestone>>
+        ? result.value
+        : <Milestone>[];
     int? selectedMilestoneId = issue.milestone?.id;
 
     if (!context.mounted) return;
@@ -1024,7 +1173,10 @@ class _IssueContent extends StatelessWidget {
 
     if (date != null) {
       final result = await Injection.editIssueDeadlineUseCase(
-        owner, repo, index, {'due_date': date.toUtc().toIso8601String()},
+        owner,
+        repo,
+        index,
+        {'due_date': date.toUtc().toIso8601String()},
       );
       switch (result) {
         case Right<Failure, void>():
@@ -1037,7 +1189,12 @@ class _IssueContent extends StatelessWidget {
 
   Future<void> _clearDueDate() async {
     final result = await Injection.editIssueUseCase(
-      EditIssueParams(owner: owner, repo: repo, index: index, body: {'due_date': null}),
+      EditIssueParams(
+        owner: owner,
+        repo: repo,
+        index: index,
+        body: {'due_date': null},
+      ),
     );
     if (result is Right<Failure, Issue>) {
       Injection.issueNotifier.reloadIssue(owner, repo, index);
@@ -1086,7 +1243,9 @@ class _CommentItemState extends State<_CommentItem> {
   Future<void> _refreshCommentReactions() async {
     if (widget.comment.id == null) return;
     final result = await Injection.getCommentReactionsUseCase(
-      widget.owner, widget.repo, widget.comment.id!,
+      widget.owner,
+      widget.repo,
+      widget.comment.id!,
     );
     if (result is Right<Failure, List<Reaction>>) {
       _commentReactions = result.value;
@@ -1099,9 +1258,9 @@ class _CommentItemState extends State<_CommentItem> {
     final currentUser = Injection.authNotifier.state is AuthAuthenticated
         ? (Injection.authNotifier.state as AuthAuthenticated).user.login
         : null;
-    final existing = _commentReactions.where(
-      (r) => r.content == content && r.user?.login == currentUser,
-    ).toList();
+    final existing = _commentReactions
+        .where((r) => r.content == content && r.user?.login == currentUser)
+        .toList();
 
     _commentReactions = List.from(_commentReactions);
     if (existing.isNotEmpty) {
@@ -1110,12 +1269,25 @@ class _CommentItemState extends State<_CommentItem> {
       );
       if (mounted) setState(() {});
       await Injection.deleteCommentReactionUseCase(
-        widget.owner, widget.repo, widget.comment.id!, content);
+        widget.owner,
+        widget.repo,
+        widget.comment.id!,
+        content,
+      );
     } else {
-      _commentReactions.add(Reaction(content: content, user: User(login: currentUser)));
+      _commentReactions.add(
+        Reaction(
+          content: content,
+          user: User(login: currentUser),
+        ),
+      );
       if (mounted) setState(() {});
       await Injection.addCommentReactionUseCase(
-        widget.owner, widget.repo, widget.comment.id!, content);
+        widget.owner,
+        widget.repo,
+        widget.comment.id!,
+        content,
+      );
     }
     await _refreshCommentReactions();
   }
@@ -1128,18 +1300,28 @@ class _CommentItemState extends State<_CommentItem> {
     setState(() => _saving = true);
     try {
       await Injection.editCommentUseCase(
-        widget.owner, widget.repo, widget.comment.id ?? 0, {'body': text},
+        widget.owner,
+        widget.repo,
+        widget.comment.id ?? 0,
+        {'body': text},
       );
       if (mounted) {
-        setState(() { _editing = false; _saving = false; });
-        Injection.issueNotifier.listComments(widget.owner, widget.repo, widget.index);
+        setState(() {
+          _editing = false;
+          _saving = false;
+        });
+        Injection.issueNotifier.listComments(
+          widget.owner,
+          widget.repo,
+          widget.index,
+        );
       }
     } catch (e) {
       if (mounted) {
         setState(() => _saving = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.error}: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${l10n.error}: $e')));
       }
     }
   }
@@ -1152,10 +1334,15 @@ class _CommentItemState extends State<_CommentItem> {
         title: Text(l10n.deleteComment),
         content: Text(l10n.deleteCommentConfirm),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
-            style: FilledButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.error),
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
             child: Text(l10n.delete),
           ),
         ],
@@ -1165,16 +1352,22 @@ class _CommentItemState extends State<_CommentItem> {
 
     try {
       await Injection.deleteCommentUseCase(
-        widget.owner, widget.repo, widget.comment.id ?? 0,
+        widget.owner,
+        widget.repo,
+        widget.comment.id ?? 0,
       );
       if (mounted) {
-        Injection.issueNotifier.listComments(widget.owner, widget.repo, widget.index);
+        Injection.issueNotifier.listComments(
+          widget.owner,
+          widget.repo,
+          widget.index,
+        );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.error}: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${l10n.error}: $e')));
       }
     }
   }
@@ -1194,14 +1387,19 @@ class _CommentItemState extends State<_CommentItem> {
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+        mainAxisAlignment: isMe
+            ? MainAxisAlignment.end
+            : MainAxisAlignment.start,
         children: [
           if (!isMe)
             Padding(
               padding: const EdgeInsets.only(top: 4),
               child: widget.comment.user != null
                   ? UserAvatar(user: widget.comment.user!, radius: 18)
-                  : CircleAvatar(radius: 18, child: Icon(Icons.person, size: 18)),
+                  : CircleAvatar(
+                      radius: 18,
+                      child: Icon(Icons.person, size: 18),
+                    ),
             ),
           if (!isMe) const SizedBox(width: 10),
           Flexible(
@@ -1214,12 +1412,17 @@ class _CommentItemState extends State<_CommentItem> {
                       showMenu<String>(
                         context: context,
                         position: RelativeRect.fromLTRB(
-                          offset.dx, offset.dy - 40,
-                          offset.dx + renderBox.size.width, offset.dy,
+                          offset.dx,
+                          offset.dy - 40,
+                          offset.dx + renderBox.size.width,
+                          offset.dy,
                         ),
                         items: [
                           PopupMenuItem(value: 'edit', child: Text(l10n.edit)),
-                          PopupMenuItem(value: 'delete', child: Text(l10n.delete)),
+                          PopupMenuItem(
+                            value: 'delete',
+                            child: Text(l10n.delete),
+                          ),
                         ],
                       ).then((v) {
                         if (v == 'edit') setState(() => _editing = true);
@@ -1231,9 +1434,7 @@ class _CommentItemState extends State<_CommentItem> {
                 clipBehavior: Clip.none,
                 children: [
                   Container(
-                    constraints: BoxConstraints(
-                      maxWidth: maxBubbleWidth,
-                    ),
+                    constraints: BoxConstraints(maxWidth: maxBubbleWidth),
                     padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
                     decoration: BoxDecoration(
                       color: bubbleColor,
@@ -1245,7 +1446,9 @@ class _CommentItemState extends State<_CommentItem> {
                       ),
                     ),
                     child: Column(
-                      crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                      crossAxisAlignment: isMe
+                          ? CrossAxisAlignment.end
+                          : CrossAxisAlignment.start,
                       children: [
                         if (!isMe && widget.comment.user?.login != null)
                           Text(
@@ -1276,7 +1479,8 @@ class _CommentItemState extends State<_CommentItem> {
                                   TextButton(
                                     onPressed: () => setState(() {
                                       _editing = false;
-                                      _editController.text = widget.comment.body ?? '';
+                                      _editController.text =
+                                          widget.comment.body ?? '';
                                     }),
                                     child: Text(l10n.cancel),
                                   ),
@@ -1284,29 +1488,42 @@ class _CommentItemState extends State<_CommentItem> {
                                   FilledButton(
                                     onPressed: _saving ? null : _saveEdit,
                                     child: _saving
-                                        ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                                        ? const SizedBox(
+                                            width: 16,
+                                            height: 16,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                            ),
+                                          )
                                         : Text(l10n.save),
                                   ),
                                 ],
                               ),
                             ],
                           )
-                        else if (widget.comment.body != null && widget.comment.body!.isNotEmpty)
+                        else if (widget.comment.body != null &&
+                            widget.comment.body!.isNotEmpty)
                           MarkdownBody(
                             data: widget.comment.body!,
                             selectable: true,
-                            styleSheet: MarkdownStyleSheet.fromTheme(theme).copyWith(
-                              p: theme.textTheme.bodyMedium,
-                            ),
+                            styleSheet: MarkdownStyleSheet.fromTheme(
+                              theme,
+                            ).copyWith(p: theme.textTheme.bodyMedium),
                             onTapLink: (text, href, title) {
                               if (href != null) {
-                                launchUrl(Uri.parse(href), mode: LaunchMode.externalApplication);
+                                launchUrl(
+                                  Uri.parse(href),
+                                  mode: LaunchMode.externalApplication,
+                                );
                               }
                             },
                           ),
                         const SizedBox(height: 4),
                         Text(
-                          _formatDate(widget.comment.created_at, AppLocalizations.of(context)!),
+                          _formatDate(
+                            widget.comment.created_at,
+                            AppLocalizations.of(context)!,
+                          ),
                           style: theme.textTheme.labelSmall?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
                             fontSize: 10,
@@ -1321,31 +1538,38 @@ class _CommentItemState extends State<_CommentItem> {
                       right: 4,
                       child: PopupMenuButton<String>(
                         padding: EdgeInsets.zero,
-                        icon: Icon(Icons.more_horiz, size: 14, color: theme.colorScheme.onSurfaceVariant),
+                        icon: Icon(
+                          Icons.more_horiz,
+                          size: 14,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
                         onSelected: (v) {
                           if (v == 'edit') setState(() => _editing = true);
                           if (v == 'delete') _delete();
                         },
                         itemBuilder: (_) => [
                           PopupMenuItem(value: 'edit', child: Text(l10n.edit)),
-                          PopupMenuItem(value: 'delete', child: Text(l10n.delete)),
+                          PopupMenuItem(
+                            value: 'delete',
+                            child: Text(l10n.delete),
+                          ),
                         ],
                       ),
                     ),
                 ],
               ),
-        ),
+            ),
+          ),
+          if (isMe) ...[
+            const SizedBox(width: 8),
+            if (widget.comment.user != null)
+              UserAvatar(user: widget.comment.user!, radius: 16)
+            else
+              CircleAvatar(radius: 16, child: Icon(Icons.person, size: 16)),
+          ],
+        ],
       ),
-      if (isMe) ...[
-        const SizedBox(width: 8),
-        if (widget.comment.user != null)
-          UserAvatar(user: widget.comment.user!, radius: 16)
-        else
-          CircleAvatar(radius: 16, child: Icon(Icons.person, size: 16)),
-      ],
-    ],
-  ),
-);
+    );
   }
 
   String _formatDate(DateTime? date, AppLocalizations l10n) {
@@ -1366,7 +1590,11 @@ class _TimelineSection extends StatefulWidget {
   final String repo;
   final int index;
 
-  const _TimelineSection({required this.owner, required this.repo, required this.index});
+  const _TimelineSection({
+    required this.owner,
+    required this.repo,
+    required this.index,
+  });
 
   @override
   State<_TimelineSection> createState() => _TimelineSectionState();
@@ -1385,7 +1613,9 @@ class _TimelineSectionState extends State<_TimelineSection> {
 
   Future<void> _load() async {
     final result = await Injection.getIssueTimelineUseCase(
-      widget.owner, widget.repo, widget.index,
+      widget.owner,
+      widget.repo,
+      widget.index,
     );
     if (mounted) {
       _timeline = result is Right<Failure, List<TimelineComment>>
@@ -1408,20 +1638,41 @@ class _TimelineSectionState extends State<_TimelineSection> {
       ),
       child: ExpansionTile(
         leading: Icon(Icons.timeline, color: theme.colorScheme.primary),
-        title: Text(l10n.timeline, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500)),
-        subtitle: Text('${_timeline.length} ${l10n.events}', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+        title: Text(
+          l10n.timeline,
+          style: theme.textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        subtitle: Text(
+          '${_timeline.length} ${l10n.events}',
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
         initiallyExpanded: _expanded,
         onExpansionChanged: (v) => setState(() => _expanded = v),
         children: [
           if (_loading)
             const Padding(
               padding: EdgeInsets.all(16),
-              child: Center(child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))),
+              child: Center(
+                child: SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              ),
             )
           else if (_timeline.isEmpty)
             Padding(
               padding: const EdgeInsets.all(16),
-              child: Text(l10n.noData, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+              child: Text(
+                l10n.noData,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
             )
           else
             Padding(
@@ -1491,12 +1742,16 @@ class _TimelineItem extends StatelessWidget {
               children: [
                 Text(
                   text,
-                  style: theme.textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w500),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
                 if (timeline.user?.login != null)
                   Text(
                     '${timeline.user!.login} · ${_formatTime(timeline.created_at, l10n)}',
-                    style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
                   ),
               ],
             ),
@@ -1524,7 +1779,11 @@ class _DependenciesSection extends StatefulWidget {
   final String repo;
   final int index;
 
-  const _DependenciesSection({required this.owner, required this.repo, required this.index});
+  const _DependenciesSection({
+    required this.owner,
+    required this.repo,
+    required this.index,
+  });
 
   @override
   State<_DependenciesSection> createState() => _DependenciesSectionState();
@@ -1543,7 +1802,9 @@ class _DependenciesSectionState extends State<_DependenciesSection> {
 
   Future<void> _load() async {
     final result = await Injection.listIssueDependenciesUseCase(
-      widget.owner, widget.repo, widget.index,
+      widget.owner,
+      widget.repo,
+      widget.index,
     );
     if (mounted) {
       _dependencies = result is Right<Failure, List<Issue>> ? result.value : [];
@@ -1567,9 +1828,14 @@ class _DependenciesSectionState extends State<_DependenciesSection> {
           keyboardType: TextInputType.number,
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l10n.cancel)),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n.cancel),
+          ),
           FilledButton(
-            onPressed: ctrl.text.trim().isEmpty ? null : () => Navigator.pop(ctx, ctrl.text.trim()),
+            onPressed: ctrl.text.trim().isEmpty
+                ? null
+                : () => Navigator.pop(ctx, ctrl.text.trim()),
             child: Text(l10n.add),
           ),
         ],
@@ -1579,14 +1845,21 @@ class _DependenciesSectionState extends State<_DependenciesSection> {
       final depIndex = int.tryParse(number);
       if (depIndex != null) {
         final result = await Injection.createIssueDependencyUseCase(
-          widget.owner, widget.repo, widget.index, depIndex,
+          widget.owner,
+          widget.repo,
+          widget.index,
+          depIndex,
         );
         if (mounted) {
           if (result is Right<Failure, void>) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.dependencyAdded)));
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(l10n.dependencyAdded)));
             _load();
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(l10n.error)));
           }
         }
       }
@@ -1601,21 +1874,34 @@ class _DependenciesSectionState extends State<_DependenciesSection> {
         title: Text(l10n.removeDependency),
         content: Text(l10n.removeDependencyConfirm),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(l10n.delete)),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.delete),
+          ),
         ],
       ),
     );
     if (ok == true && dep.number != null && mounted) {
       final result = await Injection.removeIssueDependencyUseCase(
-        widget.owner, widget.repo, widget.index, dep.number!,
+        widget.owner,
+        widget.repo,
+        widget.index,
+        dep.number!,
       );
       if (mounted) {
         if (result is Right<Failure, void>) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.dependencyRemoved)));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.dependencyRemoved)));
           _load();
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(l10n.error)));
         }
       }
     }
@@ -1634,17 +1920,24 @@ class _DependenciesSectionState extends State<_DependenciesSection> {
       ),
       child: ExpansionTile(
         leading: Icon(Icons.link, color: theme.colorScheme.primary),
-        title: Text(l10n.dependencies, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500)),
-        subtitle: Text('${_dependencies.length} ${l10n.items}', style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+        title: Text(
+          l10n.dependencies,
+          style: theme.textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        subtitle: Text(
+          '${_dependencies.length} ${l10n.items}',
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
         initiallyExpanded: _expanded,
         onExpansionChanged: (v) => setState(() => _expanded = v),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            IconButton(
-              icon: const Icon(Icons.add, size: 20),
-              onPressed: _add,
-            ),
+            IconButton(icon: const Icon(Icons.add, size: 20), onPressed: _add),
             const Icon(Icons.expand_more),
           ],
         ),
@@ -1652,12 +1945,23 @@ class _DependenciesSectionState extends State<_DependenciesSection> {
           if (_loading)
             const Padding(
               padding: EdgeInsets.all(16),
-              child: Center(child: SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))),
+              child: Center(
+                child: SizedBox(
+                  width: 20,
+                  height: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              ),
             )
           else if (_dependencies.isEmpty)
             Padding(
               padding: const EdgeInsets.all(16),
-              child: Text(l10n.noDependencies, style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+              child: Text(
+                l10n.noDependencies,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
             )
           else
             Padding(
@@ -1671,21 +1975,26 @@ class _DependenciesSectionState extends State<_DependenciesSection> {
                       width: 8,
                       height: 8,
                       decoration: BoxDecoration(
-                        color: dep.state?.value == 'open' ? Colors.green : Colors.purple,
+                        color: dep.state?.value == 'open'
+                            ? Colors.green
+                            : Colors.purple,
                         shape: BoxShape.circle,
                       ),
                     ),
-                    title: Text('#${dep.number} ${dep.title ?? ''}', style: theme.textTheme.bodySmall),
+                    title: Text(
+                      '#${dep.number} ${dep.title ?? ''}',
+                      style: theme.textTheme.bodySmall,
+                    ),
                     onTap: dep.number != null
                         ? () => Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => IssueDetailPage(
-                                  owner: dep.repository?.owner ?? widget.owner,
-                                  repo: dep.repository?.name ?? widget.repo,
-                                  index: dep.number!,
-                                ),
+                            MaterialPageRoute(
+                              builder: (_) => IssueDetailPage(
+                                owner: dep.repository?.owner ?? widget.owner,
+                                repo: dep.repository?.name ?? widget.repo,
+                                index: dep.number!,
                               ),
-                            )
+                            ),
+                          )
                         : null,
                     trailing: IconButton(
                       icon: const Icon(Icons.link_off, size: 18),
@@ -1700,4 +2009,3 @@ class _DependenciesSectionState extends State<_DependenciesSection> {
     );
   }
 }
-

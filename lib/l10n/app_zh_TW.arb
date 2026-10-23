@@ -746,5 +746,7 @@
   "activityStarred": "收藏了",
   "activityForked": "Fork 了",
   "activityApprovedPr": "通過了 PR 審查",
-  "activityRequestedChanges": "對 PR 提出了修改意見"
+  "activityRequestedChanges": "對 PR 提出了修改意見",
+  "savedFilters": "已儲存的篩選",
+  "saveFilter": "儲存篩選"
 }

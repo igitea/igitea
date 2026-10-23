@@ -9,11 +9,18 @@
 - **Cards**: `PremiumCard`/`PremiumListCard` now build on `FCard`, so repository, notification, search and profile cards share the Forui border, radius and press feedback
 - **Repo list**: Forui text-field search, `AppPage` scaffold, `AppEmpty`/`AppError` states
 - **Empty states**: `EmptyState` delegates to the Forui `AppEmpty`
+- **Login**: rebuilt on Forui — segmented account/token/OAuth2 switcher, `FTextFormField`/`FTextFormField.password`, `FButton` submit, `FAlert` errors, toast feedback and a responsive, vertically centered layout
+- **Notifications**: Forui loading/error/empty states, `FIcons` subject icons and a Forui "load more" button
+- **Issue list**: `AppPage` scaffold, Forui search field, segmented open/closed/all filter, `AppFilterChip` for active and saved filters, Forui state views
+- **Issue detail**: `AppPage` header with Forui open-in-browser/delete actions and Forui error/loading states
+- **Profile**: account actions grouped into one `AppSection` of `AppTile` rows, admin `FBadge`, sign-out confirmation via `FDialog`
+- **Search**: segmented repositories/issues/users switcher replaces the Material `TabBar`, Forui search field and state views
 
 ### Added
 - `AppTheme` (brand palette, light/dark Forui themes, touch/desktop density)
-- Shared Forui components: `AppPage`, `AppSection`, `AppTile`, `AppLoading`, `AppEmpty`, `AppError`, `AppSectionPlaceholder`
+- Shared Forui components: `AppPage`, `AppSection`, `AppTile`, `AppFilterChip`, `AppLoading`, `AppEmpty`, `AppError`, `AppSectionPlaceholder`
 - Tests for `AppSection`/`AppTile`, plus a home test asserting the header title follows the selected tab
+- l10n: `savedFilters` (zh/zh_TW) and `saveFilter` (zh_TW)
 
 ### Removed
 - Legacy home widgets `HomeIconTile`, `HomeRepoTile`, `HomeSectionCard`, `HomeRecentTile` and their tests (superseded by `AppSection`/`AppTile`)

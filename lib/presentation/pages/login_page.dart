@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
@@ -14,9 +15,7 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _LoginPageState extends State<LoginPage> {
   final _basicFormKey = GlobalKey<FormState>();
   final _tokenFormKey = GlobalKey<FormState>();
 
@@ -32,15 +31,14 @@ class _LoginPageState extends State<LoginPage>
   );
   final _oauthCodeController = TextEditingController();
 
-  bool _obscurePassword = true;
-  bool _obscureToken = true;
+  /// 0 = account, 1 = token, 2 = OAuth2.
+  int _mode = 0;
   bool _restoringCredentials = true;
   bool _oauthCodeExchanging = false;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
     _loadSavedCredentials();
   }
 
@@ -53,23 +51,24 @@ class _LoginPageState extends State<LoginPage>
         if (saved.method == AuthMethod.basic) {
           _usernameController.text = saved.username ?? '';
           _passwordController.text = saved.password ?? '';
-          _tabController.index = 0;
+          _mode = 0;
         } else if (saved.method == AuthMethod.oauth2) {
-          _tabController.index = 2;
+          _mode = 2;
         } else {
           _tokenController.text = saved.token ?? '';
-          _tabController.index = 1;
+          _mode = 1;
         }
       });
     }
-    setState(() {
-      _restoringCredentials = false;
-    });
+    if (mounted) {
+      setState(() {
+        _restoringCredentials = false;
+      });
+    }
   }
 
   @override
   void dispose() {
-    _tabController.dispose();
     _baseUrlController.dispose();
     _usernameController.dispose();
     _passwordController.dispose();
@@ -165,9 +164,7 @@ class _LoginPageState extends State<LoginPage>
 
       if (accessToken == null) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${l10n.error}: ${l10n.failedToGetAccessToken}')),
-          );
+          _showError('${l10n.error}: ${l10n.failedToGetAccessToken}');
         }
         setState(() => _oauthCodeExchanging = false);
         return;
@@ -181,9 +178,7 @@ class _LoginPageState extends State<LoginPage>
       );
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.error}: $e')),
-        );
+        _showError('${l10n.error}: $e');
       }
     } finally {
       if (mounted) setState(() => _oauthCodeExchanging = false);
@@ -191,116 +186,87 @@ class _LoginPageState extends State<LoginPage>
     }
   }
 
+  void _showError(String message) {
+    showFToast(
+      context: context,
+      variant: FToastVariant.destructive,
+      title: Text(message),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(UIConstants.lg),
+    return FScaffold(
+      child: SafeArea(
+        child: LayoutBuilder(
+          builder: (context, constraints) => SingleChildScrollView(
+            padding: const EdgeInsets.fromLTRB(20, 32, 20, 40),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 440),
-              child: ListenableBuilder(
-                listenable: Injection.authNotifier,
-                builder: (context, child) {
-                  final state = Injection.authNotifier.state;
+              constraints: BoxConstraints(
+                minHeight: (constraints.maxHeight - 72).clamp(
+                  0,
+                  double.infinity,
+                ),
+              ),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 420),
+                  child: ListenableBuilder(
+                    listenable: Injection.authNotifier,
+                    builder: (context, child) {
+                      final state = Injection.authNotifier.state;
 
-                  if (state is AuthLoading && _restoringCredentials) {
-                    return Center(
-                      child: Column(
+                      if (state is AuthLoading && _restoringCredentials) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 120),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const FCircularProgress(),
+                              const SizedBox(height: UIConstants.md),
+                              Text(
+                                l10n.restoringSession,
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+
+                      final isLoading = state is AuthLoading;
+                      final errorMessage = state is AuthError
+                          ? state.message
+                          : null;
+
+                      return Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const CircularProgressIndicator(),
-                          const SizedBox(height: UIConstants.md),
-                          Text(l10n.restoringSession),
-                        ],
-                      ),
-                    );
-                  }
-
-                  final isLoading = state is AuthLoading;
-                  final errorMessage = state is AuthError
-                      ? state.message
-                      : null;
-
-                  return Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Semantics(
-                        label: l10n.appTitle,
-                        child: Icon(
-                          Icons.code,
-                          size: 64,
-                          color: theme.colorScheme.primary,
-                        ),
-                      ),
-                      const SizedBox(height: UIConstants.md),
-                      Text(
-                        l10n.appTitle,
-                        style: theme.textTheme.headlineLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: theme.colorScheme.primary,
-                        ),
-                      ),
-                      const SizedBox(height: UIConstants.sm),
-                      Text(
-                        l10n.connectToGitea,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                      const SizedBox(height: UIConstants.xl),
-                      if (errorMessage != null)
-                        Card(
-                          color: theme.colorScheme.errorContainer,
-                          margin: const EdgeInsets.only(bottom: UIConstants.md),
-                          child: Padding(
-                            padding: const EdgeInsets.all(UIConstants.sm),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.error_outline,
-                                  color: theme.colorScheme.onErrorContainer,
-                                ),
-                                const SizedBox(width: UIConstants.sm),
-                                Expanded(
-                                  child: Text(
-                                    errorMessage,
-                                    style: theme.textTheme.bodyMedium?.copyWith(
-                                      color: theme.colorScheme.onErrorContainer,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                          _buildBrand(theme, l10n),
+                          const SizedBox(height: 28),
+                          _buildModeSelector(l10n, isLoading),
+                          const SizedBox(height: 16),
+                          if (errorMessage != null) ...[
+                            FAlert(
+                              variant: .destructive,
+                              title: Text(errorMessage),
                             ),
-                          ),
-                        ),
-                      TabBar(
-                        controller: _tabController,
-                        tabs: [
-                          Tab(text: l10n.usernamePassword),
-                          Tab(text: l10n.token),
-                          Tab(text: l10n.oauth2),
-                        ],
-                      ),
-                      const SizedBox(height: UIConstants.md),
-                      SizedBox(
-                        height: 420,
-                        child: TabBarView(
-                          controller: _tabController,
-                          children: [
-                            _buildBasicAuthForm(theme, isLoading, l10n),
-                            _buildTokenForm(theme, isLoading, l10n),
-                            _buildOAuth2Form(theme, isLoading, l10n),
+                            const SizedBox(height: 16),
                           ],
-                        ),
-                      ),
-                    ],
-                  );
-                },
+                          switch (_mode) {
+                            1 => _buildTokenForm(isLoading, l10n),
+                            2 => _buildOAuth2Form(theme, isLoading, l10n),
+                            _ => _buildBasicAuthForm(isLoading, l10n),
+                          },
+                        ],
+                      );
+                    },
+                  ),
+                ),
               ),
             ),
           ),
@@ -309,276 +275,264 @@ class _LoginPageState extends State<LoginPage>
     );
   }
 
-  Widget _buildBasicAuthForm(ThemeData theme, bool isLoading, AppLocalizations l10n) {
+  Widget _buildBrand(ThemeData theme, AppLocalizations l10n) {
+    return Column(
+      children: [
+        Icon(FIcons.squareCode, size: 56, color: theme.colorScheme.primary),
+        const SizedBox(height: 12),
+        Text(
+          l10n.appTitle,
+          textAlign: TextAlign.center,
+          style: theme.textTheme.headlineMedium?.copyWith(
+            fontWeight: FontWeight.w700,
+            color: theme.colorScheme.primary,
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          l10n.connectToGitea,
+          textAlign: TextAlign.center,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildModeSelector(AppLocalizations l10n, bool isLoading) {
+    final labels = [l10n.account, l10n.token, l10n.oauth2];
+
+    return Row(
+      children: [
+        for (var i = 0; i < labels.length; i++)
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 3),
+              child: FButton(
+                variant: _mode == i ? .primary : .outline,
+                size: .sm,
+                onPress: isLoading ? null : () => setState(() => _mode = i),
+                child: Flexible(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Text(labels[i], maxLines: 1),
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+
+  Widget _buildBasicAuthForm(bool isLoading, AppLocalizations l10n) {
     return Form(
       key: _basicFormKey,
       child: Column(
         children: [
-          TextFormField(
-            controller: _baseUrlController,
-            decoration: InputDecoration(
-              labelText: l10n.serverUrl,
-              hintText: 'https://gitea.example.com',
-              prefixIcon: const Icon(Icons.dns_outlined),
-              border: const OutlineInputBorder(),
-            ),
-            keyboardType: TextInputType.url,
+          _buildUrlField(l10n, isLoading),
+          const SizedBox(height: UIConstants.md),
+          FTextFormField(
+            control: FTextFieldControl.managed(controller: _usernameController),
+            label: Text(l10n.username),
+            hint: l10n.enterUsername,
             textInputAction: TextInputAction.next,
-            validator: (value) => _validateUrl(value, l10n),
+            autofillHints: const [AutofillHints.username],
             enabled: !isLoading,
-            autofillHints: const [AutofillHints.url],
-          ),
-          const SizedBox(height: UIConstants.lg),
-          TextFormField(
-            controller: _usernameController,
-            decoration: InputDecoration(
-              labelText: l10n.username,
-              hintText: l10n.enterUsername,
-              prefixIcon: const Icon(Icons.person_outlined),
-              border: const OutlineInputBorder(),
-            ),
-            textInputAction: TextInputAction.next,
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
                 return l10n.pleaseEnterUsername;
               }
               return null;
             },
-            enabled: !isLoading,
-            autofillHints: const [AutofillHints.username],
           ),
-          const SizedBox(height: UIConstants.lg),
-          TextFormField(
-            controller: _passwordController,
-            decoration: InputDecoration(
-              labelText: l10n.password,
-              hintText: l10n.enterPassword,
-              prefixIcon: const Icon(Icons.lock_outlined),
-              border: const OutlineInputBorder(),
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _obscurePassword ? Icons.visibility_off : Icons.visibility,
-                ),
-                onPressed: () {
-                  setState(() {
-                    _obscurePassword = !_obscurePassword;
-                  });
-                },
-              ),
-            ),
-            obscureText: _obscurePassword,
+          const SizedBox(height: UIConstants.md),
+          FTextFormField.password(
+            control: FTextFieldControl.managed(controller: _passwordController),
+            label: Text(l10n.password),
+            hint: l10n.enterPassword,
             textInputAction: TextInputAction.done,
-            onFieldSubmitted: (_) => _loginWithBasicAuth(),
+            autofillHints: const [AutofillHints.password],
+            enabled: !isLoading,
+            onSubmit: (_) => _loginWithBasicAuth(),
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return l10n.pleaseEnterPassword;
               }
               return null;
             },
-            autofillHints: const [AutofillHints.password],
-            enabled: !isLoading,
           ),
           const SizedBox(height: UIConstants.lg),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton(
-              onPressed: isLoading ? null : _loginWithBasicAuth,
-              child: isLoading
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : Text(l10n.signIn),
-            ),
+          _buildSubmitButton(
+            isLoading: isLoading,
+            label: l10n.signIn,
+            onPress: _loginWithBasicAuth,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildTokenForm(ThemeData theme, bool isLoading, AppLocalizations l10n) {
+  Widget _buildTokenForm(bool isLoading, AppLocalizations l10n) {
     return Form(
       key: _tokenFormKey,
       child: Column(
         children: [
-          TextFormField(
-            controller: _baseUrlController,
-            decoration: InputDecoration(
-              labelText: l10n.serverUrl,
-              hintText: 'https://gitea.example.com',
-              prefixIcon: const Icon(Icons.dns_outlined),
-              border: const OutlineInputBorder(),
-            ),
-            keyboardType: TextInputType.url,
-            textInputAction: TextInputAction.next,
-            validator: (value) => _validateUrl(value, l10n),
-            enabled: !isLoading,
-          ),
-          const SizedBox(height: UIConstants.lg),
-          TextFormField(
-            controller: _tokenController,
-            decoration: InputDecoration(
-              labelText: l10n.token,
-              hintText: l10n.pasteAccessToken,
-              prefixIcon: const Icon(Icons.key_outlined),
-              border: const OutlineInputBorder(),
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _obscureToken ? Icons.visibility_off : Icons.visibility,
-                ),
-                onPressed: () {
-                  setState(() {
-                    _obscureToken = !_obscureToken;
-                  });
-                },
-              ),
-            ),
-            obscureText: _obscureToken,
+          _buildUrlField(l10n, isLoading),
+          const SizedBox(height: UIConstants.md),
+          FTextFormField.password(
+            control: FTextFieldControl.managed(controller: _tokenController),
+            label: Text(l10n.token),
+            hint: l10n.pasteAccessToken,
             textInputAction: TextInputAction.done,
-            onFieldSubmitted: (_) => _loginWithToken(),
+            autofillHints: const [],
+            enabled: !isLoading,
+            onSubmit: (_) => _loginWithToken(),
             validator: (value) {
               if (value == null || value.trim().isEmpty) {
                 return l10n.pleaseEnterAccessToken;
               }
               return null;
             },
-            enabled: !isLoading,
           ),
           const SizedBox(height: UIConstants.lg),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton(
-              onPressed: isLoading ? null : _loginWithToken,
-              child: isLoading
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : Text(l10n.signInWithToken),
-            ),
+          _buildSubmitButton(
+            isLoading: isLoading,
+            label: l10n.signInWithToken,
+            onPress: _loginWithToken,
           ),
         ],
       ),
     );
   }
 
-  Widget _buildOAuth2Form(ThemeData theme, bool isLoading, AppLocalizations l10n) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          Text(l10n.oauth2Description,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-            textAlign: TextAlign.center,
+  Widget _buildOAuth2Form(
+    ThemeData theme,
+    bool isLoading,
+    AppLocalizations l10n,
+  ) {
+    return Column(
+      children: [
+        Text(
+          l10n.oauth2Description,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
           ),
-          const SizedBox(height: UIConstants.lg),
-          TextFormField(
-            controller: _baseUrlController,
-            decoration: InputDecoration(
-              labelText: l10n.serverUrl,
-              hintText: 'https://gitea.example.com',
-              prefixIcon: const Icon(Icons.dns_outlined),
-              border: const OutlineInputBorder(),
-            ),
-            keyboardType: TextInputType.url,
-            textInputAction: TextInputAction.next,
-            validator: (value) => _validateUrl(value, l10n),
-            enabled: !isLoading,
-          ),
-          const SizedBox(height: UIConstants.md),
-          TextFormField(
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: UIConstants.md),
+        _buildUrlField(l10n, isLoading),
+        const SizedBox(height: UIConstants.md),
+        FTextFormField(
+          control: FTextFieldControl.managed(
             controller: _oauthClientIdController,
-            decoration: InputDecoration(
-              labelText: l10n.oauth2ClientId,
-              border: const OutlineInputBorder(),
-            ),
-            textInputAction: TextInputAction.next,
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return l10n.requiredField;
-              }
-              return null;
-            },
-            enabled: !isLoading,
           ),
-          const SizedBox(height: UIConstants.md),
-          TextFormField(
+          label: Text(l10n.oauth2ClientId),
+          textInputAction: TextInputAction.next,
+          enabled: !isLoading,
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return l10n.requiredField;
+            }
+            return null;
+          },
+        ),
+        const SizedBox(height: UIConstants.md),
+        FTextFormField(
+          control: FTextFieldControl.managed(
             controller: _oauthClientSecretController,
-            decoration: InputDecoration(
-              labelText: l10n.oauth2ClientSecret,
-              border: const OutlineInputBorder(),
-            ),
-            textInputAction: TextInputAction.next,
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return l10n.requiredField;
-              }
-              return null;
-            },
-            enabled: !isLoading,
           ),
-          const SizedBox(height: UIConstants.sm),
-          TextFormField(
+          label: Text(l10n.oauth2ClientSecret),
+          textInputAction: TextInputAction.next,
+          enabled: !isLoading,
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return l10n.requiredField;
+            }
+            return null;
+          },
+        ),
+        const SizedBox(height: UIConstants.md),
+        FTextFormField(
+          control: FTextFieldControl.managed(
             controller: _oauthRedirectUriController,
-            decoration: InputDecoration(
-              labelText: l10n.oauth2RedirectUri,
-              hintText: l10n.oauth2RedirectUriHint,
-              border: const OutlineInputBorder(),
-            ),
-            textInputAction: TextInputAction.next,
-            keyboardType: TextInputType.url,
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return l10n.requiredField;
-              }
-              return null;
-            },
-            enabled: !isLoading,
           ),
-          const SizedBox(height: UIConstants.md),
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton.icon(
-              onPressed: isLoading ? null : _openOAuth2Authorization,
-              icon: const Icon(Icons.open_in_new),
-              label: Text(l10n.oauth2Authorize),
-            ),
+          label: Text(l10n.oauth2RedirectUri),
+          hint: l10n.oauth2RedirectUriHint,
+          textInputAction: TextInputAction.next,
+          keyboardType: TextInputType.url,
+          enabled: !isLoading,
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return l10n.requiredField;
+            }
+            return null;
+          },
+        ),
+        const SizedBox(height: UIConstants.md),
+        SizedBox(
+          width: double.infinity,
+          child: FButton(
+            variant: .outline,
+            onPress: isLoading ? null : _openOAuth2Authorization,
+            prefix: const Icon(FIcons.externalLink),
+            child: Text(l10n.oauth2Authorize),
           ),
-          const SizedBox(height: UIConstants.lg),
-          TextFormField(
-            controller: _oauthCodeController,
-            decoration: InputDecoration(
-              labelText: l10n.oauth2AuthorizationCode,
-              hintText: l10n.oauth2AuthorizationCodeHint,
-              border: const OutlineInputBorder(),
-            ),
-            textInputAction: TextInputAction.done,
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return l10n.requiredField;
-              }
-              return null;
-            },
-            enabled: !isLoading && !_oauthCodeExchanging,
-          ),
-          const SizedBox(height: UIConstants.lg),
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton(
-              onPressed: isLoading || _oauthCodeExchanging ? null : _exchangeOAuth2Code,
-              child: _oauthCodeExchanging
-                  ? const SizedBox(
-                      height: 20,
-                      width: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : Text(l10n.loginWithOAuth2),
-            ),
-          ),
-        ],
+        ),
+        const SizedBox(height: UIConstants.lg),
+        FTextFormField(
+          control: FTextFieldControl.managed(controller: _oauthCodeController),
+          label: Text(l10n.oauth2AuthorizationCode),
+          hint: l10n.oauth2AuthorizationCodeHint,
+          textInputAction: TextInputAction.done,
+          enabled: !isLoading && !_oauthCodeExchanging,
+          validator: (value) {
+            if (value == null || value.trim().isEmpty) {
+              return l10n.requiredField;
+            }
+            return null;
+          },
+        ),
+        const SizedBox(height: UIConstants.lg),
+        _buildSubmitButton(
+          isLoading: isLoading || _oauthCodeExchanging,
+          label: l10n.loginWithOAuth2,
+          onPress: _exchangeOAuth2Code,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildUrlField(AppLocalizations l10n, bool isLoading) {
+    return FTextFormField(
+      control: FTextFieldControl.managed(controller: _baseUrlController),
+      label: Text(l10n.serverUrl),
+      hint: 'https://gitea.example.com',
+      keyboardType: TextInputType.url,
+      textInputAction: TextInputAction.next,
+      autofillHints: const [AutofillHints.url],
+      enabled: !isLoading,
+      validator: (value) => _validateUrl(value, l10n),
+    );
+  }
+
+  Widget _buildSubmitButton({
+    required bool isLoading,
+    required String label,
+    required VoidCallback onPress,
+  }) {
+    return SizedBox(
+      width: double.infinity,
+      child: FButton(
+        onPress: isLoading ? null : onPress,
+        child: isLoading
+            ? const SizedBox(
+                height: 18,
+                width: 18,
+                child: FCircularProgress(size: .sm),
+              )
+            : Text(label),
       ),
     );
   }

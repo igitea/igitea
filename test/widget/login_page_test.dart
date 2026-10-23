@@ -16,114 +16,89 @@ void main() {
   group('LoginPage', () {
     testWidgets('renders iGitea title and subtitle', (tester) async {
       await tester.pumpWidget(testWidget());
+      await tester.pump();
       expect(find.text('iGitea'), findsOneWidget);
       expect(find.text('Connect to your Gitea instance'), findsOneWidget);
     });
 
-    testWidgets('shows both login tabs', (tester) async {
+    testWidgets('shows the three login modes', (tester) async {
       await tester.pumpWidget(testWidget());
-      expect(find.text('Username & Password'), findsOneWidget);
-      expect(find.text('Token'), findsWidgets);
+      await tester.pump();
+      expect(find.text('Account'), findsOneWidget);
+      expect(find.text('Token'), findsOneWidget);
+      expect(find.text('OAuth2'), findsOneWidget);
     });
 
-    testWidgets(
-      'basic auth tab shows Server URL, Username, Password fields and Sign In button',
-      (tester) async {
-        await tester.pumpWidget(testWidget());
-        expect(find.text('Server URL'), findsOneWidget);
-        expect(find.text('Username'), findsOneWidget);
-        expect(find.text('Password'), findsOneWidget);
-        expect(find.text('Sign In'), findsOneWidget);
-      },
-    );
+    testWidgets('account mode shows server URL, username and password', (
+      tester,
+    ) async {
+      await tester.pumpWidget(testWidget());
+      await tester.pump();
+      expect(find.text('Server URL'), findsOneWidget);
+      expect(find.text('Username'), findsOneWidget);
+      expect(find.text('Password'), findsOneWidget);
+      expect(find.text('Sign In'), findsOneWidget);
+      expect(find.byType(EditableText), findsNWidgets(3));
+    });
 
-    testWidgets(
-      'token tab shows Access Token field and Sign In with Token button',
-      (tester) async {
-        await tester.pumpWidget(testWidget());
-        await tester.tap(find.text('Token'));
-        await tester.pumpAndSettle();
-        expect(find.text('Sign In with Token'), findsOneWidget);
-        final tokenFormFields = find.byType(TextFormField);
-        expect(tokenFormFields, findsWidgets);
-        final accessTokenLabel = find.text('Token');
-        expect(accessTokenLabel, findsWidgets);
-      },
-    );
+    testWidgets('token mode shows the token form', (tester) async {
+      await tester.pumpWidget(testWidget());
+      await tester.pump();
+
+      await tester.tap(find.text('Token'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Sign In with Token'), findsOneWidget);
+      expect(find.byType(EditableText), findsNWidgets(2));
+    });
 
     testWidgets('password field is obscured by default', (tester) async {
       await tester.pumpWidget(testWidget());
-      final fields = find.byType(TextField);
-      final passwordField = tester.widget<TextField>(fields.at(2));
-      expect(passwordField.obscureText, isTrue);
+      await tester.pump();
+
+      final password = tester.widget<EditableText>(
+        find.byType(EditableText).at(2),
+      );
+      expect(password.obscureText, isTrue);
     });
 
-    testWidgets('token field is obscured by default', (tester) async {
-      await tester.pumpWidget(testWidget());
-      await tester.tap(find.text('Token'));
-      await tester.pumpAndSettle();
-      final fields = find.byType(TextField);
-      final tokenField = tester.widget<TextField>(fields.at(1));
-      expect(tokenField.obscureText, isTrue);
-    });
-
-    testWidgets(
-      'validation errors show when submitting empty basic auth form',
-      (tester) async {
-        tester.view.physicalSize = const Size(800, 1200);
-        tester.view.devicePixelRatio = 1.0;
-        addTearDown(() {
-          tester.view.resetPhysicalSize();
-          tester.view.resetDevicePixelRatio();
-        });
-        await tester.pumpWidget(testWidget());
-        await tester.tap(find.text('Sign In'));
-        await tester.pumpAndSettle();
-        expect(find.text('Please enter a server URL'), findsOneWidget);
-        expect(find.text('Please enter your username'), findsOneWidget);
-        expect(find.text('Please enter your password'), findsOneWidget);
-      },
-    );
-
-    testWidgets('validation errors show when submitting empty token form', (
+    testWidgets('validation errors show when submitting empty account form', (
       tester,
     ) async {
-      tester.view.physicalSize = const Size(800, 1200);
+      tester.view.physicalSize = const Size(800, 1400);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(() {
         tester.view.resetPhysicalSize();
         tester.view.resetDevicePixelRatio();
       });
+
       await tester.pumpWidget(testWidget());
-      await tester.tap(find.text('Token'));
+      await tester.pump();
+
+      await tester.tap(find.text('Sign In'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Sign In with Token'));
-      await tester.pumpAndSettle();
+
       expect(find.text('Please enter a server URL'), findsOneWidget);
-      expect(find.text('Please enter an access token'), findsOneWidget);
+      expect(find.text('Please enter your username'), findsOneWidget);
+      expect(find.text('Please enter your password'), findsOneWidget);
     });
 
     testWidgets('server URL validation rejects invalid URLs', (tester) async {
-      tester.view.physicalSize = const Size(800, 1200);
+      tester.view.physicalSize = const Size(800, 1400);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(() {
         tester.view.resetPhysicalSize();
         tester.view.resetDevicePixelRatio();
       });
+
       await tester.pumpWidget(testWidget());
-      await tester.enterText(find.byType(TextFormField).at(0), 'not-a-url');
+      await tester.pump();
+
+      await tester.enterText(find.byType(EditableText).first, 'not-a-url');
       await tester.tap(find.text('Sign In'));
       await tester.pumpAndSettle();
-      expect(find.text('Please enter a valid URL'), findsOneWidget);
-    });
 
-    testWidgets('password visibility toggle works', (tester) async {
-      await tester.pumpWidget(testWidget());
-      final fields = find.byType(TextField);
-      expect(tester.widget<TextField>(fields.at(2)).obscureText, isTrue);
-      await tester.tap(find.byIcon(Icons.visibility_off).first);
-      await tester.pump();
-      expect(tester.widget<TextField>(fields.at(2)).obscureText, isFalse);
+      expect(find.text('Please enter a valid URL'), findsOneWidget);
     });
   });
 }

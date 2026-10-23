@@ -34,9 +34,7 @@ class AppPage extends StatelessWidget {
         titleAlignment: Alignment.centerLeft,
         prefixes: [
           if (canPop)
-            FHeaderAction.back(
-              onPress: () => Navigator.maybePop(context),
-            ),
+            FHeaderAction.back(onPress: () => Navigator.maybePop(context)),
         ],
         title: Text(title),
         suffixes: actions,

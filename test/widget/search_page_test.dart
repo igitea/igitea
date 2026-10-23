@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:forui/forui.dart';
 import 'package:igitea/core/di/injection.dart';
 import 'package:igitea/data/models/generated/generated_models.dart';
 import 'package:igitea/presentation/pages/search_page.dart';
@@ -11,11 +12,11 @@ void main() {
     Injection.initialize();
   });
 
-  testWidgets('renders SearchBar and tabs', (tester) async {
+  testWidgets('renders the search field and mode switcher', (tester) async {
     await tester.pumpWidget(buildTestableWidget(const SearchPage()));
     await tester.pump();
 
-    expect(find.byType(SearchBar), findsOneWidget);
+    expect(find.byType(FTextField), findsOneWidget);
     expect(find.text('Repositories'), findsWidgets);
     expect(find.text('Issues'), findsWidgets);
     expect(find.text('Users'), findsWidgets);
@@ -25,7 +26,7 @@ void main() {
     await tester.pumpWidget(buildTestableWidget(const SearchPage()));
     await tester.pump();
 
-    final searchBar = find.byType(SearchBar);
+    final searchBar = find.byType(EditableText).first;
     await tester.enterText(searchBar, 'flutter');
     await tester.testTextInput.receiveAction(TextInputAction.search);
     await tester.pump();

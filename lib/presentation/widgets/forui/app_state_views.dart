@@ -75,10 +75,7 @@ class AppEmpty extends StatelessWidget {
                 style: theme.textTheme.bodySmall?.copyWith(color: muted),
               ),
             ],
-            if (action != null) ...[
-              const SizedBox(height: 16),
-              action!,
-            ],
+            if (action != null) ...[const SizedBox(height: 16), action!],
           ],
         ),
       ),
@@ -88,12 +85,7 @@ class AppEmpty extends StatelessWidget {
 
 /// A centered error state with a retry button.
 class AppError extends StatelessWidget {
-  const AppError({
-    super.key,
-    required this.message,
-    this.onRetry,
-    this.title,
-  });
+  const AppError({super.key, required this.message, this.onRetry, this.title});
 
   final String message;
   final VoidCallback? onRetry;

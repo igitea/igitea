@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
+
 import '../../core/animations/animated_wrapper.dart';
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
@@ -9,7 +11,9 @@ import '../../domain/entities/issue_state.dart';
 import '../../l10n/app_localizations.dart';
 import '../../presentation/state/issue_notifier.dart';
 import '../models/issue_filter_state.dart';
-import '../widgets/empty_state.dart';
+import '../widgets/forui/app_filter_chip.dart';
+import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_state_views.dart';
 import '../widgets/issue_filter_bottom_sheet.dart';
 import '../widgets/premium_card.dart';
 import '../widgets/user_avatar.dart';
@@ -36,7 +40,9 @@ class _IssueListPageState extends State<IssueListPage> {
   bool _savedFiltersExpanded = false;
   bool _filtersLoaded = false;
   Timer? _searchDebounceTimer;
-  final ValueNotifier<IssueFilterState> _filterState = ValueNotifier(const IssueFilterState());
+  final ValueNotifier<IssueFilterState> _filterState = ValueNotifier(
+    const IssueFilterState(),
+  );
 
   @override
   void initState() {
@@ -118,15 +124,23 @@ class _IssueListPageState extends State<IssueListPage> {
   void _navigateToIssue(String owner, String repo, int index) {
     if (_isNavigating) return;
     _isNavigating = true;
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (_) => IssueDetailPage(owner: owner, repo: repo, index: index),
-    )).then((_) => _isNavigating = false);
+    Navigator.of(context)
+        .push(
+          MaterialPageRoute(
+            builder: (_) =>
+                IssueDetailPage(owner: owner, repo: repo, index: index),
+          ),
+        )
+        .then((_) => _isNavigating = false);
   }
 
   void _onSearch(String query) {
     setState(() => _searchQuery = query);
     _searchDebounceTimer?.cancel();
-    _searchDebounceTimer = Timer(const Duration(milliseconds: 300), _forceReload);
+    _searchDebounceTimer = Timer(
+      const Duration(milliseconds: 300),
+      _forceReload,
+    );
   }
 
   Future<void> _loadSavedFilters() async {
@@ -141,10 +155,7 @@ class _IssueListPageState extends State<IssueListPage> {
 
   void _applyFilter(SavedFilter filter) {
     final notifier = Injection.issueNotifier;
-    notifier.searchIssues(
-      filter.query ?? '',
-      state: filter.state,
-    );
+    notifier.searchIssues(filter.query ?? '', state: filter.state);
     setState(() {});
   }
 
@@ -163,15 +174,22 @@ class _IssueListPageState extends State<IssueListPage> {
           autofocus: true,
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l10n.cancel)),
-          FilledButton(onPressed: () => Navigator.pop(ctx, controller.text), child: Text(l10n.save)),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, controller.text),
+            child: Text(l10n.save),
+          ),
         ],
       ),
     );
     controller.dispose();
     if (name != null && name.trim().isNotEmpty) {
       await _savedFilterService.addFilter(
-        name.trim(), filterState,
+        name.trim(),
+        filterState,
         query: _searchQuery.isNotEmpty ? _searchQuery : null,
       );
       _loadSavedFilters();
@@ -186,42 +204,33 @@ class _IssueListPageState extends State<IssueListPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.issues)),
-      body: Column(
+    return AppPage(
+      title: l10n.issues,
+      child: Column(
         children: [
-          FadeInWrapper(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: UIConstants.md, vertical: UIConstants.sm),
-              child: SearchBar(
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+            child: FTextField(
+              control: FTextFieldControl.managed(
                 controller: _searchController,
-                hintText: l10n.searchIssues,
-                leading: const Icon(Icons.search),
-                trailing: [
-                  if (_searchQuery.isNotEmpty)
-                    IconButton(
-                      icon: const Icon(Icons.clear),
-                      onPressed: () {
-                        _searchController.clear();
-                        _onSearch('');
-                      },
-                    ),
-                ],
-                onChanged: _onSearch,
-                padding: const WidgetStatePropertyAll(
-                  EdgeInsets.symmetric(horizontal: UIConstants.md),
-                ),
+                onChange: (value) => _onSearch(value.text),
               ),
+              hint: l10n.searchIssues,
+              clearable: (value) => value.text.isNotEmpty,
             ),
           ),
           FadeInWrapper(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: UIConstants.md, vertical: UIConstants.sm),
+              padding: const EdgeInsets.symmetric(
+                horizontal: UIConstants.md,
+                vertical: UIConstants.sm,
+              ),
               child: Row(
                 children: [
                   Expanded(
                     child: _FilterChips(
-                      selectedState: Injection.issueNotifier.issuesListFilter ?? 'open',
+                      selectedState:
+                          Injection.issueNotifier.issuesListFilter ?? 'open',
                       onSelected: (state) {
                         setState(() {});
                         Injection.issueNotifier.searchIssues(
@@ -233,10 +242,13 @@ class _IssueListPageState extends State<IssueListPage> {
                       l10n: l10n,
                     ),
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.filter_list),
-                    tooltip: l10n.moreFilters,
-                    onPressed: _showFilterSheet,
+                  FTappable(
+                    onPress: _showFilterSheet,
+                    semanticsLabel: l10n.moreFilters,
+                    child: const Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Icon(FIcons.listFilter, size: 18),
+                    ),
                   ),
                 ],
               ),
@@ -248,58 +260,73 @@ class _IssueListPageState extends State<IssueListPage> {
               if (!filter.hasFilters) return const SizedBox.shrink();
               return FadeInWrapper(
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: UIConstants.md, vertical: UIConstants.sm),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: UIConstants.md,
+                    vertical: UIConstants.sm,
+                  ),
                   child: Wrap(
                     spacing: UIConstants.sm,
                     runSpacing: UIConstants.sm,
                     children: [
-                      ...filter.labels.map((label) => Chip(
-                        label: Text(label),
-                        onDeleted: () {
-                          _filterState.value = filter.copyWith(
-                            labels: filter.labels.difference({label}),
-                          );
-                          _forceReload();
-                        },
-                      )),
-                      ...filter.milestones.map((m) => Chip(
-                        label: Text(m),
-                        onDeleted: () {
-                          _filterState.value = filter.copyWith(
-                            milestones: filter.milestones.difference({m}),
-                          );
-                          _forceReload();
-                        },
-                      )),
+                      ...filter.labels.map(
+                        (label) => AppFilterChip(
+                          label: label,
+                          onRemove: () {
+                            _filterState.value = filter.copyWith(
+                              labels: filter.labels.difference({label}),
+                            );
+                            _forceReload();
+                          },
+                        ),
+                      ),
+                      ...filter.milestones.map(
+                        (m) => AppFilterChip(
+                          label: m,
+                          onRemove: () {
+                            _filterState.value = filter.copyWith(
+                              milestones: filter.milestones.difference({m}),
+                            );
+                            _forceReload();
+                          },
+                        ),
+                      ),
                       if (filter.type != null)
-                        Chip(
-                          label: Text(filter.type!),
-                          onDeleted: () {
-                            _filterState.value = filter.copyWith(clearType: true);
+                        AppFilterChip(
+                          label: filter.type!,
+                          onRemove: () {
+                            _filterState.value = filter.copyWith(
+                              clearType: true,
+                            );
                             _forceReload();
                           },
                         ),
                       if (filter.assignedToMe)
-                        Chip(
-                          label: Text(l10n.assignedToMe),
-                          onDeleted: () {
-                            _filterState.value = filter.copyWith(assignedToMe: false);
+                        AppFilterChip(
+                          label: l10n.assignedToMe,
+                          onRemove: () {
+                            _filterState.value = filter.copyWith(
+                              assignedToMe: false,
+                            );
                             _forceReload();
                           },
                         ),
                       if (filter.createdByMe)
-                        Chip(
-                          label: Text(l10n.createdByMe),
-                          onDeleted: () {
-                            _filterState.value = filter.copyWith(createdByMe: false);
+                        AppFilterChip(
+                          label: l10n.createdByMe,
+                          onRemove: () {
+                            _filterState.value = filter.copyWith(
+                              createdByMe: false,
+                            );
                             _forceReload();
                           },
                         ),
                       if (filter.mentionedMe)
-                        Chip(
-                          label: Text(l10n.mentionedMe),
-                          onDeleted: () {
-                            _filterState.value = filter.copyWith(mentionedMe: false);
+                        AppFilterChip(
+                          label: l10n.mentionedMe,
+                          onRemove: () {
+                            _filterState.value = filter.copyWith(
+                              mentionedMe: false,
+                            );
                             _forceReload();
                           },
                         ),
@@ -316,18 +343,23 @@ class _IssueListPageState extends State<IssueListPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  InkWell(
-                    onTap: () => setState(() => _savedFiltersExpanded = !_savedFiltersExpanded),
+                  FTappable(
+                    onPress: () => setState(
+                      () => _savedFiltersExpanded = !_savedFiltersExpanded,
+                    ),
                     child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: UIConstants.xs),
+                      padding: const EdgeInsets.symmetric(vertical: 4),
                       child: Row(
                         children: [
                           Icon(
-                            _savedFiltersExpanded ? Icons.expand_less : Icons.expand_more,
-                            size: 18,
+                            _savedFiltersExpanded
+                                ? FIcons.chevronUp
+                                : FIcons.chevronDown,
+                            size: 16,
                           ),
                           const SizedBox(width: 4),
-                          Text('Saved Filters (${_savedFilters.length})',
+                          Text(
+                            '${l10n.savedFilters} (${_savedFilters.length})',
                             style: Theme.of(context).textTheme.labelMedium,
                           ),
                         ],
@@ -343,10 +375,10 @@ class _IssueListPageState extends State<IssueListPage> {
                         separatorBuilder: (_, _) => const SizedBox(width: 4),
                         itemBuilder: (context, i) {
                           final f = _savedFilters[i];
-                          return InputChip(
-                            label: Text(f.name, style: const TextStyle(fontSize: 12)),
-                            onPressed: () => _applyFilter(f),
-                            onDeleted: () => _deleteSavedFilter(f),
+                          return AppFilterChip(
+                            label: f.name,
+                            onPress: () => _applyFilter(f),
+                            onRemove: () => _deleteSavedFilter(f),
                           );
                         },
                       ),
@@ -354,15 +386,19 @@ class _IssueListPageState extends State<IssueListPage> {
                 ],
               ),
             ),
-          if (_filtersLoaded && (_searchQuery.isNotEmpty || Injection.issueNotifier.issuesListFilter != null))
+          if (_filtersLoaded &&
+              (_searchQuery.isNotEmpty ||
+                  Injection.issueNotifier.issuesListFilter != null))
             Align(
               alignment: Alignment.centerRight,
               child: Padding(
                 padding: const EdgeInsets.only(right: UIConstants.md),
-                child: TextButton.icon(
-                  icon: const Icon(Icons.save_outlined, size: 16),
-                  label: const Text('Save filter', style: TextStyle(fontSize: 12)),
-                  onPressed: _saveCurrentFilter,
+                child: FButton(
+                  variant: .ghost,
+                  size: .xs,
+                  prefix: const Icon(FIcons.bookmarkPlus, size: 14),
+                  onPress: _saveCurrentFilter,
+                  child: Text(l10n.saveFilter),
                 ),
               ),
             ),
@@ -372,21 +408,10 @@ class _IssueListPageState extends State<IssueListPage> {
               builder: (context, _) {
                 final issuesState = Injection.issueNotifier.issuesListState;
                 return switch (issuesState) {
-                  IssuesListLoading() => const Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                  IssuesListError(:final message) => Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text('${l10n.error}: $message'),
-                        const SizedBox(height: UIConstants.md),
-                        FilledButton(
-                          onPressed: () => _forceReload(),
-                          child: Text(l10n.retry),
-                        ),
-                      ],
-                    ),
+                  IssuesListLoading() => const AppLoading(),
+                  IssuesListError(:final message) => AppError(
+                    message: message,
+                    onRetry: _forceReload,
                   ),
                   IssuesListLoaded(:final issues, :final hasMore) => _IssueList(
                     issues: issues,
@@ -397,9 +422,7 @@ class _IssueListPageState extends State<IssueListPage> {
                     onIssueTap: _navigateToIssue,
                     l10n: l10n,
                   ),
-                  _ => const Center(
-                    child: CircularProgressIndicator(),
-                  ),
+                  _ => const AppLoading(),
                 };
               },
             ),
@@ -415,28 +438,30 @@ class _FilterChips extends StatelessWidget {
   final ValueChanged<String?> onSelected;
   final AppLocalizations l10n;
 
-  const _FilterChips({required this.selectedState, required this.onSelected, required this.l10n});
+  const _FilterChips({
+    required this.selectedState,
+    required this.onSelected,
+    required this.l10n,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final options = [
+      ('open', l10n.open),
+      ('closed', l10n.closed),
+      ('all', l10n.all),
+    ];
+
     return Wrap(
-      spacing: UIConstants.sm,
+      spacing: 6,
       children: [
-        FilterChip(
-          label: Text(l10n.open),
-          selected: selectedState == 'open',
-          onSelected: (_) => onSelected('open'),
-        ),
-        FilterChip(
-          label: Text(l10n.closed),
-          selected: selectedState == 'closed',
-          onSelected: (_) => onSelected('closed'),
-        ),
-        FilterChip(
-          label: Text(l10n.all),
-          selected: selectedState == 'all',
-          onSelected: (_) => onSelected('all'),
-        ),
+        for (final (value, label) in options)
+          FButton(
+            variant: selectedState == value ? .primary : .outline,
+            size: .xs,
+            onPress: () => onSelected(value),
+            child: Text(label),
+          ),
       ],
     );
   }
@@ -492,14 +517,18 @@ class _IssueListState extends State<_IssueList> {
   @override
   Widget build(BuildContext context) {
     if (widget.issues.isEmpty && !widget.loadingMore) {
-      return EmptyState(icon: Icons.bug_report_outlined, title: widget.l10n.noIssuesFound);
+      return AppEmpty(icon: FIcons.circleDot, title: widget.l10n.noIssuesFound);
     }
     return RefreshIndicator(
       onRefresh: () async => widget.onRefresh(),
       child: ListView.builder(
         controller: _scrollController,
-        padding: UIConstants.pagePadding + const EdgeInsets.symmetric(vertical: UIConstants.sm),
-        itemCount: widget.issues.length + (widget.hasMore || widget.loadingMore ? 1 : 0),
+        padding:
+            UIConstants.pagePadding +
+            const EdgeInsets.symmetric(vertical: UIConstants.sm),
+        itemCount:
+            widget.issues.length +
+            (widget.hasMore || widget.loadingMore ? 1 : 0),
         itemBuilder: (context, index) {
           if (index >= widget.issues.length) {
             return const _LoadingIndicator();
@@ -507,13 +536,19 @@ class _IssueListState extends State<_IssueList> {
           final issue = widget.issues[index];
           return FadeInWrapper(
             delay: Duration(milliseconds: (index * 40).clamp(0, 300)),
-            child: _IssueCard(issue: issue, l10n: widget.l10n, onTap: () {
-              final owner = issue.repository?.owner ?? '';
-              final repo = issue.repository?.name ?? '';
-              if (owner.isNotEmpty && repo.isNotEmpty && issue.number != null) {
-                widget.onIssueTap(owner, repo, issue.number!);
-              }
-            }),
+            child: _IssueCard(
+              issue: issue,
+              l10n: widget.l10n,
+              onTap: () {
+                final owner = issue.repository?.owner ?? '';
+                final repo = issue.repository?.name ?? '';
+                if (owner.isNotEmpty &&
+                    repo.isNotEmpty &&
+                    issue.number != null) {
+                  widget.onIssueTap(owner, repo, issue.number!);
+                }
+              },
+            ),
           );
         },
       ),
@@ -528,13 +563,7 @@ class _LoadingIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     return const Padding(
       padding: EdgeInsets.symmetric(vertical: 16),
-      child: Center(
-        child: SizedBox(
-          width: 24,
-          height: 24,
-          child: CircularProgressIndicator(strokeWidth: 2),
-        ),
-      ),
+      child: Center(child: FCircularProgress(size: .sm)),
     );
   }
 }
@@ -544,19 +573,24 @@ class _IssueCard extends StatelessWidget {
   final AppLocalizations l10n;
   final VoidCallback onTap;
 
-  const _IssueCard({required this.issue, required this.l10n, required this.onTap});
+  const _IssueCard({
+    required this.issue,
+    required this.l10n,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isOpen = issue.state?.isOpen == true;
-    final stateIcon = isOpen ? Icons.error_outline : Icons.check_circle;
+    final stateIcon = isOpen ? FIcons.circleDot : FIcons.circleCheck;
     final stateColor = isOpen ? Colors.green : Colors.purple;
 
     final repoFullName = issue.repository?.full_name ?? '';
     final owner = issue.repository?.owner ?? '';
     final repo = issue.repository?.name ?? '';
-    final canNavigate = owner.isNotEmpty && repo.isNotEmpty && issue.number != null;
+    final canNavigate =
+        owner.isNotEmpty && repo.isNotEmpty && issue.number != null;
 
     return PremiumListCard(
       onTap: canNavigate ? onTap : null,
@@ -570,7 +604,9 @@ class _IssueCard extends StatelessWidget {
               Expanded(
                 child: Text(
                   issue.title ?? l10n.untitled,
-                  style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -579,7 +615,9 @@ class _IssueCard extends StatelessWidget {
                 Text(
                   '#${issue.number}',
                   style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                    color: theme.colorScheme.onSurfaceVariant.withValues(
+                      alpha: 0.7,
+                    ),
                   ),
                 ),
             ],
@@ -616,12 +654,18 @@ class _IssueCard extends StatelessWidget {
           Row(
             children: [
               if (issue.comments != null) ...[
-                Icon(Icons.comment_outlined, size: UIConstants.iconXs, color: theme.colorScheme.onSurfaceVariant),
+                Icon(
+                  FIcons.messageSquare,
+                  size: UIConstants.iconXs,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
                 const SizedBox(width: UIConstants.xs),
                 Text(
                   '${issue.comments}',
                   style: theme.textTheme.labelSmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                    color: theme.colorScheme.onSurfaceVariant.withValues(
+                      alpha: 0.7,
+                    ),
                   ),
                 ),
                 const SizedBox(width: UIConstants.md),
@@ -630,7 +674,9 @@ class _IssueCard extends StatelessWidget {
                 Text(
                   _formatDate(issue.updated_at!, l10n),
                   style: theme.textTheme.labelSmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                    color: theme.colorScheme.onSurfaceVariant.withValues(
+                      alpha: 0.7,
+                    ),
                   ),
                 ),
               ],
@@ -687,14 +733,23 @@ class _LabelRow extends StatelessWidget {
             ),
             child: Text(
               label.name ?? '',
-              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: c, height: 1.2),
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: c,
+                height: 1.2,
+              ),
             ),
           );
         }),
         if (overflow > 0)
           Text(
             '+$overflow',
-            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: theme.colorScheme.onSurfaceVariant),
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
           ),
       ],
     );
