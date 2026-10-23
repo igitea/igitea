@@ -15,10 +15,14 @@
 - **Issue detail**: `AppPage` header with Forui open-in-browser/delete actions and Forui error/loading states
 - **Profile**: account actions grouped into one `AppSection` of `AppTile` rows, admin `FBadge`, sign-out confirmation via `FDialog`
 - **Search**: segmented repositories/issues/users switcher replaces the Material `TabBar`, Forui search field and state views
+- **Repository detail**: `AppPage` header with Forui star/watch/fork actions, repository sections rendered as one `AppSection` of `AppTile` rows with `FIcons`, Forui loading/error states
+- **Settings**: `AppPage` + grouped `AppSection` (appearance / account / admin), `FDialog` theme and language pickers, `FDialog` sign-out confirmation, server settings regrouped into read-only sections
+- **Issue forms**: create and edit issue pages use Forui text fields, selectable label buttons, segmented open/closed selector and an inline submit button; snackbars replaced with Forui toasts
+- **Create PR**: Forui form layout with `FTextField` title/body and `FButton` submit
 
 ### Added
 - `AppTheme` (brand palette, light/dark Forui themes, touch/desktop density)
-- Shared Forui components: `AppPage`, `AppSection`, `AppTile`, `AppFilterChip`, `AppLoading`, `AppEmpty`, `AppError`, `AppSectionPlaceholder`
+- Shared Forui components: `AppPage`, `AppSection`, `AppTile`, `AppFilterChip`, `AppLoading`, `AppEmpty`, `AppError`, `AppSectionPlaceholder`; `AppTile` gained a destructive variant and `AppPage` keeps a transparent `Material` ancestor so legacy widgets keep working during the migration
 - Tests for `AppSection`/`AppTile`, plus a home test asserting the header title follows the selected tab
 - l10n: `savedFilters` (zh/zh_TW) and `saveFilter` (zh_TW)
 

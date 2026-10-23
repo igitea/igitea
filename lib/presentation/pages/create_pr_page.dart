@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/repo_notifier.dart';
+import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_state_views.dart';
 
 class CreatePRPage extends StatefulWidget {
   final String owner;
@@ -49,7 +52,9 @@ class _CreatePRPageState extends State<CreatePRPage> {
           _branchesLoading = false;
           if (_branches.isNotEmpty) {
             _baseBranch = _branches.first.name;
-            _headBranch = _branches.length > 1 ? _branches[1].name : _branches.first.name;
+            _headBranch = _branches.length > 1
+                ? _branches[1].name
+                : _branches.first.name;
           }
         });
       }
@@ -59,83 +64,80 @@ class _CreatePRPageState extends State<CreatePRPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.newPullRequest),
-        actions: [
-          if (_isLoading)
-            const Padding(
-              padding: EdgeInsets.all(16),
-              child: SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-            )
-          else
-            TextButton(
-              onPressed: _submit,
-              child: Text(l10n.submit),
-            ),
-        ],
-      ),
-      body: _branchesLoading
-          ? const Center(child: CircularProgressIndicator())
-          : Padding(
-              padding: const EdgeInsets.all(16),
+    return AppPage(
+      title: l10n.newPullRequest,
+      child: _branchesLoading
+          ? const AppLoading()
+          : SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Row(
                     children: [
                       Expanded(
                         child: DropdownButtonFormField<String>(
                           initialValue: _headBranch,
-                          decoration: InputDecoration(labelText: l10n.headBranch),
-                          items: _branches.map((b) => DropdownMenuItem(
-                            value: b.name,
-                            child: Text(b.name ?? ''),
-                          )).toList(),
+                          decoration: InputDecoration(
+                            labelText: l10n.headBranch,
+                          ),
+                          items: _branches
+                              .map(
+                                (b) => DropdownMenuItem(
+                                  value: b.name,
+                                  child: Text(b.name ?? ''),
+                                ),
+                              )
+                              .toList(),
                           onChanged: (v) => setState(() => _headBranch = v),
                         ),
                       ),
                       const Padding(
                         padding: EdgeInsets.symmetric(horizontal: 8),
-                        child: Icon(Icons.arrow_forward),
+                        child: Icon(FIcons.arrowRight),
                       ),
                       Expanded(
                         child: DropdownButtonFormField<String>(
                           initialValue: _baseBranch,
-                          decoration: InputDecoration(labelText: l10n.baseBranch),
-                          items: _branches.map((b) => DropdownMenuItem(
-                            value: b.name,
-                            child: Text(b.name ?? ''),
-                          )).toList(),
+                          decoration: InputDecoration(
+                            labelText: l10n.baseBranch,
+                          ),
+                          items: _branches
+                              .map(
+                                (b) => DropdownMenuItem(
+                                  value: b.name,
+                                  child: Text(b.name ?? ''),
+                                ),
+                              )
+                              .toList(),
                           onChanged: (v) => setState(() => _baseBranch = v),
                         ),
                       ),
                     ],
                   ),
                   const SizedBox(height: 16),
-                  TextField(
-                    controller: _titleController,
-                    decoration: InputDecoration(
-                      labelText: l10n.title,
-                      border: const OutlineInputBorder(),
+                  FTextField(
+                    control: FTextFieldControl.managed(
+                      controller: _titleController,
                     ),
+                    label: Text(l10n.title),
                   ),
                   const SizedBox(height: 16),
-                  Expanded(
-                    child: TextField(
+                  FTextField(
+                    control: FTextFieldControl.managed(
                       controller: _bodyController,
-                      decoration: InputDecoration(
-                        labelText: l10n.body,
-                        border: const OutlineInputBorder(),
-                        alignLabelWithHint: true,
-                      ),
-                      maxLines: null,
-                      expands: true,
-                      textAlignVertical: TextAlignVertical.top,
                     ),
+                    label: Text(l10n.body),
+                    maxLines: 12,
+                    minLines: 6,
+                    textAlignVertical: TextAlignVertical.top,
+                  ),
+                  const SizedBox(height: 24),
+                  FButton(
+                    onPress: _isLoading ? null : _submit,
+                    child: _isLoading
+                        ? const FCircularProgress(size: .sm)
+                        : Text(l10n.submit),
                   ),
                 ],
               ),
@@ -147,24 +149,22 @@ class _CreatePRPageState extends State<CreatePRPage> {
     final l10n = AppLocalizations.of(context)!;
     final title = _titleController.text.trim();
     if (title.isEmpty || _headBranch == null || _baseBranch == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.pleaseFillAllFields)),
+      showFToast(
+        context: context,
+        variant: .destructive,
+        title: Text(l10n.pleaseFillAllFields),
       );
       return;
     }
 
     setState(() => _isLoading = true);
 
-    await Injection.repoNotifier.createPullRequest(
-      widget.owner,
-      widget.repo,
-      {
-        'title': title,
-        'body': _bodyController.text.trim(),
-        'head': _headBranch,
-        'base': _baseBranch,
-      },
-    );
+    await Injection.repoNotifier.createPullRequest(widget.owner, widget.repo, {
+      'title': title,
+      'body': _bodyController.text.trim(),
+      'head': _headBranch,
+      'base': _baseBranch,
+    });
 
     if (mounted) {
       setState(() => _isLoading = false);
@@ -173,8 +173,10 @@ class _CreatePRPageState extends State<CreatePRPage> {
       if (state is PullRequestDetailDataLoaded) {
         Navigator.of(context).pop(state.pullRequest);
       } else if (state is PullRequestDetailError) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.error}: ${state.message}')),
+        showFToast(
+          context: context,
+          variant: .destructive,
+          title: Text('${l10n.error}: ${state.message}'),
         );
       }
     }

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/issue_notifier.dart';
+import '../widgets/forui/app_page.dart';
 
 class CreateIssuePage extends StatefulWidget {
   final String owner;
@@ -68,36 +70,16 @@ class _CreateIssuePageState extends State<CreateIssuePage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.newIssue),
-        actions: [
-          if (_isLoading)
-            const Padding(
-              padding: EdgeInsets.all(16),
-              child: SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-            )
-          else
-            TextButton(
-              onPressed: _submit,
-              child: Text(l10n.submit),
-            ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(UIConstants.md),
+    return AppPage(
+      title: l10n.newIssue,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            TextFormField(
-              controller: _titleController,
-              decoration: InputDecoration(
-                labelText: l10n.title,
-                border: const OutlineInputBorder(),
-              ),
+            FTextFormField(
+              control: FTextFieldControl.managed(controller: _titleController),
+              label: Text(l10n.title),
               textInputAction: TextInputAction.next,
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
@@ -115,16 +97,19 @@ class _CreateIssuePageState extends State<CreateIssuePage> {
               _buildMilestoneSection(l10n),
               const SizedBox(height: UIConstants.md),
             ],
-            TextField(
-              controller: _bodyController,
-              decoration: InputDecoration(
-                labelText: l10n.body,
-                border: const OutlineInputBorder(),
-                alignLabelWithHint: true,
-              ),
+            FTextField(
+              control: FTextFieldControl.managed(controller: _bodyController),
+              label: Text(l10n.body),
               maxLines: 10,
               minLines: 5,
               textAlignVertical: TextAlignVertical.top,
+            ),
+            const SizedBox(height: UIConstants.lg),
+            FButton(
+              onPress: _isLoading ? null : _submit,
+              child: _isLoading
+                  ? const FCircularProgress(size: .sm)
+                  : Text(l10n.submit),
             ),
           ],
         ),
@@ -145,22 +130,29 @@ class _CreateIssuePageState extends State<CreateIssuePage> {
           children: _labels.map((label) {
             final isSelected = _selectedLabels.contains(label.id);
             final labelColor = _parseColor(label.color);
-            return FilterChip(
-              label: Text(label.name ?? ''),
-              selected: isSelected,
-              selectedColor: labelColor?.withValues(alpha: 0.3),
-              checkmarkColor: labelColor,
-              onSelected: (selected) {
+            return FButton(
+              variant: isSelected ? .primary : .outline,
+              size: .xs,
+              onPress: () {
                 final id = label.id;
                 if (id == null) return;
                 setState(() {
-                  if (selected) {
-                    _selectedLabels.add(id);
-                  } else {
+                  if (isSelected) {
                     _selectedLabels.remove(id);
+                  } else {
+                    _selectedLabels.add(id);
                   }
                 });
               },
+              prefix: Container(
+                width: 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: labelColor ?? theme.colorScheme.primary,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              child: Text(label.name ?? ''),
             );
           }).toList(),
         ),
@@ -182,10 +174,9 @@ class _CreateIssuePageState extends State<CreateIssuePage> {
           ),
           items: [
             DropdownMenuItem(value: null, child: Text(l10n.none)),
-            ..._milestones.map((m) => DropdownMenuItem(
-              value: m.id,
-              child: Text(m.title ?? ''),
-            )),
+            ..._milestones.map(
+              (m) => DropdownMenuItem(value: m.id, child: Text(m.title ?? '')),
+            ),
           ],
           onChanged: (value) {
             setState(() => _selectedMilestoneId = value);
@@ -199,8 +190,10 @@ class _CreateIssuePageState extends State<CreateIssuePage> {
     final l10n = AppLocalizations.of(context)!;
     final title = _titleController.text.trim();
     if (title.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.pleaseEnterTitle)),
+      showFToast(
+        context: context,
+        variant: .destructive,
+        title: Text(l10n.pleaseEnterTitle),
       );
       return;
     }
@@ -214,15 +207,10 @@ class _CreateIssuePageState extends State<CreateIssuePage> {
         'labels': _selectedLabels.toList()
       else
         'labels': <int>[],
-      if (_selectedMilestoneId != null)
-        'milestone': _selectedMilestoneId,
+      if (_selectedMilestoneId != null) 'milestone': _selectedMilestoneId,
     };
 
-    await Injection.issueNotifier.createIssue(
-      widget.owner,
-      widget.repo,
-      body,
-    );
+    await Injection.issueNotifier.createIssue(widget.owner, widget.repo, body);
 
     if (mounted) {
       setState(() => _isLoading = false);
@@ -230,8 +218,10 @@ class _CreateIssuePageState extends State<CreateIssuePage> {
       if (s is IssueDetailLoaded) {
         Navigator.of(context).pop(s.issue);
       } else if (s is IssueError) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.error}: ${s.message}')),
+        showFToast(
+          context: context,
+          variant: .destructive,
+          title: Text('${l10n.error}: ${s.message}'),
         );
       }
     }

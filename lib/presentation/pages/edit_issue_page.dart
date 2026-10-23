@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
 import '../../core/constants/ui_constants.dart';
@@ -7,6 +8,7 @@ import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/issue_notifier.dart';
+import '../widgets/forui/app_page.dart';
 
 class EditIssuePage extends StatefulWidget {
   final String owner;
@@ -46,11 +48,8 @@ class _EditIssuePageState extends State<EditIssuePage> {
     _titleController = TextEditingController(text: widget.issue.title ?? '');
     _bodyController = TextEditingController(text: widget.issue.body ?? '');
     _state = widget.issue.state?.value ?? 'open';
-    _selectedLabels = widget.issue.labels
-            ?.map((l) => l.id)
-            .whereType<int>()
-            .toSet() ??
-        {};
+    _selectedLabels =
+        widget.issue.labels?.map((l) => l.id).whereType<int>().toSet() ?? {};
     _selectedMilestoneId = widget.issue.milestone?.id;
     _dueDate = widget.issue.due_date;
 
@@ -104,9 +103,9 @@ class _EditIssuePageState extends State<EditIssuePage> {
   Future<void> _save() async {
     final l10n = AppLocalizations.of(context)!;
     if (_titleController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.titleRequired)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.titleRequired)));
       return;
     }
 
@@ -116,8 +115,7 @@ class _EditIssuePageState extends State<EditIssuePage> {
       'title': _titleController.text.trim(),
       'body': _bodyController.text.trim(),
       'state': _state,
-      if (_selectedMilestoneId != null)
-        'milestone': _selectedMilestoneId,
+      if (_selectedMilestoneId != null) 'milestone': _selectedMilestoneId,
     };
 
     await Injection.issueNotifier.editIssue(
@@ -131,9 +129,9 @@ class _EditIssuePageState extends State<EditIssuePage> {
       final s = Injection.issueNotifier.state;
       if (s is IssueError) {
         setState(() => _isSaving = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.error}: ${s.message}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('${l10n.error}: ${s.message}')));
         return;
       }
     }
@@ -161,40 +159,16 @@ class _EditIssuePageState extends State<EditIssuePage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.editIssue),
-        actions: [
-          if (_isSaving)
-            const Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-              ),
-            )
-          else
-            TextButton(
-              onPressed: _save,
-              child: Text(l10n.save),
-            ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(UIConstants.md),
+    return AppPage(
+      title: l10n.editIssue,
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            TextFormField(
-              controller: _titleController,
-              decoration: InputDecoration(
-                labelText: l10n.title,
-                border: const OutlineInputBorder(),
-              ),
-              maxLines: 1,
+            FTextFormField(
+              control: FTextFieldControl.managed(controller: _titleController),
+              label: Text(l10n.title),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
                   return l10n.requiredField;
@@ -216,6 +190,13 @@ class _EditIssuePageState extends State<EditIssuePage> {
               const SizedBox(height: UIConstants.md),
             ],
             _buildBodySection(l10n),
+            const SizedBox(height: UIConstants.lg),
+            FButton(
+              onPress: _isSaving ? null : _save,
+              child: _isSaving
+                  ? const FCircularProgress(size: .sm)
+                  : Text(l10n.save),
+            ),
           ],
         ),
       ),
@@ -225,8 +206,10 @@ class _EditIssuePageState extends State<EditIssuePage> {
   Widget _buildDueDateSection(AppLocalizations l10n) {
     return Row(
       children: [
-        OutlinedButton.icon(
-          onPressed: () async {
+        FButton(
+          variant: .outline,
+          prefix: const Icon(FIcons.calendar, size: 16),
+          onPress: () async {
             final date = await showDatePicker(
               context: context,
               initialDate: _dueDate ?? DateTime.now(),
@@ -236,24 +219,36 @@ class _EditIssuePageState extends State<EditIssuePage> {
             if (date != null) {
               final body = {'due_date': date.toIso8601String()};
               await Injection.apiService.issueEditDeadline(
-                owner: widget.owner, repo: widget.repo, index: widget.index, body: body,
+                owner: widget.owner,
+                repo: widget.repo,
+                index: widget.index,
+                body: body,
               );
               setState(() => _dueDate = date);
             }
           },
-          icon: const Icon(Icons.calendar_today, size: 18),
-          label: Text(_dueDate != null ? '${l10n.setDueDate}: ${_dueDate!.toLocal().toString().split(' ')[0]}' : l10n.setDueDate),
+          child: Text(
+            _dueDate != null
+                ? '${l10n.setDueDate}: ${_dueDate!.toLocal().toString().split(' ')[0]}'
+                : l10n.setDueDate,
+          ),
         ),
         if (_dueDate != null) ...[
           const SizedBox(width: UIConstants.sm),
-          IconButton(
-            icon: const Icon(Icons.clear),
-            onPressed: () async {
+          FTappable(
+            onPress: () async {
               await Injection.apiService.issueEditDeadline(
-                owner: widget.owner, repo: widget.repo, index: widget.index, body: {'due_date': null},
+                owner: widget.owner,
+                repo: widget.repo,
+                index: widget.index,
+                body: {'due_date': null},
               );
               setState(() => _dueDate = null);
             },
+            child: const Padding(
+              padding: EdgeInsets.all(8),
+              child: Icon(FIcons.x, size: 16),
+            ),
           ),
         ],
       ],
@@ -273,22 +268,29 @@ class _EditIssuePageState extends State<EditIssuePage> {
           children: _labels.map((label) {
             final isSelected = _selectedLabels.contains(label.id);
             final labelColor = _parseColor(label.color);
-            return FilterChip(
-              label: Text(label.name ?? ''),
-              selected: isSelected,
-              selectedColor: labelColor?.withValues(alpha: 0.3),
-              checkmarkColor: labelColor,
-              onSelected: (selected) {
+            return FButton(
+              variant: isSelected ? .primary : .outline,
+              size: .xs,
+              prefix: Container(
+                width: 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: labelColor ?? theme.colorScheme.primary,
+                  shape: BoxShape.circle,
+                ),
+              ),
+              onPress: () {
                 final id = label.id;
                 if (id == null) return;
                 setState(() {
-                  if (selected) {
-                    _selectedLabels.add(id);
-                  } else {
+                  if (isSelected) {
                     _selectedLabels.remove(id);
+                  } else {
+                    _selectedLabels.add(id);
                   }
                 });
               },
+              child: Text(label.name ?? ''),
             );
           }).toList(),
         ),
@@ -309,14 +311,10 @@ class _EditIssuePageState extends State<EditIssuePage> {
             border: const OutlineInputBorder(),
           ),
           items: [
-            DropdownMenuItem(
-              value: null,
-              child: Text(l10n.none),
+            DropdownMenuItem(value: null, child: Text(l10n.none)),
+            ..._milestones.map(
+              (m) => DropdownMenuItem(value: m.id, child: Text(m.title ?? '')),
             ),
-            ..._milestones.map((m) => DropdownMenuItem(
-              value: m.id,
-              child: Text(m.title ?? ''),
-            )),
           ],
           onChanged: (value) {
             setState(() => _selectedMilestoneId = value);
@@ -332,10 +330,15 @@ class _EditIssuePageState extends State<EditIssuePage> {
       children: [
         Row(
           children: [
-            Text(l10n.description, style: Theme.of(context).textTheme.titleSmall),
+            Text(
+              l10n.description,
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
             const Spacer(),
-            TextButton(
-              onPressed: () => setState(() => _showPreview = !_showPreview),
+            FButton(
+              variant: .ghost,
+              size: .xs,
+              onPress: () => setState(() => _showPreview = !_showPreview),
               child: Text(_showPreview ? l10n.edit : l10n.preview),
             ),
           ],
@@ -356,37 +359,40 @@ class _EditIssuePageState extends State<EditIssuePage> {
             ),
           )
         else
-          TextField(
-            controller: _bodyController,
-            decoration: InputDecoration(
-              hintText: l10n.addComment,
-              border: const OutlineInputBorder(),
-            ),
+          FTextField(
+            control: FTextFieldControl.managed(controller: _bodyController),
+            label: Text(l10n.description),
+            hint: l10n.addComment,
             maxLines: 10,
             minLines: 5,
+            textAlignVertical: TextAlignVertical.top,
           ),
       ],
     );
   }
 
   Widget _buildStateSelector(AppLocalizations l10n) {
-    return SegmentedButton<String>(
-      segments: [
-        ButtonSegment(
-          value: 'open',
-          label: Text(l10n.open),
-          icon: const Icon(Icons.error_outline),
-        ),
-        ButtonSegment(
-          value: 'closed',
-          label: Text(l10n.closed),
-          icon: const Icon(Icons.check_circle),
-        ),
+    final options = [
+      ('open', l10n.open, FIcons.circleDot),
+      ('closed', l10n.closed, FIcons.circleCheck),
+    ];
+
+    return Row(
+      children: [
+        for (final (value, label, icon) in options)
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 3),
+              child: FButton(
+                variant: _state == value ? .primary : .outline,
+                size: .sm,
+                prefix: Icon(icon, size: 14),
+                onPress: () => setState(() => _state = value),
+                child: Text(label),
+              ),
+            ),
+          ),
       ],
-      selected: {_state},
-      onSelectionChanged: (selected) {
-        setState(() => _state = selected.first);
-      },
     );
   }
 

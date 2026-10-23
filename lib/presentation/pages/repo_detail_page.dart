@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 import 'package:flutter/services.dart';
 
 import '../../core/animations/animated_wrapper.dart';
@@ -20,6 +21,10 @@ import '../state/issue_notifier.dart';
 import '../models/issue_filter_state.dart';
 import '../widgets/issue_filter_bottom_sheet.dart';
 import '../widgets/empty_state.dart';
+import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_section.dart';
+import '../widgets/forui/app_state_views.dart';
+import '../widgets/forui/app_tile.dart';
 import '../widgets/premium_card.dart';
 import '../widgets/user_avatar.dart';
 import '../widgets/file_icon.dart';
@@ -108,142 +113,176 @@ class _RepoDetailPageState extends State<RepoDetailPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      body: ListenableBuilder(
+    return AppPage(
+      title: '${widget.owner}/${widget.repo}',
+      actions: [
+        ListenableBuilder(
+          listenable: Injection.repoNotifier,
+          builder: (context, _) {
+            final isStarred = Injection.repoNotifier.isStarred;
+            final starLoading = Injection.repoNotifier.starLoading;
+            final isWatched = Injection.repoNotifier.isWatched;
+            final watchLoading = Injection.repoNotifier.watchLoading;
+            return Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                FHeaderAction(
+                  icon: Icon(isStarred ? FIcons.star : FIcons.star),
+                  selected: isStarred,
+                  onPress: starLoading
+                      ? null
+                      : () => Injection.repoNotifier.toggleStar(
+                          widget.owner,
+                          widget.repo,
+                        ),
+                ),
+                FHeaderAction(
+                  icon: Icon(isWatched ? FIcons.bell : FIcons.bell),
+                  selected: isWatched,
+                  onPress: watchLoading
+                      ? null
+                      : () => Injection.repoNotifier.toggleWatch(
+                          widget.owner,
+                          widget.repo,
+                        ),
+                ),
+                FHeaderAction(
+                  icon: const Icon(FIcons.gitFork),
+                  onPress: () => _showForkDialog(context, l10n),
+                ),
+              ],
+            );
+          },
+        ),
+      ],
+      child: ListenableBuilder(
         listenable: Injection.repoNotifier,
         builder: (context, _) {
           final state = Injection.repoNotifier.state;
           return switch (state) {
             RepoLoading() => const SlowLoadingIndicator(),
-            RepoError(:final message) => _ErrorView(
-                message: message,
-                onRetry: () =>
-                    Injection.repoNotifier.getRepo(widget.owner, widget.repo),
-              ),
+            RepoError(:final message) => AppError(
+              title: l10n.failedToLoadRepo,
+              message: message,
+              onRetry: () =>
+                  Injection.repoNotifier.getRepo(widget.owner, widget.repo),
+            ),
             RepoLoaded(:final repo) => _buildContent(context, repo, l10n),
-            _ => const Center(child: CircularProgressIndicator()),
+            _ => const AppLoading(),
           };
         },
       ),
     );
   }
 
-  Widget _buildContent(BuildContext context, Repository repo, AppLocalizations l10n) {
+  Widget _buildContent(
+    BuildContext context,
+    Repository repo,
+    AppLocalizations l10n,
+  ) {
     final sections = [
-      _SectionItem(id: 'code', title: l10n.code, icon: Icons.code),
-      _SectionItem(id: 'issues', title: l10n.issues, icon: Icons.bug_report_outlined),
-      _SectionItem(id: 'milestones', title: l10n.milestones, icon: Icons.flag),
-      _SectionItem(id: 'pullRequests', title: l10n.pullRequests, icon: Icons.merge_type),
-      _SectionItem(id: 'releases', title: l10n.releases, icon: Icons.new_releases_outlined),
-      _SectionItem(id: 'commits', title: l10n.commits, icon: Icons.commit),
-      _SectionItem(id: 'branches', title: l10n.branches, icon: Icons.call_split),
-      _SectionItem(id: 'tags', title: l10n.tags, icon: Icons.label),
-      _SectionItem(id: 'branch_protection', title: l10n.branchProtection, icon: Icons.shield_outlined),
-      _SectionItem(id: 'wiki', title: l10n.wiki, icon: Icons.book_outlined),
-      _SectionItem(id: 'webhooks', title: l10n.webhooks, icon: Icons.webhook),
-      _SectionItem(id: 'collaborators', title: l10n.collaborators, icon: Icons.people_outline),
-      _SectionItem(id: 'labels', title: l10n.labels, icon: Icons.label_outline),
-      _SectionItem(id: 'actions', title: l10n.actions, icon: Icons.play_circle_outline),
+      _SectionItem(id: 'code', title: l10n.code, icon: FIcons.code),
+      _SectionItem(id: 'issues', title: l10n.issues, icon: FIcons.circleDot),
+      _SectionItem(id: 'milestones', title: l10n.milestones, icon: FIcons.flag),
+      _SectionItem(
+        id: 'pullRequests',
+        title: l10n.pullRequests,
+        icon: FIcons.gitPullRequest,
+      ),
+      _SectionItem(id: 'releases', title: l10n.releases, icon: FIcons.tag),
+      _SectionItem(
+        id: 'commits',
+        title: l10n.commits,
+        icon: FIcons.gitCommitHorizontal,
+      ),
+      _SectionItem(
+        id: 'branches',
+        title: l10n.branches,
+        icon: FIcons.gitBranch,
+      ),
+      _SectionItem(id: 'tags', title: l10n.tags, icon: FIcons.tag),
+      _SectionItem(
+        id: 'branch_protection',
+        title: l10n.branchProtection,
+        icon: FIcons.shield,
+      ),
+      _SectionItem(id: 'wiki', title: l10n.wiki, icon: FIcons.bookOpen),
+      _SectionItem(id: 'webhooks', title: l10n.webhooks, icon: FIcons.webhook),
+      _SectionItem(
+        id: 'collaborators',
+        title: l10n.collaborators,
+        icon: FIcons.users,
+      ),
+      _SectionItem(id: 'labels', title: l10n.labels, icon: FIcons.tag),
+      _SectionItem(id: 'actions', title: l10n.actions, icon: FIcons.play),
     ];
 
-    return CustomScrollView(
-      slivers: [
-        SliverAppBar(
-          title: Text('${widget.owner}/${widget.repo}'),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.fork_right),
-              onPressed: () => _showForkDialog(context, l10n),
-            ),
-            ListenableBuilder(
-              listenable: Injection.repoNotifier,
-              builder: (context, _) {
-                final isStarred = Injection.repoNotifier.isStarred;
-                final starLoading = Injection.repoNotifier.starLoading;
-                final isWatched = Injection.repoNotifier.isWatched;
-                final watchLoading = Injection.repoNotifier.watchLoading;
-                return Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: Icon(
-                        isStarred ? Icons.star : Icons.star_outline,
-                        color: isStarred ? Colors.amber : null,
-                      ),
-                      onPressed: starLoading
-                          ? null
-                          : () => Injection.repoNotifier.toggleStar(widget.owner, widget.repo),
-                    ),
-                    const SizedBox(width: 8),
-                    IconButton(
-                      icon: Icon(
-                        isWatched
-                            ? Icons.notifications_active
-                            : Icons.notifications_outlined,
-                        color: isWatched ? Colors.blue : null,
-                      ),
-                      tooltip: isWatched ? 'Unwatch' : 'Watch',
-                      onPressed: watchLoading
-                          ? null
-                          : () => Injection.repoNotifier.toggleWatch(
-                              widget.owner, widget.repo),
-                    ),
-                  ],
-                );
-              },
-            ),
-          ],
-          pinned: true,
-          floating: true,
-        ),
-        SliverToBoxAdapter(
-          child: FadeInWrapper(
-            duration: AppAnimations.slow,
-            child: _RepoHeader(repo: repo, l10n: l10n, owner: widget.owner, repoName: widget.repo),
+    return ListView(
+      padding: const EdgeInsets.only(bottom: 24),
+      children: [
+        FadeInWrapper(
+          duration: AppAnimations.slow,
+          child: _RepoHeader(
+            repo: repo,
+            l10n: l10n,
+            owner: widget.owner,
+            repoName: widget.repo,
           ),
         ),
         if (_languages.isNotEmpty)
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: UIConstants.pagePadding.copyWith(top: UIConstants.sm, bottom: UIConstants.sm),
-              child: _LanguageBar(languages: _languages),
+          Padding(
+            padding: UIConstants.pagePadding.copyWith(
+              top: UIConstants.sm,
+              bottom: UIConstants.sm,
             ),
+            child: _LanguageBar(languages: _languages),
           ),
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: UIConstants.pagePadding.copyWith(top: UIConstants.md, bottom: UIConstants.sm),
-            child: Text(
-              l10n.repositorySections,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+        Padding(
+          padding: UIConstants.pagePadding.copyWith(
+            top: UIConstants.md,
+            bottom: UIConstants.sm,
+          ),
+          child: Text(
+            l10n.repositorySections,
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
           ),
         ),
-        SliverList.separated(
-          itemCount: sections.length,
-          separatorBuilder: (context, index) => const Divider(height: 1, indent: 56),
-          itemBuilder: (context, index) {
-            final section = sections[index];
-            return _SectionListTile(
-              section: section,
-              onTap: () => _navigateToSection(context, section.id, repo.default_branch, l10n),
-            );
-          },
+        Padding(
+          padding: UIConstants.pagePadding,
+          child: AppSection(
+            title: '',
+            showHeader: false,
+            children: [
+              for (final section in sections)
+                AppTile(
+                  leading: Icon(section.icon, size: 18),
+                  title: section.title,
+                  onPress: () => _navigateToSection(
+                    context,
+                    section.id,
+                    repo.default_branch,
+                    l10n,
+                  ),
+                ),
+            ],
+          ),
         ),
-        const SliverToBoxAdapter(child: SizedBox(height: UIConstants.lg)),
       ],
     );
   }
 
-  void _navigateToSection(BuildContext context, String sectionId, String? defaultBranch, AppLocalizations l10n) {
+  void _navigateToSection(
+    BuildContext context,
+    String sectionId,
+    String? defaultBranch,
+    AppLocalizations l10n,
+  ) {
     if (sectionId == 'wiki') {
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (_) => WikiListPage(
-            owner: widget.owner,
-            repo: widget.repo,
-          ),
+          builder: (_) => WikiListPage(owner: widget.owner, repo: widget.repo),
         ),
       );
       return;
@@ -251,10 +290,8 @@ class _RepoDetailPageState extends State<RepoDetailPage> {
     if (sectionId == 'webhooks') {
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (_) => WebhookListPage(
-            owner: widget.owner,
-            repo: widget.repo,
-          ),
+          builder: (_) =>
+              WebhookListPage(owner: widget.owner, repo: widget.repo),
         ),
       );
       return;
@@ -262,10 +299,8 @@ class _RepoDetailPageState extends State<RepoDetailPage> {
     if (sectionId == 'collaborators') {
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (_) => CollaboratorsPage(
-            owner: widget.owner,
-            repo: widget.repo,
-          ),
+          builder: (_) =>
+              CollaboratorsPage(owner: widget.owner, repo: widget.repo),
         ),
       );
       return;
@@ -273,10 +308,8 @@ class _RepoDetailPageState extends State<RepoDetailPage> {
     if (sectionId == 'branch_protection') {
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (_) => BranchProtectionPage(
-            owner: widget.owner,
-            repo: widget.repo,
-          ),
+          builder: (_) =>
+              BranchProtectionPage(owner: widget.owner, repo: widget.repo),
         ),
       );
       return;
@@ -284,10 +317,7 @@ class _RepoDetailPageState extends State<RepoDetailPage> {
     if (sectionId == 'labels') {
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (_) => LabelListPage(
-            owner: widget.owner,
-            repo: widget.repo,
-          ),
+          builder: (_) => LabelListPage(owner: widget.owner, repo: widget.repo),
         ),
       );
       return;
@@ -295,10 +325,8 @@ class _RepoDetailPageState extends State<RepoDetailPage> {
     if (sectionId == 'actions') {
       Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (_) => ActionsListPage(
-            owner: widget.owner,
-            repo: widget.repo,
-          ),
+          builder: (_) =>
+              ActionsListPage(owner: widget.owner, repo: widget.repo),
         ),
       );
       return;
@@ -315,7 +343,10 @@ class _RepoDetailPageState extends State<RepoDetailPage> {
     );
   }
 
-  Future<void> _showForkDialog(BuildContext context, AppLocalizations l10n) async {
+  Future<void> _showForkDialog(
+    BuildContext context,
+    AppLocalizations l10n,
+  ) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -336,7 +367,10 @@ class _RepoDetailPageState extends State<RepoDetailPage> {
 
     if (confirmed != true || !context.mounted) return;
 
-    final result = await Injection.repoNotifier.createFork(widget.owner, widget.repo);
+    final result = await Injection.repoNotifier.createFork(
+      widget.owner,
+      widget.repo,
+    );
     if (!context.mounted) return;
     switch (result) {
       case Left<Failure, Repository>(:final value):
@@ -345,31 +379,13 @@ class _RepoDetailPageState extends State<RepoDetailPage> {
         );
       case Right<Failure, Repository>(:final value):
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.forked}: ${value.full_name ?? value.name ?? ''}')),
+          SnackBar(
+            content: Text(
+              '${l10n.forked}: ${value.full_name ?? value.name ?? ''}',
+            ),
+          ),
         );
     }
-  }
-}
-
-class _ErrorView extends StatelessWidget {
-  final String message;
-  final VoidCallback onRetry;
-
-  const _ErrorView({required this.message, required this.onRetry});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return EmptyState(
-      icon: Icons.error_outline,
-      title: l10n.failedToLoadRepo,
-      subtitle: message,
-      action: FilledButton.icon(
-        onPressed: onRetry,
-        icon: const Icon(Icons.refresh),
-        label: Text(l10n.retry),
-      ),
-    );
   }
 }
 
@@ -390,7 +406,7 @@ class _RepoHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    
+
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -403,7 +419,9 @@ class _RepoHeader extends StatelessWidget {
         ),
       ),
       child: Padding(
-        padding: UIConstants.pagePadding + const EdgeInsets.symmetric(vertical: UIConstants.md),
+        padding:
+            UIConstants.pagePadding +
+            const EdgeInsets.symmetric(vertical: UIConstants.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -416,7 +434,10 @@ class _RepoHeader extends StatelessWidget {
                   CircleAvatar(
                     radius: UIConstants.avatarXl,
                     backgroundColor: colorScheme.primaryContainer,
-                    child: Icon(Icons.source, color: colorScheme.onPrimaryContainer),
+                    child: Icon(
+                      Icons.source,
+                      color: colorScheme.onPrimaryContainer,
+                    ),
                   ),
                 const SizedBox(width: UIConstants.md),
                 Expanded(
@@ -476,7 +497,12 @@ class _RepoHeader extends StatelessWidget {
               ),
             ],
             const SizedBox(height: UIConstants.md),
-            _StatsGrid(repo: repo, l10n: l10n, owner: owner, repoName: repoName),
+            _StatsGrid(
+              repo: repo,
+              l10n: l10n,
+              owner: owner,
+              repoName: repoName,
+            ),
             const SizedBox(height: UIConstants.sm),
             Wrap(
               spacing: UIConstants.sm,
@@ -496,19 +522,29 @@ class _RepoHeader extends StatelessWidget {
             const SizedBox(height: UIConstants.sm),
             Row(
               children: [
-                Text(l10n.topics, style: theme.textTheme.labelSmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                )),
+                Text(
+                  l10n.topics,
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
                 const Spacer(),
                 Tooltip(
                   message: '${l10n.edit} ${l10n.topics}',
                   child: InkWell(
                     onTap: () => showTopicEditDialog(
-                      context, owner, repoName, repo.topics ?? [],
+                      context,
+                      owner,
+                      repoName,
+                      repo.topics ?? [],
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(4),
-                      child: Icon(Icons.edit, size: 14, color: theme.colorScheme.primary),
+                      child: Icon(
+                        Icons.edit,
+                        size: 14,
+                        color: theme.colorScheme.primary,
+                      ),
                     ),
                   ),
                 ),
@@ -519,11 +555,15 @@ class _RepoHeader extends StatelessWidget {
               Wrap(
                 spacing: UIConstants.xs,
                 runSpacing: UIConstants.xs,
-                children: repo.topics!.map((t) => Chip(
-                  label: Text(t, style: const TextStyle(fontSize: 11)),
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  visualDensity: VisualDensity.compact,
-                )).toList(),
+                children: repo.topics!
+                    .map(
+                      (t) => Chip(
+                        label: Text(t, style: const TextStyle(fontSize: 11)),
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        visualDensity: VisualDensity.compact,
+                      ),
+                    )
+                    .toList(),
               )
             else
               Text(
@@ -566,9 +606,12 @@ class _StatsGrid extends StatelessWidget {
             icon: Icons.star_outline,
             value: '${repo.stars_count ?? 0}',
             label: l10n.stars,
-            onTap: () => Navigator.of(context).push(MaterialPageRoute(
-              builder: (_) => RepoStargazersPage(owner: owner, repo: repoName),
-            )),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) =>
+                    RepoStargazersPage(owner: owner, repo: repoName),
+              ),
+            ),
           ),
         ),
         const SizedBox(width: UIConstants.sm),
@@ -585,9 +628,12 @@ class _StatsGrid extends StatelessWidget {
             icon: Icons.visibility_outlined,
             value: '${repo.watchers_count ?? 0}',
             label: l10n.watchers,
-            onTap: () => Navigator.of(context).push(MaterialPageRoute(
-              builder: (_) => RepoStargazersPage(owner: owner, repo: repoName),
-            )),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) =>
+                    RepoStargazersPage(owner: owner, repo: repoName),
+              ),
+            ),
           ),
         ),
         const SizedBox(width: UIConstants.sm),
@@ -609,24 +655,38 @@ class _StatCard extends StatelessWidget {
   final String label;
   final VoidCallback? onTap;
 
-  const _StatCard({required this.icon, required this.value, required this.label, this.onTap});
+  const _StatCard({
+    required this.icon,
+    required this.value,
+    required this.label,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final child = Container(
-      padding: const EdgeInsets.symmetric(vertical: UIConstants.sm, horizontal: UIConstants.xs),
+      padding: const EdgeInsets.symmetric(
+        vertical: UIConstants.sm,
+        horizontal: UIConstants.xs,
+      ),
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
       ),
       child: Column(
         children: [
-          Icon(icon, size: UIConstants.iconSm, color: theme.colorScheme.onSurfaceVariant),
+          Icon(
+            icon,
+            size: UIConstants.iconSm,
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
           const SizedBox(height: UIConstants.xs),
           Text(
             value,
-            style: theme.textTheme.labelMedium?.copyWith(fontWeight: FontWeight.w600),
+            style: theme.textTheme.labelMedium?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
           ),
           Text(
             label,
@@ -638,7 +698,11 @@ class _StatCard extends StatelessWidget {
       ),
     );
     if (onTap != null) {
-      return InkWell(onTap: onTap, borderRadius: BorderRadius.circular(UIConstants.badgeRadius), child: child);
+      return InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
+        child: child,
+      );
     }
     return child;
   }
@@ -687,7 +751,10 @@ class _Badge extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: UIConstants.sm, vertical: UIConstants.xs),
+      padding: const EdgeInsets.symmetric(
+        horizontal: UIConstants.sm,
+        vertical: UIConstants.xs,
+      ),
       decoration: BoxDecoration(
         color: backgroundColor,
         borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
@@ -722,9 +789,19 @@ class _CloneUrls extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (repo.clone_url != null)
-          _UrlRow(label: l10n.https, url: repo.clone_url!, theme: theme, l10n: l10n),
+          _UrlRow(
+            label: l10n.https,
+            url: repo.clone_url!,
+            theme: theme,
+            l10n: l10n,
+          ),
         if (repo.ssh_url != null)
-          _UrlRow(label: l10n.ssh, url: repo.ssh_url!, theme: theme, l10n: l10n),
+          _UrlRow(
+            label: l10n.ssh,
+            url: repo.ssh_url!,
+            theme: theme,
+            l10n: l10n,
+          ),
       ],
     );
   }
@@ -747,7 +824,10 @@ class _UrlRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(bottom: UIConstants.xs),
-      padding: const EdgeInsets.symmetric(horizontal: UIConstants.sm, vertical: UIConstants.xs),
+      padding: const EdgeInsets.symmetric(
+        horizontal: UIConstants.sm,
+        vertical: UIConstants.xs,
+      ),
       decoration: BoxDecoration(
         color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
@@ -758,17 +838,19 @@ class _UrlRow extends StatelessWidget {
             width: 48,
             child: Text(label, style: theme.textTheme.labelSmall),
           ),
-            Expanded(
-              child: Text(
-                url,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+          Expanded(
+            child: Text(
+              url,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant.withValues(
+                  alpha: 0.7,
                 ),
-                overflow: TextOverflow.ellipsis,
               ),
+              overflow: TextOverflow.ellipsis,
             ),
-          ],
-        ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -852,10 +934,18 @@ class _CodeTabState extends State<_CodeTab> {
       children: [
         if (_pathStack.isNotEmpty)
           Container(
-            margin: const EdgeInsets.symmetric(horizontal: UIConstants.md, vertical: UIConstants.sm),
-            padding: const EdgeInsets.symmetric(horizontal: UIConstants.sm, vertical: UIConstants.xs),
+            margin: const EdgeInsets.symmetric(
+              horizontal: UIConstants.md,
+              vertical: UIConstants.sm,
+            ),
+            padding: const EdgeInsets.symmetric(
+              horizontal: UIConstants.sm,
+              vertical: UIConstants.xs,
+            ),
             decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+              color: theme.colorScheme.surfaceContainerHighest.withValues(
+                alpha: 0.3,
+              ),
               borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
             ),
             child: Row(
@@ -865,15 +955,15 @@ class _CodeTabState extends State<_CodeTab> {
                   onPressed: _navigateUp,
                   visualDensity: VisualDensity.compact,
                 ),
-                  Expanded(
-                    child: Text(
-                      _breadcrumbText,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                      ),
-                      overflow: TextOverflow.ellipsis,
+                Expanded(
+                  child: Text(
+                    _breadcrumbText,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
+                    overflow: TextOverflow.ellipsis,
                   ),
+                ),
               ],
             ),
           ),
@@ -883,26 +973,32 @@ class _CodeTabState extends State<_CodeTab> {
             builder: (context, _) {
               final state = Injection.repoNotifier.contentsState;
               return switch (state) {
-                ContentsLoading() => const Center(child: CircularProgressIndicator()),
+                ContentsLoading() => const Center(
+                  child: CircularProgressIndicator(),
+                ),
                 ContentsError(:final message) => Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text('${l10n.error}: $message'),
-                        const SizedBox(height: UIConstants.md),
-                        FilledButton(
-                          onPressed: () => Injection.repoNotifier.loadContents(
-                            widget.owner,
-                            widget.repo,
-                            path: _currentPath.isEmpty ? null : _currentPath,
-                            ref: widget.defaultBranch,
-                          ),
-                          child: Text(l10n.retry),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text('${l10n.error}: $message'),
+                      const SizedBox(height: UIConstants.md),
+                      FilledButton(
+                        onPressed: () => Injection.repoNotifier.loadContents(
+                          widget.owner,
+                          widget.repo,
+                          path: _currentPath.isEmpty ? null : _currentPath,
+                          ref: widget.defaultBranch,
                         ),
-                      ],
-                    ),
+                        child: Text(l10n.retry),
+                      ),
+                    ],
                   ),
-                ContentsLoaded(:final contents) => _buildFileList(contents, theme, l10n),
+                ),
+                ContentsLoaded(:final contents) => _buildFileList(
+                  contents,
+                  theme,
+                  l10n,
+                ),
                 _ => const Center(child: CircularProgressIndicator()),
               };
             },
@@ -920,7 +1016,11 @@ class _CodeTabState extends State<_CodeTab> {
     return parts.join(' / ');
   }
 
-  Widget _buildFileList(List<ContentsResponse> contents, ThemeData theme, AppLocalizations l10n) {
+  Widget _buildFileList(
+    List<ContentsResponse> contents,
+    ThemeData theme,
+    AppLocalizations l10n,
+  ) {
     if (contents.isEmpty) {
       return EmptyState(icon: Icons.folder_open, title: l10n.emptyDirectory);
     }
@@ -928,7 +1028,9 @@ class _CodeTabState extends State<_CodeTab> {
     final files = contents.where((c) => c.type != 'dir').toList();
     final sorted = [...dirs, ...files];
     return ListView.builder(
-      padding: UIConstants.pagePadding + const EdgeInsets.symmetric(vertical: UIConstants.sm),
+      padding:
+          UIConstants.pagePadding +
+          const EdgeInsets.symmetric(vertical: UIConstants.sm),
       itemCount: sorted.length,
       itemBuilder: (context, index) {
         final item = sorted[index];
@@ -977,16 +1079,15 @@ class _FileItem extends StatelessWidget {
           size: UIConstants.iconMd,
           color: isDir ? Colors.blue : theme.colorScheme.onSurfaceVariant,
         ),
-        title: Text(
-          item.name ?? '',
-          style: theme.textTheme.bodyMedium,
-        ),
+        title: Text(item.name ?? '', style: theme.textTheme.bodyMedium),
         trailing: item.size != null && !isDir
             ? Text(
                 _formatSize(item.size!),
                 style: theme.textTheme.labelSmall?.copyWith(
                   fontFamily: 'monospace',
-                  color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                  color: theme.colorScheme.onSurfaceVariant.withValues(
+                    alpha: 0.7,
+                  ),
                 ),
               )
             : null,
@@ -1007,7 +1108,11 @@ class _IssuesTab extends StatefulWidget {
   final String repo;
   final AppLocalizations l10n;
 
-  const _IssuesTab({required this.owner, required this.repo, required this.l10n});
+  const _IssuesTab({
+    required this.owner,
+    required this.repo,
+    required this.l10n,
+  });
 
   @override
   State<_IssuesTab> createState() => _IssuesTabState();
@@ -1015,7 +1120,9 @@ class _IssuesTab extends StatefulWidget {
 
 class _IssuesTabState extends State<_IssuesTab> {
   String _selectedFilter = 'open';
-  final ValueNotifier<IssueFilterState> _filterState = ValueNotifier(const IssueFilterState());
+  final ValueNotifier<IssueFilterState> _filterState = ValueNotifier(
+    const IssueFilterState(),
+  );
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   bool _isFilterSheetOpen = false;
@@ -1048,7 +1155,8 @@ class _IssuesTabState extends State<_IssuesTab> {
     final state = Injection.repoNotifier.state;
     if (state is RepoLoaded) {
       final p = state.repo.permissions;
-      return (p?.push == true || p?.admin == true) && state.repo.has_issues != false;
+      return (p?.push == true || p?.admin == true) &&
+          state.repo.has_issues != false;
     }
     return false;
   }
@@ -1066,10 +1174,14 @@ class _IssuesTabState extends State<_IssuesTab> {
 
       final state = Injection.issueNotifier.state;
       if (state is LabelsLoaded) {
-        labels.addAll(state.labels.map((l) => l.name ?? '').where((n) => n.isNotEmpty));
+        labels.addAll(
+          state.labels.map((l) => l.name ?? '').where((n) => n.isNotEmpty),
+        );
       }
       if (state is MilestonesLoaded) {
-        milestones.addAll(state.milestones.map((m) => m.title ?? '').where((t) => t.isNotEmpty));
+        milestones.addAll(
+          state.milestones.map((m) => m.title ?? '').where((t) => t.isNotEmpty),
+        );
       }
 
       if (!mounted) return;
@@ -1117,7 +1229,9 @@ class _IssuesTabState extends State<_IssuesTab> {
             Column(
               children: [
                 Padding(
-                  padding: UIConstants.pagePadding + const EdgeInsets.only(top: UIConstants.sm),
+                  padding:
+                      UIConstants.pagePadding +
+                      const EdgeInsets.only(top: UIConstants.sm),
                   child: Column(
                     children: [
                       Row(
@@ -1141,10 +1255,15 @@ class _IssuesTabState extends State<_IssuesTab> {
                               onChanged: (query) {
                                 setState(() => _searchQuery = query);
                                 _debounceTimer?.cancel();
-                                _debounceTimer = Timer(const Duration(milliseconds: 300), _loadIssues);
+                                _debounceTimer = Timer(
+                                  const Duration(milliseconds: 300),
+                                  _loadIssues,
+                                );
                               },
                               padding: const WidgetStatePropertyAll(
-                                EdgeInsets.symmetric(horizontal: UIConstants.md),
+                                EdgeInsets.symmetric(
+                                  horizontal: UIConstants.md,
+                                ),
                               ),
                             ),
                           ),
@@ -1190,36 +1309,47 @@ class _IssuesTabState extends State<_IssuesTab> {
                       ValueListenableBuilder<IssueFilterState>(
                         valueListenable: _filterState,
                         builder: (context, filter, _) {
-                          if (!filter.hasFilters) return const SizedBox.shrink();
+                          if (!filter.hasFilters) {
+                            return const SizedBox.shrink();
+                          }
                           return Padding(
                             padding: const EdgeInsets.only(top: UIConstants.sm),
                             child: Wrap(
                               spacing: UIConstants.sm,
                               runSpacing: UIConstants.sm,
                               children: [
-                                ...filter.labels.map((label) => Chip(
-                                  label: Text(label),
-                                  onDeleted: () {
-                                    _filterState.value = filter.copyWith(
-                                      labels: filter.labels.difference({label}),
-                                    );
-                                    _loadIssues();
-                                  },
-                                )),
-                                ...filter.milestones.map((m) => Chip(
-                                  label: Text(m),
-                                  onDeleted: () {
-                                    _filterState.value = filter.copyWith(
-                                      milestones: filter.milestones.difference({m}),
-                                    );
-                                    _loadIssues();
-                                  },
-                                )),
+                                ...filter.labels.map(
+                                  (label) => Chip(
+                                    label: Text(label),
+                                    onDeleted: () {
+                                      _filterState.value = filter.copyWith(
+                                        labels: filter.labels.difference({
+                                          label,
+                                        }),
+                                      );
+                                      _loadIssues();
+                                    },
+                                  ),
+                                ),
+                                ...filter.milestones.map(
+                                  (m) => Chip(
+                                    label: Text(m),
+                                    onDeleted: () {
+                                      _filterState.value = filter.copyWith(
+                                        milestones: filter.milestones
+                                            .difference({m}),
+                                      );
+                                      _loadIssues();
+                                    },
+                                  ),
+                                ),
                                 if (filter.type != null)
                                   Chip(
                                     label: Text(filter.type!),
                                     onDeleted: () {
-                                      _filterState.value = filter.copyWith(clearType: true);
+                                      _filterState.value = filter.copyWith(
+                                        clearType: true,
+                                      );
                                       _loadIssues();
                                     },
                                   ),
@@ -1227,7 +1357,9 @@ class _IssuesTabState extends State<_IssuesTab> {
                                   Chip(
                                     label: Text(widget.l10n.assignedToMe),
                                     onDeleted: () {
-                                      _filterState.value = filter.copyWith(assignedToMe: false);
+                                      _filterState.value = filter.copyWith(
+                                        assignedToMe: false,
+                                      );
                                       _loadIssues();
                                     },
                                   ),
@@ -1235,7 +1367,9 @@ class _IssuesTabState extends State<_IssuesTab> {
                                   Chip(
                                     label: Text(widget.l10n.createdByMe),
                                     onDeleted: () {
-                                      _filterState.value = filter.copyWith(createdByMe: false);
+                                      _filterState.value = filter.copyWith(
+                                        createdByMe: false,
+                                      );
                                       _loadIssues();
                                     },
                                   ),
@@ -1243,7 +1377,9 @@ class _IssuesTabState extends State<_IssuesTab> {
                                   Chip(
                                     label: Text(widget.l10n.mentionedMe),
                                     onDeleted: () {
-                                      _filterState.value = filter.copyWith(mentionedMe: false);
+                                      _filterState.value = filter.copyWith(
+                                        mentionedMe: false,
+                                      );
                                       _loadIssues();
                                     },
                                   ),
@@ -1257,45 +1393,58 @@ class _IssuesTabState extends State<_IssuesTab> {
                 ),
                 Expanded(
                   child: switch (issuesState) {
-                    IssuesListLoading() => const Center(child: CircularProgressIndicator()),
+                    IssuesListLoading() => const Center(
+                      child: CircularProgressIndicator(),
+                    ),
                     IssuesListError(:final message) => Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text('${widget.l10n.error}: $message'),
-                            const SizedBox(height: UIConstants.md),
-                            FilledButton(
-                              onPressed: _loadIssues,
-                              child: Text(widget.l10n.retry),
-                            ),
-                          ],
-                        ),
-                      ),
-                    IssuesListLoaded(:final issues) => issues.isEmpty
-                        ? EmptyState(icon: Icons.bug_report_outlined, title: widget.l10n.noIssues)
-                        : RefreshIndicator(
-                            onRefresh: () async {
-                              _loadIssues();
-                            },
-                            child: ListView.builder(
-                              padding: UIConstants.pagePadding + const EdgeInsets.symmetric(vertical: UIConstants.sm),
-                              itemCount: issues.length,
-                              itemBuilder: (context, index) {
-                                final issue = issues[index];
-                                return FadeInWrapper(
-                                  delay: Duration(milliseconds: index * 20),
-                                  child: _IssueItem(
-                                    issue: issue,
-                                    owner: widget.owner,
-                                    repo: widget.repo,
-                                    l10n: widget.l10n,
-                                    onRefresh: _loadIssues,
-                                  ),
-                                );
-                              },
-                            ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('${widget.l10n.error}: $message'),
+                          const SizedBox(height: UIConstants.md),
+                          FilledButton(
+                            onPressed: _loadIssues,
+                            child: Text(widget.l10n.retry),
                           ),
-                    _ => EmptyState(icon: Icons.bug_report_outlined, title: widget.l10n.noIssues),
+                        ],
+                      ),
+                    ),
+                    IssuesListLoaded(:final issues) =>
+                      issues.isEmpty
+                          ? EmptyState(
+                              icon: Icons.bug_report_outlined,
+                              title: widget.l10n.noIssues,
+                            )
+                          : RefreshIndicator(
+                              onRefresh: () async {
+                                _loadIssues();
+                              },
+                              child: ListView.builder(
+                                padding:
+                                    UIConstants.pagePadding +
+                                    const EdgeInsets.symmetric(
+                                      vertical: UIConstants.sm,
+                                    ),
+                                itemCount: issues.length,
+                                itemBuilder: (context, index) {
+                                  final issue = issues[index];
+                                  return FadeInWrapper(
+                                    delay: Duration(milliseconds: index * 20),
+                                    child: _IssueItem(
+                                      issue: issue,
+                                      owner: widget.owner,
+                                      repo: widget.repo,
+                                      l10n: widget.l10n,
+                                      onRefresh: _loadIssues,
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                    _ => EmptyState(
+                      icon: Icons.bug_report_outlined,
+                      title: widget.l10n.noIssues,
+                    ),
                   },
                 ),
               ],
@@ -1308,7 +1457,10 @@ class _IssuesTabState extends State<_IssuesTab> {
                       onPressed: () async {
                         final result = await Navigator.of(context).push<Issue>(
                           MaterialPageRoute(
-                            builder: (_) => CreateIssuePage(owner: widget.owner, repo: widget.repo),
+                            builder: (_) => CreateIssuePage(
+                              owner: widget.owner,
+                              repo: widget.repo,
+                            ),
                           ),
                         );
                         if (result != null && context.mounted) {
@@ -1334,7 +1486,13 @@ class _IssueItem extends StatelessWidget {
   final AppLocalizations l10n;
   final VoidCallback? onRefresh;
 
-  const _IssueItem({required this.issue, required this.owner, required this.repo, required this.l10n, this.onRefresh});
+  const _IssueItem({
+    required this.issue,
+    required this.owner,
+    required this.repo,
+    required this.l10n,
+    this.onRefresh,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1345,13 +1503,15 @@ class _IssueItem extends StatelessWidget {
 
     return PremiumListCard(
       onTap: () async {
-        final changed = await Navigator.of(context).push<bool>(MaterialPageRoute(
-          builder: (_) => IssueDetailPage(
-            owner: owner,
-            repo: repo,
-            index: issue.number ?? 0,
+        final changed = await Navigator.of(context).push<bool>(
+          MaterialPageRoute(
+            builder: (_) => IssueDetailPage(
+              owner: owner,
+              repo: repo,
+              index: issue.number ?? 0,
+            ),
           ),
-        ));
+        );
         if (changed == true) onRefresh?.call();
       },
       child: Row(
@@ -1380,7 +1540,9 @@ class _IssueItem extends StatelessWidget {
                     Text(
                       '#${issue.number ?? 0}',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                        color: theme.colorScheme.onSurfaceVariant.withValues(
+                          alpha: 0.7,
+                        ),
                       ),
                     ),
                   ],
@@ -1388,7 +1550,11 @@ class _IssueItem extends StatelessWidget {
                 const SizedBox(height: UIConstants.xs),
                 Row(
                   children: [
-                    Icon(stateIcon, size: UIConstants.iconSm, color: stateColor),
+                    Icon(
+                      stateIcon,
+                      size: UIConstants.iconSm,
+                      color: stateColor,
+                    ),
                     const SizedBox(width: UIConstants.xs),
                     Text(
                       isOpen ? l10n.open : l10n.closed,
@@ -1479,14 +1645,23 @@ class _LabelRow extends StatelessWidget {
             ),
             child: Text(
               label.name ?? '',
-              style: TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: c, height: 1.2),
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: c,
+                height: 1.2,
+              ),
             ),
           );
         }),
         if (overflow > 0)
           Text(
             '+$overflow',
-            style: TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: theme.colorScheme.onSurfaceVariant),
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
           ),
       ],
     );
@@ -1498,7 +1673,11 @@ class _PullRequestsTab extends StatefulWidget {
   final String repo;
   final AppLocalizations l10n;
 
-  const _PullRequestsTab({required this.owner, required this.repo, required this.l10n});
+  const _PullRequestsTab({
+    required this.owner,
+    required this.repo,
+    required this.l10n,
+  });
 
   @override
   State<_PullRequestsTab> createState() => _PullRequestsTabState();
@@ -1508,14 +1687,19 @@ class _PullRequestsTabState extends State<_PullRequestsTab> {
   String _selectedFilter = 'open';
 
   void _loadPullRequests() {
-    Injection.repoNotifier.listPullRequests(widget.owner, widget.repo, state: _selectedFilter);
+    Injection.repoNotifier.listPullRequests(
+      widget.owner,
+      widget.repo,
+      state: _selectedFilter,
+    );
   }
 
   bool _canCreatePR() {
     final state = Injection.repoNotifier.state;
     if (state is RepoLoaded) {
       final p = state.repo.permissions;
-      return (p?.push == true || p?.admin == true) && state.repo.has_pull_requests != false;
+      return (p?.push == true || p?.admin == true) &&
+          state.repo.has_pull_requests != false;
     }
     return false;
   }
@@ -1537,7 +1721,9 @@ class _PullRequestsTabState extends State<_PullRequestsTab> {
             Column(
               children: [
                 Padding(
-                  padding: UIConstants.pagePadding + const EdgeInsets.only(top: UIConstants.sm),
+                  padding:
+                      UIConstants.pagePadding +
+                      const EdgeInsets.only(top: UIConstants.sm),
                   child: Row(
                     children: [
                       FilterChip(
@@ -1571,56 +1757,84 @@ class _PullRequestsTabState extends State<_PullRequestsTab> {
                 ),
                 Expanded(
                   child: switch (state) {
-                    PullRequestsLoading() => const Center(child: CircularProgressIndicator()),
+                    PullRequestsLoading() => const Center(
+                      child: CircularProgressIndicator(),
+                    ),
                     PullRequestsError(:final message) => Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text('${widget.l10n.error}: $message'),
-                            const SizedBox(height: UIConstants.md),
-                            FilledButton(
-                              onPressed: _loadPullRequests,
-                              child: Text(widget.l10n.retry),
-                            ),
-                          ],
-                        ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text('${widget.l10n.error}: $message'),
+                          const SizedBox(height: UIConstants.md),
+                          FilledButton(
+                            onPressed: _loadPullRequests,
+                            child: Text(widget.l10n.retry),
+                          ),
+                        ],
                       ),
-                    PullRequestsLoaded(:final pullRequests, :final hasMore) => pullRequests.isEmpty
-                        ? EmptyState(icon: Icons.merge_type, title: widget.l10n.noPullRequests)
-                        : RefreshIndicator(
-                            onRefresh: () async => _loadPullRequests(),
-                            child: ListView.builder(
-                              padding: UIConstants.pagePadding + const EdgeInsets.symmetric(vertical: UIConstants.sm),
-                              itemCount: pullRequests.length + (hasMore ? 1 : 0),
-                              itemBuilder: (context, index) {
-                                if (index == pullRequests.length) {
-                                  return Center(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(16),
-                                      child: Injection.repoNotifier.prLoadingMore
-                                          ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(strokeWidth: 2))
-                                          : TextButton(
-                                              onPressed: () => Injection.repoNotifier.loadMorePullRequests(widget.owner, widget.repo, state: _selectedFilter),
-                                              child: const Text('Load more'),
-                                            ),
+                    ),
+                    PullRequestsLoaded(:final pullRequests, :final hasMore) =>
+                      pullRequests.isEmpty
+                          ? EmptyState(
+                              icon: Icons.merge_type,
+                              title: widget.l10n.noPullRequests,
+                            )
+                          : RefreshIndicator(
+                              onRefresh: () async => _loadPullRequests(),
+                              child: ListView.builder(
+                                padding:
+                                    UIConstants.pagePadding +
+                                    const EdgeInsets.symmetric(
+                                      vertical: UIConstants.sm,
+                                    ),
+                                itemCount:
+                                    pullRequests.length + (hasMore ? 1 : 0),
+                                itemBuilder: (context, index) {
+                                  if (index == pullRequests.length) {
+                                    return Center(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(16),
+                                        child:
+                                            Injection.repoNotifier.prLoadingMore
+                                            ? const SizedBox(
+                                                height: 24,
+                                                width: 24,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                      strokeWidth: 2,
+                                                    ),
+                                              )
+                                            : TextButton(
+                                                onPressed: () => Injection
+                                                    .repoNotifier
+                                                    .loadMorePullRequests(
+                                                      widget.owner,
+                                                      widget.repo,
+                                                      state: _selectedFilter,
+                                                    ),
+                                                child: const Text('Load more'),
+                                              ),
+                                      ),
+                                    );
+                                  }
+                                  final pr = pullRequests[index];
+                                  return FadeInWrapper(
+                                    delay: Duration(milliseconds: index * 20),
+                                    child: _PRItem(
+                                      pr: pr,
+                                      owner: widget.owner,
+                                      repo: widget.repo,
+                                      l10n: widget.l10n,
+                                      onRefresh: _loadPullRequests,
                                     ),
                                   );
-                                }
-                                final pr = pullRequests[index];
-                                return FadeInWrapper(
-                                  delay: Duration(milliseconds: index * 20),
-                                  child: _PRItem(
-                                    pr: pr,
-                                    owner: widget.owner,
-                                    repo: widget.repo,
-                                    l10n: widget.l10n,
-                                    onRefresh: _loadPullRequests,
-                                  ),
-                                );
-                              },
+                                },
+                              ),
                             ),
-                          ),
-                    _ => EmptyState(icon: Icons.merge_type, title: widget.l10n.noPullRequests),
+                    _ => EmptyState(
+                      icon: Icons.merge_type,
+                      title: widget.l10n.noPullRequests,
+                    ),
                   },
                 ),
               ],
@@ -1631,11 +1845,15 @@ class _PullRequestsTabState extends State<_PullRequestsTab> {
               child: _canCreatePR()
                   ? FloatingActionButton(
                       onPressed: () async {
-                        final result = await Navigator.of(context).push<PullRequest>(
-                          MaterialPageRoute(
-                            builder: (_) => CreatePRPage(owner: widget.owner, repo: widget.repo),
-                          ),
-                        );
+                        final result = await Navigator.of(context)
+                            .push<PullRequest>(
+                              MaterialPageRoute(
+                                builder: (_) => CreatePRPage(
+                                  owner: widget.owner,
+                                  repo: widget.repo,
+                                ),
+                              ),
+                            );
                         if (result != null && context.mounted) {
                           _selectedFilter = 'open';
                           _loadPullRequests();
@@ -1659,7 +1877,13 @@ class _PRItem extends StatelessWidget {
   final AppLocalizations l10n;
   final VoidCallback? onRefresh;
 
-  const _PRItem({required this.pr, required this.owner, required this.repo, required this.l10n, this.onRefresh});
+  const _PRItem({
+    required this.pr,
+    required this.owner,
+    required this.repo,
+    required this.l10n,
+    this.onRefresh,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1679,13 +1903,12 @@ class _PRItem extends StatelessWidget {
 
     return PremiumListCard(
       onTap: () async {
-        final changed = await Navigator.of(context).push<bool>(MaterialPageRoute(
-          builder: (_) => PRDetailPage(
-            owner: owner,
-            repo: repo,
-            index: pr.number ?? 0,
+        final changed = await Navigator.of(context).push<bool>(
+          MaterialPageRoute(
+            builder: (_) =>
+                PRDetailPage(owner: owner, repo: repo, index: pr.number ?? 0),
           ),
-        ));
+        );
         if (changed == true) onRefresh?.call();
       },
       child: Row(
@@ -1714,7 +1937,9 @@ class _PRItem extends StatelessWidget {
                     Text(
                       '#${pr.number ?? 0}',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
                       ),
                     ),
                   ],
@@ -1722,10 +1947,18 @@ class _PRItem extends StatelessWidget {
                 const SizedBox(height: UIConstants.xs),
                 Row(
                   children: [
-                    Icon(stateIcon, size: UIConstants.iconSm, color: stateColor),
+                    Icon(
+                      stateIcon,
+                      size: UIConstants.iconSm,
+                      color: stateColor,
+                    ),
                     const SizedBox(width: UIConstants.xs),
                     Text(
-                      pr.merged == true ? l10n.merged : pr.draft == true ? l10n.draft : l10n.open,
+                      pr.merged == true
+                          ? l10n.merged
+                          : pr.draft == true
+                          ? l10n.draft
+                          : l10n.open,
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: stateColor,
                       ),
@@ -1778,7 +2011,11 @@ class _ReleasesTab extends StatefulWidget {
   final String repo;
   final AppLocalizations l10n;
 
-  const _ReleasesTab({required this.owner, required this.repo, required this.l10n});
+  const _ReleasesTab({
+    required this.owner,
+    required this.repo,
+    required this.l10n,
+  });
 
   @override
   State<_ReleasesTab> createState() => _ReleasesTabState();
@@ -1797,7 +2034,8 @@ class _ReleasesTabState extends State<_ReleasesTab> {
     final state = Injection.repoNotifier.state;
     if (state is RepoLoaded) {
       final p = state.repo.permissions;
-      return (p?.push == true || p?.admin == true) && state.repo.has_releases != false;
+      return (p?.push == true || p?.admin == true) &&
+          state.repo.has_releases != false;
     }
     return false;
   }
@@ -1806,10 +2044,8 @@ class _ReleasesTabState extends State<_ReleasesTab> {
     final result = await Navigator.push<bool>(
       context,
       MaterialPageRoute(
-        builder: (_) => CreateReleasePage(
-          owner: widget.owner,
-          repo: widget.repo,
-        ),
+        builder: (_) =>
+            CreateReleasePage(owner: widget.owner, repo: widget.repo),
       ),
     );
     if (result == true && mounted) {
@@ -1826,54 +2062,77 @@ class _ReleasesTabState extends State<_ReleasesTab> {
           builder: (context, _) {
             final state = Injection.repoNotifier.releasesState;
             return switch (state) {
-              ReleasesLoading() => const Center(child: CircularProgressIndicator()),
+              ReleasesLoading() => const Center(
+                child: CircularProgressIndicator(),
+              ),
               ReleasesError(:final message) => Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text('${widget.l10n.error}: $message'),
-                      const SizedBox(height: UIConstants.md),
-                      FilledButton(
-                        onPressed: () => Injection.repoNotifier.listReleases(
-                            widget.owner, widget.repo),
-                        child: Text(widget.l10n.retry),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text('${widget.l10n.error}: $message'),
+                    const SizedBox(height: UIConstants.md),
+                    FilledButton(
+                      onPressed: () => Injection.repoNotifier.listReleases(
+                        widget.owner,
+                        widget.repo,
                       ),
-                    ],
-                  ),
+                      child: Text(widget.l10n.retry),
+                    ),
+                  ],
                 ),
-              ReleasesLoaded(:final releases, :final hasMore) => releases.isEmpty
-                  ? EmptyState(icon: Icons.new_releases_outlined, title: widget.l10n.noReleases)
-                  : ListView.builder(
-                      padding: UIConstants.pagePadding +
-                          EdgeInsets.only(bottom: 80),
-                      itemCount: releases.length + (hasMore ? 1 : 0),
-                      itemBuilder: (context, index) {
-                        if (index == releases.length) {
-                          return Center(
-                            child: Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: Injection.repoNotifier.releasesLoadingMore
-                                  ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(strokeWidth: 2))
-                                  : TextButton(
-                                      onPressed: () => Injection.repoNotifier.loadMoreReleases(widget.owner, widget.repo),
-                                      child: const Text('Load more releases'),
-                                    ),
+              ),
+              ReleasesLoaded(:final releases, :final hasMore) =>
+                releases.isEmpty
+                    ? EmptyState(
+                        icon: Icons.new_releases_outlined,
+                        title: widget.l10n.noReleases,
+                      )
+                    : ListView.builder(
+                        padding:
+                            UIConstants.pagePadding +
+                            EdgeInsets.only(bottom: 80),
+                        itemCount: releases.length + (hasMore ? 1 : 0),
+                        itemBuilder: (context, index) {
+                          if (index == releases.length) {
+                            return Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                child:
+                                    Injection.repoNotifier.releasesLoadingMore
+                                    ? const SizedBox(
+                                        height: 24,
+                                        width: 24,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : TextButton(
+                                        onPressed: () => Injection.repoNotifier
+                                            .loadMoreReleases(
+                                              widget.owner,
+                                              widget.repo,
+                                            ),
+                                        child: const Text('Load more releases'),
+                                      ),
+                              ),
+                            );
+                          }
+                          final release = releases[index];
+                          return FadeInWrapper(
+                            delay: Duration(milliseconds: index * 20),
+                            child: _ReleaseItem(
+                              release: release,
+                              owner: widget.owner,
+                              repo: widget.repo,
+                              l10n: widget.l10n,
                             ),
                           );
-                        }
-                        final release = releases[index];
-                        return FadeInWrapper(
-                          delay: Duration(milliseconds: index * 20),
-                          child: _ReleaseItem(
-                            release: release,
-                            owner: widget.owner,
-                            repo: widget.repo,
-                            l10n: widget.l10n,
-                          ),
-                        );
-                      },
-                    ),
-              _ => EmptyState(icon: Icons.new_releases_outlined, title: widget.l10n.noReleases),
+                        },
+                      ),
+              _ => EmptyState(
+                icon: Icons.new_releases_outlined,
+                title: widget.l10n.noReleases,
+              ),
             };
           },
         ),
@@ -1899,7 +2158,12 @@ class _ReleaseItem extends StatelessWidget {
   final String repo;
   final AppLocalizations l10n;
 
-  const _ReleaseItem({required this.release, required this.owner, required this.repo, required this.l10n});
+  const _ReleaseItem({
+    required this.release,
+    required this.owner,
+    required this.repo,
+    required this.l10n,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -1909,11 +2173,8 @@ class _ReleaseItem extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => ReleaseDetailPage(
-              owner: owner,
-              repo: repo,
-              release: release,
-            ),
+            builder: (_) =>
+                ReleaseDetailPage(owner: owner, repo: repo, release: release),
           ),
         );
       },
@@ -1949,14 +2210,21 @@ class _ReleaseItem extends StatelessWidget {
                     if (release.prerelease == true) ...[
                       const SizedBox(width: UIConstants.sm),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: UIConstants.sm, vertical: UIConstants.xs),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: UIConstants.sm,
+                          vertical: UIConstants.xs,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.orange.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
+                          borderRadius: BorderRadius.circular(
+                            UIConstants.badgeRadius,
+                          ),
                         ),
                         child: Text(
                           l10n.preRelease,
-                          style: theme.textTheme.labelSmall?.copyWith(color: Colors.orange),
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: Colors.orange,
+                          ),
                         ),
                       ),
                     ],
@@ -1967,7 +2235,9 @@ class _ReleaseItem extends StatelessWidget {
                   Text(
                     release.author!.login ?? release.author!.full_name ?? '',
                     style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                      color: theme.colorScheme.onSurfaceVariant.withValues(
+                        alpha: 0.7,
+                      ),
                     ),
                   ),
                 ],
@@ -1978,7 +2248,9 @@ class _ReleaseItem extends StatelessWidget {
             Text(
               _formatDate(release.published_at!),
               style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                color: theme.colorScheme.onSurfaceVariant.withValues(
+                  alpha: 0.7,
+                ),
               ),
             ),
         ],
@@ -2009,45 +2281,6 @@ class _SectionItem {
   });
 }
 
-class _SectionListTile extends StatelessWidget {
-  final _SectionItem section;
-  final VoidCallback onTap;
-
-  const _SectionListTile({
-    required this.section,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return ListTile(
-      leading: Icon(
-        section.icon,
-        size: UIConstants.iconMd,
-        color: theme.colorScheme.primary,
-      ),
-      title: Semantics(
-        headingLevel: 2,
-        child: Text(
-          section.title,
-          style: theme.textTheme.bodyLarge?.copyWith(
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-      ),
-      trailing: Semantics(
-        excludeSemantics: true,
-        child: Icon(
-          Icons.chevron_right,
-          color: theme.colorScheme.onSurfaceVariant,
-        ),
-      ),
-      onTap: onTap,
-    );
-  }
-}
-
 class _RepoSectionPage extends StatelessWidget {
   final String owner;
   final String repo;
@@ -2067,9 +2300,7 @@ class _RepoSectionPage extends StatelessWidget {
     final title = _getTitle(l10n);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(title),
-      ),
+      appBar: AppBar(title: Text(title)),
       body: _buildSection(l10n),
     );
   }
@@ -2095,45 +2326,21 @@ class _RepoSectionPage extends StatelessWidget {
   Widget _buildSection(AppLocalizations l10n) {
     return switch (sectionId) {
       'code' => _CodeTab(
-          owner: owner,
-          repo: repo,
-          defaultBranch: defaultBranch,
-        ),
-      'issues' => _IssuesTab(
-          owner: owner,
-          repo: repo,
-          l10n: l10n,
-        ),
-      'milestones' => _MilestonesTab(
-          owner: owner,
-          repo: repo,
-          l10n: l10n,
-        ),
-      'pullRequests' => _PullRequestsTab(
-          owner: owner,
-          repo: repo,
-          l10n: l10n,
-        ),
-      'releases' => _ReleasesTab(
-          owner: owner,
-          repo: repo,
-          l10n: l10n,
-        ),
-      'commits' => _CommitsTab(
-          owner: owner,
-          repo: repo,
-          l10n: l10n,
-        ),
+        owner: owner,
+        repo: repo,
+        defaultBranch: defaultBranch,
+      ),
+      'issues' => _IssuesTab(owner: owner, repo: repo, l10n: l10n),
+      'milestones' => _MilestonesTab(owner: owner, repo: repo, l10n: l10n),
+      'pullRequests' => _PullRequestsTab(owner: owner, repo: repo, l10n: l10n),
+      'releases' => _ReleasesTab(owner: owner, repo: repo, l10n: l10n),
+      'commits' => _CommitsTab(owner: owner, repo: repo, l10n: l10n),
       'branches' => _BranchesTab(
-          owner: owner,
-          repo: repo,
-          defaultBranch: defaultBranch,
-        ),
-      'tags' => _TagsTab(
-          owner: owner,
-          repo: repo,
-          l10n: l10n,
-        ),
+        owner: owner,
+        repo: repo,
+        defaultBranch: defaultBranch,
+      ),
+      'tags' => _TagsTab(owner: owner, repo: repo, l10n: l10n),
       'wiki' => WikiListPage(owner: owner, repo: repo),
       _ => Center(child: Text(l10n.unknownSection)),
     };
@@ -2145,7 +2352,11 @@ class _CommitsTab extends StatefulWidget {
   final String repo;
   final AppLocalizations l10n;
 
-  const _CommitsTab({required this.owner, required this.repo, required this.l10n});
+  const _CommitsTab({
+    required this.owner,
+    required this.repo,
+    required this.l10n,
+  });
 
   @override
   State<_CommitsTab> createState() => _CommitsTabState();
@@ -2169,37 +2380,42 @@ class _CommitsTabState extends State<_CommitsTab> {
         return switch (state) {
           CommitsLoading() => const Center(child: CircularProgressIndicator()),
           CommitsError(:final message) => Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text('${widget.l10n.error}: $message'),
-                  const SizedBox(height: UIConstants.md),
-                  FilledButton(
-                    onPressed: () => Injection.repoNotifier.listCommits(
-                        widget.owner, widget.repo),
-                    child: Text(widget.l10n.retry),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('${widget.l10n.error}: $message'),
+                const SizedBox(height: UIConstants.md),
+                FilledButton(
+                  onPressed: () => Injection.repoNotifier.listCommits(
+                    widget.owner,
+                    widget.repo,
                   ),
-                ],
-              ),
-            ),
-          CommitsLoaded(:final commits) => commits.isEmpty
-              ? EmptyState(icon: Icons.commit, title: widget.l10n.noCommits)
-              : ListView.builder(
-                  padding: UIConstants.pagePadding + const EdgeInsets.symmetric(vertical: UIConstants.sm),
-                  itemCount: commits.length,
-                  itemBuilder: (context, index) {
-                    final commit = commits[index];
-                    return FadeInWrapper(
-                      delay: Duration(milliseconds: index * 20),
-                      child: _CommitItem(
-                        commit: commit,
-                        owner: widget.owner,
-                        repo: widget.repo,
-                        l10n: widget.l10n,
-                      ),
-                    );
-                  },
+                  child: Text(widget.l10n.retry),
                 ),
+              ],
+            ),
+          ),
+          CommitsLoaded(:final commits) =>
+            commits.isEmpty
+                ? EmptyState(icon: Icons.commit, title: widget.l10n.noCommits)
+                : ListView.builder(
+                    padding:
+                        UIConstants.pagePadding +
+                        const EdgeInsets.symmetric(vertical: UIConstants.sm),
+                    itemCount: commits.length,
+                    itemBuilder: (context, index) {
+                      final commit = commits[index];
+                      return FadeInWrapper(
+                        delay: Duration(milliseconds: index * 20),
+                        child: _CommitItem(
+                          commit: commit,
+                          owner: widget.owner,
+                          repo: widget.repo,
+                          l10n: widget.l10n,
+                        ),
+                      );
+                    },
+                  ),
           _ => EmptyState(icon: Icons.commit, title: widget.l10n.noCommits),
         };
       },
@@ -2228,11 +2444,8 @@ class _CommitItem extends StatelessWidget {
         if (commit.sha != null) {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (_) => CommitDetailPage(
-                owner: owner,
-                repo: repo,
-                sha: commit.sha!,
-              ),
+              builder: (_) =>
+                  CommitDetailPage(owner: owner, repo: repo, sha: commit.sha!),
             ),
           );
         }
@@ -2256,9 +2469,9 @@ class _CommitItem extends StatelessWidget {
               children: [
                 Text(
                   commit.commit?.message ?? '',
-                    style: theme.textTheme.bodyMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -2277,7 +2490,9 @@ class _CommitItem extends StatelessWidget {
                       Text(
                         _formatDate(commit.created!),
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                          color: theme.colorScheme.onSurfaceVariant.withValues(
+                            alpha: 0.7,
+                          ),
                         ),
                       ),
                     ],
@@ -2288,7 +2503,10 @@ class _CommitItem extends StatelessWidget {
           ),
           if (commit.sha != null)
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: UIConstants.sm, vertical: UIConstants.xs),
+              padding: const EdgeInsets.symmetric(
+                horizontal: UIConstants.sm,
+                vertical: UIConstants.xs,
+              ),
               decoration: BoxDecoration(
                 color: theme.colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
@@ -2322,7 +2540,11 @@ class _BranchesTab extends StatefulWidget {
   final String repo;
   final String? defaultBranch;
 
-  const _BranchesTab({required this.owner, required this.repo, this.defaultBranch});
+  const _BranchesTab({
+    required this.owner,
+    required this.repo,
+    this.defaultBranch,
+  });
 
   @override
   State<_BranchesTab> createState() => _BranchesTabState();
@@ -2347,80 +2569,102 @@ class _BranchesTabState extends State<_BranchesTab> {
         return switch (state) {
           BranchesLoading() => const Center(child: CircularProgressIndicator()),
           BranchesError(:final message) => Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text('${l10n.error}: $message'),
-                  const SizedBox(height: UIConstants.md),
-                  FilledButton(
-                    onPressed: () => Injection.repoNotifier.listBranches(
-                        widget.owner, widget.repo),
-                    child: Text(l10n.retry),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('${l10n.error}: $message'),
+                const SizedBox(height: UIConstants.md),
+                FilledButton(
+                  onPressed: () => Injection.repoNotifier.listBranches(
+                    widget.owner,
+                    widget.repo,
                   ),
-                ],
-              ),
+                  child: Text(l10n.retry),
+                ),
+              ],
             ),
-          BranchesLoaded(:final branches) => branches.isEmpty
-              ? EmptyState(icon: Icons.call_split, title: l10n.noBranches)
-              : ListView.builder(
-                  padding: UIConstants.pagePadding + const EdgeInsets.symmetric(vertical: UIConstants.sm),
-                  itemCount: branches.length,
-                  itemBuilder: (context, index) {
-                    final branch = branches[index];
-                    final isDefault = branch.name == widget.defaultBranch;
-                    return FadeInWrapper(
-                      delay: Duration(milliseconds: index * 20),
-                      child: PremiumListCard(
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => _RepoSectionPage(
-                                owner: widget.owner,
-                                repo: widget.repo,
-                                sectionId: 'code',
-                                defaultBranch: branch.name,
-                              ),
-                            ),
-                          );
-                        },
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.call_split,
-                              size: UIConstants.iconMd,
-                              color: isDefault
-                                  ? Theme.of(context).colorScheme.primary
-                                  : Theme.of(context).colorScheme.onSurfaceVariant,
-                            ),
-                            const SizedBox(width: UIConstants.md),
-                            Expanded(
-                              child: Text(
-                                branch.name ?? '',
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  fontWeight: isDefault ? FontWeight.w600 : null,
+          ),
+          BranchesLoaded(:final branches) =>
+            branches.isEmpty
+                ? EmptyState(icon: Icons.call_split, title: l10n.noBranches)
+                : ListView.builder(
+                    padding:
+                        UIConstants.pagePadding +
+                        const EdgeInsets.symmetric(vertical: UIConstants.sm),
+                    itemCount: branches.length,
+                    itemBuilder: (context, index) {
+                      final branch = branches[index];
+                      final isDefault = branch.name == widget.defaultBranch;
+                      return FadeInWrapper(
+                        delay: Duration(milliseconds: index * 20),
+                        child: PremiumListCard(
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => _RepoSectionPage(
+                                  owner: widget.owner,
+                                  repo: widget.repo,
+                                  sectionId: 'code',
+                                  defaultBranch: branch.name,
                                 ),
                               ),
-                            ),
-                            if (isDefault)
-                              Container(
-                                padding: const EdgeInsets.symmetric(horizontal: UIConstants.sm, vertical: UIConstants.xs),
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context).colorScheme.primaryContainer,
-                                  borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
-                                ),
+                            );
+                          },
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.call_split,
+                                size: UIConstants.iconMd,
+                                color: isDefault
+                                    ? Theme.of(context).colorScheme.primary
+                                    : Theme.of(
+                                        context,
+                                      ).colorScheme.onSurfaceVariant,
+                              ),
+                              const SizedBox(width: UIConstants.md),
+                              Expanded(
                                 child: Text(
-                                  l10n.defaultBranch,
-                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                    color: Theme.of(context).colorScheme.onPrimaryContainer,
+                                  branch.name ?? '',
+                                  style: Theme.of(context).textTheme.bodyMedium
+                                      ?.copyWith(
+                                        fontWeight: isDefault
+                                            ? FontWeight.w600
+                                            : null,
+                                      ),
+                                ),
+                              ),
+                              if (isDefault)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: UIConstants.sm,
+                                    vertical: UIConstants.xs,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(
+                                      context,
+                                    ).colorScheme.primaryContainer,
+                                    borderRadius: BorderRadius.circular(
+                                      UIConstants.badgeRadius,
+                                    ),
+                                  ),
+                                  child: Text(
+                                    l10n.defaultBranch,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .labelSmall
+                                        ?.copyWith(
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.onPrimaryContainer,
+                                        ),
                                   ),
                                 ),
-                              ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    );
-                  },
-                ),
+                      );
+                    },
+                  ),
           _ => EmptyState(icon: Icons.call_split, title: l10n.noBranches),
         };
       },
@@ -2433,7 +2677,11 @@ class _MilestonesTab extends StatefulWidget {
   final String repo;
   final AppLocalizations l10n;
 
-  const _MilestonesTab({required this.owner, required this.repo, required this.l10n});
+  const _MilestonesTab({
+    required this.owner,
+    required this.repo,
+    required this.l10n,
+  });
 
   @override
   State<_MilestonesTab> createState() => _MilestonesTabState();
@@ -2444,10 +2692,7 @@ class _MilestonesTabState extends State<_MilestonesTab> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Injection.issueNotifier.listMilestones(
-        widget.owner,
-        widget.repo,
-      );
+      Injection.issueNotifier.listMilestones(widget.owner, widget.repo);
     });
   }
 
@@ -2455,10 +2700,8 @@ class _MilestonesTabState extends State<_MilestonesTab> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => CreateMilestonePage(
-          owner: widget.owner,
-          repo: widget.repo,
-        ),
+        builder: (_) =>
+            CreateMilestonePage(owner: widget.owner, repo: widget.repo),
       ),
     );
     if (result == true) {
@@ -2476,20 +2719,25 @@ class _MilestonesTabState extends State<_MilestonesTab> {
         return switch (state) {
           IssueLoading() => const Center(child: CircularProgressIndicator()),
           IssueError(:final message) => Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text('${widget.l10n.error}: $message'),
-                  const SizedBox(height: UIConstants.md),
-                  FilledButton(
-                    onPressed: () => Injection.issueNotifier.listMilestones(
-                        widget.owner, widget.repo),
-                    child: Text(widget.l10n.retry),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('${widget.l10n.error}: $message'),
+                const SizedBox(height: UIConstants.md),
+                FilledButton(
+                  onPressed: () => Injection.issueNotifier.listMilestones(
+                    widget.owner,
+                    widget.repo,
                   ),
-                ],
-              ),
+                  child: Text(widget.l10n.retry),
+                ),
+              ],
             ),
-          MilestonesLoaded(:final milestones) => _buildMilestonesList(milestones, theme),
+          ),
+          MilestonesLoaded(:final milestones) => _buildMilestonesList(
+            milestones,
+            theme,
+          ),
           _ => EmptyState(icon: Icons.flag, title: widget.l10n.noMilestones),
         };
       },
@@ -2512,8 +2760,11 @@ class _MilestonesTabState extends State<_MilestonesTab> {
             itemCount: milestones.length,
             itemBuilder: (context, index) {
               final milestone = milestones[index];
-              final total = (milestone.open_issues ?? 0) + (milestone.closed_issues ?? 0);
-              final progress = total > 0 ? (milestone.closed_issues ?? 0) / total : 0.0;
+              final total =
+                  (milestone.open_issues ?? 0) + (milestone.closed_issues ?? 0);
+              final progress = total > 0
+                  ? (milestone.closed_issues ?? 0) / total
+                  : 0.0;
               return FadeInWrapper(
                 delay: Duration(milliseconds: index * 20),
                 child: PremiumListCard(
@@ -2545,20 +2796,26 @@ class _MilestonesTabState extends State<_MilestonesTab> {
                             Text(
                               _formatDate(milestone.due_on!),
                               style: theme.textTheme.labelSmall?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                                color: theme.colorScheme.onSurfaceVariant
+                                    .withValues(alpha: 0.7),
                               ),
                             ),
                         ],
                       ),
                       const SizedBox(height: UIConstants.sm),
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
+                        borderRadius: BorderRadius.circular(
+                          UIConstants.badgeRadius,
+                        ),
                         child: LinearProgressIndicator(
                           value: progress,
                           minHeight: 6,
-                          backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                          backgroundColor:
+                              theme.colorScheme.surfaceContainerHighest,
                           valueColor: AlwaysStoppedAnimation<Color>(
-                            progress >= 1.0 ? Colors.green : theme.colorScheme.primary,
+                            progress >= 1.0
+                                ? Colors.green
+                                : theme.colorScheme.primary,
                           ),
                         ),
                       ),
@@ -2568,14 +2825,16 @@ class _MilestonesTabState extends State<_MilestonesTab> {
                           Text(
                             '${(progress * 100).toStringAsFixed(0)}%',
                             style: theme.textTheme.labelSmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                              color: theme.colorScheme.onSurfaceVariant
+                                  .withValues(alpha: 0.7),
                             ),
                           ),
                           const Spacer(),
                           Text(
                             '${milestone.open_issues ?? 0} ${widget.l10n.open} \u00b7 ${milestone.closed_issues ?? 0} ${widget.l10n.closed}',
                             style: theme.textTheme.labelSmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                              color: theme.colorScheme.onSurfaceVariant
+                                  .withValues(alpha: 0.7),
                             ),
                           ),
                         ],
@@ -2639,96 +2898,121 @@ class _TagsTabState extends State<_TagsTab> {
         return switch (state) {
           TagsLoading() => const Center(child: CircularProgressIndicator()),
           TagsError(:final message) => Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text('${widget.l10n.error}: $message'),
-                  const SizedBox(height: UIConstants.md),
-                  FilledButton(
-                    onPressed: () => Injection.repoNotifier.listTags(
-                        widget.owner, widget.repo),
-                    child: Text(widget.l10n.retry),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text('${widget.l10n.error}: $message'),
+                const SizedBox(height: UIConstants.md),
+                FilledButton(
+                  onPressed: () => Injection.repoNotifier.listTags(
+                    widget.owner,
+                    widget.repo,
                   ),
-                ],
-              ),
-            ),
-          TagsLoaded(:final tags) => tags.isEmpty
-              ? EmptyState(icon: Icons.label, title: widget.l10n.noTags)
-              : ListView.builder(
-                  padding: UIConstants.pagePadding + const EdgeInsets.symmetric(vertical: UIConstants.sm),
-                  itemCount: tags.length,
-                  itemBuilder: (context, index) {
-                    final tag = tags[index];
-                    return FadeInWrapper(
-                      delay: Duration(milliseconds: index * 20),
-                      child: PremiumListCard(
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => TagDetailPage(tag: tag),
-                            ),
-                          );
-                        },
-                        child: Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(UIConstants.sm),
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).colorScheme.primaryContainer.withValues(alpha: 0.5),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                Icons.label,
-                                size: UIConstants.iconMd,
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                            ),
-                            const SizedBox(width: UIConstants.md),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    tag.name ?? '',
-                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  if (tag.commit?.sha != null) ...[
-                                    const SizedBox(height: UIConstants.xs),
-                                    Text(
-                                      tag.commit!.sha!.substring(0, 7),
-                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                        fontFamily: 'monospace',
-                                        color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-                                      ),
-                                    ),
-                                  ],
-                                ],
-                              ),
-                            ),
-                            if (tag.tarball_url != null || tag.zipball_url != null)
-                              PopupMenuButton<String>(
-                                icon: const Icon(Icons.more_vert, size: UIConstants.iconMd),
-                                itemBuilder: (context) => [
-                                  if (tag.tarball_url != null)
-                                    PopupMenuItem(
-                                      value: 'tarball',
-                                      child: Text(widget.l10n.downloadTarball),
-                                    ),
-                                  if (tag.zipball_url != null)
-                                    PopupMenuItem(
-                                      value: 'zipball',
-                                      child: Text(widget.l10n.downloadZipball),
-                                    ),
-                                ],
-                              ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
+                  child: Text(widget.l10n.retry),
                 ),
+              ],
+            ),
+          ),
+          TagsLoaded(:final tags) =>
+            tags.isEmpty
+                ? EmptyState(icon: Icons.label, title: widget.l10n.noTags)
+                : ListView.builder(
+                    padding:
+                        UIConstants.pagePadding +
+                        const EdgeInsets.symmetric(vertical: UIConstants.sm),
+                    itemCount: tags.length,
+                    itemBuilder: (context, index) {
+                      final tag = tags[index];
+                      return FadeInWrapper(
+                        delay: Duration(milliseconds: index * 20),
+                        child: PremiumListCard(
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (_) => TagDetailPage(tag: tag),
+                              ),
+                            );
+                          },
+                          child: Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(UIConstants.sm),
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .primaryContainer
+                                      .withValues(alpha: 0.5),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  Icons.label,
+                                  size: UIConstants.iconMd,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
+                              ),
+                              const SizedBox(width: UIConstants.md),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      tag.name ?? '',
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.copyWith(
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                    ),
+                                    if (tag.commit?.sha != null) ...[
+                                      const SizedBox(height: UIConstants.xs),
+                                      Text(
+                                        tag.commit!.sha!.substring(0, 7),
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodySmall
+                                            ?.copyWith(
+                                              fontFamily: 'monospace',
+                                              color: Theme.of(context)
+                                                  .colorScheme
+                                                  .onSurfaceVariant
+                                                  .withValues(alpha: 0.7),
+                                            ),
+                                      ),
+                                    ],
+                                  ],
+                                ),
+                              ),
+                              if (tag.tarball_url != null ||
+                                  tag.zipball_url != null)
+                                PopupMenuButton<String>(
+                                  icon: const Icon(
+                                    Icons.more_vert,
+                                    size: UIConstants.iconMd,
+                                  ),
+                                  itemBuilder: (context) => [
+                                    if (tag.tarball_url != null)
+                                      PopupMenuItem(
+                                        value: 'tarball',
+                                        child: Text(
+                                          widget.l10n.downloadTarball,
+                                        ),
+                                      ),
+                                    if (tag.zipball_url != null)
+                                      PopupMenuItem(
+                                        value: 'zipball',
+                                        child: Text(
+                                          widget.l10n.downloadZipball,
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
           _ => EmptyState(icon: Icons.label, title: widget.l10n.noTags),
         };
       },
@@ -2761,7 +3045,8 @@ class _LanguageBar extends StatelessWidget {
             child: Row(
               children: top.map((e) {
                 final ratio = e.value / total;
-                final color = _languageColors[e.key] ??
+                final color =
+                    _languageColors[e.key] ??
                     Color((e.key.hashCode & 0xFFFFFF) + 0xFF000000);
                 return Expanded(
                   flex: (ratio * 1000).round(),
@@ -2777,7 +3062,8 @@ class _LanguageBar extends StatelessWidget {
           runSpacing: 4,
           children: top.map((e) {
             final ratio = e.value / total;
-            final color = _languageColors[e.key] ??
+            final color =
+                _languageColors[e.key] ??
                 Color((e.key.hashCode & 0xFFFFFF) + 0xFF000000);
             return Row(
               mainAxisSize: MainAxisSize.min,
@@ -2791,10 +3077,7 @@ class _LanguageBar extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 4),
-                Text(
-                  e.key,
-                  style: theme.textTheme.labelSmall,
-                ),
+                Text(e.key, style: theme.textTheme.labelSmall),
                 const SizedBox(width: 2),
                 Text(
                   '${(ratio * 100).toStringAsFixed(1)}%',
@@ -2822,11 +3105,8 @@ Future<void> showTopicEditDialog(
   final l10n = AppLocalizations.of(context)!;
   final saved = await showDialog<bool>(
     context: context,
-    builder: (ctx) => _TopicEditDialog(
-      topics: topics,
-      controller: controller,
-      l10n: l10n,
-    ),
+    builder: (ctx) =>
+        _TopicEditDialog(topics: topics, controller: controller, l10n: l10n),
   );
 
   if (saved != true || context.mounted == false) return;
@@ -2840,9 +3120,9 @@ Future<void> showTopicEditDialog(
         SnackBar(content: Text('${l10n.error}: ${value.message}')),
       );
     case Right<Failure, void>():
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.saved)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.saved)));
       Injection.repoNotifier.getRepo(owner, repo);
   }
 }
@@ -2915,14 +3195,19 @@ class _TopicEditDialogState extends State<_TopicEditDialog> {
                       hintText: widget.l10n.addTopic,
                       border: const OutlineInputBorder(),
                       isDense: true,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 10,
+                      ),
                     ),
                     onSubmitted: (_) => _addTopic(),
                   ),
                 ),
                 const SizedBox(width: 8),
                 FilledButton(
-                  onPressed: widget.controller.text.trim().isEmpty ? null : _addTopic,
+                  onPressed: widget.controller.text.trim().isEmpty
+                      ? null
+                      : _addTopic,
                   child: Text(widget.l10n.add),
                 ),
               ],
@@ -2945,11 +3230,19 @@ class _TopicEditDialogState extends State<_TopicEditDialog> {
                 child: Wrap(
                   spacing: 8,
                   runSpacing: 8,
-                  children: _topics.map((t) => Chip(
-                    label: Text(t),
-                    onDeleted: () => _removeTopic(t),
-                    deleteIcon: Icon(Icons.close, size: 16, color: theme.colorScheme.error),
-                  )).toList(),
+                  children: _topics
+                      .map(
+                        (t) => Chip(
+                          label: Text(t),
+                          onDeleted: () => _removeTopic(t),
+                          deleteIcon: Icon(
+                            Icons.close,
+                            size: 16,
+                            color: theme.colorScheme.error,
+                          ),
+                        ),
+                      )
+                      .toList(),
                 ),
               ),
           ],

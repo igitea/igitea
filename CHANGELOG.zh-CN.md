@@ -15,10 +15,14 @@
 - **议题详情**：`AppPage` 头部 + Forui 的浏览器打开/删除操作，错误与加载态统一
 - **个人资料**：账户操作合并为一个 `AppSection`（`AppTile` 行），管理员标识改用 `FBadge`，退出登录确认改用 `FDialog`
 - **搜索页**：仓库/议题/用户切换由 Material `TabBar` 改为分段按钮，搜索框与状态视图改用 Forui
+- **仓库详情**：`AppPage` 头部 + Forui 的星标/关注/Fork 操作，仓库功能区合并为一个 `AppSection`（`AppTile` + `FIcons`），加载/错误态统一
+- **设置页**：`AppPage` + 分组 `AppSection`（外观 / 账户 / 管理），主题与语言选择改用 `FDialog`，退出登录改用 `FDialog` 确认，服务器设置改为分组只读列表
+- **议题表单**：新建/编辑议题改用 Forui 输入框、可选标签按钮、open/closed 分段选择与内联提交按钮，SnackBar 改为 Forui Toast
+- **新建 PR**：表单改为 Forui 布局（`FTextField` 标题/正文 + `FButton` 提交）
 
 ### Added
 - `AppTheme`（品牌色板、亮/暗 Forui 主题、触屏/桌面密度）
-- 共享 Forui 组件：`AppPage`、`AppSection`、`AppTile`、`AppFilterChip`、`AppLoading`、`AppEmpty`、`AppError`、`AppSectionPlaceholder`
+- 共享 Forui 组件：`AppPage`、`AppSection`、`AppTile`、`AppFilterChip`、`AppLoading`、`AppEmpty`、`AppError`、`AppSectionPlaceholder`；`AppTile` 新增 destructive 变体，`AppPage` 保留透明 `Material` 祖先以兼容迁移中的旧组件
 - `AppSection`/`AppTile` 测试，以及「标题随 Tab 切换」的首页测试
 - i18n：新增 `savedFilters`（中/繁）与 `saveFilter`（繁中）
 

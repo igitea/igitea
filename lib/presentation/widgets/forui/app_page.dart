@@ -41,7 +41,9 @@ class AppPage extends StatelessWidget {
       ),
       footer: footer,
       childPad: childPad,
-      child: child,
+      // A transparent Material ancestor keeps legacy Material widgets (InkWell,
+      // ListTile, Chip, ...) working on pages that are not fully migrated yet.
+      child: Material(color: Colors.transparent, child: child),
     );
   }
 }

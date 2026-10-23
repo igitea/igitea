@@ -13,6 +13,9 @@ class AppTile extends StatelessWidget {
   final bool showChevron;
   final String? semanticsLabel;
 
+  /// Renders the title in the destructive color (e.g. sign out).
+  final bool destructive;
+
   const AppTile({
     super.key,
     required this.title,
@@ -22,6 +25,7 @@ class AppTile extends StatelessWidget {
     this.onPress,
     this.showChevron = true,
     this.semanticsLabel,
+    this.destructive = false,
   });
 
   @override
@@ -47,7 +51,9 @@ class AppTile extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: theme.textTheme.bodyLarge?.copyWith(
                       fontWeight: FontWeight.w500,
-                      color: theme.colorScheme.onSurface,
+                      color: destructive
+                          ? theme.colorScheme.error
+                          : theme.colorScheme.onSurface,
                     ),
                   ),
                   if (subtitle != null && subtitle!.isNotEmpty)

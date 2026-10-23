@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:igitea/core/di/injection.dart';
 import 'package:igitea/core/storage/auth_method_storage.dart';
@@ -6,6 +5,7 @@ import 'package:igitea/data/models/generated/generated_models.dart';
 import 'package:igitea/domain/entities/auth_state.dart';
 import 'package:igitea/presentation/pages/repo_detail_page.dart';
 import 'package:igitea/presentation/state/repo_notifier.dart';
+import 'package:igitea/presentation/widgets/forui/app_state_views.dart';
 import 'package:igitea/widget_test_helpers.dart';
 
 void main() {
@@ -23,7 +23,7 @@ void main() {
     await tester.pumpWidget(
       buildTestableWidget(const RepoDetailPage(owner: 'testowner', repo: 'testrepo')),
     );
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    expect(find.byType(AppLoading), findsOneWidget);
   });
 
   testWidgets('renders section list with 8 items', (tester) async {
