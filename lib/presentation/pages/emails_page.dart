@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
-import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../core/errors/failures.dart';
 import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
-import '../widgets/empty_state.dart';
+import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_state_views.dart';
+import '../widgets/forui/app_tile.dart';
 
 class EmailsPage extends StatefulWidget {
   const EmailsPage({super.key});
@@ -41,22 +43,24 @@ class _EmailsPageState extends State<EmailsPage> {
   Future<void> _add() async {
     final l10n = AppLocalizations.of(context)!;
     final ctrl = TextEditingController();
-    final email = await showDialog<String>(
+    final email = await showFDialog<String>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx, style, animation) => FDialog(
         title: Text(l10n.addEmail),
-        content: TextField(
-          controller: ctrl,
-          decoration: InputDecoration(
-            hintText: 'user@example.com',
-            border: const OutlineInputBorder(),
-          ),
+        body: FTextField(
+          control: FTextFieldControl.managed(controller: ctrl),
+          label: Text(l10n.email),
+          hint: 'user@example.com',
           keyboardType: TextInputType.emailAddress,
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l10n.cancel)),
-          FilledButton(
-            onPressed: ctrl.text.trim().isEmpty ? null : () => Navigator.pop(ctx, ctrl.text.trim()),
+          FButton(
+            variant: .outline,
+            onPress: () => Navigator.pop(ctx),
+            child: Text(l10n.cancel),
+          ),
+          FButton(
+            onPress: () => Navigator.pop(ctx, ctrl.text.trim()),
             child: Text(l10n.addEmail),
           ),
         ],
@@ -68,23 +72,35 @@ class _EmailsPageState extends State<EmailsPage> {
     if (!mounted) return;
     switch (result) {
       case Right<Failure, void>():
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.created)));
+        showFToast(context: context, title: Text(l10n.created));
         _load();
-      case Left<Failure, void>(:final value):
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
+      case Left<Failure, void>():
+        showFToast(
+          context: context,
+          variant: .destructive,
+          title: Text(l10n.error),
+        );
     }
   }
 
   Future<void> _delete(Email email) async {
     final l10n = AppLocalizations.of(context)!;
-    final ok = await showDialog<bool>(
+    final ok = await showFDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx, style, animation) => FDialog(
         title: Text(l10n.delete),
-        content: Text(l10n.deleteLabelConfirm),
+        body: Text(l10n.deleteLabelConfirm),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(l10n.delete)),
+          FButton(
+            variant: .outline,
+            onPress: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          FButton(
+            variant: .destructive,
+            onPress: () => Navigator.pop(ctx, true),
+            child: Text(l10n.delete),
+          ),
         ],
       ),
     );
@@ -94,102 +110,80 @@ class _EmailsPageState extends State<EmailsPage> {
     if (!mounted) return;
     switch (result) {
       case Right<Failure, void>():
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.labelDeleted)));
+        showFToast(context: context, title: Text(l10n.labelDeleted));
         _load();
-      case Left<Failure, void>(:final value):
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
+      case Left<Failure, void>():
+        showFToast(
+          context: context,
+          variant: .destructive,
+          title: Text(l10n.error),
+        );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.emails)),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _add,
-        icon: const Icon(Icons.add),
-        label: Text(l10n.addEmail),
-      ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
+    return AppPage(
+      title: l10n.emails,
+      actions: [
+        FHeaderAction(
+          icon: const Icon(FIcons.plus),
+          semanticsLabel: l10n.addEmail,
+          onPress: _add,
+        ),
+      ],
+      child: _loading
+          ? const AppLoading()
           : _error != null
-              ? Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.error_outline_rounded, size: 48,
-                        color: Theme.of(context).colorScheme.error),
-                      const SizedBox(height: 16),
-                      Text(_error!, style: Theme.of(context).textTheme.bodyLarge),
-                      const SizedBox(height: 16),
-                      FilledButton.tonalIcon(
-                        onPressed: _load,
-                        icon: const Icon(Icons.refresh_rounded, size: 18),
-                        label: Text(l10n.retry),
+          ? AppError(message: _error!, onRetry: _load)
+          : _emails.isEmpty
+          ? AppEmpty(icon: FIcons.mail, title: l10n.noData)
+          : RefreshIndicator(
+              onRefresh: _load,
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+                children: [
+                  for (final e in _emails)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: FCard.raw(
+                        child: AppTile(
+                          leading: Icon(
+                            e.primary == true ? FIcons.mail : FIcons.mailOpen,
+                            size: 18,
+                            color: e.primary == true
+                                ? theme.colorScheme.primary
+                                : null,
+                          ),
+                          title: e.email ?? '',
+                          subtitle: [
+                            if (e.verified == true) 'Verified',
+                            if (e.primary == true) 'Primary',
+                          ].join(' · '),
+                          showChevron: false,
+                          trailing: e.primary == true
+                              ? null
+                              : FTappable(
+                                  onPress: () => _delete(e),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(6),
+                                    child: Icon(
+                                      FIcons.trash2,
+                                      size: 16,
+                                      color: theme.colorScheme.error,
+                                    ),
+                                  ),
+                                ),
+                          onPress: null,
+                        ),
                       ),
-                    ],
-                  ),
-                )
-              : _emails.isEmpty
-              ? EmptyState(icon: Icons.email_outlined, title: l10n.noData)
-              : RefreshIndicator(
-                  onRefresh: _load,
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(UIConstants.md),
-                    itemCount: _emails.length,
-                    itemBuilder: (context, index) {
-                      final e = _emails[index];
-                      return Card(
-                        elevation: 0,
-                        margin: const EdgeInsets.only(bottom: UIConstants.sm),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant),
-                        ),
-                        child: ListTile(
-                          leading: Icon(e.primary == true ? Icons.email : Icons.email_outlined,
-                            color: e.primary == true ? Theme.of(context).colorScheme.primary : null),
-                          title: Text(e.email ?? ''),
-                          subtitle: Row(
-                            children: [
-                              if (e.verified == true)
-                                const _Badge(label: 'Verified', color: Colors.green),
-                              if (e.primary == true) ...[
-                                if (e.verified == true) const SizedBox(width: 6),
-                                const _Badge(label: 'Primary', color: Colors.blue),
-                              ],
-                            ],
-                          ),
-                          trailing: e.primary == true ? null : IconButton(
-                            icon: const Icon(Icons.delete_outline),
-                            tooltip: l10n.delete,
-                            onPressed: () => _delete(e),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-    );
-  }
-}
-
-class _Badge extends StatelessWidget {
-  final String label;
-  final Color color;
-  const _Badge({required this.label, required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(3),
-      ),
-      child: Text(label, style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: color)),
+                    ),
+                ],
+              ),
+            ),
     );
   }
 }

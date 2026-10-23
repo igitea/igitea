@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../core/utils/either.dart';
 import '../../l10n/app_localizations.dart';
+import '../widgets/forui/app_page.dart';
 
 class CreateMilestonePage extends StatefulWidget {
   final String owner;
@@ -56,8 +58,10 @@ class _CreateMilestonePageState extends State<CreateMilestonePage> {
     final title = _titleController.text.trim();
 
     if (title.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.titleRequired)),
+      showFToast(
+        context: context,
+        variant: .destructive,
+        title: Text(l10n.titleRequired),
       );
       return;
     }
@@ -68,8 +72,7 @@ class _CreateMilestonePageState extends State<CreateMilestonePage> {
       'title': title,
       if (_descriptionController.text.trim().isNotEmpty)
         'description': _descriptionController.text.trim(),
-      if (_dueDate != null)
-        'due_on': _formatDueDate(_dueDate!),
+      if (_dueDate != null) 'due_on': _formatDueDate(_dueDate!),
     };
 
     final result = await Injection.issueNotifier.createMilestone(
@@ -82,13 +85,13 @@ class _CreateMilestonePageState extends State<CreateMilestonePage> {
       setState(() => _isSaving = false);
       switch (result) {
         case Left(:final value):
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${l10n.error}: ${value.message}')),
+          showFToast(
+            context: context,
+            variant: .destructive,
+            title: Text('${l10n.error}: ${value.message}'),
           );
         case Right():
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.created)),
-          );
+          showFToast(context: context, title: Text(l10n.created));
           Navigator.of(context).pop(true);
       }
     }
@@ -98,45 +101,45 @@ class _CreateMilestonePageState extends State<CreateMilestonePage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.createMilestone),
-        actions: [
-          IconButton(
-            icon: _isSaving
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(Icons.save),
-            onPressed: _isSaving ? null : _save,
+    return AppPage(
+      title: l10n.createMilestone,
+      actions: [
+        if (_isSaving)
+          const Padding(
+            padding: EdgeInsets.all(8),
+            child: FCircularProgress(size: .sm),
+          )
+        else
+          FHeaderAction(
+            icon: const Icon(FIcons.save),
+            semanticsLabel: l10n.save,
+            onPress: _save,
           ),
-        ],
-      ),
-      body: SingleChildScrollView(
+      ],
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(UIConstants.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextField(
-              controller: _titleController,
-              decoration: InputDecoration(
-                labelText: l10n.milestoneTitle,
-                border: const OutlineInputBorder(),
-              ),
+            FTextFormField(
+              control: FTextFieldControl.managed(controller: _titleController),
+              label: Text(l10n.milestoneTitle),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return l10n.titleRequired;
+                }
+                return null;
+              },
             ),
             const SizedBox(height: UIConstants.md),
-            TextField(
-              controller: _descriptionController,
-              decoration: InputDecoration(
-                labelText: l10n.milestoneDescription,
-                hintText: l10n.milestoneDescriptionHint,
-                border: const OutlineInputBorder(),
-                alignLabelWithHint: true,
+            FTextField(
+              control: FTextFieldControl.managed(
+                controller: _descriptionController,
               ),
+              label: Text(l10n.milestoneDescription),
+              hint: l10n.milestoneDescriptionHint,
               maxLines: 5,
-              keyboardType: TextInputType.multiline,
+              minLines: 3,
             ),
             const SizedBox(height: UIConstants.md),
             _buildDueDateRow(l10n),
@@ -150,22 +153,24 @@ class _CreateMilestonePageState extends State<CreateMilestonePage> {
     return Row(
       children: [
         Expanded(
-          child: OutlinedButton.icon(
-            onPressed: _pickDueDate,
-            icon: const Icon(Icons.calendar_today),
-            label: Text(
-              _dueDate != null
-                  ? _formatDate(_dueDate!)
-                  : l10n.milestoneDueDate,
+          child: FButton(
+            variant: .outline,
+            prefix: const Icon(FIcons.calendar, size: 16),
+            onPress: _pickDueDate,
+            child: Text(
+              _dueDate != null ? _formatDate(_dueDate!) : l10n.milestoneDueDate,
             ),
           ),
         ),
         if (_dueDate != null) ...[
           const SizedBox(width: UIConstants.sm),
-          IconButton(
-            icon: const Icon(Icons.clear),
-            onPressed: () => setState(() => _dueDate = null),
-            tooltip: l10n.clear,
+          FTappable(
+            semanticsLabel: l10n.clear,
+            onPress: () => setState(() => _dueDate = null),
+            child: const Padding(
+              padding: EdgeInsets.all(8),
+              child: Icon(FIcons.x, size: 16),
+            ),
           ),
         ],
       ],
@@ -178,7 +183,7 @@ class _CreateMilestonePageState extends State<CreateMilestonePage> {
     final h = offset.inHours.abs().toString().padLeft(2, '0');
     final m = (offset.inMinutes.abs() % 60).toString().padLeft(2, '0');
     return '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}T'
-           '${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}:${d.second.toString().padLeft(2, '0')}$sign$h:$m';
+        '${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}:${d.second.toString().padLeft(2, '0')}$sign$h:$m';
   }
 
   String _formatDate(DateTime date) {

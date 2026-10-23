@@ -19,6 +19,10 @@
 - **设置页**：`AppPage` + 分组 `AppSection`（外观 / 账户 / 管理），主题与语言选择改用 `FDialog`，退出登录改用 `FDialog` 确认，服务器设置改为分组只读列表
 - **议题表单**：新建/编辑议题改用 Forui 输入框、可选标签按钮、open/closed 分段选择与内联提交按钮，SnackBar 改为 Forui Toast
 - **新建 PR**：表单改为 Forui 布局（`FTextField` 标题/正文 + `FButton` 提交）
+- **PR 详情**：`AppPage` 头部 + 审查/浏览器打开操作，合并确认改用 `FDialog`，评论输入与加载/错误态 Forui 化
+- **表单页批量迁移 Forui**：新建/编辑标签、新建/编辑里程碑、新建/编辑组织、新建/编辑团队、新建/编辑 Release、新建仓库、迁移仓库、新建 Webhook、新建管理 Webhook——统一使用 `AppPage`、`FTextFormField`/`FTextField`、`FButton`、`FDialog` 与 `showFToast`
+- **审查弹窗**：`CreateReviewDialog` 改为 `FDialog`，审查动作使用 Forui 分段按钮
+- **邮箱页**：`AppPage` 头部操作、Forui 列表行、添加/删除弹窗与 Toast
 
 ### Added
 - `AppTheme`（品牌色板、亮/暗 Forui 主题、触屏/桌面密度）

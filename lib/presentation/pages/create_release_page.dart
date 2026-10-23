@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/repo_notifier.dart';
+import '../widgets/forui/app_page.dart';
 
 class CreateReleasePage extends StatefulWidget {
   final String owner;
   final String repo;
 
-  const CreateReleasePage({
-    super.key,
-    required this.owner,
-    required this.repo,
-  });
+  const CreateReleasePage({super.key, required this.owner, required this.repo});
 
   @override
   State<CreateReleasePage> createState() => _CreateReleasePageState();
@@ -66,7 +64,9 @@ class _CreateReleasePageState extends State<CreateReleasePage> {
 
   String? _validBranchValue() {
     if (_selectedBranch == null) return null;
-    return _branches.any((b) => b.name == _selectedBranch) ? _selectedBranch : null;
+    return _branches.any((b) => b.name == _selectedBranch)
+        ? _selectedBranch
+        : null;
   }
 
   String? _validTagValue() {
@@ -76,11 +76,11 @@ class _CreateReleasePageState extends State<CreateReleasePage> {
 
   Future<void> _save() async {
     final l10n = AppLocalizations.of(context)!;
-    final tag = _useExistingTag ? (_selectedTag ?? '') : _tagController.text.trim();
+    final tag = _useExistingTag
+        ? (_selectedTag ?? '')
+        : _tagController.text.trim();
     if (tag.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.releaseTagNameRequired)),
-      );
+      showFToast(context: context, title: Text(l10n.releaseTagNameRequired));
       return;
     }
 
@@ -88,10 +88,16 @@ class _CreateReleasePageState extends State<CreateReleasePage> {
 
     final option = CreateReleaseOption(
       tag_name: tag,
-      name: _titleController.text.trim().isEmpty ? null : _titleController.text.trim(),
-      body: _bodyController.text.trim().isEmpty ? null : _bodyController.text.trim(),
+      name: _titleController.text.trim().isEmpty
+          ? null
+          : _titleController.text.trim(),
+      body: _bodyController.text.trim().isEmpty
+          ? null
+          : _bodyController.text.trim(),
       target_commitish: _selectedBranch,
-      tag_message: _tagMessageController.text.trim().isEmpty ? null : _tagMessageController.text.trim(),
+      tag_message: _tagMessageController.text.trim().isEmpty
+          ? null
+          : _tagMessageController.text.trim(),
       draft: _draft,
       prerelease: _prerelease,
     );
@@ -105,13 +111,13 @@ class _CreateReleasePageState extends State<CreateReleasePage> {
     if (mounted) {
       setState(() => _isSaving = false);
       if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.releaseCreated)),
-        );
+        showFToast(context: context, title: Text(l10n.releaseCreated));
         Navigator.pop(context, true);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.error)),
+        showFToast(
+          context: context,
+          variant: .destructive,
+          title: Text(l10n.error),
         );
       }
     }
@@ -121,19 +127,17 @@ class _CreateReleasePageState extends State<CreateReleasePage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.createRelease),
-        actions: [
-          IconButton(
-            icon: _isSaving
-                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                : const Icon(Icons.save),
-            onPressed: _isSaving ? null : _save,
-          ),
-        ],
-      ),
-      body: ListenableBuilder(
+    return AppPage(
+      title: l10n.createRelease,
+      actions: [
+        FHeaderAction(
+          icon: _isSaving
+              ? const FCircularProgress(size: .xs)
+              : const Icon(FIcons.save),
+          onPress: _isSaving ? null : _save,
+        ),
+      ],
+      child: ListenableBuilder(
         listenable: Injection.repoNotifier,
         builder: (context, _) {
           return SingleChildScrollView(
@@ -145,32 +149,27 @@ class _CreateReleasePageState extends State<CreateReleasePage> {
                 const SizedBox(height: UIConstants.md),
                 _buildBranchDropdown(l10n),
                 const SizedBox(height: UIConstants.md),
-                TextField(
-                  controller: _titleController,
-                  decoration: InputDecoration(
-                    labelText: l10n.releaseTitle,
-                    border: const OutlineInputBorder(),
+                FTextField(
+                  control: FTextFieldControl.managed(
+                    controller: _titleController,
                   ),
+                  label: Text(l10n.releaseTitle),
                 ),
                 const SizedBox(height: UIConstants.md),
-                TextField(
-                  controller: _bodyController,
-                  decoration: InputDecoration(
-                    labelText: l10n.releaseBody,
-                    border: const OutlineInputBorder(),
-                    alignLabelWithHint: true,
+                FTextField(
+                  control: FTextFieldControl.managed(
+                    controller: _bodyController,
                   ),
+                  label: Text(l10n.releaseBody),
                   maxLines: 8,
                   keyboardType: TextInputType.multiline,
                 ),
                 const SizedBox(height: UIConstants.sm),
-                TextField(
-                  controller: _tagMessageController,
-                  decoration: InputDecoration(
-                    labelText: l10n.tagMessage,
-                    border: const OutlineInputBorder(),
-                    alignLabelWithHint: true,
+                FTextField(
+                  control: FTextFieldControl.managed(
+                    controller: _tagMessageController,
                   ),
+                  label: Text(l10n.tagMessage),
                   maxLines: 3,
                   keyboardType: TextInputType.multiline,
                 ),
@@ -201,21 +200,23 @@ class _CreateReleasePageState extends State<CreateReleasePage> {
       children: [
         Row(
           children: [
-            Text(l10n.releaseTagName, style: Theme.of(context).textTheme.bodyMedium),
+            Text(
+              l10n.releaseTagName,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
             const Spacer(),
-            SegmentedButton<bool>(
-              segments: const [
-                ButtonSegment(value: false, label: Text('New')),
-                ButtonSegment(value: true, label: Text('Existing')),
-              ],
-              selected: {_useExistingTag},
-              onSelectionChanged: (v) => setState(() => _useExistingTag = v.first),
-              style: ButtonStyle(
-                visualDensity: VisualDensity.compact,
-                textStyle: WidgetStateProperty.all(
-                  Theme.of(context).textTheme.labelSmall,
-                ),
-              ),
+            FButton(
+              variant: _useExistingTag ? .outline : .primary,
+              size: .xs,
+              onPress: () => setState(() => _useExistingTag = false),
+              child: const Text('New'),
+            ),
+            const SizedBox(width: UIConstants.xs),
+            FButton(
+              variant: _useExistingTag ? .primary : .outline,
+              size: .xs,
+              onPress: () => setState(() => _useExistingTag = true),
+              child: const Text('Existing'),
             ),
           ],
         ),
@@ -225,7 +226,10 @@ class _CreateReleasePageState extends State<CreateReleasePage> {
             initialValue: _validTagValue(),
             decoration: const InputDecoration(
               border: OutlineInputBorder(),
-              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+              contentPadding: EdgeInsets.symmetric(
+                horizontal: 12,
+                vertical: 14,
+              ),
             ),
             hint: const Text('Select a tag'),
             isExpanded: true,
@@ -235,12 +239,9 @@ class _CreateReleasePageState extends State<CreateReleasePage> {
             onChanged: (v) => setState(() => _selectedTag = v),
           )
         else
-          TextField(
-            controller: _tagController,
-            decoration: const InputDecoration(
-              hintText: 'v1.0.0',
-              border: OutlineInputBorder(),
-            ),
+          FTextField(
+            control: FTextFieldControl.managed(controller: _tagController),
+            hint: 'v1.0.0',
           ),
       ],
     );
@@ -264,11 +265,17 @@ class _CreateReleasePageState extends State<CreateReleasePage> {
 
   List<String> _uniqueBranches() {
     final seen = <String>{};
-    return _branches.map((b) => b.name ?? '').where((n) => n.isNotEmpty && seen.add(n)).toList();
+    return _branches
+        .map((b) => b.name ?? '')
+        .where((n) => n.isNotEmpty && seen.add(n))
+        .toList();
   }
 
   List<String> _uniqueTags() {
     final seen = <String>{};
-    return _tags.map((t) => t.name ?? '').where((n) => n.isNotEmpty && seen.add(n)).toList();
+    return _tags
+        .map((t) => t.name ?? '')
+        .where((n) => n.isNotEmpty && seen.add(n))
+        .toList();
   }
 }

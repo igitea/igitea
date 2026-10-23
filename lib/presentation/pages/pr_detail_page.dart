@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/animations/animated_wrapper.dart';
@@ -11,6 +12,8 @@ import '../../domain/entities/issue_state.dart';
 import '../../l10n/app_localizations.dart';
 import '../../presentation/state/issue_notifier.dart';
 import '../../presentation/state/repo_notifier.dart';
+import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_state_views.dart';
 import '../widgets/user_avatar.dart';
 import 'create_review_dialog.dart';
 
@@ -134,64 +137,57 @@ class _PRDetailPageState extends State<PRDetailPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.pullRequestNumber(widget.index)),
-        actions: [
-          if (Injection.repoNotifier.pullRequestDetailState is PullRequestDetailDataLoaded) ...[
-            IconButton(
-              icon: const Icon(Icons.rate_review_outlined),
-              tooltip: AppLocalizations.of(context)!.reviewChanges,
-              onPressed: () async {
-                final result = await showDialog<bool>(
-                  context: context,
-                  builder: (_) => CreateReviewDialog(
-                    owner: widget.owner, repo: widget.repo, index: widget.index,
-                  ),
+    return AppPage(
+      title: l10n.pullRequestNumber(widget.index),
+      actions: [
+        if (Injection.repoNotifier.pullRequestDetailState
+            is PullRequestDetailDataLoaded) ...[
+          FHeaderAction(
+            icon: const Icon(FIcons.messageSquare),
+            semanticsLabel: l10n.reviewChanges,
+            onPress: () async {
+              final result = await showFDialog<bool>(
+                context: context,
+                builder: (_, _, _) => CreateReviewDialog(
+                  owner: widget.owner,
+                  repo: widget.repo,
+                  index: widget.index,
+                ),
+              );
+              if (result == true) {
+                await _loadReviews();
+              }
+            },
+          ),
+          FHeaderAction(
+            icon: const Icon(FIcons.externalLink),
+            onPress: () {
+              final state = Injection.repoNotifier.pullRequestDetailState
+                  as PullRequestDetailDataLoaded;
+              if (state.pullRequest.html_url != null) {
+                launchUrl(
+                  Uri.parse(state.pullRequest.html_url!),
+                  mode: LaunchMode.externalApplication,
                 );
-                if (result == true) {
-                  await _loadReviews();
-                }
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.open_in_new),
-              onPressed: () {
-                final state = Injection.repoNotifier.pullRequestDetailState as PullRequestDetailDataLoaded;
-                if (state.pullRequest.html_url != null) {
-                  launchUrl(
-                    Uri.parse(state.pullRequest.html_url!),
-                    mode: LaunchMode.externalApplication,
-                  );
-                }
-              },
-            ),
-          ],
+              }
+            },
+          ),
         ],
-      ),
-      body: RefreshIndicator(
+      ],
+      child: RefreshIndicator(
         onRefresh: _onRefresh,
         child: ListenableBuilder(
           listenable: Listenable.merge([Injection.repoNotifier, Injection.issueNotifier]),
           builder: (context, _) {
             final state = Injection.repoNotifier.pullRequestDetailState;
             return switch (state) {
-              PullRequestDetailLoading() => const Center(child: CircularProgressIndicator()),
-              PullRequestDetailError(:final message) => Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text('${l10n.error}: $message'),
-                    const SizedBox(height: 16),
-                    FilledButton(
-                      onPressed: () => Injection.repoNotifier.getPullRequest(
-                        widget.owner,
-                        widget.repo,
-                        widget.index,
-                      ),
-                      child: Text(l10n.retry),
-                    ),
-                  ],
+              PullRequestDetailLoading() => const AppLoading(),
+              PullRequestDetailError(:final message) => AppError(
+                message: message,
+                onRetry: () => Injection.repoNotifier.getPullRequest(
+                  widget.owner,
+                  widget.repo,
+                  widget.index,
                 ),
               ),
               PullRequestDetailDataLoaded(:final pullRequest) => _PRContent(
@@ -304,20 +300,22 @@ class _PRContent extends StatelessWidget {
           if (pr.state?.isOpen == true && pr.mergeable == true && pr.merged != true)
             Row(
               children: [
-                FilledButton(
-                  onPressed: () async {
-                    final confirmed = await showDialog<bool>(
+                FButton(
+                  prefix: const Icon(FIcons.gitMerge, size: 16),
+                  onPress: () async {
+                    final confirmed = await showFDialog<bool>(
                       context: context,
-                      builder: (ctx) => AlertDialog(
+                      builder: (ctx, style, animation) => FDialog(
                         title: Text(l10n.mergePullRequest),
-                        content: Text(l10n.mergeConfirmMessage),
+                        body: Text(l10n.mergeConfirmMessage),
                         actions: [
-                          TextButton(
-                            onPressed: () => Navigator.of(ctx).pop(false),
+                          FButton(
+                            variant: .outline,
+                            onPress: () => Navigator.of(ctx).pop(false),
                             child: Text(l10n.cancel),
                           ),
-                          FilledButton(
-                            onPressed: () => Navigator.of(ctx).pop(true),
+                          FButton(
+                            onPress: () => Navigator.of(ctx).pop(true),
                             child: Text(l10n.merge),
                           ),
                         ],
@@ -440,15 +438,25 @@ class _PRContent extends StatelessWidget {
             builder: (context, _) {
               final commentsState = Injection.issueNotifier.commentsState;
               return switch (commentsState) {
-                CommentsLoading() => const Center(child: CircularProgressIndicator()),
-                CommentsError(:final message) => Column(
-                  children: [
-                    Text('${l10n.failedToLoadComments}: $message'),
-                    TextButton(
-                      onPressed: () => Injection.issueNotifier.listComments(owner, repo, index),
-                      child: Text(l10n.retry),
-                    ),
-                  ],
+                CommentsLoading() => const Padding(
+                  padding: EdgeInsets.symmetric(vertical: 24),
+                  child: Center(child: FCircularProgress(size: .sm)),
+                ),
+                CommentsError(:final message) => Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: Column(
+                    children: [
+                      Text('${l10n.failedToLoadComments}: $message'),
+                      const SizedBox(height: 8),
+                      FButton(
+                        variant: .outline,
+                        size: .sm,
+                        onPress: () => Injection.issueNotifier
+                            .listComments(owner, repo, index),
+                        child: Text(l10n.retry),
+                      ),
+                    ],
+                  ),
                 ),
                 CommentsLoaded(:final comments) => _buildCommentsList(context, comments, l10n),
                 _ => const SizedBox.shrink(),
@@ -457,30 +465,33 @@ class _PRContent extends StatelessWidget {
           ),
 
           const SizedBox(height: 16),
-          TextField(
-            controller: commentController,
-            decoration: InputDecoration(
-              hintText: l10n.writeComment,
-              border: const OutlineInputBorder(),
-              suffixIcon: IconButton(
-                icon: const Icon(Icons.send),
-                onPressed: () {
-                  final text = commentController.text.trim();
-                  if (text.isNotEmpty) {
-                    Injection.issueNotifier.createComment(
-                      owner,
-                      repo,
-                      index,
-                      {'body': text},
-                    );
-                    commentController.clear();
-                  }
-                },
-              ),
-            ),
+          FTextField(
+            control: FTextFieldControl.managed(controller: commentController),
+            hint: l10n.writeComment,
             textCapitalization: TextCapitalization.sentences,
-            maxLines: 3,
-            minLines: 1,
+            maxLines: 4,
+            minLines: 2,
+          ),
+          const SizedBox(height: 8),
+          Align(
+            alignment: Alignment.centerRight,
+            child: FButton(
+              size: .sm,
+              prefix: const Icon(FIcons.send, size: 14),
+              onPress: () {
+                final text = commentController.text.trim();
+                if (text.isNotEmpty) {
+                  Injection.issueNotifier.createComment(
+                    owner,
+                    repo,
+                    index,
+                    {'body': text},
+                  );
+                  commentController.clear();
+                }
+              },
+              child: Text(l10n.comment),
+            ),
           ),
 
           const SizedBox(height: 16),

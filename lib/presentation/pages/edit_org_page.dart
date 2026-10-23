@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/organization_notifier.dart';
+import '../widgets/forui/app_page.dart';
 
 class EditOrgPage extends StatefulWidget {
   final Organization org;
 
-  const EditOrgPage({
-    super.key,
-    required this.org,
-  });
+  const EditOrgPage({super.key, required this.org});
 
   @override
   State<EditOrgPage> createState() => _EditOrgPageState();
@@ -29,9 +28,15 @@ class _EditOrgPageState extends State<EditOrgPage> {
   @override
   void initState() {
     super.initState();
-    _fullNameController = TextEditingController(text: widget.org.full_name ?? '');
-    _descriptionController = TextEditingController(text: widget.org.description ?? '');
-    _locationController = TextEditingController(text: widget.org.location ?? '');
+    _fullNameController = TextEditingController(
+      text: widget.org.full_name ?? '',
+    );
+    _descriptionController = TextEditingController(
+      text: widget.org.description ?? '',
+    );
+    _locationController = TextEditingController(
+      text: widget.org.location ?? '',
+    );
     _websiteController = TextEditingController(text: widget.org.website ?? '');
     _emailController = TextEditingController(text: widget.org.email ?? '');
     _visibility = widget.org.visibility ?? 'public';
@@ -70,7 +75,10 @@ class _EditOrgPageState extends State<EditOrgPage> {
     }
     body['visibility'] = _visibility;
 
-    await Injection.organizationNotifier.editOrg(widget.org.username ?? '', body);
+    await Injection.organizationNotifier.editOrg(
+      widget.org.username ?? '',
+      body,
+    );
 
     if (mounted) {
       setState(() {
@@ -81,8 +89,10 @@ class _EditOrgPageState extends State<EditOrgPage> {
       if (state is OrgLoaded) {
         Navigator.pop(context, true);
       } else if (state is OrgError) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(state.message)),
+        showFToast(
+          context: context,
+          variant: .destructive,
+          title: Text(state.message),
         );
       }
     }
@@ -91,70 +101,52 @@ class _EditOrgPageState extends State<EditOrgPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.editOrganization),
-        actions: [
-          if (_isLoading)
-            const Center(
-              child: Padding(
-                padding: EdgeInsets.only(right: 16),
-                child: SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-              ),
-            )
-          else
-            TextButton(
-              onPressed: _save,
-              child: Text(l10n.save),
-            ),
-        ],
-      ),
-      body: ListView(
+    return AppPage(
+      title: l10n.editOrganization,
+      actions: [
+        if (_isLoading)
+          const Padding(
+            padding: EdgeInsets.all(8),
+            child: FCircularProgress(size: .sm),
+          )
+        else
+          FHeaderAction(
+            icon: const Icon(FIcons.save),
+            semanticsLabel: l10n.save,
+            onPress: _save,
+          ),
+      ],
+      child: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          TextField(
-            controller: _fullNameController,
-            decoration: InputDecoration(
-              labelText: l10n.fullName,
-              border: const OutlineInputBorder(),
-            ),
+          FTextFormField(
+            control: FTextFieldControl.managed(controller: _fullNameController),
+            label: Text(l10n.fullName),
           ),
           const SizedBox(height: 16),
-          TextField(
-            controller: _descriptionController,
-            decoration: InputDecoration(
-              labelText: l10n.description,
-              border: const OutlineInputBorder(),
+          FTextField(
+            control: FTextFieldControl.managed(
+              controller: _descriptionController,
             ),
+            label: Text(l10n.description),
             maxLines: 3,
+            minLines: 3,
           ),
           const SizedBox(height: 16),
-          TextField(
-            controller: _locationController,
-            decoration: InputDecoration(
-              labelText: l10n.location,
-              border: const OutlineInputBorder(),
-            ),
+          FTextFormField(
+            control: FTextFieldControl.managed(controller: _locationController),
+            label: Text(l10n.location),
           ),
           const SizedBox(height: 16),
-          TextField(
-            controller: _websiteController,
-            decoration: InputDecoration(
-              labelText: l10n.website,
-              border: const OutlineInputBorder(),
-            ),
+          FTextFormField(
+            control: FTextFieldControl.managed(controller: _websiteController),
+            label: Text(l10n.website),
+            keyboardType: TextInputType.url,
           ),
           const SizedBox(height: 16),
-          TextField(
-            controller: _emailController,
-            decoration: InputDecoration(
-              labelText: l10n.email,
-              border: const OutlineInputBorder(),
-            ),
+          FTextFormField(
+            control: FTextFieldControl.managed(controller: _emailController),
+            label: Text(l10n.email),
             keyboardType: TextInputType.emailAddress,
           ),
           const SizedBox(height: 16),

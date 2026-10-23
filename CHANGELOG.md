@@ -19,6 +19,10 @@
 - **Settings**: `AppPage` + grouped `AppSection` (appearance / account / admin), `FDialog` theme and language pickers, `FDialog` sign-out confirmation, server settings regrouped into read-only sections
 - **Issue forms**: create and edit issue pages use Forui text fields, selectable label buttons, segmented open/closed selector and an inline submit button; snackbars replaced with Forui toasts
 - **Create PR**: Forui form layout with `FTextField` title/body and `FButton` submit
+- **PR detail**: `AppPage` header with review/open-in-browser actions, Forui merge dialog, comment composer and loading/error states
+- **Form pages migrated to Forui**: create/edit label, create/edit milestone, create/edit organization, create/edit team, create/edit release, create repo, migrate repo, create webhook, create admin webhook — every page now uses `AppPage`, `FTextFormField`/`FTextField`, `FButton`, `FDialog` and `showFToast`
+- **Review dialog**: `CreateReviewDialog` rebuilt as an `FDialog` with Forui segmented review actions
+- **Emails page**: `AppPage` header action, Forui list rows, add/delete dialogs and toasts
 
 ### Added
 - `AppTheme` (brand palette, light/dark Forui themes, touch/desktop density)

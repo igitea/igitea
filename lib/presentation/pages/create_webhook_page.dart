@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
+import '../widgets/forui/app_page.dart';
 
 class CreateWebhookPage extends StatefulWidget {
   final String owner;
@@ -67,9 +69,7 @@ class _CreateWebhookPageState extends State<CreateWebhookPage> {
     final url = _urlController.text.trim();
 
     if (url.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.webhookUrl)),
-      );
+      showFToast(context: context, title: Text(l10n.webhookUrl));
       return;
     }
 
@@ -89,25 +89,28 @@ class _CreateWebhookPageState extends State<CreateWebhookPage> {
 
     final result = widget.hook != null
         ? await Injection.repoNotifier.editHook(
-            widget.owner, widget.repo, widget.hook!.id ?? 0, body,
+            widget.owner,
+            widget.repo,
+            widget.hook!.id ?? 0,
+            body,
           )
         : await Injection.repoNotifier.createHook(
-      widget.owner,
-      widget.repo,
-      body,
-    );
+            widget.owner,
+            widget.repo,
+            body,
+          );
 
     if (mounted) {
       setState(() => _isSaving = false);
       switch (result) {
         case Left(:final value):
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${l10n.error}: ${value.message}')),
+          showFToast(
+            context: context,
+            variant: .destructive,
+            title: Text('${l10n.error}: ${value.message}'),
           );
         case Right():
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.created)),
-          );
+          showFToast(context: context, title: Text(l10n.created));
           Navigator.of(context).pop(true);
       }
     }
@@ -117,44 +120,32 @@ class _CreateWebhookPageState extends State<CreateWebhookPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.hook != null ? l10n.editWebhook : l10n.createWebhook),
-        actions: [
-          IconButton(
-            icon: _isSaving
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(Icons.save),
-            onPressed: _isSaving ? null : _save,
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
+    return AppPage(
+      title: widget.hook != null ? l10n.editWebhook : l10n.createWebhook,
+      actions: [
+        FHeaderAction(
+          icon: _isSaving
+              ? const FCircularProgress(size: .xs)
+              : const Icon(FIcons.save),
+          onPress: _isSaving ? null : _save,
+        ),
+      ],
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(UIConstants.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextField(
-              controller: _urlController,
-              decoration: InputDecoration(
-                labelText: l10n.webhookUrl,
-                hintText: l10n.webhookUrlHint,
-                border: const OutlineInputBorder(),
-              ),
+            FTextField(
+              control: FTextFieldControl.managed(controller: _urlController),
+              label: Text(l10n.webhookUrl),
+              hint: l10n.webhookUrlHint,
               keyboardType: TextInputType.url,
             ),
             const SizedBox(height: UIConstants.md),
-            TextField(
-              controller: _secretController,
-              decoration: InputDecoration(
-                labelText: l10n.webhookSecret,
-                hintText: l10n.webhookSecretHint,
-                border: const OutlineInputBorder(),
-              ),
+            FTextField(
+              control: FTextFieldControl.managed(controller: _secretController),
+              label: Text(l10n.webhookSecret),
+              hint: l10n.webhookSecretHint,
               obscureText: true,
             ),
             const SizedBox(height: UIConstants.md),
@@ -185,26 +176,28 @@ class _CreateWebhookPageState extends State<CreateWebhookPage> {
             const SizedBox(height: UIConstants.sm),
             Text(
               l10n.webhookEvents,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
             ),
             const SizedBox(height: UIConstants.sm),
-            ..._availableEvents.map((event) => CheckboxListTile(
-              title: Text(_eventLabel(event, l10n)),
-              value: _selectedEvents.contains(event),
-              onChanged: (v) {
-                setState(() {
-                  if (v == true) {
-                    _selectedEvents.add(event);
-                  } else {
-                    _selectedEvents.remove(event);
-                  }
-                });
-              },
-              controlAffinity: ListTileControlAffinity.trailing,
-              dense: true,
-            )),
+            ..._availableEvents.map(
+              (event) => CheckboxListTile(
+                title: Text(_eventLabel(event, l10n)),
+                value: _selectedEvents.contains(event),
+                onChanged: (v) {
+                  setState(() {
+                    if (v == true) {
+                      _selectedEvents.add(event);
+                    } else {
+                      _selectedEvents.remove(event);
+                    }
+                  });
+                },
+                controlAffinity: ListTileControlAffinity.trailing,
+                dense: true,
+              ),
+            ),
           ],
         ),
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../../core/di/injection.dart';
 import '../../core/errors/failures.dart';
@@ -6,6 +7,7 @@ import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../domain/usecases/repo_usecases.dart';
 import '../../l10n/app_localizations.dart';
+import '../widgets/forui/app_page.dart';
 
 class MigrateRepoPage extends StatefulWidget {
   const MigrateRepoPage({super.key});
@@ -38,8 +40,15 @@ class _MigrateRepoPageState extends State<MigrateRepoPage> {
   String? _error;
 
   static const _services = [
-    'git', 'github', 'gitea', 'gitlab', 'gogs',
-    'onedev', 'gitbucket', 'codebase', 'codecommit',
+    'git',
+    'github',
+    'gitea',
+    'gitlab',
+    'gogs',
+    'onedev',
+    'gitbucket',
+    'codebase',
+    'codecommit',
   ];
 
   @override
@@ -58,23 +67,31 @@ class _MigrateRepoPageState extends State<MigrateRepoPage> {
   Future<void> _migrate() async {
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() { _isLoading = true; _error = null; });
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
 
     final result = await Injection.migrateRepoUseCase(
       MigrateRepoParams(
         cloneAddr: _cloneAddrController.text.trim(),
         repoName: _repoNameController.text.trim(),
         repoOwner: _repoOwnerController.text.trim().isEmpty
-            ? null : _repoOwnerController.text.trim(),
+            ? null
+            : _repoOwnerController.text.trim(),
         service: _service,
         authUsername: _authUsernameController.text.trim().isEmpty
-            ? null : _authUsernameController.text.trim(),
+            ? null
+            : _authUsernameController.text.trim(),
         authPassword: _authPasswordController.text.trim().isEmpty
-            ? null : _authPasswordController.text.trim(),
+            ? null
+            : _authPasswordController.text.trim(),
         authToken: _authTokenController.text.trim().isEmpty
-            ? null : _authTokenController.text.trim(),
+            ? null
+            : _authTokenController.text.trim(),
         description: _descriptionController.text.trim().isEmpty
-            ? null : _descriptionController.text.trim(),
+            ? null
+            : _descriptionController.text.trim(),
         issues: _issues,
         labels: _labels,
         milestones: _milestones,
@@ -94,8 +111,9 @@ class _MigrateRepoPageState extends State<MigrateRepoPage> {
       case Left<Failure, Repository>(:final value):
         setState(() => _error = value.message);
       case Right<Failure, Repository>():
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.repoImported)),
+        showFToast(
+          context: context,
+          title: Text(AppLocalizations.of(context)!.repoImported),
         );
         Navigator.pop(context, true);
     }
@@ -106,28 +124,17 @@ class _MigrateRepoPageState extends State<MigrateRepoPage> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.importRepository),
-        actions: [
-          if (_isLoading)
-            const Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: SizedBox(
-                  width: 20, height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-              ),
-            )
-          else
-            TextButton(
-              onPressed: _migrate,
-              child: Text(l10n.import),
-            ),
-        ],
-      ),
-      body: Form(
+    return AppPage(
+      title: l10n.importRepository,
+      actions: [
+        FHeaderAction(
+          icon: _isLoading
+              ? const FCircularProgress(size: .xs)
+              : const Icon(FIcons.upload),
+          onPress: _isLoading ? null : _migrate,
+        ),
+      ],
+      child: Form(
         key: _formKey,
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
@@ -143,43 +150,46 @@ class _MigrateRepoPageState extends State<MigrateRepoPage> {
                     color: theme.colorScheme.errorContainer,
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Text(_error!, style: TextStyle(color: theme.colorScheme.onErrorContainer)),
+                  child: Text(
+                    _error!,
+                    style: TextStyle(color: theme.colorScheme.onErrorContainer),
+                  ),
                 ),
-              TextFormField(
-                controller: _cloneAddrController,
-                decoration: InputDecoration(
-                  labelText: l10n.cloneUrl,
-                  hintText: 'https://github.com/owner/repo.git',
-                  border: const OutlineInputBorder(),
+              FTextFormField(
+                control: FTextFieldControl.managed(
+                  controller: _cloneAddrController,
                 ),
+                label: Text(l10n.cloneUrl),
+                hint: 'https://github.com/owner/repo.git',
                 keyboardType: TextInputType.url,
                 textInputAction: TextInputAction.next,
-                validator: (v) => (v == null || v.trim().isEmpty) ? l10n.requiredField : null,
                 autofillHints: const [AutofillHints.url],
+                validator: (v) =>
+                    (v == null || v.trim().isEmpty) ? l10n.requiredField : null,
               ),
               const SizedBox(height: 16),
               Row(
                 children: [
                   Expanded(
-                    child: TextFormField(
-                      controller: _repoNameController,
-                      decoration: InputDecoration(
-                        labelText: l10n.repositoryName,
-                        border: const OutlineInputBorder(),
+                    child: FTextFormField(
+                      control: FTextFieldControl.managed(
+                        controller: _repoNameController,
                       ),
+                      label: Text(l10n.repositoryName),
                       textInputAction: TextInputAction.next,
-                      validator: (v) => (v == null || v.trim().isEmpty) ? l10n.requiredField : null,
+                      validator: (v) => (v == null || v.trim().isEmpty)
+                          ? l10n.requiredField
+                          : null,
                     ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
-                    child: TextFormField(
-                      controller: _repoOwnerController,
-                      decoration: InputDecoration(
-                        labelText: l10n.repoOwner,
-                        hintText: l10n.personal,
-                        border: const OutlineInputBorder(),
+                    child: FTextField(
+                      control: FTextFieldControl.managed(
+                        controller: _repoOwnerController,
                       ),
+                      label: Text(l10n.repoOwner),
+                      hint: l10n.personal,
                       textInputAction: TextInputAction.next,
                     ),
                   ),
@@ -187,58 +197,68 @@ class _MigrateRepoPageState extends State<MigrateRepoPage> {
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                value: _service,
+                initialValue: _service,
                 decoration: InputDecoration(
                   labelText: l10n.gitService,
                   border: const OutlineInputBorder(),
                 ),
-                items: _services.map((s) => DropdownMenuItem(value: s, child: Text(s))).toList(),
-                onChanged: (v) { if (v != null) setState(() => _service = v); },
+                items: _services
+                    .map((s) => DropdownMenuItem(value: s, child: Text(s)))
+                    .toList(),
+                onChanged: (v) {
+                  if (v != null) setState(() => _service = v);
+                },
               ),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: _descriptionController,
-                decoration: InputDecoration(
-                  labelText: l10n.description,
-                  border: const OutlineInputBorder(),
+              FTextField(
+                control: FTextFieldControl.managed(
+                  controller: _descriptionController,
                 ),
+                label: Text(l10n.description),
                 maxLines: 2,
                 textInputAction: TextInputAction.next,
               ),
               const SizedBox(height: 24),
-              Text(l10n.authentication, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: _authUsernameController,
-                decoration: InputDecoration(
-                  labelText: l10n.authUsername,
-                  border: const OutlineInputBorder(),
+              Text(
+                l10n.authentication,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
                 ),
+              ),
+              const SizedBox(height: 12),
+              FTextField(
+                control: FTextFieldControl.managed(
+                  controller: _authUsernameController,
+                ),
+                label: Text(l10n.authUsername),
                 textInputAction: TextInputAction.next,
                 autofillHints: const [AutofillHints.username],
               ),
               const SizedBox(height: 12),
-              TextFormField(
-                controller: _authPasswordController,
-                decoration: InputDecoration(
-                  labelText: l10n.authPassword,
-                  border: const OutlineInputBorder(),
+              FTextField(
+                control: FTextFieldControl.managed(
+                  controller: _authPasswordController,
                 ),
+                label: Text(l10n.authPassword),
                 obscureText: true,
                 textInputAction: TextInputAction.next,
                 autofillHints: const [AutofillHints.password],
               ),
               const SizedBox(height: 12),
-              TextFormField(
-                controller: _authTokenController,
-                decoration: InputDecoration(
-                  labelText: l10n.authToken,
-                  border: const OutlineInputBorder(),
+              FTextField(
+                control: FTextFieldControl.managed(
+                  controller: _authTokenController,
                 ),
+                label: Text(l10n.authToken),
                 textInputAction: TextInputAction.done,
               ),
               const SizedBox(height: 24),
-              Text(l10n.migrationOptions, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
+              Text(
+                l10n.migrationOptions,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
               const SizedBox(height: 8),
               SwitchListTile(
                 title: Text(l10n.private),
@@ -252,25 +272,57 @@ class _MigrateRepoPageState extends State<MigrateRepoPage> {
               ),
               if (_mirror) ...[
                 const SizedBox(height: 8),
-                TextFormField(
-                  controller: _mirrorIntervalController,
-                  decoration: InputDecoration(
-                    labelText: l10n.mirrorInterval,
-                    hintText: '8h',
-                    border: const OutlineInputBorder(),
+                FTextField(
+                  control: FTextFieldControl.managed(
+                    controller: _mirrorIntervalController,
                   ),
+                  label: Text(l10n.mirrorInterval),
+                  hint: '8h',
                 ),
               ],
               const SizedBox(height: 24),
-              Text(l10n.migrateData, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
+              Text(
+                l10n.migrateData,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
               const SizedBox(height: 8),
-              CheckboxListTile(title: Text(l10n.issues), value: _issues, onChanged: (v) => setState(() => _issues = v ?? true)),
-              CheckboxListTile(title: Text(l10n.labels), value: _labels, onChanged: (v) => setState(() => _labels = v ?? true)),
-              CheckboxListTile(title: Text(l10n.milestones), value: _milestones, onChanged: (v) => setState(() => _milestones = v ?? true)),
-              CheckboxListTile(title: Text(l10n.pullRequests), value: _pullRequests, onChanged: (v) => setState(() => _pullRequests = v ?? true)),
-              CheckboxListTile(title: Text(l10n.releases), value: _releases, onChanged: (v) => setState(() => _releases = v ?? true)),
-              CheckboxListTile(title: Text(l10n.wiki), value: _wiki, onChanged: (v) => setState(() => _wiki = v ?? true)),
-              CheckboxListTile(title: const Text('LFS'), value: _lfs, onChanged: (v) => setState(() => _lfs = v ?? false)),
+              CheckboxListTile(
+                title: Text(l10n.issues),
+                value: _issues,
+                onChanged: (v) => setState(() => _issues = v ?? true),
+              ),
+              CheckboxListTile(
+                title: Text(l10n.labels),
+                value: _labels,
+                onChanged: (v) => setState(() => _labels = v ?? true),
+              ),
+              CheckboxListTile(
+                title: Text(l10n.milestones),
+                value: _milestones,
+                onChanged: (v) => setState(() => _milestones = v ?? true),
+              ),
+              CheckboxListTile(
+                title: Text(l10n.pullRequests),
+                value: _pullRequests,
+                onChanged: (v) => setState(() => _pullRequests = v ?? true),
+              ),
+              CheckboxListTile(
+                title: Text(l10n.releases),
+                value: _releases,
+                onChanged: (v) => setState(() => _releases = v ?? true),
+              ),
+              CheckboxListTile(
+                title: Text(l10n.wiki),
+                value: _wiki,
+                onChanged: (v) => setState(() => _wiki = v ?? true),
+              ),
+              CheckboxListTile(
+                title: const Text('LFS'),
+                value: _lfs,
+                onChanged: (v) => setState(() => _lfs = v ?? false),
+              ),
             ],
           ),
         ),

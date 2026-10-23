@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:forui/forui.dart';
 
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
@@ -8,6 +9,7 @@ import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../domain/usecases/repo_usecases.dart';
 import '../../l10n/app_localizations.dart';
+import '../widgets/forui/app_page.dart';
 
 class CreateRepoPage extends StatefulWidget {
   const CreateRepoPage({super.key});
@@ -64,11 +66,12 @@ class _CreateRepoPageState extends State<CreateRepoPage> {
         });
       case Right<Failure, Repository>(:final value):
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                AppLocalizations.of(context)!.repoCreated(value.full_name ?? value.name ?? ''),
-              ),
+          showFToast(
+            context: context,
+            title: Text(
+              AppLocalizations.of(
+                context,
+              )!.repoCreated(value.full_name ?? value.name ?? ''),
             ),
           );
           Navigator.pop(context, true);
@@ -81,29 +84,17 @@ class _CreateRepoPageState extends State<CreateRepoPage> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.createRepository),
-        actions: [
-          if (_isLoading)
-            const Center(
-              child: Padding(
-                padding: EdgeInsets.only(right: UIConstants.md),
-                child: SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-              ),
-            )
-          else
-            TextButton(
-              onPressed: _create,
-              child: Text(l10n.create),
-            ),
-        ],
-      ),
-      body: Form(
+    return AppPage(
+      title: l10n.createRepository,
+      actions: [
+        FHeaderAction(
+          icon: _isLoading
+              ? const FCircularProgress(size: .xs)
+              : const Icon(FIcons.plus),
+          onPress: _isLoading ? null : _create,
+        ),
+      ],
+      child: Form(
         key: _formKey,
         child: ListView(
           padding: const EdgeInsets.all(UIConstants.md),
@@ -124,32 +115,28 @@ class _CreateRepoPageState extends State<CreateRepoPage> {
               ),
               const SizedBox(height: UIConstants.md),
             ],
-            TextFormField(
-              controller: _nameController,
-              decoration: InputDecoration(
-                labelText: l10n.repositoryName,
-                hintText: l10n.repositoryNameHint,
-                border: const OutlineInputBorder(),
-                prefixIcon: const Icon(Icons.source),
-              ),
+            FTextFormField(
+              control: FTextFieldControl.managed(controller: _nameController),
+              label: Text(l10n.repositoryName),
+              hint: l10n.repositoryNameHint,
+              textInputAction: TextInputAction.next,
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9_.-]')),
+              ],
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
                   return l10n.repositoryNameRequired;
                 }
                 return null;
               },
-              textInputAction: TextInputAction.next,
-              inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9_.-]'))],
             ),
             const SizedBox(height: UIConstants.md),
-            TextFormField(
-              controller: _descriptionController,
-              decoration: InputDecoration(
-                labelText: l10n.description,
-                hintText: l10n.descriptionHint,
-                border: const OutlineInputBorder(),
-                prefixIcon: const Icon(Icons.description_outlined),
+            FTextField(
+              control: FTextFieldControl.managed(
+                controller: _descriptionController,
               ),
+              label: Text(l10n.description),
+              hint: l10n.descriptionHint,
               maxLines: 3,
               textInputAction: TextInputAction.done,
             ),
@@ -159,7 +146,9 @@ class _CreateRepoPageState extends State<CreateRepoPage> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(UIConstants.cardRadius),
                 side: BorderSide(
-                  color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                  color: theme.colorScheme.outlineVariant.withValues(
+                    alpha: 0.5,
+                  ),
                 ),
               ),
               child: Padding(
@@ -177,7 +166,7 @@ class _CreateRepoPageState extends State<CreateRepoPage> {
                     _VisibilityOption(
                       title: l10n.public,
                       subtitle: l10n.publicDescription,
-                      icon: Icons.public,
+                      icon: FIcons.globe,
                       isSelected: !_isPrivate,
                       onTap: () => setState(() => _isPrivate = false),
                     ),
@@ -185,7 +174,7 @@ class _CreateRepoPageState extends State<CreateRepoPage> {
                     _VisibilityOption(
                       title: l10n.private,
                       subtitle: l10n.privateDescription,
-                      icon: Icons.lock,
+                      icon: FIcons.lock,
                       isSelected: _isPrivate,
                       onTap: () => setState(() => _isPrivate = true),
                     ),
@@ -202,7 +191,9 @@ class _CreateRepoPageState extends State<CreateRepoPage> {
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(UIConstants.cardRadius),
                 side: BorderSide(
-                  color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                  color: theme.colorScheme.outlineVariant.withValues(
+                    alpha: 0.5,
+                  ),
                 ),
               ),
             ),
@@ -266,9 +257,9 @@ class _VisibilityOption extends StatelessWidget {
               ),
             ),
             if (isSelected)
-              Icon(Icons.check_circle, color: theme.colorScheme.primary)
+              Icon(FIcons.circleCheck, color: theme.colorScheme.primary)
             else
-              Icon(Icons.circle_outlined, color: theme.colorScheme.onSurfaceVariant),
+              Icon(FIcons.circle, color: theme.colorScheme.onSurfaceVariant),
           ],
         ),
       ),

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
-import '../../core/utils/either.dart';
-import '../../domain/usecases/repo_usecases.dart';
 import '../../l10n/app_localizations.dart';
 
 class CreateReviewDialog extends StatefulWidget {
@@ -60,44 +59,67 @@ class _CreateReviewDialogState extends State<CreateReviewDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    return AlertDialog(
+
+    final options = [
+      ('COMMENT', l10n.comment, FIcons.messageSquare),
+      ('APPROVED', l10n.approve, FIcons.circleCheck),
+      ('REQUEST_CHANGES', l10n.requestChanges, FIcons.circleX),
+    ];
+
+    return FDialog(
       title: Text(l10n.reviewChanges),
-      content: SizedBox(
-        width: double.maxFinite,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            SegmentedButton<String>(
-              segments: [
-                ButtonSegment(value: 'COMMENT', label: Text(l10n.comment), icon: const Icon(Icons.comment)),
-                ButtonSegment(value: 'APPROVED', label: Text(l10n.approve), icon: const Icon(Icons.check_circle, color: Colors.green)),
-                ButtonSegment(value: 'REQUEST_CHANGES', label: Text(l10n.requestChanges), icon: const Icon(Icons.cancel, color: Colors.red)),
-              ],
-              selected: {_event},
-              onSelectionChanged: (v) => setState(() => _event = v.first),
-            ),
-            const SizedBox(height: UIConstants.md),
-            TextField(
-              controller: _bodyController,
-              decoration: InputDecoration(
-                labelText: l10n.reviewBody,
-                border: const OutlineInputBorder(),
-                alignLabelWithHint: true,
-              ),
-              maxLines: 5,
-              minLines: 3,
-            ),
-          ],
-        ),
+      body: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              for (final (value, label, icon) in options)
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 3),
+                    child: FButton(
+                      variant: _event == value ? .primary : .outline,
+                      size: .sm,
+                      prefix: Icon(icon, size: 14),
+                      onPress: () => setState(() => _event = value),
+                      child: Flexible(
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(label, maxLines: 1),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: UIConstants.md),
+          FTextField(
+            control: FTextFieldControl.managed(controller: _bodyController),
+            label: Text(l10n.reviewBody),
+            maxLines: 5,
+            minLines: 3,
+            textAlignVertical: TextAlignVertical.top,
+          ),
+        ],
       ),
       actions: [
-        TextButton(onPressed: () => Navigator.of(context).pop(), child: Text(l10n.cancel)),
-        FilledButton(
-          onPressed: _submitting ? null : _submit,
+        FButton(
+          variant: .outline,
+          onPress: () => Navigator.of(context).pop(),
+          child: Text(l10n.cancel),
+        ),
+        FButton(
+          onPress: _submitting ? null : _submit,
           child: _submitting
-              ? const SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2))
-              : Text(_event == 'APPROVED' ? l10n.approve : _event == 'REQUEST_CHANGES' ? l10n.requestChanges : l10n.comment),
+              ? const FCircularProgress(size: .sm)
+              : Text(
+                  _event == 'APPROVED'
+                      ? l10n.approve
+                      : _event == 'REQUEST_CHANGES'
+                          ? l10n.requestChanges
+                          : l10n.comment,
+                ),
         ),
       ],
     );

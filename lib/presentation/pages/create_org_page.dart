@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../../core/di/injection.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/organization_notifier.dart';
+import '../widgets/forui/app_page.dart';
 
 class CreateOrgPage extends StatefulWidget {
   const CreateOrgPage({super.key});
@@ -71,8 +73,10 @@ class _CreateOrgPageState extends State<CreateOrgPage> {
       if (state is OrgLoaded) {
         Navigator.pop(context, true);
       } else if (state is OrgError) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(state.message)),
+        showFToast(
+          context: context,
+          variant: .destructive,
+          title: Text(state.message),
         );
       }
     }
@@ -81,39 +85,32 @@ class _CreateOrgPageState extends State<CreateOrgPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.createOrganization),
-        actions: [
-          if (_isLoading)
-            const Center(
-              child: Padding(
-                padding: EdgeInsets.only(right: 16),
-                child: SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-              ),
-            )
-          else
-            TextButton(
-              onPressed: _create,
-              child: Text(l10n.create),
-            ),
-        ],
-      ),
-      body: Form(
+    return AppPage(
+      title: l10n.createOrganization,
+      actions: [
+        if (_isLoading)
+          const Padding(
+            padding: EdgeInsets.all(8),
+            child: FCircularProgress(size: .sm),
+          )
+        else
+          FHeaderAction(
+            icon: const Icon(FIcons.check),
+            semanticsLabel: l10n.create,
+            onPress: _create,
+          ),
+      ],
+      child: Form(
         key: _formKey,
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            TextFormField(
-              controller: _usernameController,
-              decoration: InputDecoration(
-                labelText: l10n.username,
-                border: const OutlineInputBorder(),
+            FTextFormField(
+              control: FTextFieldControl.managed(
+                controller: _usernameController,
               ),
+              label: Text(l10n.username),
+              textInputAction: TextInputAction.next,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return l10n.usernameRequired;
@@ -122,50 +119,43 @@ class _CreateOrgPageState extends State<CreateOrgPage> {
               },
             ),
             const SizedBox(height: 16),
-            TextFormField(
-              controller: _fullNameController,
-              decoration: InputDecoration(
-                labelText: l10n.fullName,
-                border: const OutlineInputBorder(),
+            FTextFormField(
+              control: FTextFieldControl.managed(
+                controller: _fullNameController,
               ),
+              label: Text(l10n.fullName),
               textInputAction: TextInputAction.next,
             ),
             const SizedBox(height: 16),
-            TextFormField(
-              controller: _descriptionController,
-              decoration: InputDecoration(
-                labelText: l10n.description,
-                border: const OutlineInputBorder(),
+            FTextField(
+              control: FTextFieldControl.managed(
+                controller: _descriptionController,
               ),
+              label: Text(l10n.description),
               maxLines: 3,
+              minLines: 3,
+            ),
+            const SizedBox(height: 16),
+            FTextFormField(
+              control: FTextFieldControl.managed(
+                controller: _locationController,
+              ),
+              label: Text(l10n.location),
               textInputAction: TextInputAction.next,
             ),
             const SizedBox(height: 16),
-            TextFormField(
-              controller: _locationController,
-              decoration: InputDecoration(
-                labelText: l10n.location,
-                border: const OutlineInputBorder(),
+            FTextFormField(
+              control: FTextFieldControl.managed(
+                controller: _websiteController,
               ),
-              textInputAction: TextInputAction.next,
-            ),
-            const SizedBox(height: 16),
-            TextFormField(
-              controller: _websiteController,
-              decoration: InputDecoration(
-                labelText: l10n.website,
-                border: const OutlineInputBorder(),
-              ),
+              label: Text(l10n.website),
               keyboardType: TextInputType.url,
               textInputAction: TextInputAction.next,
             ),
             const SizedBox(height: 16),
-            TextFormField(
-              controller: _emailController,
-              decoration: InputDecoration(
-                labelText: l10n.email,
-                border: const OutlineInputBorder(),
-              ),
+            FTextFormField(
+              control: FTextFieldControl.managed(controller: _emailController),
+              label: Text(l10n.email),
               keyboardType: TextInputType.emailAddress,
               textInputAction: TextInputAction.done,
             ),

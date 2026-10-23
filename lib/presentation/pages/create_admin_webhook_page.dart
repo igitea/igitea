@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../../core/di/injection.dart';
 import '../../l10n/app_localizations.dart';
+import '../widgets/forui/app_page.dart';
 
 class CreateAdminWebhookPage extends StatefulWidget {
   const CreateAdminWebhookPage({super.key});
@@ -19,8 +21,15 @@ class _CreateAdminWebhookPageState extends State<CreateAdminWebhookPage> {
   bool _isSaving = false;
 
   static const _availableEvents = [
-    'push', 'pull_request', 'issues', 'create', 'delete',
-    'release', 'wiki', 'star', 'fork',
+    'push',
+    'pull_request',
+    'issues',
+    'create',
+    'delete',
+    'release',
+    'wiki',
+    'star',
+    'fork',
   ];
 
   @override
@@ -34,9 +43,7 @@ class _CreateAdminWebhookPageState extends State<CreateAdminWebhookPage> {
     final l10n = AppLocalizations.of(context)!;
     final url = _urlController.text.trim();
     if (url.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.webhookUrlHint)),
-      );
+      showFToast(context: context, title: Text(l10n.webhookUrlHint));
       return;
     }
 
@@ -60,13 +67,13 @@ class _CreateAdminWebhookPageState extends State<CreateAdminWebhookPage> {
     setState(() => _isSaving = false);
 
     if (result != null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.created)),
-      );
+      showFToast(context: context, title: Text(l10n.created));
       Navigator.of(context).pop(true);
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${l10n.error}: ${l10n.unknownError}')),
+      showFToast(
+        context: context,
+        variant: .destructive,
+        title: Text('${l10n.error}: ${l10n.unknownError}'),
       );
     }
   }
@@ -76,53 +83,36 @@ class _CreateAdminWebhookPageState extends State<CreateAdminWebhookPage> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.createWebhook),
-        actions: [
-          if (_isSaving)
-            const Center(
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: SizedBox(
-                  width: 20, height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                ),
-              ),
-            )
-          else
-            TextButton(
-              onPressed: _save,
-              child: Text(l10n.save),
-            ),
-        ],
-      ),
-      body: SingleChildScrollView(
+    return AppPage(
+      title: l10n.createWebhook,
+      actions: [
+        FHeaderAction(
+          icon: _isSaving
+              ? const FCircularProgress(size: .xs)
+              : const Icon(FIcons.save),
+          onPress: _isSaving ? null : _save,
+        ),
+      ],
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextField(
-              controller: _urlController,
-              decoration: InputDecoration(
-                labelText: l10n.webhookUrl,
-                hintText: l10n.webhookUrlHint,
-                border: const OutlineInputBorder(),
-              ),
+            FTextField(
+              control: FTextFieldControl.managed(controller: _urlController),
+              label: Text(l10n.webhookUrl),
+              hint: l10n.webhookUrlHint,
               keyboardType: TextInputType.url,
             ),
             const SizedBox(height: 16),
-            TextField(
-              controller: _secretController,
-              decoration: InputDecoration(
-                labelText: l10n.webhookSecret,
-                hintText: l10n.webhookSecretHint,
-                border: const OutlineInputBorder(),
-              ),
+            FTextField(
+              control: FTextFieldControl.managed(controller: _secretController),
+              label: Text(l10n.webhookSecret),
+              hint: l10n.webhookSecretHint,
             ),
             const SizedBox(height: 16),
             DropdownButtonFormField<String>(
-              value: _contentType,
+              initialValue: _contentType,
               decoration: InputDecoration(
                 labelText: l10n.webhookContentType,
                 border: const OutlineInputBorder(),
@@ -150,7 +140,9 @@ class _CreateAdminWebhookPageState extends State<CreateAdminWebhookPage> {
             const SizedBox(height: 16),
             Text(
               l10n.webhookEvents,
-              style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
             ),
             const SizedBox(height: 8),
             ..._availableEvents.map((event) {

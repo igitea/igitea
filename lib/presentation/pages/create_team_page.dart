@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
+import '../widgets/forui/app_page.dart';
 
 class CreateTeamPage extends StatefulWidget {
   final String org;
@@ -42,16 +44,16 @@ class _CreateTeamPageState extends State<CreateTeamPage> {
     final l10n = AppLocalizations.of(context)!;
     final name = _nameController.text.trim();
     if (name.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.teamNameRequired)),
-      );
+      showFToast(context: context, title: Text(l10n.teamNameRequired));
       return;
     }
     setState(() => _isSaving = true);
 
     final option = CreateTeamOption(
       name: name,
-      description: _descController.text.trim().isEmpty ? null : _descController.text.trim(),
+      description: _descController.text.trim().isEmpty
+          ? null
+          : _descController.text.trim(),
       permission: _permission,
       can_create_org_repo: _canCreateRepo,
       includes_all_repositories: _includesAllRepos,
@@ -65,13 +67,13 @@ class _CreateTeamPageState extends State<CreateTeamPage> {
     if (mounted) {
       setState(() => _isSaving = false);
       if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.teamCreated)),
-        );
+        showFToast(context: context, title: Text(l10n.teamCreated));
         Navigator.pop(context, true);
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.error)),
+        showFToast(
+          context: context,
+          variant: .destructive,
+          title: Text(l10n.error),
         );
       }
     }
@@ -81,29 +83,24 @@ class _CreateTeamPageState extends State<CreateTeamPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.createTeam),
-        actions: [
-          IconButton(
-            icon: _isSaving
-                ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-                : const Icon(Icons.save),
-            onPressed: _isSaving ? null : _save,
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
+    return AppPage(
+      title: l10n.createTeam,
+      actions: [
+        FHeaderAction(
+          icon: _isSaving
+              ? const FCircularProgress(size: .xs)
+              : const Icon(FIcons.save),
+          onPress: _isSaving ? null : _save,
+        ),
+      ],
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(UIConstants.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            TextFormField(
-              controller: _nameController,
-              decoration: InputDecoration(
-                labelText: l10n.teamName,
-                border: const OutlineInputBorder(),
-              ),
+            FTextFormField(
+              control: FTextFieldControl.managed(controller: _nameController),
+              label: Text(l10n.teamName),
               validator: (value) {
                 if (value == null || value.trim().isEmpty) {
                   return l10n.requiredField;
@@ -112,12 +109,9 @@ class _CreateTeamPageState extends State<CreateTeamPage> {
               },
             ),
             const SizedBox(height: UIConstants.md),
-            TextFormField(
-              controller: _descController,
-              decoration: InputDecoration(
-                labelText: l10n.teamDescription,
-                border: const OutlineInputBorder(),
-              ),
+            FTextField(
+              control: FTextFieldControl.managed(controller: _descController),
+              label: Text(l10n.teamDescription),
               maxLines: 3,
             ),
             const SizedBox(height: UIConstants.md),
@@ -127,7 +121,9 @@ class _CreateTeamPageState extends State<CreateTeamPage> {
                 labelText: l10n.teamPermission,
                 border: const OutlineInputBorder(),
               ),
-              items: _permissions.map((p) => DropdownMenuItem(value: p, child: Text(p))).toList(),
+              items: _permissions
+                  .map((p) => DropdownMenuItem(value: p, child: Text(p)))
+                  .toList(),
               onChanged: (v) => setState(() => _permission = v ?? 'read'),
             ),
             const SizedBox(height: UIConstants.md),
