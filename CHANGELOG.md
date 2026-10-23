@@ -34,6 +34,7 @@
 - **Filter sheets on `FSheet`**: issue and repository filters now open as Forui modal sheets (`showFSheet`) from the issue list, repository detail and search pages
 - **Last Material chrome removed**: team and organization detail pages now use `AppPage` + `FTabs` (collapsing Material headers and swipeable `TabBarView`s are gone), organization overflow actions live in an `FPopoverMenu`
 - **Consistency pass**: remaining `SwitchListTile`/`CheckboxListTile` in create/edit forms replaced with `FSwitch`/`FCheckbox`, remaining filter `Chip`s with `AppFilterChip`, and the last Material icons/snackbars replaced
+- **Polish**: chip-style `FButton`s now size to their content inside `Wrap`s, page columns stretch so filter rows align left, avatars fall back to `FAvatar`, and README screenshots were refreshed with the Forui UI
 
 ### Added
 - `AppTheme` (brand palette, light/dark Forui themes, touch/desktop density)

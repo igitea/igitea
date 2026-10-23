@@ -226,6 +226,7 @@ class _EditReleasePageState extends State<EditReleasePage> {
               FButton(
                 variant: .ghost,
                 size: .xs,
+                mainAxisSize: .min,
                 prefix: const Icon(FIcons.tag, size: 16),
                 onPress: () async {
                   final tag = await showDialog<String>(

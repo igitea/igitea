@@ -119,6 +119,7 @@ class _PackageListPageState extends State<PackageListPage> {
               child: FButton(
                 variant: isSelected ? .primary : .outline,
                 size: .xs,
+                mainAxisSize: .min,
                 onPress: () {
                   setState(() => _typeFilter = type);
                   _loadPackages();

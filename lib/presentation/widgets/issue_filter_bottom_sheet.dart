@@ -101,6 +101,7 @@ class _IssueFilterBottomSheetState extends State<IssueFilterBottomSheet> {
                           return FButton(
                             variant: isSelected ? .primary : .outline,
                             size: .xs,
+                            mainAxisSize: .min,
                             onPress: () => _toggleLabel(label),
                             child: Text(label),
                           );
@@ -119,6 +120,7 @@ class _IssueFilterBottomSheetState extends State<IssueFilterBottomSheet> {
                           return FButton(
                             variant: isSelected ? .primary : .outline,
                             size: .xs,
+                            mainAxisSize: .min,
                             onPress: () => _toggleMilestone(m),
                             child: Text(m),
                           );

@@ -133,6 +133,7 @@ class _CreateIssuePageState extends State<CreateIssuePage> {
             return FButton(
               variant: isSelected ? .primary : .outline,
               size: .xs,
+              mainAxisSize: .min,
               onPress: () {
                 final id = label.id;
                 if (id == null) return;

@@ -79,6 +79,7 @@ class _RepoFilterBottomSheetState extends State<RepoFilterBottomSheet> {
                         return FButton(
                           variant: isSelected ? .primary : .outline,
                           size: .xs,
+                          mainAxisSize: .min,
                           onPress: () => setState(
                             () => _state = _state.copyWith(
                               sort: option.value,

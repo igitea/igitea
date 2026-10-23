@@ -139,6 +139,7 @@ class _SearchPageState extends State<SearchPage> {
     final l10n = AppLocalizations.of(context)!;
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),

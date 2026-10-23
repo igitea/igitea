@@ -6,6 +6,7 @@ import 'package:igitea/core/storage/auth_method_storage.dart';
 import 'package:igitea/domain/entities/auth_state.dart';
 import 'package:igitea/presentation/pages/dashboard_page.dart';
 import 'package:igitea/presentation/pages/home_page.dart';
+import 'package:igitea/presentation/widgets/user_avatar.dart';
 import 'package:igitea/widget_test_helpers.dart';
 
 void main() {
@@ -47,7 +48,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('My Work'), findsOneWidget);
-      expect(find.byType(CircleAvatar), findsAtLeast(1));
+      expect(find.byType(UserAvatar), findsAtLeast(1));
     });
 
     testWidgets('shows dashboard as default tab', (tester) async {

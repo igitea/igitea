@@ -269,6 +269,7 @@ class _EditIssuePageState extends State<EditIssuePage> {
             return FButton(
               variant: isSelected ? .primary : .outline,
               size: .xs,
+              mainAxisSize: .min,
               prefix: Container(
                 width: 8,
                 height: 8,
@@ -336,6 +337,7 @@ class _EditIssuePageState extends State<EditIssuePage> {
             FButton(
               variant: .ghost,
               size: .xs,
+              mainAxisSize: .min,
               onPress: () => setState(() => _showPreview = !_showPreview),
               child: Text(_showPreview ? l10n.edit : l10n.preview),
             ),

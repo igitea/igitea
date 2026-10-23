@@ -1286,6 +1286,7 @@ class _IssuesTabState extends State<_IssuesTab> {
                                   ? .primary
                                   : .outline,
                               size: .xs,
+                              mainAxisSize: .min,
                               onPress: () => setState(() {
                                 _selectedFilter = option.$1;
                                 _loadIssues();
@@ -1725,6 +1726,7 @@ class _PullRequestsTabState extends State<_PullRequestsTab> {
                               ? .primary
                               : .outline,
                           size: .xs,
+                          mainAxisSize: .min,
                           onPress: () => setState(() {
                             _selectedFilter = option.$1;
                             _loadPullRequests();

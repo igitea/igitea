@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 
@@ -45,8 +46,8 @@ class OrgAvatar extends StatelessWidget {
   }
 
   Widget _buildFallback(ThemeData theme, String initial) {
-    return CircleAvatar(
-      radius: radius,
+    return FAvatar.raw(
+      size: radius * 2,
       child: Text(
         initial,
         style: TextStyle(

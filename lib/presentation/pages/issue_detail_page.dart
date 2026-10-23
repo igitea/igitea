@@ -470,6 +470,7 @@ class _IssueContent extends StatelessWidget {
                 FButton(
                   variant: .outline,
                   size: .xs,
+                  mainAxisSize: .min,
                   prefix: const Icon(FIcons.pencilLine, size: 16),
                   onPress: () async {
                     final edited = await Navigator.of(context).push<bool>(
@@ -493,6 +494,7 @@ class _IssueContent extends StatelessWidget {
               FButton(
                 variant: .outline,
                 size: .xs,
+                mainAxisSize: .min,
                 prefix: Icon(
                   isSubscribed ? FIcons.bellOff : FIcons.bell,
                   size: 16,

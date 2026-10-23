@@ -209,6 +209,7 @@ class _IssueListPageState extends State<IssueListPage> {
     return AppPage(
       title: l10n.issues,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
@@ -398,6 +399,7 @@ class _IssueListPageState extends State<IssueListPage> {
                 child: FButton(
                   variant: .ghost,
                   size: .xs,
+                  mainAxisSize: .min,
                   prefix: const Icon(FIcons.bookmarkPlus, size: 14),
                   onPress: _saveCurrentFilter,
                   child: Text(l10n.saveFilter),
@@ -461,6 +463,7 @@ class _FilterChips extends StatelessWidget {
           FButton(
             variant: selectedState == value ? .primary : .outline,
             size: .xs,
+            mainAxisSize: .min,
             onPress: () => onSelected(value),
             child: Text(label),
           ),

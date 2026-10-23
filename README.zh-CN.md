@@ -6,9 +6,9 @@
 
 ## 截图
 
-| 登录 | 个人资料 | 仓库 | Issue |
-|:----:|:--------:|:----:|:-----:|
-| <img src="doc/login.png" width="200" /> | <img src="doc/profile.png" width="200" /> | <img src="doc/repos.png" width="200" /> | <img src="doc/issues.png" width="200" /> |
+| 主页 | 登录 | 个人资料 | 仓库 |
+|:----:|:----:|:--------:|:----:|
+| <img src="doc/home.png" width="200" /> | <img src="doc/login.png" width="200" /> | <img src="doc/profile.png" width="200" /> | <img src="doc/repos.png" width="200" /> |
 
 ## 功能特性
 

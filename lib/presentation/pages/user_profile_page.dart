@@ -419,11 +419,13 @@ class _UserHeader extends StatelessWidget {
                         ? FButton(
                             variant: .outline,
                             size: .xs,
+                            mainAxisSize: .min,
                             onPress: onToggleFollow,
                             child: Text(l10n.unfollow),
                           )
                         : FButton(
                             size: .xs,
+                            mainAxisSize: .min,
                             onPress: onToggleFollow,
                             child: Text(l10n.follow),
                           ),

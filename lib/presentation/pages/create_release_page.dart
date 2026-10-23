@@ -222,6 +222,7 @@ class _CreateReleasePageState extends State<CreateReleasePage> {
             FButton(
               variant: _useExistingTag ? .outline : .primary,
               size: .xs,
+              mainAxisSize: .min,
               onPress: () => setState(() => _useExistingTag = false),
               child: const Text('New'),
             ),
@@ -229,6 +230,7 @@ class _CreateReleasePageState extends State<CreateReleasePage> {
             FButton(
               variant: _useExistingTag ? .primary : .outline,
               size: .xs,
+              mainAxisSize: .min,
               onPress: () => setState(() => _useExistingTag = true),
               child: const Text('Existing'),
             ),
