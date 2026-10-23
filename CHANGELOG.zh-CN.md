@@ -23,6 +23,9 @@
 - **表单页批量迁移 Forui**：新建/编辑标签、新建/编辑里程碑、新建/编辑组织、新建/编辑团队、新建/编辑 Release、新建仓库、迁移仓库、新建 Webhook、新建管理 Webhook——统一使用 `AppPage`、`FTextFormField`/`FTextField`、`FButton`、`FDialog` 与 `showFToast`
 - **审查弹窗**：`CreateReviewDialog` 改为 `FDialog`，审查动作使用 Forui 分段按钮
 - **邮箱页**：`AppPage` 头部操作、Forui 列表行、添加/删除弹窗与 Toast
+- **账户与用户页**：SSH 密钥、访问令牌、GPG 密钥、OAuth 应用、关注列表、用户/星标仓库、组织列表、用户管理全部迁移到 `AppPage` + Forui 列表行/`FDialog`/Toast（令牌页保留作用域分组与创建弹窗）
+- **文件与 Diff 查看器**：仓库文件、Blame、历史、对比、PR 文件列表、PR Diff 页改用 `AppPage` 工具栏 + `FHeaderAction`、溢出菜单 `FPopoverMenu`、Forui 状态视图与弹窗；代码/Diff 渲染逻辑不动
+- **管理页**：仪表盘、Hooks、Cron、Runners、邮件、徽章改为分组 `AppSection`/`AppTile` 列表，搜索、操作与弹窗 Forui 化
 
 ### Added
 - `AppTheme`（品牌色板、亮/暗 Forui 主题、触屏/桌面密度）

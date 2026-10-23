@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
-import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../core/errors/failures.dart';
 import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
-import '../widgets/empty_state.dart';
+import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_state_views.dart';
+import '../widgets/forui/app_tile.dart';
 
 class GpgKeysPage extends StatefulWidget {
   const GpgKeysPage({super.key});
@@ -19,6 +21,7 @@ class _GpgKeysPageState extends State<GpgKeysPage> {
   List<GPGKey> _keys = [];
   String? _error;
   bool _loading = true;
+  final Set<String> _expanded = {};
 
   @override
   void initState() {
@@ -32,31 +35,45 @@ class _GpgKeysPageState extends State<GpgKeysPage> {
     if (!mounted) return;
     switch (result) {
       case Right<Failure, List<GPGKey>>(:final value):
-        setState(() { _keys = value; _loading = false; _error = null; });
+        setState(() {
+          _keys = value;
+          _loading = false;
+          _error = null;
+        });
       case Left<Failure, List<GPGKey>>(:final value):
-        if (mounted) setState(() { _loading = false; _error = value.message; });
+        if (mounted) {
+          setState(() {
+            _loading = false;
+            _error = value.message;
+          });
+        }
     }
   }
 
   Future<void> _add() async {
     final l10n = AppLocalizations.of(context)!;
     final ctrl = TextEditingController();
-    final key = await showDialog<String>(
+    final key = await showFDialog<String>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx, style, animation) => FDialog(
         title: Text(l10n.addGpgKey),
-        content: TextField(
-          controller: ctrl,
-          decoration: InputDecoration(
-            hintText: l10n.gpgKeyHint,
-            border: const OutlineInputBorder(),
-          ),
+        body: FTextField(
+          control: FTextFieldControl.managed(controller: ctrl),
+          label: Text(l10n.publicKey),
+          hint: l10n.gpgKeyHint,
           maxLines: 6,
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l10n.cancel)),
-          FilledButton(
-            onPressed: ctrl.text.trim().isEmpty ? null : () => Navigator.pop(ctx, ctrl.text.trim()),
+          FButton(
+            variant: .outline,
+            onPress: () => Navigator.pop(ctx),
+            child: Text(l10n.cancel),
+          ),
+          FButton(
+            onPress: () {
+              final value = ctrl.text.trim();
+              if (value.isNotEmpty) Navigator.pop(ctx, value);
+            },
             child: Text(l10n.add),
           ),
         ],
@@ -68,23 +85,35 @@ class _GpgKeysPageState extends State<GpgKeysPage> {
     if (!mounted) return;
     switch (result) {
       case Right<Failure, GPGKey>():
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.gpgKeyAdded)));
+        showFToast(context: context, title: Text(l10n.gpgKeyAdded));
         _load();
-      case Left<Failure, GPGKey>(:final value):
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
+      case Left<Failure, GPGKey>():
+        showFToast(
+          context: context,
+          variant: .destructive,
+          title: Text(l10n.error),
+        );
     }
   }
 
   Future<void> _delete(GPGKey gpgKey) async {
     final l10n = AppLocalizations.of(context)!;
-    final ok = await showDialog<bool>(
+    final ok = await showFDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx, style, animation) => FDialog(
         title: Text(l10n.deleteGpgKey),
-        content: Text(l10n.deleteGpgKeyConfirm),
+        body: Text(l10n.deleteGpgKeyConfirm),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(l10n.delete)),
+          FButton(
+            variant: .outline,
+            onPress: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          FButton(
+            variant: .destructive,
+            onPress: () => Navigator.pop(ctx, true),
+            child: Text(l10n.delete),
+          ),
         ],
       ),
     );
@@ -95,10 +124,14 @@ class _GpgKeysPageState extends State<GpgKeysPage> {
     if (!mounted) return;
     switch (result) {
       case Right<Failure, void>():
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.gpgKeyDeleted)));
+        showFToast(context: context, title: Text(l10n.gpgKeyDeleted));
         _load();
-      case Left<Failure, void>(:final value):
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
+      case Left<Failure, void>():
+        showFToast(
+          context: context,
+          variant: .destructive,
+          title: Text(l10n.error),
+        );
     }
   }
 
@@ -107,111 +140,103 @@ class _GpgKeysPageState extends State<GpgKeysPage> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.gpgKeys)),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _add,
-        icon: const Icon(Icons.add),
-        label: Text(l10n.add),
-      ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
+    return AppPage(
+      title: l10n.gpgKeys,
+      actions: [
+        FHeaderAction(
+          icon: const Icon(FIcons.plus),
+          semanticsLabel: l10n.addGpgKey,
+          onPress: _add,
+        ),
+      ],
+      child: _loading
+          ? const AppLoading()
           : _error != null
-              ? Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.error_outline_rounded, size: 48,
-                        color: Theme.of(context).colorScheme.error),
-                      const SizedBox(height: 16),
-                      Text(_error!, style: Theme.of(context).textTheme.bodyLarge),
-                      const SizedBox(height: 16),
-                      FilledButton.tonalIcon(
-                        onPressed: _load,
-                        icon: const Icon(Icons.refresh_rounded, size: 18),
-                        label: Text(l10n.retry),
-                      ),
-                    ],
-                  ),
-                )
-              : _keys.isEmpty
-              ? EmptyState(icon: Icons.vpn_key_outlined, title: l10n.noGpgKeys)
-              : RefreshIndicator(
-                  onRefresh: _load,
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(UIConstants.md),
-                    itemCount: _keys.length,
-                    itemBuilder: (context, index) {
-                      final key = _keys[index];
-                      return Card(
-                        elevation: 0,
-                        margin: const EdgeInsets.only(bottom: UIConstants.sm),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          side: BorderSide(color: theme.colorScheme.outlineVariant),
-                        ),
-                        child: ExpansionTile(
-                          leading: Icon(Icons.vpn_key, color: theme.colorScheme.primary),
-                          title: Text(
-                            key.key_id ?? l10n.unknown,
-                            style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500),
-                          ),
-                          subtitle: Row(
-                            children: [
-                              if (key.can_sign == true)
-                                _Badge(label: l10n.sign, color: Colors.blue),
-                              if (key.can_certify == true) ...[
-                                const SizedBox(width: 4),
-                                _Badge(label: l10n.certify, color: Colors.purple),
-                              ],
-                              if (key.verified == true) ...[
-                                const SizedBox(width: 4),
-                                _Badge(label: l10n.verified, color: Colors.green),
-                              ],
-                            ],
-                          ),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.delete_outline),
-                            onPressed: () => _delete(key),
-                          ),
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-                              child: SelectableText(
-                                key.public_key ?? '',
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  fontFamily: 'monospace',
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
-                  ),
-                ),
+          ? AppError(message: _error!, onRetry: _load)
+          : _keys.isEmpty
+          ? AppEmpty(icon: FIcons.keyRound, title: l10n.noGpgKeys)
+          : RefreshIndicator(
+              onRefresh: _load,
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+                children: [
+                  for (final key in _keys)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: _buildKeyCard(key, l10n, theme),
+                    ),
+                ],
+              ),
+            ),
     );
   }
-}
 
-class _Badge extends StatelessWidget {
-  final String label;
-  final Color color;
+  Widget _buildKeyCard(GPGKey key, AppLocalizations l10n, ThemeData theme) {
+    final keyId = key.id?.toString() ?? key.key_id ?? key.public_key ?? '';
+    final expanded = _expanded.contains(keyId);
+    final badges = [
+      if (key.can_sign == true) l10n.sign,
+      if (key.can_certify == true) l10n.certify,
+      if (key.verified == true) l10n.verified,
+    ];
 
-  const _Badge({required this.label, required this.color});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(fontSize: 10, fontWeight: FontWeight.w600, color: color),
+    return FCard.raw(
+      child: Column(
+        children: [
+          AppTile(
+            leading: Icon(
+              FIcons.keyRound,
+              size: 18,
+              color: theme.colorScheme.primary,
+            ),
+            title: key.key_id ?? l10n.unknown,
+            subtitle: badges.join(' · '),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  expanded ? FIcons.chevronUp : FIcons.chevronDown,
+                  size: 16,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 4),
+                FTappable(
+                  onPress: () => _delete(key),
+                  semanticsLabel: l10n.deleteGpgKey,
+                  child: Padding(
+                    padding: const EdgeInsets.all(6),
+                    child: Icon(
+                      FIcons.trash2,
+                      size: 16,
+                      color: theme.colorScheme.error,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            showChevron: false,
+            onPress: () {
+              setState(() {
+                if (expanded) {
+                  _expanded.remove(keyId);
+                } else {
+                  _expanded.add(keyId);
+                }
+              });
+            },
+          ),
+          if (expanded)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+              child: SelectableText(
+                key.public_key ?? '',
+                style: theme.textTheme.bodySmall?.copyWith(
+                  fontFamily: 'monospace',
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

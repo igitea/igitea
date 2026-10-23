@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../../l10n/app_localizations.dart';
+import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_section.dart';
+import '../widgets/forui/app_tile.dart';
 import 'admin_badges_page.dart';
 import 'admin_cron_page.dart';
 import 'admin_emails_page.dart';
@@ -14,88 +18,58 @@ class AdminDashboardPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.adminPanel)),
-      body: ListView(
-        padding: const EdgeInsets.symmetric(vertical: 8),
+    return AppPage(
+      title: l10n.adminPanel,
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
         children: [
-          _AdminFeatureCard(
-            icon: Icons.webhook,
-            title: l10n.adminHooksTitle,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const AdminHooksPage()),
-              );
-            },
-          ),
-          _AdminFeatureCard(
-            icon: Icons.schedule,
-            title: l10n.adminCronTitle,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const AdminCronPage()),
-              );
-            },
-          ),
-          _AdminFeatureCard(
-            icon: Icons.directions_run,
-            title: l10n.adminRunnersTitle,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const AdminRunnersPage()),
-              );
-            },
-          ),
-          _AdminFeatureCard(
-            icon: Icons.email,
-            title: l10n.adminEmailsTitle,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const AdminEmailsPage()),
-              );
-            },
-          ),
-          _AdminFeatureCard(
-            icon: Icons.badge,
-            title: l10n.adminBadgesTitle,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const AdminBadgesPage()),
-              );
-            },
+          AppSection(
+            title: '',
+            showHeader: false,
+            children: [
+              AppTile(
+                leading: const Icon(FIcons.webhook),
+                title: l10n.adminHooksTitle,
+                onPress: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AdminHooksPage()),
+                ),
+              ),
+              AppTile(
+                leading: const Icon(FIcons.calendarClock),
+                title: l10n.adminCronTitle,
+                onPress: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AdminCronPage()),
+                ),
+              ),
+              AppTile(
+                leading: const Icon(FIcons.activity),
+                title: l10n.adminRunnersTitle,
+                onPress: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AdminRunnersPage()),
+                ),
+              ),
+              AppTile(
+                leading: const Icon(FIcons.mail),
+                title: l10n.adminEmailsTitle,
+                onPress: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AdminEmailsPage()),
+                ),
+              ),
+              AppTile(
+                leading: const Icon(FIcons.badgeCheck),
+                title: l10n.adminBadgesTitle,
+                onPress: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const AdminBadgesPage()),
+                ),
+              ),
+            ],
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _AdminFeatureCard extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final VoidCallback onTap;
-
-  const _AdminFeatureCard({
-    required this.icon,
-    required this.title,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      child: ListTile(
-        leading: Icon(icon, color: theme.colorScheme.primary),
-        title: Text(title),
-        trailing: Semantics(excludeSemantics: true, child: Icon(Icons.chevron_right, color: theme.colorScheme.onSurfaceVariant)),
-        onTap: onTap,
       ),
     );
   }

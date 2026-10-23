@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../../core/di/injection.dart';
 import '../../l10n/app_localizations.dart';
+import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_state_views.dart';
+import '../widgets/forui/app_section.dart';
+import '../widgets/forui/app_tile.dart';
 import '../state/admin_notifier.dart';
 
 class AdminRunnersPage extends StatefulWidget {
@@ -23,50 +28,43 @@ class _AdminRunnersPageState extends State<AdminRunnersPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.adminRunnersTitle)),
-      body: ListenableBuilder(
+    return AppPage(
+      title: l10n.adminRunnersTitle,
+      child: ListenableBuilder(
         listenable: Injection.adminNotifier,
         builder: (context, _) {
           final state = Injection.adminNotifier.runnersState;
           return switch (state) {
-            AdminRunnersLoading() => const Center(child: CircularProgressIndicator()),
-            AdminRunnersError(:final message) => Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text('${l10n.error}: $message'),
-                  const SizedBox(height: 16),
-                  FilledButton(
-                    onPressed: () => Injection.adminNotifier.loadRunners(),
-                    child: Text(l10n.retry),
-                  ),
-                ],
-              ),
+            AdminRunnersLoading() => const AppLoading(),
+            AdminRunnersError(:final message) => AppError(
+              message: message,
+              onRetry: () => Injection.adminNotifier.loadRunners(),
             ),
             AdminRunnersLoaded(:final runners) => runners.isEmpty
-              ? Center(child: Text(l10n.adminNoRunners))
-              : ListView.builder(
-                  itemCount: runners.length,
-                  itemBuilder: (context, index) {
-                    final runner = runners[index];
-                    return Card(
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                      child: ListTile(
-                        leading: const Icon(Icons.directions_run),
-                        title: Text(runner.name ?? l10n.unknown),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            if (runner.status != null)
-                              Text('Status: ${runner.status}'),
-                            if (runner.busy != null)
-                              Text('Busy: ${runner.busy! ? 'Yes' : 'No'}'),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
+              ? AppEmpty(icon: FIcons.activity, title: l10n.adminNoRunners)
+              : ListView(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+                  children: [
+                    AppSection(
+                      title: '',
+                      showHeader: false,
+                      children: [
+                        for (final runner in runners)
+                          AppTile(
+                            leading: const Icon(FIcons.activity),
+                            title: runner.name ?? l10n.unknown,
+                            subtitle: [
+                              if (runner.status != null)
+                                'Status: ${runner.status}',
+                              if (runner.busy != null)
+                                'Busy: ${runner.busy! ? 'Yes' : 'No'}',
+                            ].join(' · '),
+                            showChevron: false,
+                            onPress: null,
+                          ),
+                      ],
+                    ),
+                  ],
                 ),
             _ => const SizedBox.shrink(),
           };

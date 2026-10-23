@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../../core/di/injection.dart';
 import '../../core/errors/failures.dart';
@@ -7,6 +8,9 @@ import '../../data/models/generated/generated_models.dart';
 import '../../domain/entities/auth_state.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/token_notifier.dart';
+import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_state_views.dart';
+import '../widgets/forui/app_tile.dart';
 
 const _scopeGroups = [
   _ScopeGroup('User', [
@@ -89,9 +93,9 @@ class _TokensPageState extends State<TokensPage> {
     final nameController = TextEditingController();
     final selectedScopes = <String>{};
 
-    final result = await showDialog<_CreateResult>(
+    final result = await showFDialog<_CreateResult>(
       context: context,
-      builder: (ctx) => _CreateTokenDialog(
+      builder: (ctx, style, animation) => _CreateTokenDialog(
         nameController: nameController,
         selectedScopes: selectedScopes,
       ),
@@ -111,8 +115,10 @@ class _TokensPageState extends State<TokensPage> {
         _showTokenCreatedDialog(value);
         _loadTokens();
       case Left<Failure, AccessToken>(:final value):
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.error}: ${value.message}')),
+        showFToast(
+          context: context,
+          variant: .destructive,
+          title: Text('${l10n.error}: ${value.message}'),
         );
     }
   }
@@ -120,17 +126,17 @@ class _TokensPageState extends State<TokensPage> {
   void _showTokenCreatedDialog(AccessToken token) {
     final l10n = AppLocalizations.of(context)!;
 
-    showDialog(
+    showFDialog<void>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx, style, animation) => FDialog(
         title: Row(
           children: [
-            Icon(Icons.check_circle_rounded, color: Theme.of(ctx).colorScheme.primary),
+            Icon(FIcons.circleCheck, color: Theme.of(ctx).colorScheme.primary),
             const SizedBox(width: 8),
             Text(l10n.tokenCreated),
           ],
         ),
-        content: Column(
+        body: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -140,14 +146,16 @@ class _TokensPageState extends State<TokensPage> {
               width: double.infinity,
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Theme.of(ctx).colorScheme.errorContainer.withValues(alpha: 0.3),
+                color: Theme.of(
+                  ctx,
+                ).colorScheme.errorContainer.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Icon(
-                    Icons.warning_amber_rounded,
+                    FIcons.triangleAlert,
                     size: 18,
                     color: Theme.of(ctx).colorScheme.error,
                   ),
@@ -182,10 +190,7 @@ class _TokensPageState extends State<TokensPage> {
           ],
         ),
         actions: [
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l10n.ok),
-          ),
+          FButton(onPress: () => Navigator.pop(ctx), child: Text(l10n.ok)),
         ],
       ),
     );
@@ -193,18 +198,20 @@ class _TokensPageState extends State<TokensPage> {
 
   Future<void> _deleteToken(AccessToken token) async {
     final l10n = AppLocalizations.of(context)!;
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showFDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx, style, animation) => FDialog(
         title: Text(l10n.deleteToken),
-        content: Text('${l10n.deleteTokenConfirm} "${token.name ?? ''}"?'),
+        body: Text('${l10n.deleteTokenConfirm} "${token.name ?? ''}"?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(ctx).colorScheme.error,
-            ),
+          FButton(
+            variant: .outline,
+            onPress: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          FButton(
+            variant: .destructive,
+            onPress: () => Navigator.pop(ctx, true),
             child: Text(l10n.delete),
           ),
         ],
@@ -220,9 +227,7 @@ class _TokensPageState extends State<TokensPage> {
 
     if (mounted) {
       if (success) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.tokenDeleted)),
-        );
+        showFToast(context: context, title: Text(l10n.tokenDeleted));
       }
       _loadTokens();
     }
@@ -231,25 +236,26 @@ class _TokensPageState extends State<TokensPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.accessTokens),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: _createToken,
-            tooltip: l10n.createToken,
-          ),
-        ],
-      ),
-      body: ListenableBuilder(
+    return AppPage(
+      title: l10n.accessTokens,
+      actions: [
+        FHeaderAction(
+          icon: const Icon(FIcons.plus),
+          semanticsLabel: l10n.createToken,
+          onPress: _createToken,
+        ),
+      ],
+      child: ListenableBuilder(
         listenable: Injection.tokenNotifier,
         builder: (context, _) {
           final state = Injection.tokenNotifier.state;
           return switch (state) {
             TokenInitial() => const SizedBox.shrink(),
-            TokenLoading() => _buildLoadingSkeleton(),
-            TokenError(:final message) => _buildErrorState(message, l10n),
+            TokenLoading() => const AppLoading(),
+            TokenError(:final message) => AppError(
+              message: message,
+              onRetry: _loadTokens,
+            ),
             TokenListLoaded(:final tokens) => _buildTokenList(tokens, l10n),
             _ => _buildTokenList([], l10n),
           };
@@ -258,110 +264,15 @@ class _TokensPageState extends State<TokensPage> {
     );
   }
 
-  Widget _buildLoadingSkeleton() {
-    final theme = Theme.of(context);
-    return ListView.separated(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      itemCount: 5,
-      separatorBuilder: (_, __) => const SizedBox(height: 8),
-      itemBuilder: (context, index) => Card(
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: BorderSide(color: theme.colorScheme.outlineVariant),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              CircleAvatar(
-                backgroundColor: theme.colorScheme.surfaceContainerHighest,
-                radius: 20,
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      width: 120,
-                      height: 14,
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.surfaceContainerHighest,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Container(
-                      width: 80,
-                      height: 10,
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.surfaceContainerHighest,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildErrorState(String message, AppLocalizations l10n) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.error_outline_rounded,
-            size: 64,
-            color: Theme.of(context).colorScheme.error,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            message,
-            style: Theme.of(context).textTheme.bodyLarge,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 16),
-          FilledButton.tonalIcon(
-            onPressed: _loadTokens,
-            icon: const Icon(Icons.refresh_rounded, size: 18),
-            label: Text(l10n.retry),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildTokenList(List<AccessToken> tokens, AppLocalizations l10n) {
     if (tokens.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.vpn_key_rounded,
-              size: 64,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
-            const SizedBox(height: 16),
-            Text(
-              l10n.noTokens,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              ),
-            ),
-            const SizedBox(height: 24),
-            FilledButton.icon(
-              onPressed: _createToken,
-              icon: const Icon(Icons.add_rounded, size: 18),
-              label: Text(l10n.createToken),
-            ),
-          ],
+      return AppEmpty(
+        icon: FIcons.keyRound,
+        title: l10n.noTokens,
+        action: FButton(
+          prefix: const Icon(FIcons.plus, size: 16),
+          onPress: _createToken,
+          child: Text(l10n.createToken),
         ),
       );
     }
@@ -369,64 +280,42 @@ class _TokensPageState extends State<TokensPage> {
     return RefreshIndicator(
       onRefresh: _loadTokens,
       child: ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
         itemCount: tokens.length,
         itemBuilder: (context, index) {
           final token = tokens[index];
           final theme = Theme.of(context);
-          return Card(
-            elevation: 0,
-            margin: const EdgeInsets.only(bottom: 8),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-              side: BorderSide(color: theme.colorScheme.outlineVariant),
-            ),
-            child: InkWell(
-              borderRadius: BorderRadius.circular(12),
-              onTap: null,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                child: Row(
-                  children: [
-                    CircleAvatar(
-                      backgroundColor: theme.colorScheme.primaryContainer,
-                      child: Icon(Icons.vpn_key_rounded, color: theme.colorScheme.onPrimaryContainer, size: 20),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            token.name ?? '',
-                            style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
-                          ),
-                          const SizedBox(height: 2),
-                          if (token.token_last_eight != null)
-                            Text(
-                              '...${token.token_last_eight}',
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                fontFamily: 'monospace',
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                          if (token.created_at != null)
-                            Text(
-                              '${l10n.createdAt}: ${token.created_at!.toLocal().toString().split(' ')[0]}',
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                            ),
-                        ],
-                      ),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.delete_outline_rounded, color: theme.colorScheme.error),
-                      onPressed: () => _deleteToken(token),
-                      tooltip: l10n.deleteToken,
-                    ),
-                  ],
+          final subtitle = [
+            if (token.token_last_eight != null) '...${token.token_last_eight}',
+            if (token.created_at != null)
+              '${l10n.createdAt}: ${token.created_at!.toLocal().toString().split(' ')[0]}',
+          ].join(' · ');
+
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: FCard.raw(
+              child: AppTile(
+                leading: Icon(
+                  FIcons.keyRound,
+                  size: 18,
+                  color: theme.colorScheme.primary,
                 ),
+                title: token.name ?? '',
+                subtitle: subtitle,
+                showChevron: false,
+                trailing: FTappable(
+                  onPress: () => _deleteToken(token),
+                  semanticsLabel: l10n.deleteToken,
+                  child: Padding(
+                    padding: const EdgeInsets.all(6),
+                    child: Icon(
+                      FIcons.trash2,
+                      size: 16,
+                      color: theme.colorScheme.error,
+                    ),
+                  ),
+                ),
+                onPress: null,
               ),
             ),
           );
@@ -486,178 +375,176 @@ class _CreateTokenDialogState extends State<_CreateTokenDialog> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    return AlertDialog(
+    return FDialog(
       title: Text(l10n.createToken),
-      content: SizedBox(
-        width: double.maxFinite,
-        child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 8),
-                  TextField(
-                    controller: widget.nameController,
-                    focusNode: _nameFocusNode,
-                    decoration: InputDecoration(
-                      labelText: l10n.tokenName,
-                      border: const OutlineInputBorder(),
-                    ),
-                    maxLength: 255,
-                  ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  Text(
-                    l10n.scopes,
-                    style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
-                  ),
-                  const Spacer(),
-                  TextButton(
-                    onPressed: () {
-                      setState(() {
-                        _selectAll = !_selectAll;
-                        if (_selectAll) {
-                          widget.selectedScopes.addAll(
-                            _scopeGroups.expand((g) => g.items).map((i) => i.value),
-                          );
-                        } else {
-                          widget.selectedScopes.clear();
-                        }
-                      });
-                    },
-                    child: Text(_selectAll ? l10n.deselectAll : l10n.selectAll),
-                  ),
-                ],
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 8),
+            FTextField(
+              control: FTextFieldControl.managed(
+                controller: widget.nameController,
               ),
-              const SizedBox(height: 8),
-              ..._scopeGroups.map((group) {
-                final allSelected = group.items
-                    .every((item) => widget.selectedScopes.contains(item.value));
-                final someSelected = group.items
-                    .any((item) => widget.selectedScopes.contains(item.value));
-                final expanded = _expandedGroups.contains(group.name);
-
-                return Card(
-                  elevation: 0,
-                  margin: const EdgeInsets.only(bottom: 4),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    side: BorderSide(color: theme.colorScheme.outlineVariant),
+              focusNode: _nameFocusNode,
+              label: Text(l10n.tokenName),
+              maxLength: 255,
+            ),
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Text(
+                  l10n.scopes,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
                   ),
+                ),
+                const Spacer(),
+                FButton(
+                  variant: .ghost,
+                  size: .sm,
+                  onPress: () {
+                    setState(() {
+                      _selectAll = !_selectAll;
+                      if (_selectAll) {
+                        widget.selectedScopes.addAll(
+                          _scopeGroups
+                              .expand((g) => g.items)
+                              .map((i) => i.value),
+                        );
+                      } else {
+                        widget.selectedScopes.clear();
+                      }
+                    });
+                  },
+                  child: Text(_selectAll ? l10n.deselectAll : l10n.selectAll),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            ..._scopeGroups.map((group) {
+              final allSelected = group.items.every(
+                (item) => widget.selectedScopes.contains(item.value),
+              );
+              final expanded = _expandedGroups.contains(group.name);
+
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: FCard.raw(
                   child: Column(
                     children: [
-                      InkWell(
-                        borderRadius: BorderRadius.circular(8),
-                        onTap: () {
-                          setState(() {
-                            if (expanded) {
-                              _expandedGroups.remove(group.name);
-                            } else {
-                              _expandedGroups.add(group.name);
-                            }
-                          });
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                          child: Row(
-                            children: [
-                              Checkbox(
-                                value: allSelected,
-                                tristate: someSelected && !allSelected,
-                                onChanged: (v) {
-                                  setState(() {
-                                    if (v == true) {
-                                      widget.selectedScopes
-                                          .addAll(group.items.map((i) => i.value));
-                                    } else {
-                                      widget.selectedScopes
-                                          .removeAll(group.items.map((i) => i.value));
-                                    }
-                                  });
-                                },
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Text(
-                                  group.name,
-                                  style: theme.textTheme.bodyMedium?.copyWith(
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ),
-                              Icon(
-                                expanded ? Icons.expand_less : Icons.expand_more,
-                                size: 20,
-                                color: theme.colorScheme.onSurfaceVariant,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      if (expanded)
-                        ...group.items.map((item) {
-                          final isSelected =
-                              widget.selectedScopes.contains(item.value);
-                          return InkWell(
-                            onTap: () {
+                      Row(
+                        children: [
+                          FCheckbox(
+                            value: allSelected,
+                            semanticsLabel: group.name,
+                            onChange: (v) {
                               setState(() {
-                                if (isSelected) {
-                                  widget.selectedScopes.remove(item.value);
+                                if (v) {
+                                  widget.selectedScopes.addAll(
+                                    group.items.map((i) => i.value),
+                                  );
                                 } else {
-                                  widget.selectedScopes.add(item.value);
+                                  widget.selectedScopes.removeAll(
+                                    group.items.map((i) => i.value),
+                                  );
                                 }
                               });
                             },
-                            child: Padding(
-                              padding: const EdgeInsets.only(left: 52, right: 12, top: 4, bottom: 4),
-                              child: Row(
-                                children: [
-                                  Checkbox(
-                                    value: isSelected,
-                                    onChanged: (v) {
-                                      setState(() {
-                                        if (v == true) {
-                                          widget.selectedScopes.add(item.value);
-                                        } else {
-                                          widget.selectedScopes.remove(item.value);
-                                        }
-                                      });
-                                    },
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    item.label,
-                                    style: theme.textTheme.bodyMedium,
-                                  ),
-                                ],
+                          ),
+                          Expanded(
+                            child: FTappable(
+                              onPress: () {
+                                setState(() {
+                                  if (expanded) {
+                                    _expandedGroups.remove(group.name);
+                                  } else {
+                                    _expandedGroups.add(group.name);
+                                  }
+                                });
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 10,
+                                ),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        group.name,
+                                        style: theme.textTheme.bodyMedium
+                                            ?.copyWith(
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                      ),
+                                    ),
+                                    Icon(
+                                      expanded
+                                          ? FIcons.chevronUp
+                                          : FIcons.chevronDown,
+                                      size: 20,
+                                      color: theme.colorScheme.onSurfaceVariant,
+                                    ),
+                                  ],
+                                ),
                               ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (expanded)
+                        ...group.items.map((item) {
+                          final isSelected = widget.selectedScopes.contains(
+                            item.value,
+                          );
+                          return Padding(
+                            padding: const EdgeInsets.only(
+                              left: 40,
+                              right: 12,
+                              top: 4,
+                              bottom: 4,
+                            ),
+                            child: FCheckbox(
+                              value: isSelected,
+                              label: Text(item.label),
+                              onChange: (v) {
+                                setState(() {
+                                  if (v) {
+                                    widget.selectedScopes.add(item.value);
+                                  } else {
+                                    widget.selectedScopes.remove(item.value);
+                                  }
+                                });
+                              },
                             ),
                           );
                         }),
                     ],
                   ),
-                );
-              }),
-            ],
-          ),
+                ),
+              );
+            }),
+          ],
         ),
       ),
       actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
+        FButton(
+          variant: .outline,
+          onPress: () => Navigator.pop(context),
           child: Text(l10n.cancel),
         ),
-        FilledButton(
-          onPressed: widget.nameController.text.trim().isEmpty
+        FButton(
+          onPress: widget.nameController.text.trim().isEmpty
               ? null
               : () => Navigator.pop(
-                    context,
-                    _CreateResult(
-                      widget.nameController.text.trim(),
-                      Set.from(widget.selectedScopes),
-                    ),
+                  context,
+                  _CreateResult(
+                    widget.nameController.text.trim(),
+                    Set.from(widget.selectedScopes),
                   ),
+                ),
           child: Text(l10n.create),
         ),
       ],

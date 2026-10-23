@@ -7,6 +7,7 @@ import 'package:flutter_highlight/flutter_highlight.dart';
 import 'package:flutter_highlight/themes/github.dart';
 import 'package:flutter_highlight/themes/vs2015.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:forui/forui.dart';
 import 'package:highlight/highlight.dart';
 import 'package:highlight/languages/all.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -17,7 +18,8 @@ import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../domain/usecases/repo_usecases.dart';
 import '../../l10n/app_localizations.dart';
-import '../widgets/slow_loading_indicator.dart';
+import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_state_views.dart';
 import 'file_history_page.dart';
 import 'file_compare_page.dart';
 import 'file_blame_page.dart';
@@ -176,22 +178,24 @@ class _RepoFilePageState extends State<RepoFilePage> {
     }
 
     final l10n = AppLocalizations.of(context)!;
-    final result = await showDialog<bool>(
+    final result = await showFDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context, style, animation) => FDialog(
         title: Text(l10n.unsavedChanges),
-        content: Text(l10n.unsavedChangesMessage),
+        body: Text(l10n.unsavedChangesMessage),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
+          FButton(
+            variant: .outline,
+            onPress: () => Navigator.of(context).pop(false),
             child: Text(l10n.cancel),
           ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
+          FButton(
+            variant: .outline,
+            onPress: () => Navigator.of(context).pop(true),
             child: Text(l10n.discard),
           ),
-          FilledButton(
-            onPressed: () {
+          FButton(
+            onPress: () {
               Navigator.of(context).pop(false);
               _saveFile();
             },
@@ -207,7 +211,6 @@ class _RepoFilePageState extends State<RepoFilePage> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final hasContent = _decodedContent != null;
     return PopScope(
@@ -216,114 +219,111 @@ class _RepoFilePageState extends State<RepoFilePage> {
         if (didPop) return;
         _onWillPop();
       },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(widget.name),
-          actions: [
-            if (_isEditing && _hasChanges)
-              IconButton(
-                icon: const Icon(Icons.save),
-                tooltip: l10n.save,
-                onPressed: _saveFile,
-              ),
-            if (_isEditable)
-              IconButton(
-                icon: Icon(_isEditing ? Icons.preview : Icons.edit),
-                tooltip: _isEditing ? l10n.preview : l10n.edit,
-                onPressed: _toggleEditMode,
-              ),
-            if (hasContent)
-              IconButton(
-                icon: const Icon(Icons.copy),
-                tooltip: l10n.copyCode,
-                onPressed: () => _copyToClipboard(context),
-              ),
-            if (widget.downloadUrl != null)
-              IconButton(
-                icon: const Icon(Icons.download),
-                tooltip: l10n.downloadFile,
-                onPressed: () => _downloadFile(context),
-              ),
-            if (hasContent)
-              PopupMenuButton<String>(
-                icon: const Icon(Icons.more_vert),
-                tooltip: l10n.more,
-                onSelected: (value) {
-                  switch (value) {
-                    case 'history':
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => FileHistoryPage(
-                            owner: widget.owner,
-                            repo: widget.repo,
-                            path: widget.path,
-                            ref: widget.ref,
-                          ),
-                        ),
-                      );
-                    case 'compare':
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => FileComparePage(
-                            owner: widget.owner,
-                            repo: widget.repo,
-                            path: widget.path,
-                          ),
-                        ),
-                      );
-                    case 'blame':
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => FileBlamePage(
-                            owner: widget.owner,
-                            repo: widget.repo,
-                            path: widget.path,
-                            ref: widget.ref,
-                          ),
-                        ),
-                      );
-                  }
-                },
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    value: 'history',
-                    child: ListTile(
-                      leading: const Icon(Icons.history),
+      child: AppPage(
+        title: widget.name,
+        actions: [
+          if (_isEditing && _hasChanges)
+            FHeaderAction(
+              icon: const Icon(FIcons.save),
+              semanticsLabel: l10n.save,
+              onPress: _saveFile,
+            ),
+          if (_isEditable)
+            FHeaderAction(
+              icon: Icon(_isEditing ? FIcons.eye : FIcons.penLine),
+              semanticsLabel: _isEditing ? l10n.preview : l10n.edit,
+              onPress: _toggleEditMode,
+            ),
+          if (hasContent)
+            FHeaderAction(
+              icon: const Icon(FIcons.copy),
+              semanticsLabel: l10n.copyCode,
+              onPress: () => _copyToClipboard(context),
+            ),
+          if (widget.downloadUrl != null)
+            FHeaderAction(
+              icon: const Icon(FIcons.download),
+              semanticsLabel: l10n.downloadFile,
+              onPress: () => _downloadFile(context),
+            ),
+          if (hasContent)
+            FPopoverMenu(
+              menuAnchor: Alignment.topRight,
+              childAnchor: Alignment.bottomRight,
+              menu: [
+                FItemGroup(
+                  children: [
+                    FItem(
+                      prefix: const Icon(FIcons.history),
                       title: Text(l10n.commitHistory),
-                      dense: true,
-                      contentPadding: EdgeInsets.zero,
+                      onPress: _openHistory,
                     ),
-                  ),
-                  PopupMenuItem(
-                    value: 'compare',
-                    child: ListTile(
-                      leading: const Icon(Icons.compare_arrows),
+                    FItem(
+                      prefix: const Icon(FIcons.gitCompareArrows),
                       title: Text(l10n.compareVersions),
-                      dense: true,
-                      contentPadding: EdgeInsets.zero,
+                      onPress: _openCompare,
                     ),
-                  ),
-                  PopupMenuItem(
-                    value: 'blame',
-                    child: ListTile(
-                      leading: const Icon(Icons.face),
+                    FItem(
+                      prefix: const Icon(FIcons.smile),
                       title: Text(l10n.blame),
-                      dense: true,
-                      contentPadding: EdgeInsets.zero,
+                      onPress: _openBlame,
                     ),
-                  ),
-                ],
+                  ],
+                ),
+              ],
+              builder: (context, controller, child) => FHeaderAction(
+                icon: const Icon(FIcons.ellipsisVertical),
+                semanticsLabel: l10n.more,
+                onPress: () => controller.toggle(),
               ),
-          ],
-        ),
-        body: _loading
-            ? const SlowLoadingIndicator()
+            ),
+        ],
+        child: _loading
+            ? const AppLoading()
             : _error != null
-                ? _buildError(theme, l10n)
-                : _buildContent(theme),
+            ? _buildError(l10n)
+            : _buildContent(),
+      ),
+    );
+  }
+
+  void _openHistory() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => FileHistoryPage(
+          owner: widget.owner,
+          repo: widget.repo,
+          path: widget.path,
+          ref: widget.ref,
+        ),
+      ),
+    );
+  }
+
+  void _openCompare() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => FileComparePage(
+          owner: widget.owner,
+          repo: widget.repo,
+          path: widget.path,
+        ),
+      ),
+    );
+  }
+
+  void _openBlame() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => FileBlamePage(
+          owner: widget.owner,
+          repo: widget.repo,
+          path: widget.path,
+          ref: widget.ref,
+        ),
       ),
     );
   }
@@ -334,8 +334,9 @@ class _RepoFilePageState extends State<RepoFilePage> {
       final content = _decodedContent ?? '';
       if (content.length > _maxPreviewBytes) {
         _showError(
-          AppLocalizations.of(context)!
-              .fileTooLargeParams(_formatSize(content.length)),
+          AppLocalizations.of(
+            context,
+          )!.fileTooLargeParams(_formatSize(content.length)),
         );
         return;
       }
@@ -358,7 +359,9 @@ class _RepoFilePageState extends State<RepoFilePage> {
 
   Future<void> _saveFile() async {
     final l10n = AppLocalizations.of(context)!;
-    if (!_hasChanges || _originalContent == null || _editController == null) return;
+    if (!_hasChanges || _originalContent == null || _editController == null) {
+      return;
+    }
 
     final content = _editController!.text;
     final sha = _rawResponse?.sha;
@@ -372,10 +375,13 @@ class _RepoFilePageState extends State<RepoFilePage> {
     if (message == null || message.isEmpty) return;
     if (!mounted) return;
 
-    showDialog(
+    showFDialog<void>(
       context: context,
       barrierDismissible: false,
-      builder: (context) => const Center(child: CircularProgressIndicator()),
+      builder: (context, style, animation) => FDialog(
+        body: const Center(child: FCircularProgress()),
+        actions: const [],
+      ),
     );
 
     final result = await Injection.repoNotifier.updateFile(
@@ -402,36 +408,36 @@ class _RepoFilePageState extends State<RepoFilePage> {
           _isEditing = false;
         });
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.fileSaved)),
-          );
+          showFToast(context: context, title: Text(l10n.fileSaved));
         }
     }
   }
 
   Future<String?> _showCommitMessageDialog() async {
     final l10n = AppLocalizations.of(context)!;
-    final controller = TextEditingController(text: l10n.commitUpdateFile(widget.name));
-    final result = await showDialog<String>(
+    final controller = TextEditingController(
+      text: l10n.commitUpdateFile(widget.name),
+    );
+    final result = await showFDialog<String>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (context, style, animation) => FDialog(
         title: Text(l10n.commitMessage),
-        content: TextField(
-          controller: controller,
-          decoration: InputDecoration(
-            labelText: l10n.message,
-            hintText: l10n.commitMessageHint,
-          ),
+        body: FTextField(
+          control: FTextFieldControl.managed(controller: controller),
+          label: Text(l10n.message),
+          hint: l10n.commitMessageHint,
           autofocus: true,
+          minLines: 3,
           maxLines: 3,
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
+          FButton(
+            variant: .outline,
+            onPress: () => Navigator.of(context).pop(),
             child: Text(l10n.cancel),
           ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(controller.text),
+          FButton(
+            onPress: () => Navigator.of(context).pop(controller.text),
             child: Text(l10n.commit),
           ),
         ],
@@ -443,57 +449,53 @@ class _RepoFilePageState extends State<RepoFilePage> {
 
   void _showError(String message) {
     if (!mounted) return;
-    showDialog(
+    final l10n = AppLocalizations.of(context)!;
+    showFDialog<void>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(AppLocalizations.of(context)!.error),
-        content: Text(message),
+      builder: (context, style, animation) => FDialog(
+        title: Text(l10n.error),
+        body: Text(message),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text(AppLocalizations.of(context)!.ok),
+          FButton(
+            variant: .outline,
+            onPress: () => Navigator.of(context).pop(),
+            child: Text(l10n.ok),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildError(ThemeData theme, AppLocalizations l10n) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.error_outline, size: 48, color: theme.colorScheme.error),
-          const SizedBox(height: 16),
-          Text(l10n.failedToLoadFile, style: theme.textTheme.titleMedium),
-          const SizedBox(height: 8),
+  Widget _buildError(AppLocalizations l10n) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        AppError(
+          title: l10n.failedToLoadFile,
+          message: _error!,
+          onRetry: () {
+            setState(() {
+              _loading = true;
+              _error = null;
+            });
+            _loadFile();
+          },
+        ),
+        if (widget.htmlUrl != null)
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32),
-            child: Text(_error!, textAlign: TextAlign.center),
-          ),
-          const SizedBox(height: 24),
-          FilledButton.icon(
-            onPressed: () {
-              setState(() { _loading = true; _error = null; });
-              _loadFile();
-            },
-            icon: const Icon(Icons.refresh),
-            label: Text(l10n.retry),
-          ),
-          if (widget.htmlUrl != null) ...[
-            const SizedBox(height: 8),
-            OutlinedButton.icon(
-              onPressed: () => _launchUrl(widget.htmlUrl!),
-              icon: const Icon(Icons.open_in_new),
-              label: Text(l10n.openInBrowser),
+            padding: const EdgeInsets.only(top: 8),
+            child: FButton(
+              variant: .outline,
+              prefix: const Icon(FIcons.externalLink, size: 16),
+              onPress: () => _launchUrl(widget.htmlUrl!),
+              child: Text(l10n.openInBrowser),
             ),
-          ],
-        ],
-      ),
+          ),
+      ],
     );
   }
 
-  Widget _buildContent(ThemeData theme) {
+  Widget _buildContent() {
     final l10n = AppLocalizations.of(context)!;
     if (_isImage) {
       if (widget.downloadUrl != null) {
@@ -504,16 +506,16 @@ class _RepoFilePageState extends State<RepoFilePage> {
             cacheWidth: (MediaQuery.sizeOf(context).width * dpr).round(),
             cacheHeight: (MediaQuery.sizeOf(context).height * dpr).round(),
             semanticLabel: 'Image preview',
-            errorBuilder: (context, error, stackTrace) => _buildFallback(theme, l10n),
+            errorBuilder: (context, error, stackTrace) => _buildFallback(l10n),
           ),
         );
       }
-      return _buildFallback(theme, l10n);
+      return _buildFallback(l10n);
     }
 
     if (_isMarkdown && _decodedContent != null && !_isEditing) {
       if (_decodedContent!.length > _maxMarkdownBytes) {
-        return _buildTooLarge(theme, l10n, isMarkdown: true);
+        return _buildTooLarge(l10n, isMarkdown: true);
       }
       return SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -523,51 +525,41 @@ class _RepoFilePageState extends State<RepoFilePage> {
 
     if (_decodedContent != null) {
       if (_decodedContent!.length > _maxPreviewBytes) {
-        return _buildTooLarge(theme, l10n, isMarkdown: false);
+        return _buildTooLarge(l10n, isMarkdown: false);
       }
       if (_isEditing) {
-        return _buildEditor(theme);
+        return _buildEditor(Theme.of(context));
       }
-      return _buildSelectableCode(theme);
+      return _buildSelectableCode(Theme.of(context));
     }
 
-    return _buildFallback(theme, l10n);
+    return _buildFallback(l10n);
   }
 
-  Widget _buildTooLarge(ThemeData theme, AppLocalizations l10n,
-      {required bool isMarkdown}) {
+  Widget _buildTooLarge(AppLocalizations l10n, {required bool isMarkdown}) {
     final size = _decodedContent!.length;
-    return Center(
-      child: Column(
+    return AppEmpty(
+      icon: FIcons.fileText,
+      title: widget.name,
+      subtitle: isMarkdown
+          ? l10n.documentTooLarge
+          : l10n.fileTooLargeParams(_formatSize(size)),
+      action: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.description_outlined, size: 64,
-              color: theme.colorScheme.onSurfaceVariant),
-          const SizedBox(height: 16),
-          Text(widget.name, style: theme.textTheme.titleMedium),
-          const SizedBox(height: 8),
-          Text(
-            isMarkdown
-                ? l10n.documentTooLarge
-                : l10n.fileTooLargeParams(_formatSize(size)),
-            textAlign: TextAlign.center,
-            style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant),
-          ),
-          if (widget.htmlUrl != null) ...[
-            const SizedBox(height: 24),
-            FilledButton.icon(
-              onPressed: () => _launchUrl(widget.htmlUrl!),
-              icon: const Icon(Icons.open_in_new),
-              label: Text(l10n.openInBrowser),
+          if (widget.htmlUrl != null)
+            FButton(
+              prefix: const Icon(FIcons.externalLink, size: 16),
+              onPress: () => _launchUrl(widget.htmlUrl!),
+              child: Text(l10n.openInBrowser),
             ),
-          ],
           if (widget.downloadUrl != null) ...[
             const SizedBox(height: 8),
-            OutlinedButton.icon(
-              onPressed: () => _launchUrl(widget.downloadUrl!),
-              icon: const Icon(Icons.download),
-              label: Text(l10n.download),
+            FButton(
+              variant: .outline,
+              prefix: const Icon(FIcons.download, size: 16),
+              onPress: () => _launchUrl(widget.downloadUrl!),
+              child: Text(l10n.download),
             ),
           ],
         ],
@@ -580,7 +572,7 @@ class _RepoFilePageState extends State<RepoFilePage> {
     final codeTheme = isDark ? vs2015Theme : githubTheme;
 
     if (_editController == null) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(child: FCircularProgress());
     }
 
     try {
@@ -689,8 +681,7 @@ class _RepoFilePageState extends State<RepoFilePage> {
                     children: List.generate(
                       chunkLines.length,
                       (index) => Padding(
-                        padding:
-                            const EdgeInsets.symmetric(horizontal: 8),
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
                         child: Text(
                           '${start + index + 1}',
                           style: TextStyle(
@@ -714,37 +705,29 @@ class _RepoFilePageState extends State<RepoFilePage> {
     );
   }
 
-  Widget _buildFallback(ThemeData theme, AppLocalizations l10n) {
-    return Center(
-      child: Column(
+  Widget _buildFallback(AppLocalizations l10n) {
+    return AppEmpty(
+      icon: FIcons.file,
+      title: widget.name,
+      subtitle: _rawResponse?.size != null
+          ? _formatSize(_rawResponse!.size!)
+          : l10n.filePreviewNotAvailable,
+      action: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.insert_drive_file, size: 64,
-              color: theme.colorScheme.onSurfaceVariant),
-          const SizedBox(height: 16),
-          Text(widget.name, style: theme.textTheme.titleMedium),
-          const SizedBox(height: 8),
-          Text(
-            _rawResponse?.size != null
-                ? _formatSize(_rawResponse!.size!)
-                : l10n.filePreviewNotAvailable,
-            style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant),
-          ),
-          if (widget.htmlUrl != null) ...[
-            const SizedBox(height: 24),
-            FilledButton.icon(
-              onPressed: () => _launchUrl(widget.htmlUrl!),
-              icon: const Icon(Icons.open_in_new),
-              label: Text(l10n.openInBrowser),
+          if (widget.htmlUrl != null)
+            FButton(
+              prefix: const Icon(FIcons.externalLink, size: 16),
+              onPress: () => _launchUrl(widget.htmlUrl!),
+              child: Text(l10n.openInBrowser),
             ),
-          ],
           if (widget.downloadUrl != null) ...[
             const SizedBox(height: 8),
-            OutlinedButton.icon(
-              onPressed: () => _launchUrl(widget.downloadUrl!),
-              icon: const Icon(Icons.download),
-              label: Text(l10n.download),
+            FButton(
+              variant: .outline,
+              prefix: const Icon(FIcons.download, size: 16),
+              onPress: () => _launchUrl(widget.downloadUrl!),
+              child: Text(l10n.download),
             ),
           ],
         ],
@@ -806,9 +789,7 @@ class _RepoFilePageState extends State<RepoFilePage> {
     if (_decodedContent == null) return;
     await Clipboard.setData(ClipboardData(text: _decodedContent!));
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.copied)),
-      );
+      showFToast(context: context, title: Text(l10n.copied));
     }
   }
 
@@ -817,10 +798,15 @@ class _RepoFilePageState extends State<RepoFilePage> {
     if (widget.downloadUrl == null) return;
     final uri = Uri.tryParse(widget.downloadUrl!);
     if (uri != null) {
-      final success = await launchUrl(uri, mode: LaunchMode.externalApplication);
+      final success = await launchUrl(
+        uri,
+        mode: LaunchMode.externalApplication,
+      );
       if (!success && context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.failedToOpenDownloadUrl)),
+        showFToast(
+          context: context,
+          variant: .destructive,
+          title: Text(l10n.failedToOpenDownloadUrl),
         );
       }
     }

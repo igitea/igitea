@@ -1,10 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../core/utils/diff_parser.dart';
 import '../../l10n/app_localizations.dart';
+import '../widgets/forui/app_page.dart';
 
 class FileComparePage extends StatefulWidget {
   final String owner;
@@ -62,9 +64,11 @@ class _FileComparePageState extends State<FileComparePage> {
         if (rawDiff.isNotEmpty) {
           final allFiles = await compute(DiffParser.parse, rawDiff);
           setState(() {
-            _files = allFiles.where((f) =>
-              f.newPath == widget.path || f.oldPath == widget.path
-            ).toList();
+            _files = allFiles
+                .where(
+                  (f) => f.newPath == widget.path || f.oldPath == widget.path,
+                )
+                .toList();
             _loading = false;
           });
         } else {
@@ -89,41 +93,36 @@ class _FileComparePageState extends State<FileComparePage> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.compareVersions)),
-      body: SingleChildScrollView(
+    return AppPage(
+      title: l10n.compareVersions,
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(UIConstants.md),
         child: Column(
           children: [
-            TextField(
-              controller: _baseRefController,
-              decoration: InputDecoration(
-                labelText: l10n.baseRef,
-                hintText: 'main~1, abc1234',
-                border: const OutlineInputBorder(),
+            FTextField(
+              control: FTextFieldControl.managed(
+                controller: _baseRefController,
               ),
+              label: Text(l10n.baseRef),
+              hint: 'main~1, abc1234',
             ),
             const SizedBox(height: UIConstants.sm),
-            TextField(
-              controller: _headRefController,
-              decoration: InputDecoration(
-                labelText: l10n.headRef,
-                hintText: 'main, HEAD',
-                border: const OutlineInputBorder(),
+            FTextField(
+              control: FTextFieldControl.managed(
+                controller: _headRefController,
               ),
+              label: Text(l10n.headRef),
+              hint: 'main, HEAD',
             ),
             const SizedBox(height: UIConstants.md),
             SizedBox(
               width: double.infinity,
-              child: FilledButton.icon(
-                onPressed: _loading ? null : _compare,
-                icon: _loading
-                    ? const SizedBox(
-                        width: 18, height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    : const Icon(Icons.compare_arrows),
-                label: Text(l10n.compare),
+              child: FButton(
+                onPress: _loading ? null : _compare,
+                prefix: _loading
+                    ? const FCircularProgress(size: .sm)
+                    : const Icon(FIcons.gitCompareArrows, size: 16),
+                child: Text(l10n.compare),
               ),
             ),
             if (_error != null) ...[
@@ -132,14 +131,18 @@ class _FileComparePageState extends State<FileComparePage> {
             ],
             if (_files.isNotEmpty) ...[
               const SizedBox(height: UIConstants.md),
-              const Divider(),
-              ..._files.expand((file) => [
-                _buildFileHeader(file, l10n),
-                ...file.hunks.expand((hunk) => [
-                  _buildHunkHeader(hunk),
-                  ...hunk.lines.map(_buildDiffLine),
-                ]),
-              ]),
+              const FDivider(),
+              ..._files.expand(
+                (file) => [
+                  _buildFileHeader(file, l10n),
+                  ...file.hunks.expand(
+                    (hunk) => [
+                      _buildHunkHeader(hunk),
+                      ...hunk.lines.map(_buildDiffLine),
+                    ],
+                  ),
+                ],
+              ),
             ],
           ],
         ),
@@ -155,17 +158,26 @@ class _FileComparePageState extends State<FileComparePage> {
       child: Row(
         children: [
           Icon(
-            file.status == 'added' ? Icons.add_circle :
-            file.status == 'removed' ? Icons.remove_circle : Icons.edit,
+            file.status == 'added'
+                ? FIcons.circlePlus
+                : file.status == 'removed'
+                ? FIcons.circleMinus
+                : FIcons.penLine,
             size: UIConstants.iconSm,
-            color: file.status == 'added' ? Colors.green :
-                   file.status == 'removed' ? Colors.red :
-                   theme.colorScheme.primary,
+            color: file.status == 'added'
+                ? Colors.green
+                : file.status == 'removed'
+                ? Colors.red
+                : theme.colorScheme.primary,
           ),
           const SizedBox(width: UIConstants.sm),
-          Text(file.newPath, style: theme.textTheme.bodySmall?.copyWith(
-            fontFamily: 'monospace', fontWeight: FontWeight.w600,
-          )),
+          Text(
+            file.newPath,
+            style: theme.textTheme.bodySmall?.copyWith(
+              fontFamily: 'monospace',
+              fontWeight: FontWeight.w600,
+            ),
+          ),
         ],
       ),
     );
@@ -174,11 +186,18 @@ class _FileComparePageState extends State<FileComparePage> {
   Widget _buildHunkHeader(DiffHunk hunk) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.symmetric(horizontal: UIConstants.sm, vertical: UIConstants.xs),
+      padding: const EdgeInsets.symmetric(
+        horizontal: UIConstants.sm,
+        vertical: UIConstants.xs,
+      ),
       color: Theme.of(context).colorScheme.surfaceContainerLow,
-      child: Text(hunk.header, style: Theme.of(context).textTheme.labelSmall?.copyWith(
-        fontFamily: 'monospace', color: Theme.of(context).colorScheme.primary,
-      )),
+      child: Text(
+        hunk.header,
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+          fontFamily: 'monospace',
+          color: Theme.of(context).colorScheme.primary,
+        ),
+      ),
     );
   }
 
@@ -204,16 +223,33 @@ class _FileComparePageState extends State<FileComparePage> {
         children: [
           Text(
             '${line.oldLineNum?.toString().padLeft(4) ?? '    '} ${line.newLineNum?.toString().padLeft(4) ?? '    '}',
-            style: theme.textTheme.labelSmall?.copyWith(fontFamily: 'monospace',
-              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5)),
+            style: theme.textTheme.labelSmall?.copyWith(
+              fontFamily: 'monospace',
+              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+            ),
           ),
           const SizedBox(width: UIConstants.xs),
-          Text(prefix, style: theme.textTheme.bodySmall?.copyWith(fontFamily: 'monospace',
-            fontWeight: FontWeight.w700,
-            color: line.type == DiffLineType.added ? Colors.green :
-                   line.type == DiffLineType.removed ? Colors.red : null)),
+          Text(
+            prefix,
+            style: theme.textTheme.bodySmall?.copyWith(
+              fontFamily: 'monospace',
+              fontWeight: FontWeight.w700,
+              color: line.type == DiffLineType.added
+                  ? Colors.green
+                  : line.type == DiffLineType.removed
+                  ? Colors.red
+                  : null,
+            ),
+          ),
           const SizedBox(width: UIConstants.xs),
-          Expanded(child: Text(line.content, style: theme.textTheme.bodySmall?.copyWith(fontFamily: 'monospace'))),
+          Expanded(
+            child: Text(
+              line.content,
+              style: theme.textTheme.bodySmall?.copyWith(
+                fontFamily: 'monospace',
+              ),
+            ),
+          ),
         ],
       ),
     );

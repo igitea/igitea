@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../../core/animations/animated_wrapper.dart';
 import '../../core/constants/ui_constants.dart';
@@ -6,7 +7,8 @@ import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/repo_notifier.dart';
-import '../widgets/empty_state.dart';
+import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_state_views.dart';
 import '../widgets/user_avatar.dart';
 import 'commit_detail_page.dart';
 
@@ -75,36 +77,18 @@ class _FileHistoryPageState extends State<FileHistoryPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.commitHistory)),
-      body: _buildBody(l10n),
-    );
+    return AppPage(title: l10n.commitHistory, child: _buildBody(l10n));
   }
 
   Widget _buildBody(AppLocalizations l10n) {
     if (_loading) {
-      return const Center(child: CircularProgressIndicator());
+      return const AppLoading();
     }
     if (_error != null) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('${l10n.error}: $_error'),
-            const SizedBox(height: UIConstants.md),
-            FilledButton(
-              onPressed: _loadHistory,
-              child: Text(l10n.retry),
-            ),
-          ],
-        ),
-      );
+      return AppError(message: _error!, onRetry: _loadHistory);
     }
     if (_commits.isEmpty) {
-      return EmptyState(
-        icon: Icons.history,
-        title: l10n.noCommits,
-      );
+      return AppEmpty(icon: FIcons.history, title: l10n.noCommits);
     }
     return RefreshIndicator(
       onRefresh: _loadHistory,
@@ -115,81 +99,96 @@ class _FileHistoryPageState extends State<FileHistoryPage> {
           final commit = _commits[index];
           return FadeInWrapper(
             delay: Duration(milliseconds: index * 20),
-            child: Card(
-              margin: const EdgeInsets.only(bottom: UIConstants.sm),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(UIConstants.cardRadius),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => CommitDetailPage(
-                        owner: widget.owner,
-                        repo: widget.repo,
-                        sha: commit.sha ?? '',
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: UIConstants.sm),
+              child: FCard.raw(
+                child: FTappable(
+                  onPress: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => CommitDetailPage(
+                          owner: widget.owner,
+                          repo: widget.repo,
+                          sha: commit.sha ?? '',
+                        ),
                       ),
+                    );
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(UIConstants.md),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (commit.author != null)
+                          UserAvatar(
+                            user: commit.author!,
+                            radius: UIConstants.avatarMd,
+                          )
+                        else
+                          const CircleAvatar(
+                            radius: 16,
+                            child: Icon(FIcons.user, size: 16),
+                          ),
+                        const SizedBox(width: UIConstants.md),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                commit.commit?.message?.split('\n').first ?? '',
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(fontWeight: FontWeight.w500),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: UIConstants.xs),
+                              Row(
+                                children: [
+                                  Text(
+                                    commit.author?.login ??
+                                        commit.commit?.author?.name ??
+                                        '',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .labelSmall
+                                        ?.copyWith(
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.onSurfaceVariant,
+                                        ),
+                                  ),
+                                  const SizedBox(width: UIConstants.sm),
+                                  Text(
+                                    _formatDate(commit.created, l10n),
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .labelSmall
+                                        ?.copyWith(
+                                          color: Theme.of(
+                                            context,
+                                          ).colorScheme.onSurfaceVariant,
+                                        ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: UIConstants.xs),
+                              Text(
+                                commit.sha?.substring(0, 7) ?? '',
+                                style: Theme.of(context).textTheme.labelSmall
+                                    ?.copyWith(
+                                      fontFamily: 'monospace',
+                                      color: Theme.of(
+                                        context,
+                                      ).colorScheme.primary,
+                                    ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Icon(FIcons.chevronRight),
+                      ],
                     ),
-                  );
-                },
-                child: Padding(
-                  padding: const EdgeInsets.all(UIConstants.md),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (commit.author != null)
-                        UserAvatar(
-                          user: commit.author!,
-                          radius: UIConstants.avatarMd,
-                        )
-                      else
-                        const CircleAvatar(
-                          radius: 16,
-                          child: Icon(Icons.person, size: 16),
-                        ),
-                      const SizedBox(width: UIConstants.md),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              commit.commit?.message?.split('\n').first ?? '',
-                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                fontWeight: FontWeight.w500,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: UIConstants.xs),
-                            Row(
-                              children: [
-                                Text(
-                                  commit.author?.login ?? commit.commit?.author?.name ?? '',
-                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                                const SizedBox(width: UIConstants.sm),
-                                Text(
-                                  _formatDate(commit.created, l10n),
-                                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: UIConstants.xs),
-                            Text(
-                              commit.sha?.substring(0, 7) ?? '',
-                              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                fontFamily: 'monospace',
-                                color: Theme.of(context).colorScheme.primary,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Icon(Icons.chevron_right),
-                    ],
                   ),
                 ),
               ),

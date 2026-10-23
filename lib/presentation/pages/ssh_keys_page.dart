@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
-import '../../core/animations/animated_wrapper.dart';
-import '../../core/constants/ui_constants.dart';
+import 'package:forui/forui.dart';
+
 import '../../core/di/injection.dart';
 import '../../core/errors/failures.dart';
 import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
+import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_state_views.dart';
+import '../widgets/forui/app_tile.dart';
 
 class SshKeysPage extends StatefulWidget {
   const SshKeysPage({super.key});
@@ -36,9 +39,15 @@ class _SshKeysPageState extends State<SshKeysPage> {
       if (mounted) {
         switch (result) {
           case Right<Failure, List<PublicKey>>(:final value):
-            setState(() { _keys = value; _loading = false; });
+            setState(() {
+              _keys = value;
+              _loading = false;
+            });
           case Left<Failure, List<PublicKey>>():
-            setState(() { _error = 'Load failed'; _loading = false; });
+            setState(() {
+              _error = 'Load failed';
+              _loading = false;
+            });
         }
       }
     } catch (e) {
@@ -53,21 +62,20 @@ class _SshKeysPageState extends State<SshKeysPage> {
 
   Future<void> _deleteKey(int id) async {
     final l10n = AppLocalizations.of(context)!;
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showFDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (ctx, style, animation) => FDialog(
         title: Text(l10n.deleteKey),
-        content: Text(l10n.deleteKeyConfirm),
+        body: Text(l10n.deleteKeyConfirm),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
+          FButton(
+            variant: .outline,
+            onPress: () => Navigator.pop(ctx, false),
             child: Text(l10n.cancel),
           ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
+          FButton(
+            variant: .destructive,
+            onPress: () => Navigator.pop(ctx, true),
             child: Text(l10n.delete),
           ),
         ],
@@ -81,9 +89,7 @@ class _SshKeysPageState extends State<SshKeysPage> {
       switch (result) {
         case Right<Failure, void>():
           if (mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(l10n.keyDeleted)),
-            );
+            showFToast(context: context, title: Text(l10n.keyDeleted));
             _loadKeys();
           }
         case Left<Failure, void>(:final value):
@@ -91,8 +97,10 @@ class _SshKeysPageState extends State<SshKeysPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.error}: $e')),
+        showFToast(
+          context: context,
+          variant: .destructive,
+          title: Text('${l10n.error}: $e'),
         );
       }
     }
@@ -103,117 +111,72 @@ class _SshKeysPageState extends State<SshKeysPage> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.sshKeys),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            onPressed: () => _showAddKeyDialog(),
-          ),
-        ],
-      ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
+    return AppPage(
+      title: l10n.sshKeys,
+      actions: [
+        FHeaderAction(
+          icon: const Icon(FIcons.plus),
+          semanticsLabel: l10n.addSshKey,
+          onPress: _showAddKeyDialog,
+        ),
+      ],
+      child: _loading
+          ? const AppLoading()
           : _error != null
-              ? Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text('${l10n.error}: $_error'),
-                      const SizedBox(height: UIConstants.md),
-                      FilledButton(
-                        onPressed: _loadKeys,
-                        child: Text(l10n.retry),
-                      ),
-                    ],
-                  ),
-                )
-              : _keys.isEmpty
-                  ? Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.key_outlined,
-                            size: 64,
-                            color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+          ? AppError(message: _error!, onRetry: _loadKeys)
+          : _keys.isEmpty
+          ? AppEmpty(
+              icon: FIcons.keyRound,
+              title: l10n.noSshKeysFound,
+              action: FButton(
+                prefix: const Icon(FIcons.plus, size: 16),
+                onPress: _showAddKeyDialog,
+                child: Text(l10n.addSshKey),
+              ),
+            )
+          : RefreshIndicator(
+              onRefresh: _loadKeys,
+              child: ListView(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+                children: [
+                  for (final key in _keys)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: FCard.raw(
+                        child: AppTile(
+                          leading: Icon(
+                            FIcons.keyRound,
+                            size: 18,
+                            color: theme.colorScheme.primary,
                           ),
-                          const SizedBox(height: 16),
-                          Text(
-                            l10n.noSshKeysFound,
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          FilledButton.icon(
-                            onPressed: () => _showAddKeyDialog(),
-                            icon: const Icon(Icons.add),
-                            label: Text(l10n.addSshKey),
-                          ),
-                        ],
-                      ),
-                    )
-                  : RefreshIndicator(
-                      onRefresh: _loadKeys,
-                      child: ListView.builder(
-                        padding: const EdgeInsets.all(UIConstants.md),
-                        itemCount: _keys.length,
-                        itemBuilder: (context, index) {
-                          final key = _keys[index];
-                          return FadeInWrapper(
-                            delay: Duration(milliseconds: index * 30),
-                            child: Card(
-                              margin: const EdgeInsets.only(bottom: UIConstants.md),
-                              child: Padding(
-                                padding: const EdgeInsets.all(UIConstants.md),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        Expanded(
-                                          child: Text(
-                                            key.title ?? l10n.untitled,
-                                            style: theme.textTheme.titleMedium?.copyWith(
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                        ),
-                                        IconButton(
-                                          icon: const Icon(Icons.delete_outline),
-                                          onPressed: key.id != null
-                                              ? () => _deleteKey(key.id!)
-                                              : null,
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: UIConstants.sm),
-                                    Text(
-                                      key.fingerprint ?? '',
-                                      style: theme.textTheme.bodySmall?.copyWith(
-                                        color: theme.colorScheme.onSurfaceVariant,
-                                        fontFamily: 'monospace',
-                                      ),
-                                    ),
-                                    if (key.created_at != null) ...[
-                                      const SizedBox(height: UIConstants.sm),
-                                      Text(
-                                        '${l10n.created}: ${_formatDate(key.created_at!, l10n)}',
-                                        style: theme.textTheme.bodySmall?.copyWith(
-                                          color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-                                        ),
-                                      ),
-                                    ],
-                                  ],
-                                ),
+                          title: key.title ?? l10n.untitled,
+                          subtitle: [
+                            if (key.fingerprint != null) key.fingerprint!,
+                            if (key.created_at != null)
+                              '${l10n.created}: ${_formatDate(key.created_at!, l10n)}',
+                          ].join(' · '),
+                          showChevron: false,
+                          trailing: FTappable(
+                            onPress: key.id != null
+                                ? () => _deleteKey(key.id!)
+                                : null,
+                            semanticsLabel: l10n.deleteKey,
+                            child: Padding(
+                              padding: const EdgeInsets.all(6),
+                              child: Icon(
+                                FIcons.trash2,
+                                size: 16,
+                                color: theme.colorScheme.error,
                               ),
                             ),
-                          );
-                        },
+                          ),
+                          onPress: null,
+                        ),
                       ),
                     ),
+                ],
+              ),
+            ),
     );
   }
 
@@ -222,50 +185,41 @@ class _SshKeysPageState extends State<SshKeysPage> {
     final titleController = TextEditingController();
     final keyController = TextEditingController();
 
-    final result = await showDialog<Map<String, String>>(
+    final result = await showFDialog<Map<String, String>>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (ctx, style, animation) => FDialog(
         title: Text(l10n.addSshKey),
-        content: SingleChildScrollView(
+        body: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              TextFormField(
-                controller: titleController,
-                decoration: InputDecoration(
-                  labelText: l10n.title,
-                  hintText: l10n.myLaptopHint,
-                ),
+              FTextField(
+                control: FTextFieldControl.managed(controller: titleController),
+                label: Text(l10n.title),
+                hint: l10n.myLaptopHint,
                 maxLength: 255,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return l10n.requiredField;
-                  }
-                  return null;
-                },
               ),
-              const SizedBox(height: UIConstants.md),
-              TextField(
-                controller: keyController,
-                decoration: InputDecoration(
-                  labelText: l10n.publicKey,
-                  hintText: l10n.sshPublicKeyHint,
-                ),
+              const SizedBox(height: 16),
+              FTextField(
+                control: FTextFieldControl.managed(controller: keyController),
+                label: Text(l10n.publicKey),
+                hint: l10n.sshPublicKeyHint,
                 maxLines: 5,
               ),
             ],
           ),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
+          FButton(
+            variant: .outline,
+            onPress: () => Navigator.pop(ctx),
             child: Text(l10n.cancel),
           ),
-          FilledButton(
-            onPressed: () {
+          FButton(
+            onPress: () {
               if (titleController.text.isNotEmpty &&
                   keyController.text.isNotEmpty) {
-                Navigator.pop(context, {
+                Navigator.pop(ctx, {
                   'title': titleController.text,
                   'key': keyController.text,
                 });
@@ -279,13 +233,14 @@ class _SshKeysPageState extends State<SshKeysPage> {
 
     if (result != null) {
       try {
-        final addResult = await Injection.addKeyUseCase(result['title'] ?? '', result['key'] ?? '');
+        final addResult = await Injection.addKeyUseCase(
+          result['title'] ?? '',
+          result['key'] ?? '',
+        );
         switch (addResult) {
           case Right<Failure, PublicKey>():
             if (mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(l10n.keyAdded)),
-              );
+              showFToast(context: context, title: Text(l10n.keyAdded));
               _loadKeys();
             }
           case Left<Failure, PublicKey>(:final value):
@@ -293,8 +248,10 @@ class _SshKeysPageState extends State<SshKeysPage> {
         }
       } catch (e) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${l10n.error}: $e')),
+          showFToast(
+            context: context,
+            variant: .destructive,
+            title: Text('${l10n.error}: $e'),
           );
         }
       }

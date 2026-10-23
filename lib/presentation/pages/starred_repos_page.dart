@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
-import '../../core/animations/animated_wrapper.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/user_notifier.dart';
+import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_state_views.dart';
 import '../widgets/user_avatar.dart';
 import 'repo_detail_page.dart';
 
@@ -27,63 +29,55 @@ class _StarredReposPageState extends State<StarredReposPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.starredRepos),
-      ),
-      body: ListenableBuilder(
+    return AppPage(
+      title: l10n.starredRepos,
+      child: ListenableBuilder(
         listenable: Injection.userNotifier,
         builder: (context, _) {
           final state = Injection.userNotifier.state;
           final starredRepos = Injection.userNotifier.starredRepos;
           return switch (state) {
-            UserLoading() => const Center(
-                child: CircularProgressIndicator(),
-              ),
-            UserError(:final message) => Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(message),
-                    const SizedBox(height: 16),
-                    FilledButton(
-                      onPressed: () =>
+            UserLoading() => const AppLoading(),
+            UserError(:final message) => AppError(
+              message: message,
+              onRetry: () => Injection.userNotifier.listStarredRepos(),
+            ),
+            _ =>
+              starredRepos.isEmpty
+                  ? AppEmpty(icon: FIcons.star, title: l10n.noData)
+                  : RefreshIndicator(
+                      onRefresh: () =>
                           Injection.userNotifier.listStarredRepos(),
-                      child: Text(l10n.retry),
-                    ),
-                  ],
-                ),
-              ),
-            _ => starredRepos.isEmpty
-                ? Center(child: Text(l10n.noData))
-                : RefreshIndicator(
-                    onRefresh: () =>
-                        Injection.userNotifier.listStarredRepos(),
-                    child: ListView.builder(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      itemCount: starredRepos.length + (Injection.userNotifier.starredHasMore ? 1 : 0),
-                      itemBuilder: (context, index) {
-                        if (index == starredRepos.length) {
-                          return Center(
-                            child: Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: Injection.userNotifier.starredLoadingMore
-                                  ? const SizedBox(height: 24, width: 24, child: CircularProgressIndicator(strokeWidth: 2))
-                                  : TextButton(
-                                      onPressed: () => Injection.userNotifier.loadMoreStarredRepos(),
-                                      child: const Text('Load more'),
-                                    ),
-                            ),
+                      child: ListView.builder(
+                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+                        itemCount:
+                            starredRepos.length +
+                            (Injection.userNotifier.starredHasMore ? 1 : 0),
+                        itemBuilder: (context, index) {
+                          if (index == starredRepos.length) {
+                            return Center(
+                              child: Padding(
+                                padding: const EdgeInsets.all(16),
+                                child: Injection.userNotifier.starredLoadingMore
+                                    ? const FCircularProgress(size: .sm)
+                                    : FButton(
+                                        variant: .ghost,
+                                        size: .sm,
+                                        onPress: () => Injection.userNotifier
+                                            .loadMoreStarredRepos(),
+                                        child: const Text('Load more'),
+                                      ),
+                              ),
+                            );
+                          }
+                          final repo = starredRepos[index];
+                          return Padding(
+                            padding: const EdgeInsets.only(bottom: 8),
+                            child: _RepoCard(repo: repo),
                           );
-                        }
-                        final repo = starredRepos[index];
-                        return FadeInWrapper(
-                          delay: Duration(milliseconds: index * 30),
-                          child: _RepoCard(repo: repo),
-                        );
-                      },
+                        },
+                      ),
                     ),
-                  ),
           };
         },
       ),
@@ -100,16 +94,17 @@ class _RepoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: InkWell(
-        onTap: () {
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (_) => RepoDetailPage(
-              owner: repo.owner?.login ?? '',
-              repo: repo.name ?? '',
+    return FCard.raw(
+      child: FTappable(
+        onPress: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => RepoDetailPage(
+                owner: repo.owner?.login ?? '',
+                repo: repo.name ?? '',
+              ),
             ),
-          ));
+          );
         },
         child: Padding(
           padding: const EdgeInsets.all(12),
@@ -122,7 +117,7 @@ class _RepoCard extends StatelessWidget {
                     UserAvatar(user: repo.owner!, radius: 14)
                   else
                     Icon(
-                      repo.private == true ? Icons.lock : Icons.public,
+                      repo.private == true ? FIcons.lock : FIcons.globe,
                       size: 18,
                       color: theme.colorScheme.primary,
                     ),
@@ -141,7 +136,9 @@ class _RepoCard extends StatelessWidget {
                           const SizedBox(width: 8),
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 6, vertical: 1),
+                              horizontal: 6,
+                              vertical: 1,
+                            ),
                             decoration: BoxDecoration(
                               color: theme.colorScheme.errorContainer,
                               borderRadius: BorderRadius.circular(4),
@@ -159,8 +156,7 @@ class _RepoCard extends StatelessWidget {
                   ),
                 ],
               ),
-              if (repo.description != null &&
-                  repo.description!.isNotEmpty) ...[
+              if (repo.description != null && repo.description!.isNotEmpty) ...[
                 const SizedBox(height: 4),
                 Text(
                   repo.description!,
@@ -186,7 +182,7 @@ class _RepoCard extends StatelessWidget {
                     const SizedBox(width: 12),
                   ],
                   Icon(
-                    Icons.star_outline,
+                    FIcons.star,
                     size: 14,
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -197,7 +193,7 @@ class _RepoCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 12),
                   Icon(
-                    Icons.call_split,
+                    FIcons.gitFork,
                     size: 14,
                     color: theme.colorScheme.onSurfaceVariant,
                   ),

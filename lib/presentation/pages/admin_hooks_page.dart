@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../../core/di/injection.dart';
 import '../../l10n/app_localizations.dart';
+import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_section.dart';
+import '../widgets/forui/app_state_views.dart';
+import '../widgets/forui/app_tile.dart';
 import '../state/admin_notifier.dart';
 import 'create_admin_webhook_page.dart';
 
@@ -24,77 +29,60 @@ class _AdminHooksPageState extends State<AdminHooksPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.adminHooksTitle),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            tooltip: l10n.createWebhook,
-            onPressed: () async {
-              await Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const CreateAdminWebhookPage()),
-              );
-              if (context.mounted) {
-                Injection.adminNotifier.loadHooks();
-              }
-            },
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        heroTag: 'admin_hooks',
-        onPressed: () async {
-          await Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => const CreateAdminWebhookPage()),
-          );
-          if (context.mounted) {
-            Injection.adminNotifier.loadHooks();
-          }
-        },
-        child: const Icon(Icons.add),
-      ),
-      body: ListenableBuilder(
+    return AppPage(
+      title: l10n.adminHooksTitle,
+      actions: [
+        FHeaderAction(
+          icon: const Icon(FIcons.plus),
+          semanticsLabel: l10n.createWebhook,
+          onPress: () async {
+            await Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const CreateAdminWebhookPage()),
+            );
+            if (context.mounted) {
+              Injection.adminNotifier.loadHooks();
+            }
+          },
+        ),
+      ],
+      child: ListenableBuilder(
         listenable: Injection.adminNotifier,
         builder: (context, _) {
           final state = Injection.adminNotifier.hooksState;
           return switch (state) {
-            AdminHooksLoading() => const Center(child: CircularProgressIndicator()),
-            AdminHooksError(:final message) => Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text('${l10n.error}: $message'),
-                  const SizedBox(height: 16),
-                  FilledButton(
-                    onPressed: () => Injection.adminNotifier.loadHooks(),
-                    child: Text(l10n.retry),
-                  ),
-                ],
-              ),
+            AdminHooksLoading() => const AppLoading(),
+            AdminHooksError(:final message) => AppError(
+              message: message,
+              onRetry: () => Injection.adminNotifier.loadHooks(),
             ),
             AdminHooksLoaded(:final hooks) => hooks.isEmpty
-              ? Center(child: Text(l10n.adminNoHooks))
-              : ListView.builder(
-                  itemCount: hooks.length,
-                  itemBuilder: (context, index) {
-                    final hook = hooks[index];
-                    return Card(
-                      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                      child: ListTile(
-                        leading: const Icon(Icons.webhook),
-                        title: Text(hook.type ?? l10n.unknown),
-                        subtitle: Text(hook.config?['url']?.toString() ?? ''),
-                        trailing: IconButton(
-                          icon: const Icon(Icons.delete),
-                          tooltip: l10n.delete,
-                          onPressed: () => _confirmDelete(context, hook.id),
-                        ),
-                      ),
-                    );
-                  },
+              ? AppEmpty(icon: FIcons.webhook, title: l10n.adminNoHooks)
+              : ListView(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+                  children: [
+                    AppSection(
+                      title: '',
+                      showHeader: false,
+                      children: [
+                        for (final hook in hooks)
+                          AppTile(
+                            leading: const Icon(FIcons.webhook),
+                            title: hook.type ?? l10n.unknown,
+                            subtitle: hook.config?['url']?.toString() ?? '',
+                            showChevron: false,
+                            trailing: FTappable(
+                              onPress: () => _confirmDelete(context, hook.id),
+                              child: const Padding(
+                                padding: EdgeInsets.all(6),
+                                child: Icon(FIcons.trash2, size: 16),
+                              ),
+                            ),
+                            onPress: null,
+                          ),
+                      ],
+                    ),
+                  ],
                 ),
             _ => const SizedBox.shrink(),
           };
@@ -106,28 +94,26 @@ class _AdminHooksPageState extends State<AdminHooksPage> {
   void _confirmDelete(BuildContext context, int? id) {
     if (id == null) return;
     final l10n = AppLocalizations.of(context)!;
-    showDialog(
+    showFDialog<void>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx, style, animation) => FDialog(
         title: Text(l10n.deleteWebhook),
-        content: Text(l10n.deleteWebhookConfirm),
+        body: Text(l10n.deleteWebhookConfirm),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(),
+          FButton(
+            variant: .outline,
+            onPress: () => Navigator.of(ctx).pop(),
             child: Text(l10n.cancel),
           ),
-          FilledButton(
-            onPressed: () async {
+          FButton(
+            variant: .destructive,
+            onPress: () async {
               Navigator.of(ctx).pop();
               await Injection.adminNotifier.deleteHook(id);
               if (context.mounted) {
                 Injection.adminNotifier.loadHooks();
               }
             },
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
-              foregroundColor: Theme.of(context).colorScheme.onError,
-            ),
             child: Text(l10n.delete),
           ),
         ],

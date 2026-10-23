@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/user_oauth_notifier.dart';
+import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_state_views.dart';
+import '../widgets/forui/app_tile.dart';
 
 class OAuthAppsPage extends StatefulWidget {
   const OAuthAppsPage({super.key});
@@ -22,43 +26,42 @@ class _OAuthAppsPageState extends State<OAuthAppsPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.oauthAppsTitle)),
-      body: ListenableBuilder(
+    return AppPage(
+      title: l10n.oauthAppsTitle,
+      actions: [
+        FHeaderAction(
+          icon: const Icon(FIcons.plus),
+          semanticsLabel: l10n.oauthCreateApp,
+          onPress: () => _showCreateDialog(context),
+        ),
+      ],
+      child: ListenableBuilder(
         listenable: Injection.userOAuthNotifier,
         builder: (context, _) {
           final state = Injection.userOAuthNotifier.appsState;
           return switch (state) {
-            OAuth2AppsLoading() => const Center(child: CircularProgressIndicator()),
-            OAuth2AppsError(:final message) => Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text('${l10n.error}: $message'),
-                  const SizedBox(height: 16),
-                  FilledButton(
-                    onPressed: () => Injection.userOAuthNotifier.loadApps(),
-                    child: Text(l10n.retry),
-                  ),
-                ],
-              ),
+            OAuth2AppsLoading() => const AppLoading(),
+            OAuth2AppsError(:final message) => AppError(
+              message: message,
+              onRetry: () => Injection.userOAuthNotifier.loadApps(),
             ),
-            OAuth2AppsLoaded(:final apps) => apps.isEmpty
-              ? Center(child: Text(l10n.oauthNoApps))
-              : ListView.builder(
-                  itemCount: apps.length,
-                  itemBuilder: (context, index) {
-                    final app = apps[index];
-                    return _OAuthAppCard(app: app);
-                  },
-                ),
+            OAuth2AppsLoaded(:final apps) =>
+              apps.isEmpty
+                  ? AppEmpty(icon: FIcons.appWindow, title: l10n.oauthNoApps)
+                  : ListView.builder(
+                      padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+                      itemCount: apps.length,
+                      itemBuilder: (context, index) {
+                        final app = apps[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: _OAuthAppCard(app: app),
+                        );
+                      },
+                    ),
             _ => const SizedBox(),
           };
         },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => _showCreateDialog(context),
-        child: const Icon(Icons.add),
       ),
     );
   }
@@ -68,30 +71,34 @@ class _OAuthAppsPageState extends State<OAuthAppsPage> {
     final nameController = TextEditingController();
     final redirectUriController = TextEditingController();
 
-    showDialog(
+    showFDialog<void>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (ctx, style, animation) => FDialog(
         title: Text(l10n.oauthCreateApp),
-        content: Column(
+        body: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(
-              controller: nameController,
-              decoration: InputDecoration(labelText: l10n.name),
+            FTextField(
+              control: FTextFieldControl.managed(controller: nameController),
+              label: Text(l10n.name),
             ),
-            TextField(
-              controller: redirectUriController,
-              decoration: InputDecoration(labelText: l10n.oauthRedirectUri),
+            const SizedBox(height: 12),
+            FTextField(
+              control: FTextFieldControl.managed(
+                controller: redirectUriController,
+              ),
+              label: Text(l10n.oauthRedirectUri),
             ),
           ],
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
+          FButton(
+            variant: .outline,
+            onPress: () => Navigator.pop(ctx),
             child: Text(l10n.cancel),
           ),
-          FilledButton(
-            onPressed: () {
+          FButton(
+            onPress: () {
               final name = nameController.text.trim();
               final redirectUri = redirectUriController.text.trim();
               if (name.isNotEmpty && redirectUri.isNotEmpty) {
@@ -99,7 +106,7 @@ class _OAuthAppsPageState extends State<OAuthAppsPage> {
                   'name': name,
                   'redirect_uris': [redirectUri],
                 });
-                Navigator.pop(context);
+                Navigator.pop(ctx);
               }
             },
             child: Text(l10n.create),
@@ -118,46 +125,62 @@ class _OAuthAppCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      child: ListTile(
-        leading: const Icon(Icons.apps),
-        title: Text(app.name ?? l10n.unknown),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (app.client_id != null)
-              Text('Client ID: ${app.client_id}'),
-            if (app.redirect_uris != null && app.redirect_uris!.isNotEmpty)
-              Text('${l10n.oauthRedirectUri}: ${app.redirect_uris!.first}'),
-          ],
+    final theme = Theme.of(context);
+    final subtitle = [
+      if (app.client_id != null) 'Client ID: ${app.client_id}',
+      if (app.redirect_uris != null && app.redirect_uris!.isNotEmpty)
+        '${l10n.oauthRedirectUri}: ${app.redirect_uris!.first}',
+    ].join(' · ');
+
+    return FCard.raw(
+      child: AppTile(
+        leading: Icon(
+          FIcons.appWindow,
+          size: 18,
+          color: theme.colorScheme.primary,
         ),
-        trailing: IconButton(
-          icon: const Icon(Icons.delete),
-          onPressed: () => _confirmDelete(context, app),
+        title: app.name ?? l10n.unknown,
+        subtitle: subtitle,
+        showChevron: false,
+        trailing: FTappable(
+          onPress: () => _confirmDelete(context, app),
+          semanticsLabel: l10n.delete,
+          child: Padding(
+            padding: const EdgeInsets.all(6),
+            child: Icon(
+              FIcons.trash2,
+              size: 16,
+              color: theme.colorScheme.error,
+            ),
+          ),
         ),
+        onPress: null,
       ),
     );
   }
 
   void _confirmDelete(BuildContext context, OAuth2Application app) {
     final l10n = AppLocalizations.of(context)!;
-    showDialog(
+    showFDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (ctx, style, animation) => FDialog(
         title: Text(l10n.confirmDelete),
-        content: Text('${l10n.oauthDeleteAppConfirm} "${app.name ?? l10n.unknown}"?'),
+        body: Text(
+          '${l10n.oauthDeleteAppConfirm} "${app.name ?? l10n.unknown}"?',
+        ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
+          FButton(
+            variant: .outline,
+            onPress: () => Navigator.pop(ctx, false),
             child: Text(l10n.cancel),
           ),
-          FilledButton(
-            onPressed: () {
+          FButton(
+            variant: .destructive,
+            onPress: () {
               if (app.id != null) {
                 Injection.userOAuthNotifier.deleteApp(app.id!);
               }
-              Navigator.pop(context);
+              Navigator.pop(ctx, true);
             },
             child: Text(l10n.delete),
           ),

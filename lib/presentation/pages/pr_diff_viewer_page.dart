@@ -1,10 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../core/utils/diff_parser.dart';
 import '../../l10n/app_localizations.dart';
+import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_state_views.dart';
 
 class PrDiffViewerPage extends StatefulWidget {
   final String owner;
@@ -78,42 +81,28 @@ class _PrDiffViewerPageState extends State<PrDiffViewerPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.diffView),
-        actions: [
-          IconButton(
-            icon: Icon(_splitView ? Icons.view_column : Icons.view_stream),
-            tooltip: _splitView ? l10n.unifiedView : l10n.splitView,
-            onPressed: () => setState(() => _splitView = !_splitView),
-          ),
-        ],
-      ),
-      body: _buildBody(l10n),
+    return AppPage(
+      title: l10n.diffView,
+      actions: [
+        FHeaderAction(
+          icon: Icon(_splitView ? FIcons.columns2 : FIcons.rows3),
+          semanticsLabel: _splitView ? l10n.unifiedView : l10n.splitView,
+          onPress: () => setState(() => _splitView = !_splitView),
+        ),
+      ],
+      child: _buildBody(l10n),
     );
   }
 
   Widget _buildBody(AppLocalizations l10n) {
     if (_loading) {
-      return const Center(child: CircularProgressIndicator());
+      return const AppLoading();
     }
     if (_error != null) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('${l10n.error}: $_error'),
-            const SizedBox(height: UIConstants.md),
-            FilledButton(
-              onPressed: _loadDiff,
-              child: Text(l10n.retry),
-            ),
-          ],
-        ),
-      );
+      return AppError(message: _error!, onRetry: _loadDiff);
     }
     if (_files.isEmpty) {
-      return Center(child: Text(l10n.noChanges));
+      return AppEmpty(icon: FIcons.fileDiff, title: l10n.noChanges);
     }
     return ListView.builder(
       padding: const EdgeInsets.all(UIConstants.md),
@@ -124,7 +113,9 @@ class _PrDiffViewerPageState extends State<PrDiffViewerPage> {
           DiffHunkHeaderRow(:final hunk) => _buildHunkHeader(hunk),
           DiffLineRow(:final line) => _buildDiffLine(line),
           DiffTruncatedRow(:final hiddenLineCount) => _buildTruncated(
-              hiddenLineCount, l10n),
+            hiddenLineCount,
+            l10n,
+          ),
         };
       },
     );
@@ -134,12 +125,12 @@ class _PrDiffViewerPageState extends State<PrDiffViewerPage> {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: UIConstants.sm),
       child: Center(
-        child: OutlinedButton.icon(
-          onPressed: _expandAll,
-          icon: const Icon(Icons.unfold_more),
-          label: Text(
-            '${l10n.showEntireDiff} (+$hiddenLineCount)',
-          ),
+        child: FButton(
+          variant: .outline,
+          size: .sm,
+          prefix: const Icon(FIcons.unfoldVertical, size: 16),
+          onPress: _expandAll,
+          child: Text('${l10n.showEntireDiff} (+$hiddenLineCount)'),
         ),
       ),
     );
@@ -161,16 +152,16 @@ class _PrDiffViewerPageState extends State<PrDiffViewerPage> {
         children: [
           Icon(
             file.status == 'added'
-                ? Icons.add_circle
+                ? FIcons.circlePlus
                 : file.status == 'removed'
-                    ? Icons.remove_circle
-                    : Icons.edit,
+                ? FIcons.circleMinus
+                : FIcons.penLine,
             size: UIConstants.iconSm,
             color: file.status == 'added'
                 ? Colors.green
                 : file.status == 'removed'
-                    ? Colors.red
-                    : theme.colorScheme.primary,
+                ? Colors.red
+                : theme.colorScheme.primary,
           ),
           const SizedBox(width: UIConstants.sm),
           Expanded(
@@ -219,7 +210,8 @@ class _PrDiffViewerPageState extends State<PrDiffViewerPage> {
       _ => ' ',
     };
 
-    final lineNum = '${line.oldLineNum?.toString().padLeft(4) ?? ''}'
+    final lineNum =
+        '${line.oldLineNum?.toString().padLeft(4) ?? ''}'
         ' ${line.newLineNum?.toString().padLeft(4) ?? ''}';
 
     return Container(
@@ -245,8 +237,8 @@ class _PrDiffViewerPageState extends State<PrDiffViewerPage> {
               color: line.type == DiffLineType.added
                   ? Colors.green
                   : line.type == DiffLineType.removed
-                      ? Colors.red
-                      : null,
+                  ? Colors.red
+                  : null,
             ),
           ),
           const SizedBox(width: UIConstants.xs),

@@ -1,12 +1,15 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/repo_notifier.dart';
+import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_state_views.dart';
 import '../widgets/user_avatar.dart';
 import 'commit_detail_page.dart';
 
@@ -180,33 +183,18 @@ class _FileBlamePageState extends State<FileBlamePage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.blame)),
-      body: _buildBody(l10n),
-    );
+    return AppPage(title: l10n.blame, child: _buildBody(l10n));
   }
 
   Widget _buildBody(AppLocalizations l10n) {
     if (_loading) {
-      return const Center(child: CircularProgressIndicator());
+      return const AppLoading();
     }
     if (_error != null) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('${l10n.error}: $_error'),
-            const SizedBox(height: UIConstants.md),
-            FilledButton(
-              onPressed: _loadBlame,
-              child: Text(l10n.retry),
-            ),
-          ],
-        ),
-      );
+      return AppError(message: _error!, onRetry: _loadBlame);
     }
     if (_lines.isEmpty) {
-      return Center(child: Text(l10n.noContent));
+      return AppEmpty(icon: FIcons.file, title: l10n.noContent);
     }
     if (_blameApiSupported && _ranges.isNotEmpty) {
       return _buildBlameView(l10n);
@@ -237,7 +225,13 @@ class _FileBlamePageState extends State<FileBlamePage> {
     );
   }
 
-  Widget _buildBlameRow(BuildContext context, int lineNum, String sha, dynamic commit, int index) {
+  Widget _buildBlameRow(
+    BuildContext context,
+    int lineNum,
+    String sha,
+    dynamic commit,
+    int index,
+  ) {
     final row = Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -260,10 +254,11 @@ class _FileBlamePageState extends State<FileBlamePage> {
                       Expanded(
                         child: Text(
                           commit.sha?.substring(0, 7) ?? '',
-                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            fontFamily: 'monospace',
-                            color: Theme.of(context).colorScheme.primary,
-                          ),
+                          style: Theme.of(context).textTheme.labelSmall
+                              ?.copyWith(
+                                fontFamily: 'monospace',
+                                color: Theme.of(context).colorScheme.primary,
+                              ),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
@@ -287,7 +282,9 @@ class _FileBlamePageState extends State<FileBlamePage> {
               '$lineNum',
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
                 fontFamily: 'monospace',
-                color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                color: Theme.of(
+                  context,
+                ).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
               ),
               textAlign: TextAlign.right,
             ),
@@ -305,9 +302,9 @@ class _FileBlamePageState extends State<FileBlamePage> {
             ),
             child: Text(
               _lines[index],
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                fontFamily: 'monospace',
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(fontFamily: 'monospace'),
             ),
           ),
         ),
@@ -315,8 +312,8 @@ class _FileBlamePageState extends State<FileBlamePage> {
     );
 
     if (sha.isNotEmpty) {
-      return InkWell(
-        onTap: () => Navigator.push(
+      return FTappable(
+        onPress: () => Navigator.push(
           context,
           MaterialPageRoute(
             builder: (_) => CommitDetailPage(
@@ -347,7 +344,9 @@ class _FileBlamePageState extends State<FileBlamePage> {
                   '${index + 1}',
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     fontFamily: 'monospace',
-                    color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
                   ),
                   textAlign: TextAlign.right,
                 ),
@@ -361,9 +360,9 @@ class _FileBlamePageState extends State<FileBlamePage> {
               Expanded(
                 child: Text(
                   _lines[index],
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    fontFamily: 'monospace',
-                  ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(fontFamily: 'monospace'),
                 ),
               ),
             ],

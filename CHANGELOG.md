@@ -23,6 +23,9 @@
 - **Form pages migrated to Forui**: create/edit label, create/edit milestone, create/edit organization, create/edit team, create/edit release, create repo, migrate repo, create webhook, create admin webhook — every page now uses `AppPage`, `FTextFormField`/`FTextField`, `FButton`, `FDialog` and `showFToast`
 - **Review dialog**: `CreateReviewDialog` rebuilt as an `FDialog` with Forui segmented review actions
 - **Emails page**: `AppPage` header action, Forui list rows, add/delete dialogs and toasts
+- **Account & user pages**: SSH keys, access tokens, GPG keys, OAuth apps, follow lists, user/starred repositories, organizations and user management migrated to `AppPage`, Forui list rows, `FDialog` forms and toasts (`tokens` keeps its token-scope groups and creation dialog)
+- **File & diff viewers**: repository file, blame, history, compare, PR files and PR diff pages use `AppPage` toolbars with `FHeaderAction`, `FPopoverMenu` overflow actions, Forui state views and dialogs; diff/code rendering untouched
+- **Admin pages**: dashboard, hooks, cron, runners, emails and badges migrated to grouped `AppSection`/`AppTile` lists with Forui search, actions and dialogs
 
 ### Added
 - `AppTheme` (brand palette, light/dark Forui themes, touch/desktop density)

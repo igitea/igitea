@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
-import '../../core/animations/animated_wrapper.dart';
-import '../../core/constants/ui_constants.dart';
+import 'package:forui/forui.dart';
+
 import '../../core/di/injection.dart';
 import '../../core/errors/failures.dart';
 import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../domain/usecases/user_usecases.dart';
 import '../../l10n/app_localizations.dart';
-import '../widgets/empty_state.dart';
+import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_state_views.dart';
+import '../widgets/forui/app_tile.dart';
 import '../widgets/user_avatar.dart';
 import 'user_profile_page.dart';
 
@@ -36,8 +38,12 @@ class _FollowPageState extends State<FollowPage> {
   Future<void> _load() async {
     setState(() => _loading = true);
     final result = widget.type == FollowType.followers
-        ? await Injection.listFollowersUseCase(ListFollowersParams(username: widget.username))
-        : await Injection.listFollowingUseCase(ListFollowingParams(username: widget.username));
+        ? await Injection.listFollowersUseCase(
+            ListFollowersParams(username: widget.username),
+          )
+        : await Injection.listFollowingUseCase(
+            ListFollowingParams(username: widget.username),
+          );
     if (mounted) {
       _users
         ..clear()
@@ -49,67 +55,42 @@ class _FollowPageState extends State<FollowPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final title = widget.type == FollowType.followers ? l10n.followers : l10n.following;
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: _buildBody(l10n),
-    );
+    final title = widget.type == FollowType.followers
+        ? l10n.followers
+        : l10n.following;
+    return AppPage(title: title, child: _buildBody(l10n));
   }
 
   Widget _buildBody(AppLocalizations l10n) {
-    if (_loading) return const Center(child: CircularProgressIndicator());
+    if (_loading) return const AppLoading();
 
     if (_users.isEmpty) {
-      return EmptyState(icon: Icons.people_outline, title: l10n.noData);
+      return AppEmpty(icon: FIcons.users, title: l10n.noData);
     }
 
     return RefreshIndicator(
       onRefresh: _load,
       child: ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: UIConstants.md),
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
         itemCount: _users.length,
-        itemBuilder: (context, index) => _UserCard(user: _users[index], index: index),
-      ),
-    );
-  }
-}
-
-class _UserCard extends StatelessWidget {
-  final User user;
-  final int index;
-
-  const _UserCard({required this.user, required this.index});
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return FadeInWrapper(
-      delay: Duration(milliseconds: index * 20),
-      child: Padding(
-        padding: const EdgeInsets.only(bottom: UIConstants.sm),
-        child: Card(
-          elevation: 0,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-            side: BorderSide(color: theme.colorScheme.outlineVariant),
-          ),
-          child: InkWell(
-            borderRadius: BorderRadius.circular(12),
-            onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => UserProfilePage(username: user.login ?? '')),
-            ),
-            child: ListTile(
-              leading: UserAvatar(user: user, radius: 18),
-              title: Text(
-                user.login ?? '',
-                style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+        itemBuilder: (context, index) {
+          final user = _users[index];
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: FCard.raw(
+              child: AppTile(
+                leading: UserAvatar(user: user, radius: 18),
+                title: user.login ?? '',
+                subtitle: user.full_name,
+                onPress: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => UserProfilePage(username: user.login ?? ''),
+                  ),
+                ),
               ),
-              subtitle: user.full_name != null
-                  ? Text(user.full_name!, style: theme.textTheme.bodySmall)
-                  : null,
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
