@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 import 'app.dart';
 
 void main() {
@@ -16,7 +17,7 @@ void main() {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.error_outline, size: 48, color: Colors.red),
+              const Icon(FIcons.circleAlert, size: 48, color: Colors.red),
               const SizedBox(height: 16),
               const Text(
                 'Something went wrong',
