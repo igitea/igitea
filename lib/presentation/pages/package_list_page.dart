@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../../core/animations/animated_wrapper.dart';
 import '../../core/constants/ui_constants.dart';
@@ -6,7 +7,8 @@ import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/package_notifier.dart';
-import '../widgets/empty_state.dart';
+import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_state_views.dart';
 import 'package_detail_page.dart';
 import 'repo_detail_page.dart';
 
@@ -42,7 +44,8 @@ class _PackageListPageState extends State<PackageListPage> {
     return state.packages.where((p) => seen.add(p.name ?? '')).toList();
   }
 
-  bool get _loading => Injection.packageNotifier.listState is PackageListLoading;
+  bool get _loading =>
+      Injection.packageNotifier.listState is PackageListLoading;
 
   String? get _error {
     final state = Injection.packageNotifier.listState;
@@ -61,9 +64,9 @@ class _PackageListPageState extends State<PackageListPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.packages)),
-      body: ListenableBuilder(
+    return AppPage(
+      title: l10n.packages,
+      child: ListenableBuilder(
         listenable: Injection.packageNotifier,
         builder: (context, _) => _buildBody(l10n),
       ),
@@ -72,34 +75,15 @@ class _PackageListPageState extends State<PackageListPage> {
 
   Widget _buildBody(AppLocalizations l10n) {
     if (_loading && _packages.isEmpty) {
-      return const Center(child: CircularProgressIndicator());
+      return const AppLoading();
     }
     if (_error != null && _packages.isEmpty) {
-      return _buildErrorState(l10n);
+      return AppError(message: _error!, onRetry: _loadPackages);
     }
     if (!_loading && _packages.isEmpty) {
-      return EmptyState(
-        icon: Icons.inventory_2_outlined,
-        title: l10n.noPackages,
-      );
+      return AppEmpty(icon: FIcons.package, title: l10n.noPackages);
     }
     return _buildPackageList(l10n);
-  }
-
-  Widget _buildErrorState(AppLocalizations l10n) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text('${l10n.error}: $_error'),
-          const SizedBox(height: UIConstants.md),
-          FilledButton(
-            onPressed: _loadPackages,
-            child: Text(l10n.retry),
-          ),
-        ],
-      ),
-    );
   }
 
   Widget _buildPackageList(AppLocalizations l10n) {
@@ -132,13 +116,14 @@ class _PackageListPageState extends State<PackageListPage> {
             final isSelected = _typeFilter == type;
             return Padding(
               padding: const EdgeInsets.only(right: UIConstants.sm),
-              child: FilterChip(
-                label: Text(type ?? l10n.allTypes),
-                selected: isSelected,
-                onSelected: (_) {
+              child: FButton(
+                variant: isSelected ? .primary : .outline,
+                size: .xs,
+                onPress: () {
                   setState(() => _typeFilter = type);
                   _loadPackages();
                 },
+                child: Text(type ?? l10n.allTypes),
               ),
             );
           }).toList(),
@@ -174,115 +159,115 @@ class _PackageListPageState extends State<PackageListPage> {
 
   Widget _buildPackageCard(AppLocalizations l10n, Package pkg, int index) {
     final repo = pkg.repository;
+    final theme = Theme.of(context);
     return FadeInWrapper(
       delay: Duration(milliseconds: index * 30),
-      child: Card(
-        margin: const EdgeInsets.only(bottom: UIConstants.md),
-        elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: BorderSide(
-            color: Theme.of(context).colorScheme.outlineVariant,
-          ),
-        ),
-        child: InkWell(
-          onTap: () {
-            if (pkg.type != null && pkg.name != null && pkg.version != null) {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => PackageDetailPage(
-                    owner: widget.owner,
-                    type: pkg.type!,
-                    name: pkg.name!,
-                    version: pkg.version!,
-                  ),
-                ),
-              );
-            }
-          },
-          borderRadius: BorderRadius.circular(12),
-          child: Padding(
-            padding: const EdgeInsets.all(UIConstants.md),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Icon(
-                      Icons.inventory_2_outlined,
-                      size: UIConstants.iconLg,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    const SizedBox(width: UIConstants.md),
-                    Expanded(
-                      child: Text(
-                        pkg.name ?? '',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: UIConstants.md),
+        child: FCard.raw(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              FTappable(
+                onPress: () {
+                  if (pkg.type != null &&
+                      pkg.name != null &&
+                      pkg.version != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => PackageDetailPage(
+                          owner: widget.owner,
+                          type: pkg.type!,
+                          name: pkg.name!,
+                          version: pkg.version!,
                         ),
                       ),
-                    ),
-                    const Icon(Icons.chevron_right),
-                  ],
-                ),
-                const SizedBox(height: UIConstants.sm + 2),
-                Wrap(
-                  spacing: UIConstants.sm,
-                  runSpacing: UIConstants.xs,
-                  children: [
-                    if (pkg.type != null)
-                      _buildTypeBadge(pkg.type!),
-                    if (pkg.version != null)
-                      _buildVersionBadge(pkg.version!),
-                  ],
-                ),
-                if (repo != null && repo.full_name != null) ...[
-                  const SizedBox(height: UIConstants.sm),
-                  InkWell(
-                    onTap: () {
-                      final parts = repo.full_name!.split('/');
-                      if (parts.length == 2) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => RepoDetailPage(
-                              owner: parts[0],
-                              repo: parts[1],
-                            ),
-                          ),
-                        );
-                      }
-                    },
-                    borderRadius: BorderRadius.circular(4),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 2),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
+                    );
+                  }
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(UIConstants.md),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
                         children: [
                           Icon(
-                            Icons.code,
-                            size: 14,
-                            color: Theme.of(context).colorScheme.primary,
+                            FIcons.package,
+                            size: UIConstants.iconLg,
+                            color: theme.colorScheme.primary,
                           ),
-                          const SizedBox(width: 4),
-                          Flexible(
+                          const SizedBox(width: UIConstants.md),
+                          Expanded(
                             child: Text(
-                              repo.full_name!,
-                              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                                color: Theme.of(context).colorScheme.primary,
-                                fontWeight: FontWeight.w500,
+                              pkg.name ?? '',
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
                               ),
-                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
+                          const Icon(FIcons.chevronRight),
                         ],
                       ),
+                      const SizedBox(height: UIConstants.sm + 2),
+                      Wrap(
+                        spacing: UIConstants.sm,
+                        runSpacing: UIConstants.xs,
+                        children: [
+                          if (pkg.type != null) _buildTypeBadge(pkg.type!),
+                          if (pkg.version != null)
+                            _buildVersionBadge(pkg.version!),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              if (repo != null && repo.full_name != null)
+                FTappable(
+                  onPress: () {
+                    final parts = repo.full_name!.split('/');
+                    if (parts.length == 2) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              RepoDetailPage(owner: parts[0], repo: parts[1]),
+                        ),
+                      );
+                    }
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      UIConstants.md,
+                      0,
+                      UIConstants.md,
+                      UIConstants.md,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          FIcons.code,
+                          size: 14,
+                          color: theme.colorScheme.primary,
+                        ),
+                        const SizedBox(width: 4),
+                        Flexible(
+                          child: Text(
+                            repo.full_name!,
+                            style: theme.textTheme.labelMedium?.copyWith(
+                              color: theme.colorScheme.primary,
+                              fontWeight: FontWeight.w500,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                ],
-              ],
-            ),
+                ),
+            ],
           ),
         ),
       ),

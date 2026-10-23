@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/animations/animated_wrapper.dart';
@@ -6,6 +7,8 @@ import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
+import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_tile.dart';
 import '../widgets/user_avatar.dart';
 import 'edit_release_page.dart';
 
@@ -44,21 +47,20 @@ class _ReleaseDetailPageState extends State<ReleaseDetailPage> {
 
   Future<void> _delete() async {
     final l10n = AppLocalizations.of(context)!;
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showFDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx, style, animation) => FDialog(
         title: Text(l10n.deleteRelease),
-        content: Text(l10n.deleteReleaseConfirm),
+        body: Text(l10n.deleteReleaseConfirm),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
+          FButton(
+            variant: .outline,
+            onPress: () => Navigator.pop(ctx, false),
             child: Text(l10n.cancel),
           ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
+          FButton(
+            variant: .destructive,
+            onPress: () => Navigator.pop(ctx, true),
             child: Text(l10n.delete),
           ),
         ],
@@ -73,13 +75,13 @@ class _ReleaseDetailPageState extends State<ReleaseDetailPage> {
       );
       if (mounted) {
         if (success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.releaseDeleted)),
-          );
+          showFToast(context: context, title: Text(l10n.releaseDeleted));
           Navigator.pop(context, true);
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.error)),
+          showFToast(
+            context: context,
+            variant: .destructive,
+            title: Text(l10n.error),
           );
         }
       }
@@ -90,38 +92,36 @@ class _ReleaseDetailPageState extends State<ReleaseDetailPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final release = widget.release;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(release.tag_name ?? ''),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit_outlined),
-            tooltip: l10n.editRelease,
-            onPressed: _edit,
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete_outline),
-            tooltip: l10n.deleteRelease,
-            onPressed: _delete,
-          ),
-        ],
-      ),
-      body: _buildContent(context, release, l10n),
+    return AppPage(
+      title: release.tag_name ?? '',
+      actions: [
+        FHeaderAction(
+          icon: const Icon(FIcons.pencil),
+          semanticsLabel: l10n.editRelease,
+          onPress: _edit,
+        ),
+        FHeaderAction(
+          icon: const Icon(FIcons.trash2),
+          semanticsLabel: l10n.deleteRelease,
+          onPress: _delete,
+        ),
+      ],
+      child: _buildContent(context, release, l10n),
     );
   }
 
-  Widget _buildContent(BuildContext context, Release release, AppLocalizations l10n) {
+  Widget _buildContent(
+    BuildContext context,
+    Release release,
+    AppLocalizations l10n,
+  ) {
     final theme = Theme.of(context);
     return ListView(
       padding: const EdgeInsets.all(UIConstants.md),
       children: [
         Row(
           children: [
-            const Icon(
-              Icons.new_releases_outlined,
-              size: 32,
-              color: Colors.amber,
-            ),
+            const Icon(FIcons.tag, size: 32, color: Colors.amber),
             const SizedBox(width: UIConstants.md),
             Expanded(
               child: Column(
@@ -209,17 +209,21 @@ class _ReleaseDetailPageState extends State<ReleaseDetailPage> {
             final asset = entry.value;
             return FadeInWrapper(
               delay: Duration(milliseconds: index * 30),
-              child: ListTile(
-                leading: const Icon(Icons.attach_file),
-                title: Text(asset.name ?? ''),
-                subtitle: Text(_formatSize(asset.size ?? 0)),
-                trailing: IconButton(
-                  icon: const Icon(Icons.download),
-                  onPressed: () {
-                    if (asset.browser_download_url != null) {
-                      launchUrl(Uri.parse(asset.browser_download_url!));
-                    }
-                  },
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: FCard.raw(
+                  child: AppTile(
+                    leading: const Icon(FIcons.file, size: 18),
+                    title: asset.name ?? '',
+                    subtitle: _formatSize(asset.size ?? 0),
+                    showChevron: false,
+                    trailing: const Icon(FIcons.download, size: 16),
+                    onPress: () {
+                      if (asset.browser_download_url != null) {
+                        launchUrl(Uri.parse(asset.browser_download_url!));
+                      }
+                    },
+                  ),
                 ),
               ),
             );
@@ -230,22 +234,23 @@ class _ReleaseDetailPageState extends State<ReleaseDetailPage> {
           Row(
             children: [
               if (release.tarball_url != null) ...[
-                IconButton(
-                  icon: const Icon(Icons.archive),
-                  tooltip: l10n.tarball,
-                  onPressed: () => launchUrl(Uri.parse(release.tarball_url!)),
+                FButton(
+                  variant: .outline,
+                  size: .sm,
+                  prefix: const Icon(FIcons.archive, size: 16),
+                  onPress: () => launchUrl(Uri.parse(release.tarball_url!)),
+                  child: Text(l10n.tarball),
                 ),
-                Text(l10n.tarball),
+                const SizedBox(width: 8),
               ],
-              const SizedBox(width: 16),
-              if (release.zipball_url != null) ...[
-                IconButton(
-                  icon: const Icon(Icons.folder_zip),
-                  tooltip: l10n.zipball,
-                  onPressed: () => launchUrl(Uri.parse(release.zipball_url!)),
+              if (release.zipball_url != null)
+                FButton(
+                  variant: .outline,
+                  size: .sm,
+                  prefix: const Icon(FIcons.package, size: 16),
+                  onPress: () => launchUrl(Uri.parse(release.zipball_url!)),
+                  child: Text(l10n.zipball),
                 ),
-                Text(l10n.zipball),
-              ],
             ],
           ),
         ],

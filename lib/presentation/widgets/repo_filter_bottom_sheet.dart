@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 import '../../l10n/app_localizations.dart';
 import '../models/repo_filter_state.dart';
 
@@ -75,50 +76,77 @@ class _RepoFilterBottomSheetState extends State<RepoFilterBottomSheet> {
                       runSpacing: 8,
                       children: _sortOptions.map((option) {
                         final isSelected = _state.sort == option.value;
-                        return FilterChip(
-                          label: Text(_getSortLabel(option.labelKey, l10n)),
-                          selected: isSelected,
-                          onSelected: (_) => setState(() => _state = _state.copyWith(
-                            sort: option.value,
-                            clearSort: option.value == null,
-                          )),
+                        return FButton(
+                          variant: isSelected ? .primary : .outline,
+                          size: .xs,
+                          onPress: () => setState(
+                            () => _state = _state.copyWith(
+                              sort: option.value,
+                              clearSort: option.value == null,
+                            ),
+                          ),
+                          child: Text(_getSortLabel(option.labelKey, l10n)),
                         );
                       }).toList(),
                     ),
                     const SizedBox(height: 16),
                     _SectionTitle(title: l10n.order),
                     const SizedBox(height: 8),
-                    SegmentedButton<String?>(
-                      segments: [
-                        ButtonSegment(value: null, label: Text(l10n.default_)),
-                        ButtonSegment(value: 'asc', label: Text(l10n.ascending)),
-                        ButtonSegment(value: 'desc', label: Text(l10n.descending)),
+                    Row(
+                      children: [
+                        for (final (value, label) in [
+                          (null, l10n.default_),
+                          ('asc', l10n.ascending),
+                          ('desc', l10n.descending),
+                        ])
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 3),
+                              child: FButton(
+                                variant: _state.order == value ? .primary : .outline,
+                                size: .sm,
+                                onPress: () => setState(
+                                  () => _state = _state.copyWith(
+                                    order: value,
+                                    clearOrder: value == null,
+                                  ),
+                                ),
+                                child: Flexible(
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(label, maxLines: 1),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                       ],
-                      selected: {_state.order},
-                      onSelectionChanged: (set) => setState(() => _state = _state.copyWith(
-                        order: set.first,
-                        clearOrder: set.first == null,
-                      )),
                     ),
                     const SizedBox(height: 16),
-                    CheckboxListTile(
-                      title: Text(l10n.privateReposOnly),
+                    FCheckbox(
+                      label: Text(l10n.privateReposOnly),
                       value: _state.private ?? false,
-                      onChanged: (v) => setState(() => _state = _state.copyWith(private: v)),
-                      contentPadding: EdgeInsets.zero,
+                      onChange: (v) => setState(
+                        () => _state = _state.copyWith(private: v),
+                      ),
                     ),
-                    CheckboxListTile(
-                      title: Text(l10n.includeArchived),
+                    const SizedBox(height: 8),
+                    FCheckbox(
+                      label: Text(l10n.includeArchived),
                       value: _state.archived ?? false,
-                      onChanged: (v) => setState(() => _state = _state.copyWith(archived: v)),
-                      contentPadding: EdgeInsets.zero,
+                      onChange: (v) => setState(
+                        () => _state = _state.copyWith(archived: v),
+                      ),
                     ),
-                    CheckboxListTile(
-                      title: Text(l10n.templatesOnly),
+                    const SizedBox(height: 8),
+                    FCheckbox(
+                      label: Text(l10n.templatesOnly),
                       value: _state.template ?? false,
-                      onChanged: (v) => setState(() => _state = _state.copyWith(template: v)),
-                      contentPadding: EdgeInsets.zero,
+                      onChange: (v) => setState(
+                        () => _state = _state.copyWith(template: v),
+                      ),
                     ),
+                    const SizedBox(height: 8),
                   ],
                 ),
               ),
@@ -128,15 +156,19 @@ class _RepoFilterBottomSheetState extends State<RepoFilterBottomSheet> {
               child: Row(
                 children: [
                   Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => Navigator.pop(context, const RepoFilterState()),
+                    child: FButton(
+                      variant: .outline,
+                      onPress: () => Navigator.pop(
+                        context,
+                        const RepoFilterState(),
+                      ),
                       child: Text(l10n.reset),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: FilledButton(
-                      onPressed: () => Navigator.pop(context, _state),
+                    child: FButton(
+                      onPress: () => Navigator.pop(context, _state),
                       child: Text(l10n.apply),
                     ),
                   ),

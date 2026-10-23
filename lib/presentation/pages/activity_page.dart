@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../widgets/activity_tile.dart';
+import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_state_views.dart';
 import 'repo_detail_page.dart';
 
 /// Full activity feed for a user, with infinite scroll.
@@ -58,21 +61,21 @@ class _ActivityPageState extends State<ActivityPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.recentActivity)),
-      body: ListenableBuilder(
+    return AppPage(
+      title: l10n.recentActivity,
+      child: ListenableBuilder(
         listenable: Injection.userNotifier,
         builder: (context, _) {
           final notifier = Injection.userNotifier;
           final activities = notifier.activities;
 
           if (notifier.activitiesLoading && activities.isEmpty) {
-            return const Center(child: CircularProgressIndicator());
+            return const AppLoading();
           }
 
           final error = notifier.activitiesError;
           if (error != null && activities.isEmpty) {
-            return _ErrorView(
+            return AppError(
               message: error,
               onRetry: () =>
                   Injection.userNotifier.getUserActivities(widget.username),
@@ -80,7 +83,7 @@ class _ActivityPageState extends State<ActivityPage> {
           }
 
           if (activities.isEmpty) {
-            return Center(child: Text(l10n.noActivity));
+            return AppEmpty(icon: FIcons.activity, title: l10n.noActivity);
           }
 
           return RefreshIndicator(
@@ -95,27 +98,24 @@ class _ActivityPageState extends State<ActivityPage> {
                 if (index >= activities.length) {
                   return const Padding(
                     padding: EdgeInsets.symmetric(vertical: UIConstants.md),
-                    child: Center(
-                      child: SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                    ),
+                    child: Center(child: FCircularProgress(size: .sm)),
                   );
                 }
                 final activity = activities[index];
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ActivityTile(
-                      activity: activity,
-                      timeText: _formatDate(activity.created, l10n),
-                      onTap: () => _openRepo(activity),
+                return Container(
+                  margin: const EdgeInsets.only(bottom: 6),
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: Theme.of(context).colorScheme.outlineVariant,
                     ),
-                    if (index < activities.length - 1)
-                      const Divider(height: 1, indent: UIConstants.md),
-                  ],
+                  ),
+                  child: ActivityTile(
+                    activity: activity,
+                    timeText: _formatDate(activity.created, l10n),
+                    onTap: () => _openRepo(activity),
+                  ),
                 );
               },
             ),
@@ -135,34 +135,6 @@ class _ActivityPageState extends State<ActivityPage> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => RepoDetailPage(owner: owner, repo: name),
-      ),
-    );
-  }
-}
-
-class _ErrorView extends StatelessWidget {
-  final String message;
-  final VoidCallback onRetry;
-
-  const _ErrorView({required this.message, required this.onRetry});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.error_outline,
-              size: 48, color: Theme.of(context).colorScheme.error),
-          const SizedBox(height: UIConstants.sm),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 32),
-            child: Text(message, textAlign: TextAlign.center),
-          ),
-          const SizedBox(height: UIConstants.md),
-          FilledButton(onPressed: onRetry, child: Text(l10n.retry)),
-        ],
       ),
     );
   }

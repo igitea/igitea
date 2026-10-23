@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../l10n/app_localizations.dart';
+import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_state_views.dart';
 import 'action_run_detail_page.dart';
 
-int _toInt(dynamic value) => switch (value) { num n => n.toInt(), String s => int.tryParse(s) ?? 0, _ => 0 };
+int _toInt(dynamic value) => switch (value) {
+  num n => n.toInt(),
+  String s => int.tryParse(s) ?? 0,
+  _ => 0,
+};
 
 class ActionsListPage extends StatefulWidget {
   final String owner;
@@ -17,7 +24,8 @@ class ActionsListPage extends StatefulWidget {
   State<ActionsListPage> createState() => _ActionsListPageState();
 }
 
-class _ActionsListPageState extends State<ActionsListPage> with AutomaticKeepAliveClientMixin {
+class _ActionsListPageState extends State<ActionsListPage>
+    with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 
@@ -41,13 +49,20 @@ class _ActionsListPageState extends State<ActionsListPage> with AutomaticKeepAli
   }
 
   Future<void> _loadWorkflowsThenRuns() async {
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     try {
       final wfResult = await Injection.apiService.repoListActionWorkflows(
-        owner: widget.owner, repo: widget.repo,
+        owner: widget.owner,
+        repo: widget.repo,
       );
       if (mounted) {
-        _workflows = (wfResult['workflows'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
+        _workflows =
+            (wfResult['workflows'] as List<dynamic>?)
+                ?.cast<Map<String, dynamic>>() ??
+            [];
       }
     } catch (_) {}
     await _loadRuns(reset: true);
@@ -57,16 +72,25 @@ class _ActionsListPageState extends State<ActionsListPage> with AutomaticKeepAli
   Future<void> _loadRuns({bool reset = false, bool loadMore = false}) async {
     if (_loadingMore) return;
     if (loadMore && !_hasMore) return;
-    if (loadMore) { _loadingMore = true; if (mounted) setState(() {}); }
+    if (loadMore) {
+      _loadingMore = true;
+      if (mounted) setState(() {});
+    }
 
     final page = reset ? 1 : (_page + 1);
     try {
       final result = await Injection.apiService.repoListActionRuns(
-        owner: widget.owner, repo: widget.repo,
-        status: _statusFilter, actor: _actorFilter,
-        page: page, limit: _pageSize,
+        owner: widget.owner,
+        repo: widget.repo,
+        status: _statusFilter,
+        actor: _actorFilter,
+        page: page,
+        limit: _pageSize,
       );
-      final newRuns = (result['workflow_runs'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
+      final newRuns =
+          (result['workflow_runs'] as List<dynamic>?)
+              ?.cast<Map<String, dynamic>>() ??
+          [];
       final total = (result['total_count'] as num?)?.toInt() ?? newRuns.length;
 
       if (mounted) {
@@ -75,15 +99,25 @@ class _ActionsListPageState extends State<ActionsListPage> with AutomaticKeepAli
           if (actor?['login'] != null) _actors.add(actor!['login'] as String);
         }
         setState(() {
-          if (reset) { _allRuns = newRuns; _page = 1; }
-          else { _allRuns.addAll(newRuns); _page = page; }
+          if (reset) {
+            _allRuns = newRuns;
+            _page = 1;
+          } else {
+            _allRuns.addAll(newRuns);
+            _page = page;
+          }
           _hasMore = _allRuns.length < total;
           _loadingMore = false;
         });
       }
     } catch (e) {
       if (mounted) {
-        if (reset) setState(() { _error = e.toString(); _loading = false; });
+        if (reset) {
+          setState(() {
+            _error = e.toString();
+            _loading = false;
+          });
+        }
         setState(() => _loadingMore = false);
       }
     }
@@ -122,65 +156,120 @@ class _ActionsListPageState extends State<ActionsListPage> with AutomaticKeepAli
   }
 
   void _applyFilter(String? status, String? actor) {
-    setState(() { _statusFilter = status; _actorFilter = actor; });
+    setState(() {
+      _statusFilter = status;
+      _actorFilter = actor;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     super.build(context);
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.actions),
-        actions: [
-          if (_actors.isNotEmpty)
-            PopupMenuButton<String>(
-              icon: const Icon(Icons.person_outline),
-              tooltip: l10n.filterByActor,
-              onSelected: (a) => _applyFilter(_statusFilter, a == 'all' ? null : a),
-              itemBuilder: (_) => [
-                PopupMenuItem(value: 'all', child: Text(l10n.all)),
-                ..._actors.map((a) => PopupMenuItem(value: a, child: Text(a))),
+    return AppPage(
+      title: l10n.actions,
+      actions: [
+        if (_actors.isNotEmpty)
+          FPopoverMenu(
+            menuAnchor: Alignment.topRight,
+            childAnchor: Alignment.bottomRight,
+            menuBuilder: (context, controller, _) => [
+              FItemGroup(
+                children: [
+                  FItem(
+                    title: Text(l10n.all),
+                    selected: _actorFilter == null,
+                    onPress: () {
+                      controller.hide();
+                      _applyFilter(_statusFilter, null);
+                    },
+                  ),
+                  for (final a in _actors)
+                    FItem(
+                      title: Text(a),
+                      selected: _actorFilter == a,
+                      onPress: () {
+                        controller.hide();
+                        _applyFilter(_statusFilter, a);
+                      },
+                    ),
+                ],
+              ),
+            ],
+            builder: (context, controller, child) => FHeaderAction(
+              icon: const Icon(FIcons.user),
+              semanticsLabel: l10n.filterByActor,
+              selected: _actorFilter != null,
+              onPress: () => controller.toggle(),
+            ),
+          ),
+        FPopoverMenu(
+          menuAnchor: Alignment.topRight,
+          childAnchor: Alignment.bottomRight,
+          menuBuilder: (context, controller, _) => [
+            FItemGroup(
+              children: [
+                FItem(
+                  title: Text(l10n.all),
+                  selected: _statusFilter == null,
+                  onPress: () {
+                    controller.hide();
+                    _applyFilter(null, _actorFilter);
+                  },
+                ),
+                for (final s in [
+                  'success',
+                  'failure',
+                  'in_progress',
+                  'queued',
+                  'cancelled',
+                  'skipped',
+                ])
+                  FItem(
+                    title: Text(s),
+                    selected: _statusFilter == s,
+                    onPress: () {
+                      controller.hide();
+                      _applyFilter(s, _actorFilter);
+                    },
+                  ),
               ],
             ),
-          PopupMenuButton<String>(
-            icon: const Icon(Icons.filter_list),
-            tooltip: l10n.filterByStatus,
-            onSelected: (s) => _applyFilter(s == 'all' ? null : s, _actorFilter),
-            itemBuilder: (_) => [
-              PopupMenuItem(value: 'all', child: Text(l10n.all)),
-              for (final s in ['success', 'failure', 'in_progress', 'queued', 'cancelled', 'skipped'])
-                PopupMenuItem(value: s, child: Text(s)),
-            ],
+          ],
+          builder: (context, controller, child) => FHeaderAction(
+            icon: const Icon(FIcons.funnel),
+            semanticsLabel: l10n.filterByStatus,
+            selected: _statusFilter != null,
+            onPress: () => controller.toggle(),
           ),
-        ],
-      ),
-      body: _buildBody(l10n),
+        ),
+      ],
+      child: _buildBody(l10n),
     );
   }
 
   Widget _buildBody(AppLocalizations l10n) {
-    if (_loading) return const Center(child: CircularProgressIndicator());
+    if (_loading) return const AppLoading();
     if (_error != null) {
-      return Center(
-        child: Column(mainAxisSize: MainAxisSize.min, children: [
-          Text('${l10n.error}: $_error'),
-          const SizedBox(height: UIConstants.md),
-          FilledButton(onPressed: _refresh, child: Text(l10n.retry)),
-        ]),
-      );
+      return AppError(message: _error!, onRetry: _refresh);
     }
 
     final filtered = _filteredRuns;
     if (filtered.isEmpty) {
-      return Center(child: Text(_statusFilter != null || _actorFilter != null ? l10n.noResults : l10n.noActions));
+      return AppEmpty(
+        icon: FIcons.play,
+        title: _statusFilter != null || _actorFilter != null
+            ? l10n.noResults
+            : l10n.noActions,
+      );
     }
 
     return RefreshIndicator(
       onRefresh: _refresh,
       child: NotificationListener<ScrollNotification>(
         onNotification: (n) {
-          if (n is ScrollEndNotification && n.metrics.pixels >= n.metrics.maxScrollExtent - 300) {
+          if (n is ScrollEndNotification &&
+              n.metrics.pixels >= n.metrics.maxScrollExtent - 300) {
             _loadRuns(loadMore: true);
           }
           return false;
@@ -193,14 +282,19 @@ class _ActionsListPageState extends State<ActionsListPage> with AutomaticKeepAli
   Widget _buildGroupedView() {
     final groups = _groupedRuns;
     final wfById = {for (final w in _workflows) _toInt(w['id']): w};
-    final wfByPath = {for (final w in _workflows) (w['path']?.toString() ?? '') : w};
+    final wfByPath = {
+      for (final w in _workflows) (w['path']?.toString() ?? ''): w,
+    };
     // Also collect runs with no matching workflow
     final orphanRuns = _filteredRuns.where((r) {
       final wfId = _toInt(r['workflow_id']);
       return !wfById.containsKey(wfId) || wfId == 0;
     }).toList();
 
-    final totalItems = groups.length + (orphanRuns.isNotEmpty ? 1 : 0) + (_loadingMore ? 1 : 0);
+    final totalItems =
+        groups.length +
+        (orphanRuns.isNotEmpty ? 1 : 0) +
+        (_loadingMore ? 1 : 0);
     return ListView.builder(
       padding: const EdgeInsets.all(UIConstants.md),
       itemCount: totalItems,
@@ -218,9 +312,9 @@ class _ActionsListPageState extends State<ActionsListPage> with AutomaticKeepAli
         }
         if (_loadingMore) {
           return const Padding(
-          padding: EdgeInsets.all(16),
-          child: Center(child: CircularProgressIndicator()),
-        );
+            padding: EdgeInsets.all(16),
+            child: Center(child: FCircularProgress(size: .sm)),
+          );
         }
         return const SizedBox.shrink();
       },
@@ -235,7 +329,7 @@ class _ActionsListPageState extends State<ActionsListPage> with AutomaticKeepAli
         if (index >= _filteredRuns.length) {
           return const Padding(
             padding: EdgeInsets.all(16),
-            child: Center(child: CircularProgressIndicator()),
+            child: Center(child: FCircularProgress(size: .sm)),
           );
         }
         return _buildRunCard(_filteredRuns[index]);
@@ -243,24 +337,40 @@ class _ActionsListPageState extends State<ActionsListPage> with AutomaticKeepAli
     );
   }
 
-  Widget _buildWorkflowGroup(Map<String, dynamic>? workflow, List<Map<String, dynamic>> runs) {
+  Widget _buildWorkflowGroup(
+    Map<String, dynamic>? workflow,
+    List<Map<String, dynamic>> runs,
+  ) {
     final theme = Theme.of(context);
-    final wfName = workflow?['name'] as String? ?? workflow?['filename'] as String? ?? 'Workflow #${workflow?['id'] ?? ''}';
+    final wfName =
+        workflow?['name'] as String? ??
+        workflow?['filename'] as String? ??
+        'Workflow #${workflow?['id'] ?? ''}';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(top: UIConstants.sm, bottom: UIConstants.xs),
+          padding: const EdgeInsets.only(
+            top: UIConstants.sm,
+            bottom: UIConstants.xs,
+          ),
           child: Row(
             children: [
-              Icon(Icons.article_outlined, size: UIConstants.iconMd, color: theme.colorScheme.primary),
-              const SizedBox(width: UIConstants.sm),
-              Expanded(child: Text(wfName, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600))),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: UIConstants.sm, vertical: 1),
-                decoration: BoxDecoration(color: theme.colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(UIConstants.badgeRadius)),
-                child: Text('${runs.length}', style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+              Icon(
+                FIcons.fileCode,
+                size: UIConstants.iconMd,
+                color: theme.colorScheme.primary,
               ),
+              const SizedBox(width: UIConstants.sm),
+              Expanded(
+                child: Text(
+                  wfName,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              FBadge(variant: .outline, child: Text('${runs.length}')),
             ],
           ),
         ),
@@ -277,17 +387,27 @@ class _ActionsListPageState extends State<ActionsListPage> with AutomaticKeepAli
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.only(top: UIConstants.sm, bottom: UIConstants.xs),
+          padding: const EdgeInsets.only(
+            top: UIConstants.sm,
+            bottom: UIConstants.xs,
+          ),
           child: Row(
             children: [
-              Icon(Icons.help_outline, size: UIConstants.iconMd, color: theme.colorScheme.onSurfaceVariant),
-              const SizedBox(width: UIConstants.sm),
-              Text(l10n.other, style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600)),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: UIConstants.sm, vertical: 1),
-                decoration: BoxDecoration(color: theme.colorScheme.surfaceContainerHighest, borderRadius: BorderRadius.circular(UIConstants.badgeRadius)),
-                child: Text('${runs.length}', style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+              Icon(
+                FIcons.circleQuestionMark,
+                size: UIConstants.iconMd,
+                color: theme.colorScheme.onSurfaceVariant,
               ),
+              const SizedBox(width: UIConstants.sm),
+              Expanded(
+                child: Text(
+                  l10n.other,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              FBadge(variant: .outline, child: Text('${runs.length}')),
             ],
           ),
         ),
@@ -310,57 +430,86 @@ class _ActionsListPageState extends State<ActionsListPage> with AutomaticKeepAli
     final runNumber = run['run_number'] ?? run['id'] ?? 0;
     final actor = run['actor'] as Map<String, dynamic>?;
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: UIConstants.xs),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(UIConstants.cardRadius),
-        onTap: () => Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => ActionRunDetailPage(
-              owner: widget.owner, repo: widget.repo,
-              runId: _toInt(run['id']), runData: run,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: UIConstants.xs),
+      child: FCard.raw(
+        child: FTappable(
+          onPress: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (_) => ActionRunDetailPage(
+                owner: widget.owner,
+                repo: widget.repo,
+                runId: _toInt(run['id']),
+                runData: run,
+              ),
             ),
           ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(UIConstants.sm),
-          child: Row(
-            children: [
-              Icon(_statusIcon(ds), color: color, size: UIConstants.iconMd),
-              const SizedBox(width: UIConstants.sm),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(run['display_title'] as String? ?? 'Run #$runNumber',
-                      style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
-                      maxLines: 1, overflow: TextOverflow.ellipsis),
-                    const SizedBox(height: UIConstants.xs),
-                    Row(
-                      children: [
-                        _badge(ds, color),
-                        if (actor?['login'] != null) ...[
-                          const SizedBox(width: UIConstants.sm),
-                          Icon(Icons.person, size: 12, color: theme.colorScheme.onSurfaceVariant),
-                          const SizedBox(width: 2),
-                          Text(actor!['login'] as String,
-                            style: theme.textTheme.labelSmall?.copyWith(color: theme.colorScheme.onSurfaceVariant)),
+          child: Padding(
+            padding: const EdgeInsets.all(UIConstants.sm),
+            child: Row(
+              children: [
+                Icon(_statusIcon(ds), color: color, size: UIConstants.iconMd),
+                const SizedBox(width: UIConstants.sm),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        run['display_title'] as String? ?? 'Run #$runNumber',
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: UIConstants.xs),
+                      Row(
+                        children: [
+                          _badge(ds, color),
+                          if (actor?['login'] != null) ...[
+                            const SizedBox(width: UIConstants.sm),
+                            Icon(
+                              FIcons.user,
+                              size: 12,
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                            const SizedBox(width: 2),
+                            Text(
+                              actor!['login'] as String,
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
+                          if (run['head_branch'] != null) ...[
+                            const SizedBox(width: UIConstants.sm),
+                            Icon(
+                              FIcons.gitBranch,
+                              size: 12,
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                            const SizedBox(width: 2),
+                            Text(
+                              run['head_branch'] as String,
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                fontFamily: 'monospace',
+                                color: theme.colorScheme.onSurfaceVariant,
+                              ),
+                            ),
+                          ],
                         ],
-                        if (run['head_branch'] != null) ...[
-                          const SizedBox(width: UIConstants.sm),
-                          Icon(Icons.call_split, size: 12, color: theme.colorScheme.onSurfaceVariant),
-                          const SizedBox(width: 2),
-                          Text(run['head_branch'] as String,
-                            style: theme.textTheme.labelSmall?.copyWith(fontFamily: 'monospace', color: theme.colorScheme.onSurfaceVariant)),
-                        ],
-                      ],
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              const Icon(Icons.chevron_right, size: UIConstants.iconMd),
-            ],
+                Icon(
+                  FIcons.chevronRight,
+                  size: UIConstants.iconMd,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -369,9 +518,22 @@ class _ActionsListPageState extends State<ActionsListPage> with AutomaticKeepAli
 
   Widget _badge(String status, Color color) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: UIConstants.sm, vertical: 1),
-      decoration: BoxDecoration(color: color.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(UIConstants.badgeRadius)),
-      child: Text(status, style: TextStyle(color: color, fontSize: 10, fontWeight: FontWeight.bold)),
+      padding: const EdgeInsets.symmetric(
+        horizontal: UIConstants.sm,
+        vertical: 1,
+      ),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
+      ),
+      child: Text(
+        status,
+        style: TextStyle(
+          color: color,
+          fontSize: 10,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
     );
   }
 
@@ -379,12 +541,14 @@ class _ActionsListPageState extends State<ActionsListPage> with AutomaticKeepAli
     'success' => Colors.green,
     'failure' || 'cancelled' || 'canceling' || 'timed_out' => Colors.red,
     'in_progress' || 'queued' || 'pending' || 'waiting' => Colors.orange,
-    'skipped' || 'neutral' => Colors.grey, _ => Colors.blue,
+    'skipped' || 'neutral' => Colors.grey,
+    _ => Colors.blue,
   };
   IconData _statusIcon(String s) => switch (s) {
-    'success' => Icons.check_circle,
-    'failure' || 'cancelled' || 'canceling' || 'timed_out' => Icons.cancel,
-    'in_progress' || 'queued' || 'pending' || 'waiting' => Icons.hourglass_top,
-    'skipped' || 'neutral' => Icons.skip_next, _ => Icons.help_outline,
+    'success' => FIcons.circleCheck,
+    'failure' || 'cancelled' || 'canceling' || 'timed_out' => FIcons.circleX,
+    'in_progress' || 'queued' || 'pending' || 'waiting' => FIcons.clock,
+    'skipped' || 'neutral' => FIcons.skipForward,
+    _ => FIcons.circleQuestionMark,
   };
 }

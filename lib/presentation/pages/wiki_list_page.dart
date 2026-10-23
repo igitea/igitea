@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:forui/forui.dart';
 
 import '../../core/animations/animated_wrapper.dart';
 import '../../core/constants/ui_constants.dart';
@@ -9,18 +10,16 @@ import '../../core/di/injection.dart';
 import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
-import '../widgets/empty_state.dart';
+import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_state_views.dart';
+import '../widgets/forui/app_tile.dart';
 import 'wiki_edit_page.dart';
 
 class WikiListPage extends StatefulWidget {
   final String owner;
   final String repo;
 
-  const WikiListPage({
-    super.key,
-    required this.owner,
-    required this.repo,
-  });
+  const WikiListPage({super.key, required this.owner, required this.repo});
 
   @override
   State<WikiListPage> createState() => _WikiListPageState();
@@ -68,10 +67,7 @@ class _WikiListPageState extends State<WikiListPage> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => WikiEditPage(
-          owner: widget.owner,
-          repo: widget.repo,
-        ),
+        builder: (_) => WikiEditPage(owner: widget.owner, repo: widget.repo),
       ),
     );
     if (result == true) {
@@ -83,53 +79,39 @@ class _WikiListPageState extends State<WikiListPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.wiki)),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _createPage,
-        icon: const Icon(Icons.add),
-        label: Text(l10n.newWikiPage),
-      ),
-      body: _buildBody(l10n),
+    return AppPage(
+      title: l10n.wiki,
+      actions: [
+        FHeaderAction(
+          icon: const Icon(FIcons.plus),
+          semanticsLabel: l10n.newWikiPage,
+          onPress: _createPage,
+        ),
+      ],
+      child: _buildBody(l10n),
     );
   }
 
   Widget _buildBody(AppLocalizations l10n) {
     if (_loading) {
-      return const Center(child: CircularProgressIndicator());
+      return const AppLoading();
     }
     if (_error != null) {
-      return _buildErrorState(l10n);
+      return AppError(message: _error!, onRetry: _loadPages);
     }
     if (_pages.isEmpty) {
-      return EmptyState(
-        icon: Icons.book_outlined,
+      return AppEmpty(
+        icon: FIcons.bookOpen,
         title: l10n.noWikiPages,
         subtitle: l10n.noWikiPagesDescription,
-        action: FilledButton.icon(
-          onPressed: _createPage,
-          icon: const Icon(Icons.add),
-          label: Text(l10n.createFirstWikiPage),
+        action: FButton(
+          prefix: const Icon(FIcons.plus, size: 16),
+          onPress: _createPage,
+          child: Text(l10n.createFirstWikiPage),
         ),
       );
     }
     return _buildPageList(l10n);
-  }
-
-  Widget _buildErrorState(AppLocalizations l10n) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text('${l10n.error}: $_error'),
-          const SizedBox(height: UIConstants.md),
-          FilledButton(
-            onPressed: _loadPages,
-            child: Text(l10n.retry),
-          ),
-        ],
-      ),
-    );
   }
 
   Widget _buildPageList(AppLocalizations l10n) {
@@ -143,35 +125,32 @@ class _WikiListPageState extends State<WikiListPage> {
           final page = _pages[index];
           return FadeInWrapper(
             delay: Duration(milliseconds: index * 30),
-            child: Card(
-              margin: const EdgeInsets.only(bottom: UIConstants.md),
-              child: ListTile(
-                leading: Icon(Icons.article_outlined, color: theme.colorScheme.primary),
-                title: Text(
-                  page.title ?? l10n.untitled,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: UIConstants.md),
+              child: FCard.raw(
+                child: AppTile(
+                  leading: Icon(
+                    FIcons.bookText,
+                    size: UIConstants.iconMd,
+                    color: theme.colorScheme.primary,
                   ),
-                ),
-                subtitle: page.last_commit != null
-                    ? Text(
-                        '${l10n.lastCommit}: ${page.last_commit!.sha ?? ''}',
-                        style: theme.textTheme.bodySmall,
-                      )
-                    : null,
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => WikiDetailPage(
-                        owner: widget.owner,
-                        repo: widget.repo,
-                        pageName: page.title ?? '',
+                  title: page.title ?? l10n.untitled,
+                  subtitle: page.last_commit != null
+                      ? '${l10n.lastCommit}: ${page.last_commit!.sha ?? ''}'
+                      : null,
+                  onPress: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => WikiDetailPage(
+                          owner: widget.owner,
+                          repo: widget.repo,
+                          pageName: page.title ?? '',
+                        ),
                       ),
-                    ),
-                  ).then((_) => _loadPages());
-                },
+                    ).then((_) => _loadPages());
+                  },
+                ),
               ),
             ),
           );
@@ -260,21 +239,20 @@ class _WikiDetailPageState extends State<WikiDetailPage> {
 
   Future<void> _deletePage() async {
     final l10n = AppLocalizations.of(context)!;
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showFDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (ctx, style, animation) => FDialog(
         title: Text(l10n.deleteWikiPage),
-        content: Text(l10n.deleteWikiPageConfirm),
+        body: Text(l10n.deleteWikiPageConfirm),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
+          FButton(
+            variant: .outline,
+            onPress: () => Navigator.pop(ctx, false),
             child: Text(l10n.cancel),
           ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
+          FButton(
+            variant: .destructive,
+            onPress: () => Navigator.pop(ctx, true),
             child: Text(l10n.delete),
           ),
         ],
@@ -292,13 +270,13 @@ class _WikiDetailPageState extends State<WikiDetailPage> {
     if (mounted) {
       switch (result) {
         case Left(:final value):
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${l10n.error}: ${value.message}')),
+          showFToast(
+            context: context,
+            variant: .destructive,
+            title: Text('${l10n.error}: ${value.message}'),
           );
         case Right():
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.wikiPageDeleted)),
-          );
+          showFToast(context: context, title: Text(l10n.wikiPageDeleted));
           Navigator.of(context).pop(true);
       }
     }
@@ -308,34 +286,32 @@ class _WikiDetailPageState extends State<WikiDetailPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.pageName),
-        actions: [
-          if (!_loading && _error == null) ...[
-            IconButton(
-              icon: const Icon(Icons.edit),
-              tooltip: l10n.edit,
-              onPressed: _editPage,
-            ),
-            IconButton(
-              icon: const Icon(Icons.delete_outline),
-              tooltip: l10n.delete,
-              onPressed: _deletePage,
-            ),
-          ],
+    return AppPage(
+      title: widget.pageName,
+      actions: [
+        if (!_loading && _error == null) ...[
+          FHeaderAction(
+            icon: const Icon(FIcons.pencil),
+            semanticsLabel: l10n.edit,
+            onPress: _editPage,
+          ),
+          FHeaderAction(
+            icon: const Icon(FIcons.trash2),
+            semanticsLabel: l10n.delete,
+            onPress: _deletePage,
+          ),
         ],
-      ),
-      body: _buildBody(l10n),
+      ],
+      child: _buildBody(l10n),
     );
   }
 
   Widget _buildBody(AppLocalizations l10n) {
     if (_loading) {
-      return const Center(child: CircularProgressIndicator());
+      return const AppLoading();
     }
     if (_error != null) {
-      return _buildErrorState(l10n);
+      return AppError(message: _error!, onRetry: _loadPage);
     }
     return FadeInWrapper(
       child: SingleChildScrollView(
@@ -346,22 +322,6 @@ class _WikiDetailPageState extends State<WikiDetailPage> {
               : l10n.noContent,
           selectable: true,
         ),
-      ),
-    );
-  }
-
-  Widget _buildErrorState(AppLocalizations l10n) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text('${l10n.error}: $_error'),
-          const SizedBox(height: UIConstants.md),
-          FilledButton(
-            onPressed: _loadPage,
-            child: Text(l10n.retry),
-          ),
-        ],
       ),
     );
   }

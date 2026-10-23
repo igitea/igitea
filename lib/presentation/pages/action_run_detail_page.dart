@@ -1,8 +1,8 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../../core/animations/animated_wrapper.dart';
@@ -12,9 +12,15 @@ import '../../core/errors/failures.dart';
 import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
-import '../widgets/empty_state.dart';
+import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_state_views.dart';
+import '../widgets/forui/app_tile.dart';
 
-int _toInt(dynamic value) => switch (value) { num n => n.toInt(), String s => int.tryParse(s) ?? 0, _ => 0 };
+int _toInt(dynamic value) => switch (value) {
+  num n => n.toInt(),
+  String s => int.tryParse(s) ?? 0,
+  _ => 0,
+};
 
 class ActionRunDetailPage extends StatefulWidget {
   final String owner;
@@ -68,17 +74,25 @@ class _ActionRunDetailPageState extends State<ActionRunDetailPage> {
 
   bool _isComplete(Map<String, dynamic> job) {
     final s = (job['status'] as String? ?? '').toLowerCase();
-    return s == 'completed' || s == 'success' || s == 'failure' ||
-           s == 'cancelled' || s == 'skipped' || s == 'canceling';
+    return s == 'completed' ||
+        s == 'success' ||
+        s == 'failure' ||
+        s == 'cancelled' ||
+        s == 'skipped' ||
+        s == 'canceling';
   }
 
   Future<void> _refreshJobs() async {
     try {
       final result = await Injection.apiService.repoListActionJobs(
-        owner: widget.owner, repo: widget.repo, run: widget.runId,
+        owner: widget.owner,
+        repo: widget.repo,
+        run: widget.runId,
       );
       if (!mounted) return;
-      final newJobs = (result['jobs'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
+      final newJobs =
+          (result['jobs'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ??
+          [];
       final allComplete = newJobs.every(_isComplete);
       final reloadedLogs = <int, String>{};
 
@@ -88,7 +102,9 @@ class _ActionRunDetailPageState extends State<ActionRunDetailPage> {
         if (_expandedJobs.contains(jId)) {
           try {
             reloadedLogs[jId] = await Injection.apiService.repoGetActionJobLogs(
-              owner: widget.owner, repo: widget.repo, jobId: jId,
+              owner: widget.owner,
+              repo: widget.repo,
+              jobId: jId,
             );
           } catch (_) {
             reloadedLogs[jId] = _logs[jId] ?? '';
@@ -112,10 +128,14 @@ class _ActionRunDetailPageState extends State<ActionRunDetailPage> {
     setState(() => _loadingJobs = true);
     try {
       final result = await Injection.apiService.repoListActionJobs(
-        owner: widget.owner, repo: widget.repo, run: widget.runId,
+        owner: widget.owner,
+        repo: widget.repo,
+        run: widget.runId,
       );
       if (mounted) {
-        final jobs = (result['jobs'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ?? [];
+        final jobs =
+            (result['jobs'] as List<dynamic>?)?.cast<Map<String, dynamic>>() ??
+            [];
         final incomplete = jobs.any((j) => !_isComplete(j));
         // Auto-expand in-progress jobs
         final expand = <int>{};
@@ -142,7 +162,9 @@ class _ActionRunDetailPageState extends State<ActionRunDetailPage> {
   Future<void> _refreshLog(int jobId) async {
     try {
       final logs = await Injection.apiService.repoGetActionJobLogs(
-        owner: widget.owner, repo: widget.repo, jobId: jobId,
+        owner: widget.owner,
+        repo: widget.repo,
+        jobId: jobId,
       );
       if (mounted) setState(() => _logs[jobId] = logs);
     } catch (_) {}
@@ -151,10 +173,14 @@ class _ActionRunDetailPageState extends State<ActionRunDetailPage> {
   Future<void> _loadArtifacts() async {
     try {
       final result = await Injection.listActionArtifactsByRunUseCase(
-        widget.owner, widget.repo, widget.runId,
+        widget.owner,
+        widget.repo,
+        widget.runId,
       );
       if (mounted && result is Right<Failure, ActionArtifactsResponse>) {
-        setState(() { _artifacts = result.value.artifacts ?? []; });
+        setState(() {
+          _artifacts = result.value.artifacts ?? [];
+        });
       }
     } catch (_) {}
   }
@@ -180,7 +206,9 @@ class _ActionRunDetailPageState extends State<ActionRunDetailPage> {
   String _runStatus(Map<String, dynamic> run) {
     final status = (run['status'] as String? ?? '').toLowerCase();
     final conclusion = (run['conclusion'] as String? ?? '').toLowerCase();
-    return conclusion.isNotEmpty && conclusion != 'null' && conclusion != 'none' ? conclusion : status;
+    return conclusion.isNotEmpty && conclusion != 'null' && conclusion != 'none'
+        ? conclusion
+        : status;
   }
 
   @override
@@ -191,13 +219,13 @@ class _ActionRunDetailPageState extends State<ActionRunDetailPage> {
     final color = _statusColor(status);
     final runNum = widget.runData['run_number'] ?? widget.runId;
 
-    return Scaffold(
-      appBar: AppBar(title: Text('$l10n.run #$runNum')),
-      body: ListView(
+    return AppPage(
+      title: '$l10n.run #$runNum',
+      child: ListView(
         padding: const EdgeInsets.all(UIConstants.md),
         children: [
           // Run info header
-          Card(
+          FCard.raw(
             child: Padding(
               padding: const EdgeInsets.all(UIConstants.md),
               child: Column(
@@ -209,8 +237,11 @@ class _ActionRunDetailPageState extends State<ActionRunDetailPage> {
                       const SizedBox(width: UIConstants.sm),
                       Expanded(
                         child: Text(
-                          widget.runData['display_title'] as String? ?? '$l10n.run #$runNum',
-                          style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                          widget.runData['display_title'] as String? ??
+                              '$l10n.run #$runNum',
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                     ],
@@ -222,9 +253,17 @@ class _ActionRunDetailPageState extends State<ActionRunDetailPage> {
                     children: [
                       _infoChip(l10n.status, status, color),
                       if (widget.runData['head_branch'] != null)
-                        _infoChip(l10n.branch, widget.runData['head_branch'] as String, theme.colorScheme.primary),
+                        _infoChip(
+                          l10n.branch,
+                          widget.runData['head_branch'] as String,
+                          theme.colorScheme.primary,
+                        ),
                       if (widget.runData['actor']?['login'] != null)
-                        _infoChip(l10n.author, widget.runData['actor']['login'] as String, theme.colorScheme.primary),
+                        _infoChip(
+                          l10n.author,
+                          widget.runData['actor']['login'] as String,
+                          theme.colorScheme.primary,
+                        ),
                     ],
                   ),
                   if (widget.runData['display_title'] != null) ...[
@@ -243,42 +282,73 @@ class _ActionRunDetailPageState extends State<ActionRunDetailPage> {
           const SizedBox(height: UIConstants.md),
 
           // Jobs section
-          Text(l10n.jobs, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+          Text(
+            l10n.jobs,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           const SizedBox(height: UIConstants.sm),
           if (_loadingJobs)
-            const Center(child: CircularProgressIndicator())
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: UIConstants.md),
+              child: Center(child: FCircularProgress(size: .sm)),
+            )
           else if (_jobs.isEmpty)
-            EmptyState(icon: Icons.assignment, title: l10n.noJobs)
+            AppEmpty(icon: FIcons.clipboardList, title: l10n.noJobs)
           else
-            ..._jobs.asMap().entries.map((entry) => FadeInWrapper(
-              delay: Duration(milliseconds: entry.key * 20),
-              child: _buildJobCard(entry.value, l10n),
-            )),
+            ..._jobs.asMap().entries.map(
+              (entry) => FadeInWrapper(
+                delay: Duration(milliseconds: entry.key * 20),
+                child: _buildJobCard(entry.value, l10n),
+              ),
+            ),
 
           // Artifacts section
           if (_artifacts.isNotEmpty) ...[
             const SizedBox(height: UIConstants.md),
-            Text(l10n.artifacts, style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
+            Text(
+              l10n.artifacts,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
             const SizedBox(height: UIConstants.sm),
-            ..._artifacts.map((a) => Card(
-              margin: const EdgeInsets.only(bottom: UIConstants.sm),
-              child: ListTile(
-                leading: const Icon(Icons.archive_outlined),
-                title: Text(a.name ?? ''),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(_formatSize(a.size_in_bytes ?? 0),
-                      style: theme.textTheme.bodySmall),
-                    IconButton(
-                      icon: const Icon(Icons.download, size: UIConstants.iconMd),
-                      tooltip: l10n.download,
-                      onPressed: () => _downloadArtifact(a),
+            ..._artifacts.map(
+              (a) => Padding(
+                padding: const EdgeInsets.only(bottom: UIConstants.sm),
+                child: FCard.raw(
+                  child: AppTile(
+                    leading: const Icon(FIcons.archive, size: 18),
+                    title: a.name ?? '',
+                    showChevron: false,
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          _formatSize(a.size_in_bytes ?? 0),
+                          style: theme.textTheme.bodySmall,
+                        ),
+                        const SizedBox(width: UIConstants.sm),
+                        FTappable(
+                          onPress: () => _downloadArtifact(a),
+                          semanticsLabel: l10n.download,
+                          child: Padding(
+                            padding: const EdgeInsets.all(6),
+                            child: Icon(
+                              FIcons.download,
+                              size: UIConstants.iconMd,
+                              color: theme.colorScheme.primary,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
-                  ],
+                    onPress: null,
+                  ),
                 ),
               ),
-            )),
+            ),
           ],
         ],
       ),
@@ -290,87 +360,128 @@ class _ActionRunDetailPageState extends State<ActionRunDetailPage> {
     final jobId = _toInt(job['id']);
     final status = (job['status'] as String? ?? 'unknown').toLowerCase();
     final conclusion = (job['conclusion'] as String? ?? '').toLowerCase();
-    final displayStatus = conclusion.isNotEmpty && conclusion != 'null' ? conclusion : status;
+    final displayStatus = conclusion.isNotEmpty && conclusion != 'null'
+        ? conclusion
+        : status;
     final color = _statusColor(displayStatus);
     final expanded = _expandedJobs.contains(jobId);
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: UIConstants.sm),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        children: [
-          InkWell(
-            onTap: () => _loadLogs(jobId),
-            child: Padding(
-              padding: const EdgeInsets.all(UIConstants.md),
-              child: Row(
-                children: [
-                  Icon(_statusIcon(displayStatus), color: color, size: UIConstants.iconMd),
-                  const SizedBox(width: UIConstants.sm),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(job['name'] as String? ?? '', style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500)),
-                        const SizedBox(height: UIConstants.xs),
-                        Row(
-                          children: [
-                            _buildBadge(displayStatus, color),
-                            if (job['started_at'] != null) ...[
-                              const SizedBox(width: UIConstants.sm),
-                              Text(_formatDuration(job), style: theme.textTheme.labelSmall?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant,
-                              )),
-                            ],
-                          ],
-                        ),
-                      ],
+    return Padding(
+      padding: const EdgeInsets.only(bottom: UIConstants.sm),
+      child: FCard.raw(
+        child: Column(
+          children: [
+            FTappable(
+              onPress: () => _loadLogs(jobId),
+              child: Padding(
+                padding: const EdgeInsets.all(UIConstants.md),
+                child: Row(
+                  children: [
+                    Icon(
+                      _statusIcon(displayStatus),
+                      color: color,
+                      size: UIConstants.iconMd,
                     ),
-                  ),
-                  Icon(expanded ? Icons.expand_less : Icons.expand_more),
-                ],
+                    const SizedBox(width: UIConstants.sm),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            job['name'] as String? ?? '',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          const SizedBox(height: UIConstants.xs),
+                          Row(
+                            children: [
+                              _buildBadge(displayStatus, color),
+                              if (job['started_at'] != null) ...[
+                                const SizedBox(width: UIConstants.sm),
+                                Text(
+                                  _formatDuration(job),
+                                  style: theme.textTheme.labelSmall?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      expanded ? FIcons.chevronUp : FIcons.chevronDown,
+                      size: UIConstants.iconMd,
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          if (expanded)
-            Container(
-              width: double.infinity,
-              constraints: const BoxConstraints(maxHeight: 400),
-              color: theme.colorScheme.surfaceContainerHighest,
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(UIConstants.sm),
-                child: _logs.containsKey(jobId)
-                    ? SelectableText(
-                        _logs[jobId]!,
-                        style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
-                      )
-                    : const Center(child: CircularProgressIndicator()),
+            if (expanded)
+              Container(
+                width: double.infinity,
+                constraints: const BoxConstraints(maxHeight: 400),
+                color: theme.colorScheme.surfaceContainerHighest,
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(UIConstants.sm),
+                  child: _logs.containsKey(jobId)
+                      ? SelectableText(
+                          _logs[jobId]!,
+                          style: const TextStyle(
+                            fontFamily: 'monospace',
+                            fontSize: 12,
+                          ),
+                        )
+                      : const Center(child: FCircularProgress(size: .sm)),
+                ),
               ),
-            ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   Widget _infoChip(String label, String value, Color color) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: UIConstants.sm, vertical: UIConstants.xs),
+      padding: const EdgeInsets.symmetric(
+        horizontal: UIConstants.sm,
+        vertical: UIConstants.xs,
+      ),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
       ),
-      child: Text('$label: $value', style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.w500)),
+      child: Text(
+        '$label: $value',
+        style: TextStyle(
+          color: color,
+          fontSize: 12,
+          fontWeight: FontWeight.w500,
+        ),
+      ),
     );
   }
 
   Widget _buildBadge(String status, Color color) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: UIConstants.sm, vertical: 2),
+      padding: const EdgeInsets.symmetric(
+        horizontal: UIConstants.sm,
+        vertical: 2,
+      ),
       decoration: BoxDecoration(
         color: color.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
       ),
-      child: Text(status, style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.bold)),
+      child: Text(
+        status,
+        style: TextStyle(
+          color: color,
+          fontSize: 11,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
     );
   }
 
@@ -386,11 +497,11 @@ class _ActionRunDetailPageState extends State<ActionRunDetailPage> {
 
   IconData _statusIcon(String status) {
     return switch (status) {
-      'success' => Icons.check_circle,
-      'failure' || 'cancelled' || 'canceling' || 'timed_out' => Icons.cancel,
-      'in_progress' || 'queued' || 'pending' || 'waiting' => Icons.hourglass_top,
-      'skipped' || 'neutral' => Icons.skip_next,
-      _ => Icons.help_outline,
+      'success' => FIcons.circleCheck,
+      'failure' || 'cancelled' || 'canceling' || 'timed_out' => FIcons.circleX,
+      'in_progress' || 'queued' || 'pending' || 'waiting' => FIcons.clock,
+      'skipped' || 'neutral' => FIcons.skipForward,
+      _ => FIcons.circleQuestionMark,
     };
   }
 
@@ -400,7 +511,9 @@ class _ActionRunDetailPageState extends State<ActionRunDetailPage> {
     if (started == null) return '';
     final start = DateTime.tryParse(started);
     if (start == null) return '';
-    final end = completed != null ? (DateTime.tryParse(completed) ?? DateTime.now()) : DateTime.now();
+    final end = completed != null
+        ? (DateTime.tryParse(completed) ?? DateTime.now())
+        : DateTime.now();
     final diff = end.difference(start);
     if (diff.inHours > 0) return '${diff.inHours}h ${diff.inMinutes % 60}m';
     if (diff.inMinutes > 0) return '${diff.inMinutes}m ${diff.inSeconds % 60}s';
@@ -414,7 +527,9 @@ class _ActionRunDetailPageState extends State<ActionRunDetailPage> {
     if (id == null) return;
     try {
       final result = await Injection.downloadActionArtifactUseCase(
-        widget.owner, widget.repo, id,
+        widget.owner,
+        widget.repo,
+        id,
       );
       if (result is! Right<Failure, List<int>>) return;
       final bytes = result.value;
@@ -422,14 +537,14 @@ class _ActionRunDetailPageState extends State<ActionRunDetailPage> {
       final file = File('${dir.path}/$name.zip');
       await file.writeAsBytes(bytes);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('$l10n.saved: ${file.path}')),
-        );
+        showFToast(context: context, title: Text('$l10n.saved: ${file.path}'));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.error}: $e')),
+        showFToast(
+          context: context,
+          variant: .destructive,
+          title: Text('${l10n.error}: $e'),
         );
       }
     }

@@ -1,25 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
+import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_section.dart';
+import '../widgets/forui/app_tile.dart';
 
 class TagDetailPage extends StatelessWidget {
   final Tag tag;
 
-  const TagDetailPage({
-    super.key,
-    required this.tag,
-  });
+  const TagDetailPage({super.key, required this.tag});
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(tag.name ?? ''),
-      ),
-      body: _buildContent(context, tag, l10n),
+    return AppPage(
+      title: tag.name ?? '',
+      child: _buildContent(context, tag, l10n),
     );
   }
 
@@ -30,11 +29,7 @@ class TagDetailPage extends StatelessWidget {
       children: [
         Row(
           children: [
-            Icon(
-              Icons.label,
-              color: theme.colorScheme.primary,
-              size: 32,
-            ),
+            Icon(FIcons.tag, color: theme.colorScheme.primary, size: 32),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
@@ -60,50 +55,53 @@ class TagDetailPage extends StatelessWidget {
         ),
         const SizedBox(height: 24),
         if (tag.message != null && tag.message!.isNotEmpty) ...[
-          _buildInfoSection(context,
+          AppSection(
             title: l10n.message,
             children: [
-              Text(
-                tag.message!,
-                style: theme.textTheme.bodyMedium,
+              Padding(
+                padding: const EdgeInsets.all(14),
+                child: Text(tag.message!, style: theme.textTheme.bodyMedium),
               ),
             ],
           ),
           const SizedBox(height: 24),
         ],
         if (tag.commit != null) ...[
-          _buildInfoSection(context,
+          AppSection(
             title: l10n.commit,
             children: [
-              _buildInfoRow(context,
-                icon: Icons.fingerprint,
-                label: l10n.sha,
-                value: tag.commit!.sha ?? '',
+              AppTile(
+                leading: const Icon(FIcons.fingerprintPattern, size: 18),
+                title: l10n.sha,
+                subtitle: tag.commit!.sha ?? '',
+                showChevron: false,
               ),
               if (tag.commit!.url != null)
-                _buildInfoRow(context,
-                  icon: Icons.open_in_new,
-                  label: l10n.url,
-                  value: tag.commit!.url!,
-                  isLink: true,
+                AppTile(
+                  leading: const Icon(FIcons.externalLink, size: 18),
+                  title: l10n.url,
+                  subtitle: tag.commit!.url!,
+                  showChevron: false,
                 ),
             ],
           ),
           const SizedBox(height: 24),
         ],
         if (tag.tarball_url != null || tag.zipball_url != null) ...[
-          _buildInfoSection(context,
+          AppSection(
             title: l10n.downloads,
             children: [
               if (tag.tarball_url != null)
-                _buildDownloadButton(
+                _buildDownloadTile(
                   label: l10n.tarball,
                   url: tag.tarball_url!,
+                  icon: FIcons.archive,
                 ),
               if (tag.zipball_url != null)
-                _buildDownloadButton(
+                _buildDownloadTile(
                   label: l10n.zipball,
                   url: tag.zipball_url!,
+                  icon: FIcons.package,
                 ),
             ],
           ),
@@ -112,67 +110,17 @@ class TagDetailPage extends StatelessWidget {
     );
   }
 
-  Widget _buildInfoSection(BuildContext context, {
-    required String title,
-    required List<Widget> children,
-  }) {
-    final theme = Theme.of(context);
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          title,
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        const SizedBox(height: 8),
-        ...children,
-      ],
-    );
-  }
-
-  Widget _buildInfoRow(BuildContext context, {
-    required IconData icon,
+  Widget _buildDownloadTile({
     required String label,
-    required String value,
-    bool isLink = false,
+    required String url,
+    required IconData icon,
   }) {
-    final theme = Theme.of(context);
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        children: [
-          Icon(icon, size: 20, color: theme.colorScheme.onSurfaceVariant),
-          const SizedBox(width: 12),
-          Text(
-            '$label: ',
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-          Expanded(
-            child: Text(
-              value,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: isLink ? theme.colorScheme.primary : null,
-              ),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDownloadButton({required String label, required String url}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: OutlinedButton.icon(
-        onPressed: () => launchUrl(Uri.parse(url)),
-        icon: const Icon(Icons.download),
-        label: Text(label),
-      ),
+    return AppTile(
+      leading: Icon(icon, size: 18),
+      title: label,
+      showChevron: false,
+      trailing: const Icon(FIcons.download, size: 16),
+      onPress: () => launchUrl(Uri.parse(url)),
     );
   }
 }

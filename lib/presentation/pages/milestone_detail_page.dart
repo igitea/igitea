@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:forui/forui.dart';
 
 import '../../core/animations/animated_wrapper.dart';
 import '../../core/constants/ui_constants.dart';
@@ -10,7 +11,8 @@ import '../../data/models/generated/generated_models.dart';
 import '../../domain/usecases/issue_usecases.dart';
 import '../../domain/entities/issue_state.dart';
 import '../../l10n/app_localizations.dart';
-import '../widgets/empty_state.dart';
+import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_state_views.dart';
 import '../widgets/premium_card.dart';
 import '../widgets/user_avatar.dart';
 import 'edit_milestone_page.dart';
@@ -76,10 +78,7 @@ class _MilestoneDetailPageState extends State<MilestoneDetailPage> {
       ),
     );
     if (result == true) {
-      await Injection.issueNotifier.listMilestones(
-        widget.owner,
-        widget.repo,
-      );
+      await Injection.issueNotifier.listMilestones(widget.owner, widget.repo);
       if (mounted) {
         setState(() {
           _milestone = widget.milestone;
@@ -90,21 +89,20 @@ class _MilestoneDetailPageState extends State<MilestoneDetailPage> {
 
   Future<void> _deleteMilestone() async {
     final l10n = AppLocalizations.of(context)!;
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showFDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (ctx, style, animation) => FDialog(
         title: Text(l10n.deleteMilestone),
-        content: Text(l10n.deleteMilestoneConfirm),
+        body: Text(l10n.deleteMilestoneConfirm),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
+          FButton(
+            variant: .outline,
+            onPress: () => Navigator.pop(ctx, false),
             child: Text(l10n.cancel),
           ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
+          FButton(
+            variant: .destructive,
+            onPress: () => Navigator.pop(ctx, true),
             child: Text(l10n.delete),
           ),
         ],
@@ -122,13 +120,13 @@ class _MilestoneDetailPageState extends State<MilestoneDetailPage> {
     if (mounted) {
       switch (result) {
         case Left(:final value):
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${l10n.error}: ${value.message}')),
+          showFToast(
+            context: context,
+            variant: .destructive,
+            title: Text('${l10n.error}: ${value.message}'),
           );
         case Right():
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.milestoneDeleted)),
-          );
+          showFToast(context: context, title: Text(l10n.milestoneDeleted));
           Navigator.of(context).pop(true);
       }
     }
@@ -138,23 +136,21 @@ class _MilestoneDetailPageState extends State<MilestoneDetailPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(_milestone.title ?? l10n.untitled),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit),
-            tooltip: l10n.edit,
-            onPressed: _editMilestone,
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete_outline),
-            tooltip: l10n.delete,
-            onPressed: _deleteMilestone,
-          ),
-        ],
-      ),
-      body: RefreshIndicator(
+    return AppPage(
+      title: _milestone.title ?? l10n.untitled,
+      actions: [
+        FHeaderAction(
+          icon: const Icon(FIcons.pencil),
+          semanticsLabel: l10n.edit,
+          onPress: _editMilestone,
+        ),
+        FHeaderAction(
+          icon: const Icon(FIcons.trash2),
+          semanticsLabel: l10n.delete,
+          onPress: _deleteMilestone,
+        ),
+      ],
+      child: RefreshIndicator(
         onRefresh: _loadIssues,
         child: ListView.builder(
           padding: const EdgeInsets.all(UIConstants.md),
@@ -163,11 +159,7 @@ class _MilestoneDetailPageState extends State<MilestoneDetailPage> {
             if (index == 0) {
               return _buildMilestoneInfo(l10n);
             }
-            return _buildIssueItem(
-              _issues[index - 1],
-              index - 1,
-              l10n,
-            );
+            return _buildIssueItem(_issues[index - 1], index - 1, l10n);
           },
         ),
       ),
@@ -176,7 +168,8 @@ class _MilestoneDetailPageState extends State<MilestoneDetailPage> {
 
   Widget _buildMilestoneInfo(AppLocalizations l10n) {
     final theme = Theme.of(context);
-    final total = (_milestone.open_issues ?? 0) + (_milestone.closed_issues ?? 0);
+    final total =
+        (_milestone.open_issues ?? 0) + (_milestone.closed_issues ?? 0);
     final progress = total > 0 ? (_milestone.closed_issues ?? 0) / total : 0.0;
     final isOpen = _milestone.state?.isOpen == true;
 
@@ -192,11 +185,13 @@ class _MilestoneDetailPageState extends State<MilestoneDetailPage> {
                     Container(
                       padding: const EdgeInsets.all(UIConstants.sm),
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
+                        color: theme.colorScheme.primaryContainer.withValues(
+                          alpha: 0.5,
+                        ),
                         shape: BoxShape.circle,
                       ),
                       child: Icon(
-                        Icons.flag,
+                        FIcons.flag,
                         size: UIConstants.iconLg,
                         color: theme.colorScheme.primary,
                       ),
@@ -225,12 +220,10 @@ class _MilestoneDetailPageState extends State<MilestoneDetailPage> {
                     _buildStateBadge(isOpen, l10n),
                   ],
                 ),
-                if (_milestone.description != null && _milestone.description!.isNotEmpty) ...[
+                if (_milestone.description != null &&
+                    _milestone.description!.isNotEmpty) ...[
                   const SizedBox(height: UIConstants.md),
-                  MarkdownBody(
-                    data: _milestone.description!,
-                    shrinkWrap: true,
-                  ),
+                  MarkdownBody(data: _milestone.description!, shrinkWrap: true),
                 ],
                 const SizedBox(height: UIConstants.md),
                 _buildStatRow(l10n, total, progress),
@@ -259,12 +252,12 @@ class _MilestoneDetailPageState extends State<MilestoneDetailPage> {
         ),
         const SizedBox(height: UIConstants.sm),
         if (_issuesLoading)
-          const Center(child: CircularProgressIndicator())
-        else if (_issues.isEmpty)
-          EmptyState(
-            icon: Icons.bug_report_outlined,
-            title: l10n.noIssues,
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 20),
+            child: Center(child: FCircularProgress(size: .sm)),
           )
+        else if (_issues.isEmpty)
+          AppEmpty(icon: FIcons.bug, title: l10n.noIssues)
         else
           const SizedBox.shrink(),
       ],
@@ -401,17 +394,19 @@ class _IssueItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isOpen = issue.state?.isOpen == true;
-    final stateIcon = isOpen ? Icons.error_outline : Icons.check_circle;
+    final stateIcon = isOpen ? FIcons.circleAlert : FIcons.circleCheck;
     final stateColor = isOpen ? Colors.green : Colors.purple;
 
     return PremiumListCard(
-      onTap: () => Navigator.of(context).push(MaterialPageRoute(
-        builder: (_) => IssueDetailPage(
-          owner: owner,
-          repo: repo,
-          index: issue.number ?? 0,
+      onTap: () => Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (_) => IssueDetailPage(
+            owner: owner,
+            repo: repo,
+            index: issue.number ?? 0,
+          ),
         ),
-      )),
+      ),
       child: Row(
         children: [
           issue.user != null
@@ -433,7 +428,11 @@ class _IssueItem extends StatelessWidget {
                 const SizedBox(height: UIConstants.xs),
                 Row(
                   children: [
-                    Icon(stateIcon, size: UIConstants.iconSm, color: stateColor),
+                    Icon(
+                      stateIcon,
+                      size: UIConstants.iconSm,
+                      color: stateColor,
+                    ),
                     const SizedBox(width: UIConstants.xs),
                     Text(
                       isOpen ? l10n.open : l10n.closed,

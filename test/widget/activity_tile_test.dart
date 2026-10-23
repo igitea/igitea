@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:igitea/data/models/generated/generated_models.dart';
 import 'package:igitea/l10n/app_localizations.dart';
@@ -10,14 +11,14 @@ void main() {
       Activity(op_type: opType, ref_name: 'refs/heads/main');
 
   Future<AppLocalizations> l10nOf(WidgetTester tester) async {
-    late AppLocalizations l10n;
+    AppLocalizations? l10n;
     await tester.pumpWidget(buildTestableWidget(Builder(
       builder: (context) {
         l10n = AppLocalizations.of(context)!;
         return const SizedBox();
       },
     )));
-    return l10n;
+    return l10n!;
   }
 
   testWidgets('describeActivity maps known op types', (tester) async {
@@ -62,11 +63,12 @@ void main() {
 
   testWidgets('activityIcon returns distinct icons per category',
       (tester) async {
-    expect(activityIcon(activityWith('push')), Icons.commit);
-    expect(activityIcon(activityWith('create_issue')), Icons.bug_report_outlined);
-    expect(activityIcon(activityWith('create_pull_request')), Icons.merge_type);
-    expect(activityIcon(activityWith('merge_pull_request')), Icons.call_merge);
-    expect(activityIcon(activityWith('star_repo')), Icons.star_outline);
-    expect(activityIcon(activityWith('unknown')), Icons.bolt_outlined);
+    expect(activityIcon(activityWith('push')), FIcons.gitCommitHorizontal);
+    expect(activityIcon(activityWith('create_issue')), FIcons.circleDot);
+    expect(activityIcon(activityWith('create_pull_request')),
+        FIcons.gitPullRequest);
+    expect(activityIcon(activityWith('merge_pull_request')), FIcons.gitMerge);
+    expect(activityIcon(activityWith('star_repo')), FIcons.star);
+    expect(activityIcon(activityWith('unknown')), FIcons.zap);
   });
 }

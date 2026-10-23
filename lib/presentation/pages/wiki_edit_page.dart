@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:forui/forui.dart';
 
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../core/utils/either.dart';
 import '../../l10n/app_localizations.dart';
+import '../widgets/forui/app_page.dart';
 
 class WikiEditPage extends StatefulWidget {
   final String owner;
@@ -35,7 +37,9 @@ class _WikiEditPageState extends State<WikiEditPage> {
   void initState() {
     super.initState();
     _titleController = TextEditingController(text: widget.pageName ?? '');
-    _contentController = TextEditingController(text: widget.initialContent ?? '');
+    _contentController = TextEditingController(
+      text: widget.initialContent ?? '',
+    );
     _messageController = TextEditingController();
   }
 
@@ -53,8 +57,10 @@ class _WikiEditPageState extends State<WikiEditPage> {
     final content = _contentController.text.trim();
 
     if (title.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.titleRequired)),
+      showFToast(
+        context: context,
+        variant: .destructive,
+        title: Text(l10n.titleRequired),
       );
       return;
     }
@@ -88,12 +94,15 @@ class _WikiEditPageState extends State<WikiEditPage> {
       setState(() => _isSaving = false);
       switch (result) {
         case Left(:final value):
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${l10n.error}: ${value.message}')),
+          showFToast(
+            context: context,
+            variant: .destructive,
+            title: Text('${l10n.error}: ${value.message}'),
           );
         case Right():
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(widget.pageName != null ? l10n.saved : l10n.created)),
+          showFToast(
+            context: context,
+            title: Text(widget.pageName != null ? l10n.saved : l10n.created),
           );
           Navigator.of(context).pop(true);
       }
@@ -104,37 +113,32 @@ class _WikiEditPageState extends State<WikiEditPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.pageName != null ? l10n.editWikiPage : l10n.newWikiPage),
-        actions: [
-          TextButton(
-            onPressed: _isSaving ? null : () => setState(() => _showPreview = !_showPreview),
-            child: Text(_showPreview ? l10n.edit : l10n.preview),
-          ),
-          IconButton(
-            icon: _isSaving
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(Icons.save),
-            onPressed: _isSaving ? null : _save,
-          ),
-        ],
-      ),
-      body: _showPreview ? _buildPreview() : _buildForm(l10n),
+    return AppPage(
+      title: widget.pageName != null ? l10n.editWikiPage : l10n.newWikiPage,
+      actions: [
+        FHeaderAction(
+          icon: Icon(_showPreview ? FIcons.pencil : FIcons.eye),
+          semanticsLabel: _showPreview ? l10n.edit : l10n.preview,
+          onPress: _isSaving
+              ? null
+              : () => setState(() => _showPreview = !_showPreview),
+        ),
+        FHeaderAction(
+          icon: _isSaving
+              ? const FCircularProgress(size: .sm)
+              : const Icon(FIcons.save),
+          semanticsLabel: l10n.save,
+          onPress: _isSaving ? null : _save,
+        ),
+      ],
+      child: _showPreview ? _buildPreview() : _buildForm(l10n),
     );
   }
 
   Widget _buildPreview() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(UIConstants.md),
-      child: MarkdownBody(
-        data: _contentController.text,
-        selectable: true,
-      ),
+      child: MarkdownBody(data: _contentController.text, selectable: true),
     );
   }
 
@@ -144,37 +148,27 @@ class _WikiEditPageState extends State<WikiEditPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          TextField(
-            controller: _titleController,
-            decoration: InputDecoration(
-              labelText: l10n.wikiPageTitle,
-              hintText: l10n.wikiPageTitleHint,
-              border: const OutlineInputBorder(),
-            ),
+          FTextField(
+            control: FTextFieldControl.managed(controller: _titleController),
+            label: Text(l10n.wikiPageTitle),
+            hint: l10n.wikiPageTitleHint,
             maxLength: 100,
             enabled: widget.pageName == null,
           ),
           const SizedBox(height: UIConstants.md),
-          TextField(
-            controller: _contentController,
-            decoration: InputDecoration(
-              labelText: l10n.wikiPageContent,
-              hintText: l10n.wikiPageContentHint,
-              border: const OutlineInputBorder(),
-              alignLabelWithHint: true,
-            ),
+          FTextField(
+            control: FTextFieldControl.managed(controller: _contentController),
+            label: Text(l10n.wikiPageContent),
+            hint: l10n.wikiPageContentHint,
             maxLines: null,
             minLines: 10,
             keyboardType: TextInputType.multiline,
           ),
           const SizedBox(height: UIConstants.md),
-          TextField(
-            controller: _messageController,
-            decoration: InputDecoration(
-              labelText: l10n.commitMessage,
-              hintText: l10n.commitMessageHint,
-              border: const OutlineInputBorder(),
-            ),
+          FTextField(
+            control: FTextFieldControl.managed(controller: _messageController),
+            label: Text(l10n.commitMessage),
+            hint: l10n.commitMessageHint,
           ),
         ],
       ),

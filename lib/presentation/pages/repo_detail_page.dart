@@ -2299,9 +2299,9 @@ class _RepoSectionPage extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final title = _getTitle(l10n);
 
-    return Scaffold(
-      appBar: AppBar(title: Text(title)),
-      body: _buildSection(l10n),
+    return AppPage(
+      title: title,
+      child: _buildSection(l10n),
     );
   }
 

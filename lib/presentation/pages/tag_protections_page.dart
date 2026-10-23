@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
@@ -6,13 +7,19 @@ import '../../core/errors/failures.dart';
 import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
-import '../widgets/empty_state.dart';
+import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_state_views.dart';
+import '../widgets/forui/app_tile.dart';
 
 class TagProtectionsPage extends StatefulWidget {
   final String owner;
   final String repo;
 
-  const TagProtectionsPage({super.key, required this.owner, required this.repo});
+  const TagProtectionsPage({
+    super.key,
+    required this.owner,
+    required this.repo,
+  });
 
   @override
   State<TagProtectionsPage> createState() => _TagProtectionsPageState();
@@ -30,36 +37,50 @@ class _TagProtectionsPageState extends State<TagProtectionsPage> {
   }
 
   Future<void> _load() async {
-    setState(() { _loading = true; _error = null; });
-    final result = await Injection.listTagProtectionsUseCase(widget.owner, widget.repo);
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
+    final result = await Injection.listTagProtectionsUseCase(
+      widget.owner,
+      widget.repo,
+    );
     if (!mounted) return;
     switch (result) {
       case Right<Failure, List<TagProtection>>(:final value):
-        setState(() { _protections = value; _loading = false; _error = null; });
+        setState(() {
+          _protections = value;
+          _loading = false;
+          _error = null;
+        });
       case Left<Failure, List<TagProtection>>(:final value):
-        setState(() { _error = value.message; _loading = false; });
+        setState(() {
+          _error = value.message;
+          _loading = false;
+        });
     }
   }
 
   Future<void> _add() async {
     final l10n = AppLocalizations.of(context)!;
     final nameController = TextEditingController();
-    final pattern = await showDialog<String>(
+    final pattern = await showFDialog<String>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx, style, animation) => FDialog(
         title: Text(l10n.createTagProtection),
-        content: TextField(
-          controller: nameController,
-          decoration: InputDecoration(
-            labelText: l10n.namePattern,
-            hintText: 'v*',
-            border: const OutlineInputBorder(),
-          ),
+        body: FTextField(
+          control: FTextFieldControl.managed(controller: nameController),
+          label: Text(l10n.namePattern),
+          hint: 'v*',
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l10n.cancel)),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, nameController.text.trim()),
+          FButton(
+            variant: .outline,
+            onPress: () => Navigator.pop(ctx),
+            child: Text(l10n.cancel),
+          ),
+          FButton(
+            onPress: () => Navigator.pop(ctx, nameController.text.trim()),
             child: Text(l10n.create),
           ),
         ],
@@ -68,41 +89,65 @@ class _TagProtectionsPageState extends State<TagProtectionsPage> {
 
     if (pattern == null || pattern.isEmpty || !mounted) return;
 
-    final result = await Injection.createTagProtectionUseCase(widget.owner, widget.repo, pattern);
+    final result = await Injection.createTagProtectionUseCase(
+      widget.owner,
+      widget.repo,
+      pattern,
+    );
     if (!mounted) return;
     switch (result) {
       case Right<Failure, TagProtection>():
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tagProtectionCreated)));
+        showFToast(context: context, title: Text(l10n.tagProtectionCreated));
         _load();
       case Left<Failure, TagProtection>():
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
+        showFToast(
+          context: context,
+          variant: .destructive,
+          title: Text(l10n.error),
+        );
     }
   }
 
   Future<void> _delete(TagProtection protection) async {
     final l10n = AppLocalizations.of(context)!;
-    final ok = await showDialog<bool>(
+    final ok = await showFDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx, style, animation) => FDialog(
         title: Text(l10n.deleteTagProtection),
-        content: Text(l10n.deleteTagProtectionConfirm),
+        body: Text(l10n.deleteTagProtectionConfirm),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(l10n.delete)),
+          FButton(
+            variant: .outline,
+            onPress: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          FButton(
+            variant: .destructive,
+            onPress: () => Navigator.pop(ctx, true),
+            child: Text(l10n.delete),
+          ),
         ],
       ),
     );
     final id = protection.id;
     if (ok != true || id == null || !mounted) return;
 
-    final result = await Injection.deleteTagProtectionUseCase(widget.owner, widget.repo, id);
+    final result = await Injection.deleteTagProtectionUseCase(
+      widget.owner,
+      widget.repo,
+      id,
+    );
     if (!mounted) return;
     switch (result) {
       case Right<Failure, void>():
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.tagProtectionDeleted)));
+        showFToast(context: context, title: Text(l10n.tagProtectionDeleted));
         _load();
       case Left<Failure, void>():
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
+        showFToast(
+          context: context,
+          variant: .destructive,
+          title: Text(l10n.error),
+        );
     }
   }
 
@@ -111,67 +156,61 @@ class _TagProtectionsPageState extends State<TagProtectionsPage> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.tagProtections)),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _add,
-        icon: const Icon(Icons.add),
-        label: Text(l10n.create),
-      ),
-      body: _loading
-          ? const Center(child: CircularProgressIndicator())
+    return AppPage(
+      title: l10n.tagProtections,
+      actions: [
+        FHeaderAction(
+          icon: const Icon(FIcons.plus),
+          semanticsLabel: l10n.create,
+          onPress: _add,
+        ),
+      ],
+      child: _loading
+          ? const AppLoading()
           : _error != null
-              ? Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.error_outline_rounded, size: 48,
-                        color: Theme.of(context).colorScheme.error),
-                      const SizedBox(height: 16),
-                      Text(_error!, style: Theme.of(context).textTheme.bodyLarge),
-                      const SizedBox(height: 16),
-                      FilledButton.tonalIcon(
-                        onPressed: _load,
-                        icon: const Icon(Icons.refresh_rounded, size: 18),
-                        label: Text(l10n.retry),
+          ? AppError(message: _error!, onRetry: _load)
+          : _protections.isEmpty
+          ? AppEmpty(icon: FIcons.tag, title: l10n.noTagProtections)
+          : RefreshIndicator(
+              onRefresh: _load,
+              child: ListView.builder(
+                padding: const EdgeInsets.all(UIConstants.md),
+                itemCount: _protections.length,
+                itemBuilder: (context, index) {
+                  final p = _protections[index];
+                  return Padding(
+                    padding: const EdgeInsets.only(bottom: UIConstants.sm),
+                    child: FCard.raw(
+                      child: AppTile(
+                        leading: Icon(
+                          FIcons.tag,
+                          size: 18,
+                          color: theme.colorScheme.primary,
+                        ),
+                        title: p.name_pattern ?? l10n.unknown,
+                        subtitle:
+                            p.whitelist_usernames != null &&
+                                p.whitelist_usernames!.isNotEmpty
+                            ? '${l10n.allowedUsers}: ${p.whitelist_usernames!.join(', ')}'
+                            : null,
+                        showChevron: false,
+                        trailing: FTappable(
+                          onPress: () => _delete(p),
+                          child: Padding(
+                            padding: const EdgeInsets.all(6),
+                            child: Icon(
+                              FIcons.trash2,
+                              size: 16,
+                              color: theme.colorScheme.error,
+                            ),
+                          ),
+                        ),
                       ),
-                    ],
-                  ),
-                )
-              : _protections.isEmpty
-              ? EmptyState(icon: Icons.local_offer_outlined, title: l10n.noTagProtections)
-              : RefreshIndicator(
-                  onRefresh: _load,
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(UIConstants.md),
-                    itemCount: _protections.length,
-                    itemBuilder: (context, index) {
-                      final p = _protections[index];
-                      return Card(
-                        elevation: 0,
-                        margin: const EdgeInsets.only(bottom: UIConstants.sm),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          side: BorderSide(color: theme.colorScheme.outlineVariant),
-                        ),
-                        child: ListTile(
-                          leading: Icon(Icons.local_offer, color: theme.colorScheme.primary),
-                          title: Text(
-                            p.name_pattern ?? l10n.unknown,
-                            style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500),
-                          ),
-                          subtitle: p.whitelist_usernames != null && p.whitelist_usernames!.isNotEmpty
-                              ? Text('${l10n.allowedUsers}: ${p.whitelist_usernames!.join(', ')}')
-                              : null,
-                          trailing: IconButton(
-                            icon: const Icon(Icons.delete_outline),
-                            onPressed: () => _delete(p),
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
+                    ),
+                  );
+                },
+              ),
+            ),
     );
   }
 }

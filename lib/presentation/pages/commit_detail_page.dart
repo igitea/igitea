@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:forui/forui.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/animations/animated_wrapper.dart';
@@ -10,6 +11,10 @@ import '../../core/utils/diff_parser.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/repo_notifier.dart';
+import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_section.dart';
+import '../widgets/forui/app_state_views.dart';
+import '../widgets/forui/app_tile.dart';
 import '../widgets/user_avatar.dart';
 
 class CommitDetailPage extends StatefulWidget {
@@ -56,7 +61,12 @@ class _CommitDetailPageState extends State<CommitDetailPage> {
         final key = f.newPath.isNotEmpty ? f.newPath : f.oldPath;
         fileMap.putIfAbsent(key, () => []).add(f);
       }
-      if (mounted) setState(() { _fileDiffs = fileMap; _diffLoading = false; });
+      if (mounted) {
+        setState(() {
+          _fileDiffs = fileMap;
+          _diffLoading = false;
+        });
+      }
     } catch (_) {
       if (mounted) setState(() => _diffLoading = false);
     }
@@ -65,36 +75,29 @@ class _CommitDetailPageState extends State<CommitDetailPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.commit)),
-      body: ListenableBuilder(
+    return AppPage(
+      title: l10n.commit,
+      child: ListenableBuilder(
         listenable: Injection.repoNotifier,
         builder: (context, _) {
           final state = Injection.repoNotifier.commitDetailState;
           return switch (state) {
-            CommitDetailLoading() => const Center(child: CircularProgressIndicator()),
-            CommitDetailError(:final message) => _buildError(message, l10n),
-            CommitDetailDataLoaded(:final commit) => _buildContent(commit, l10n),
-            _ => const Center(child: CircularProgressIndicator()),
+            CommitDetailLoading() => const AppLoading(),
+            CommitDetailError(:final message) => AppError(
+              message: message,
+              onRetry: () => Injection.repoNotifier.getCommit(
+                widget.owner,
+                widget.repo,
+                widget.sha,
+              ),
+            ),
+            CommitDetailDataLoaded(:final commit) => _buildContent(
+              commit,
+              l10n,
+            ),
+            _ => const AppLoading(),
           };
         },
-      ),
-    );
-  }
-
-  Widget _buildError(String message, AppLocalizations l10n) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text('${l10n.error}: $message'),
-          const SizedBox(height: UIConstants.md),
-          FilledButton(
-            onPressed: () => Injection.repoNotifier.getCommit(
-              widget.owner, widget.repo, widget.sha),
-            child: Text(l10n.retry),
-          ),
-        ],
       ),
     );
   }
@@ -137,23 +140,33 @@ class _CommitDetailPageState extends State<CommitDetailPage> {
         if (commitInfo?.message != null) ...[
           Text(
             commitInfo!.message!,
-            style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            style: theme.textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: UIConstants.md),
         ],
-        _buildInfoRow(
-          icon: Icons.fingerprint,
-          label: l10n.sha,
-          value: commit.sha ?? '',
-          onTap: () => _copyToClipboard(commit.sha ?? ''),
+        AppSection(
+          title: '',
+          showHeader: false,
+          children: [
+            AppTile(
+              leading: const Icon(FIcons.fingerprintPattern, size: 18),
+              title: l10n.sha,
+              subtitle: commit.sha ?? '',
+              showChevron: false,
+              onPress: () => _copyToClipboard(commit.sha ?? ''),
+            ),
+            if (commit.html_url != null)
+              AppTile(
+                leading: const Icon(FIcons.externalLink, size: 18),
+                title: l10n.url,
+                subtitle: commit.html_url!,
+                showChevron: false,
+                onPress: () => _launchUrl(commit.html_url!),
+              ),
+          ],
         ),
-        if (commit.html_url != null)
-          _buildInfoRow(
-            icon: Icons.open_in_new,
-            label: l10n.url,
-            value: commit.html_url!,
-            isLink: true,
-          ),
         if (commit.stats != null) ...[
           const SizedBox(height: UIConstants.md),
           _buildStats(commit.stats!),
@@ -162,182 +175,259 @@ class _CommitDetailPageState extends State<CommitDetailPage> {
           const SizedBox(height: UIConstants.lg),
           Row(
             children: [
-              Text(l10n.changedFiles, style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              )),
-              const Spacer(),
-              if (_diffLoading)
-                const SizedBox(
-                  width: 16, height: 16,
-                  child: CircularProgressIndicator(strokeWidth: 2),
+              Text(
+                l10n.changedFiles,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
                 ),
+              ),
+              const Spacer(),
+              if (_diffLoading) const FCircularProgress(size: .xs),
             ],
           ),
           const SizedBox(height: UIConstants.sm),
-          ..._fileDiffs.entries.toList().asMap().entries.map((entry) =>
-            FadeInWrapper(
+          ..._fileDiffs.entries.toList().asMap().entries.map(
+            (entry) => FadeInWrapper(
               delay: Duration(milliseconds: entry.key * 30),
-              child: _buildFileDiffCard(entry.value.key, entry.value.value, l10n),
+              child: _buildFileDiffCard(entry.value.key, entry.value.value),
             ),
           ),
         ] else if (commit.files != null && commit.files!.isNotEmpty) ...[
           const SizedBox(height: UIConstants.lg),
-          Text(l10n.changedFiles, style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          )),
+          Text(
+            l10n.changedFiles,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           const SizedBox(height: UIConstants.sm),
-          ...commit.files!.asMap().entries.map((entry) => FadeInWrapper(
-            delay: Duration(milliseconds: entry.key * 30),
-            child: _buildSimpleFileItem(entry.value, l10n),
-          )),
+          ...commit.files!.asMap().entries.map(
+            (entry) => FadeInWrapper(
+              delay: Duration(milliseconds: entry.key * 30),
+              child: _buildSimpleFileItem(entry.value),
+            ),
+          ),
         ],
       ],
     );
   }
 
-  Widget _buildFileDiffCard(String filename, List<DiffFile> diffs, AppLocalizations l10n) {
+  Widget _buildFileDiffCard(String filename, List<DiffFile> diffs) {
     final expanded = _expandedFiles.contains(filename);
-    final totalAdded = diffs.fold(0, (sum, f) =>
-      sum + f.hunks.fold(0, (s, h) => s + h.lines.where((l) => l.type == DiffLineType.added).length));
-    final totalRemoved = diffs.fold(0, (sum, f) =>
-      sum + f.hunks.fold(0, (s, h) => s + h.lines.where((l) => l.type == DiffLineType.removed).length));
+    final totalAdded = diffs.fold(
+      0,
+      (sum, f) =>
+          sum +
+          f.hunks.fold(
+            0,
+            (s, h) =>
+                s + h.lines.where((l) => l.type == DiffLineType.added).length,
+          ),
+    );
+    final totalRemoved = diffs.fold(
+      0,
+      (sum, f) =>
+          sum +
+          f.hunks.fold(
+            0,
+            (s, h) =>
+                s + h.lines.where((l) => l.type == DiffLineType.removed).length,
+          ),
+    );
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: UIConstants.sm),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          InkWell(
-            onTap: () => setState(() {
-              if (expanded) { _expandedFiles.remove(filename); }
-              else { _expandedFiles.add(filename); }
-            }),
-            child: Padding(
-              padding: const EdgeInsets.all(UIConstants.sm),
-              child: Row(
-                children: [
-                  Icon(Icons.insert_drive_file, size: UIConstants.iconMd,
-                    color: Theme.of(context).colorScheme.primary),
-                  const SizedBox(width: UIConstants.sm),
-                  Expanded(
-                    child: Text(filename, style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      fontFamily: 'monospace', fontWeight: FontWeight.w500,
-                    )),
-                  ),
-                  Text('+$totalAdded', style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 12, fontWeight: FontWeight.w600)),
-                  const SizedBox(width: UIConstants.sm),
-                  Text('-$totalRemoved', style: TextStyle(color: Theme.of(context).colorScheme.error, fontSize: 12, fontWeight: FontWeight.w600)),
-                ],
+    return Padding(
+      padding: const EdgeInsets.only(bottom: UIConstants.sm),
+      child: FCard.raw(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            FTappable(
+              onPress: () => setState(() {
+                if (expanded) {
+                  _expandedFiles.remove(filename);
+                } else {
+                  _expandedFiles.add(filename);
+                }
+              }),
+              child: Padding(
+                padding: const EdgeInsets.all(UIConstants.sm),
+                child: Row(
+                  children: [
+                    Icon(
+                      FIcons.file,
+                      size: UIConstants.iconMd,
+                      color: Theme.of(context).colorScheme.primary,
+                    ),
+                    const SizedBox(width: UIConstants.sm),
+                    Expanded(
+                      child: Text(
+                        filename,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontFamily: 'monospace',
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      '+$totalAdded',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(width: UIConstants.sm),
+                    Text(
+                      '-$totalRemoved',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.error,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          if (expanded)
-            ...diffs.expand((d) => d.hunks.expand((h) => [
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: UIConstants.sm, vertical: UIConstants.xs),
-                color: Theme.of(context).colorScheme.surfaceContainerLow,
-                child: Text(h.header, style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  fontFamily: 'monospace', color: Theme.of(context).colorScheme.primary,
-                )),
-              ),
-              ...h.lines.map((line) {
-                final bgColor = switch (line.type) {
-                  DiffLineType.added => Colors.green.withValues(alpha: 0.12),
-                  DiffLineType.removed => Colors.red.withValues(alpha: 0.12),
-                  _ => null,
-                };
-                return SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Container(
-                    color: bgColor,
-                    padding: const EdgeInsets.symmetric(horizontal: UIConstants.xs),
-                    child: Row(
-                      children: [
-                        Text(
-                          '${line.oldLineNum?.toString().padLeft(4) ?? '    '} ${line.newLineNum?.toString().padLeft(4) ?? '    '}',
-                          style: Theme.of(context).textTheme.labelSmall?.copyWith(fontFamily: 'monospace',
-                            color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.5)),
+            if (expanded)
+              ...diffs.expand(
+                (d) => d.hunks.expand(
+                  (h) => [
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: UIConstants.sm,
+                        vertical: UIConstants.xs,
+                      ),
+                      color: Theme.of(context).colorScheme.surfaceContainerLow,
+                      child: Text(
+                        h.header,
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          fontFamily: 'monospace',
+                          color: Theme.of(context).colorScheme.primary,
                         ),
-                        const Text(' ', style: TextStyle(fontFamily: 'monospace')),
-                        Text(line.content, style: Theme.of(context).textTheme.bodySmall?.copyWith(fontFamily: 'monospace')),
-                      ],
+                      ),
                     ),
-                  ),
-                );
-              }),
-            ])),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSimpleFileItem(CommitAffectedFiles file, AppLocalizations l10n) {
-    final theme = Theme.of(context);
-    return Card(
-      margin: const EdgeInsets.only(bottom: UIConstants.sm),
-      child: ListTile(
-        leading: Icon(
-          _getFileStatusIcon(file.status),
-          color: _getFileStatusColor(file.status),
+                    ...h.lines.map((line) {
+                      final bgColor = switch (line.type) {
+                        DiffLineType.added => Colors.green.withValues(
+                          alpha: 0.12,
+                        ),
+                        DiffLineType.removed => Colors.red.withValues(
+                          alpha: 0.12,
+                        ),
+                        _ => null,
+                      };
+                      return SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Container(
+                          color: bgColor,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: UIConstants.xs,
+                          ),
+                          child: Row(
+                            children: [
+                              Text(
+                                '${line.oldLineNum?.toString().padLeft(4) ?? '    '} ${line.newLineNum?.toString().padLeft(4) ?? '    '}',
+                                style: Theme.of(context).textTheme.labelSmall
+                                    ?.copyWith(
+                                      fontFamily: 'monospace',
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurfaceVariant
+                                          .withValues(alpha: 0.5),
+                                    ),
+                              ),
+                              const Text(
+                                ' ',
+                                style: TextStyle(fontFamily: 'monospace'),
+                              ),
+                              Text(
+                                line.content,
+                                style: Theme.of(context).textTheme.bodySmall
+                                    ?.copyWith(fontFamily: 'monospace'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }),
+                  ],
+                ),
+              ),
+          ],
         ),
-        title: Text(file.filename ?? '', style: theme.textTheme.bodyMedium),
-        subtitle: Text(file.status ?? '',
-          style: TextStyle(color: _getFileStatusColor(file.status), fontSize: 12)),
       ),
     );
   }
 
-  Widget _buildInfoRow({
-    required IconData icon, required String label, required String value,
-    bool isLink = false, VoidCallback? onTap,
-  }) {
-    final theme = Theme.of(context);
-    return InkWell(
-      onTap: onTap ?? (isLink ? () => _launchUrl(value) : null),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: UIConstants.sm),
-        child: Row(children: [
-          Icon(icon, size: 20, color: theme.colorScheme.onSurfaceVariant),
-          const SizedBox(width: UIConstants.sm),
-          Text('$label: ', style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant)),
-          Expanded(child: Text(value, style: theme.textTheme.bodyMedium?.copyWith(
-            color: isLink ? theme.colorScheme.primary : null),
-            overflow: TextOverflow.ellipsis)),
-          if (onTap != null || isLink)
-            Icon(Icons.copy, size: 16, color: theme.colorScheme.onSurfaceVariant),
-        ]),
+  Widget _buildSimpleFileItem(CommitAffectedFiles file) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: UIConstants.sm),
+      child: FCard.raw(
+        child: AppTile(
+          leading: Icon(
+            _getFileStatusIcon(file.status),
+            size: 18,
+            color: _getFileStatusColor(file.status),
+          ),
+          title: file.filename ?? '',
+          subtitle: file.status ?? '',
+          showChevron: false,
+        ),
       ),
     );
   }
 
   Widget _buildStats(CommitStats stats) {
-    return Row(children: [
-      _buildStatChip(label: '+${stats.additions ?? 0}', color: Colors.green),
-      const SizedBox(width: UIConstants.sm),
-      _buildStatChip(label: '-${stats.deletions ?? 0}', color: Colors.red),
-      const SizedBox(width: UIConstants.sm),
-      _buildStatChip(label: '${stats.total ?? 0}', color: Theme.of(context).colorScheme.onSurfaceVariant),
-    ]);
+    return Row(
+      children: [
+        _buildStatChip(label: '+${stats.additions ?? 0}', color: Colors.green),
+        const SizedBox(width: UIConstants.sm),
+        _buildStatChip(label: '-${stats.deletions ?? 0}', color: Colors.red),
+        const SizedBox(width: UIConstants.sm),
+        _buildStatChip(
+          label: '${stats.total ?? 0}',
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+        ),
+      ],
+    );
   }
 
   Widget _buildStatChip({required String label, required Color color}) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: UIConstants.sm, vertical: UIConstants.xs),
-      decoration: BoxDecoration(color: color.withValues(alpha: 0.1), borderRadius: BorderRadius.circular(UIConstants.badgeRadius)),
-      child: Text(label, style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 12)),
+      padding: const EdgeInsets.symmetric(
+        horizontal: UIConstants.sm,
+        vertical: UIConstants.xs,
+      ),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: color,
+          fontWeight: FontWeight.bold,
+          fontSize: 12,
+        ),
+      ),
     );
   }
 
   IconData _getFileStatusIcon(String? status) => switch (status) {
-    'added' => Icons.add_circle_outline, 'removed' => Icons.remove_circle_outline,
-    'modified' => Icons.edit, 'renamed' => Icons.drive_file_rename_outline, _ => Icons.insert_drive_file,
+    'added' => FIcons.circlePlus,
+    'removed' => FIcons.circleMinus,
+    'modified' => FIcons.pencil,
+    'renamed' => FIcons.filePen,
+    _ => FIcons.file,
   };
   Color _getFileStatusColor(String? status) => switch (status) {
-    'added' => Colors.green, 'removed' => Colors.red, 'modified' => Colors.orange,
-    'renamed' => Colors.blue, _ => Colors.grey,
+    'added' => Colors.green,
+    'removed' => Colors.red,
+    'modified' => Colors.orange,
+    'renamed' => Colors.blue,
+    _ => Colors.grey,
   };
 
   String _formatDate(DateTime date, AppLocalizations l10n) {
@@ -354,8 +444,9 @@ class _CommitDetailPageState extends State<CommitDetailPage> {
   Future<void> _copyToClipboard(String text) async {
     await Clipboard.setData(ClipboardData(text: text));
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context)!.copied)),
+      showFToast(
+        context: context,
+        title: Text(AppLocalizations.of(context)!.copied),
       );
     }
   }

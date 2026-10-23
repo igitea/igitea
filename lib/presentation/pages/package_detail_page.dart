@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:forui/forui.dart';
 
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/package_notifier.dart';
-import '../widgets/empty_state.dart';
+import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_section.dart';
+import '../widgets/forui/app_state_views.dart';
+import '../widgets/forui/app_tile.dart';
 import 'repo_detail_page.dart';
 
 class PackageDetailPage extends StatefulWidget {
@@ -168,26 +172,24 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
     return '$baseUrl/${widget.owner}/-/packages/${widget.type}/${widget.name}';
   }
 
-  int get _totalSize =>
-      _files.fold<int>(0, (sum, f) => sum + (f.size ?? 0));
+  int get _totalSize => _files.fold<int>(0, (sum, f) => sum + (f.size ?? 0));
 
   Future<void> _deletePackage() async {
     final l10n = AppLocalizations.of(context)!;
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showFDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx, style, animation) => FDialog(
         title: Text(l10n.deletePackage),
-        content: Text(l10n.deletePackageConfirm),
+        body: Text(l10n.deletePackageConfirm),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
+          FButton(
+            variant: .outline,
+            onPress: () => Navigator.pop(ctx, false),
             child: Text(l10n.cancel),
           ),
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
+          FButton(
+            variant: .destructive,
+            onPress: () => Navigator.pop(ctx, true),
             child: Text(l10n.delete),
           ),
         ],
@@ -204,13 +206,13 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
 
       if (mounted) {
         if (success) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.packageDeleted)),
-          );
+          showFToast(context: context, title: Text(l10n.packageDeleted));
           Navigator.pop(context, true);
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.error)),
+          showFToast(
+            context: context,
+            variant: .destructive,
+            title: Text(l10n.error),
           );
         }
       }
@@ -219,18 +221,16 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.name),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.delete_outline),
-            tooltip: AppLocalizations.of(context)!.deletePackage,
-            onPressed: _deletePackage,
-          ),
-        ],
-      ),
-      body: ListenableBuilder(
+    return AppPage(
+      title: widget.name,
+      actions: [
+        FHeaderAction(
+          icon: const Icon(FIcons.trash2),
+          semanticsLabel: AppLocalizations.of(context)!.deletePackage,
+          onPress: _deletePackage,
+        ),
+      ],
+      child: ListenableBuilder(
         listenable: Injection.packageNotifier,
         builder: (context, _) => _buildBody(),
       ),
@@ -241,32 +241,16 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
     final l10n = AppLocalizations.of(context)!;
 
     if (_loading) {
-      return const Center(child: CircularProgressIndicator());
+      return const AppLoading();
     }
     if (_error != null) {
-      return _buildErrorState(l10n);
+      return AppError(message: _error!, onRetry: _loadDetail);
     }
     final pkg = _package;
     if (pkg == null) {
       return const SizedBox.shrink();
     }
     return _buildDetailContent(l10n, pkg);
-  }
-
-  Widget _buildErrorState(AppLocalizations l10n) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text('${l10n.error}: $_error'),
-          const SizedBox(height: UIConstants.md),
-          FilledButton(
-            onPressed: _loadDetail,
-            child: Text(l10n.retry),
-          ),
-        ],
-      ),
-    );
   }
 
   Widget _buildDetailContent(AppLocalizations l10n, Package pkg) {
@@ -293,18 +277,19 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
   }
 
   Widget _buildHeader(AppLocalizations l10n) {
+    final theme = Theme.of(context);
     return Row(
       children: [
         Container(
           width: 48,
           height: 48,
           decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primaryContainer,
+            color: theme.colorScheme.primaryContainer,
             borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(
-            Icons.inventory_2_outlined,
-            color: Theme.of(context).colorScheme.onPrimaryContainer,
+            FIcons.package,
+            color: theme.colorScheme.onPrimaryContainer,
             size: UIConstants.iconLg,
           ),
         ),
@@ -315,7 +300,7 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
             children: [
               Text(
                 widget.name,
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                style: theme.textTheme.headlineSmall?.copyWith(
                   fontWeight: FontWeight.w700,
                 ),
               ),
@@ -328,7 +313,7 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
                 ),
                 child: Text(
                   widget.type,
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  style: theme.textTheme.labelSmall?.copyWith(
                     color: _typeColor(widget.type),
                     fontWeight: FontWeight.w600,
                   ),
@@ -342,14 +327,7 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
   }
 
   Widget _buildSummarySection(AppLocalizations l10n, Package pkg) {
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-          color: Theme.of(context).colorScheme.outlineVariant,
-        ),
-      ),
+    return FCard.raw(
       child: Padding(
         padding: const EdgeInsets.all(UIConstants.md),
         child: _buildSummaryGrid(l10n, pkg),
@@ -358,18 +336,23 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
   }
 
   Widget _buildSummaryGrid(AppLocalizations l10n, Package pkg) {
+    final theme = Theme.of(context);
     final items = <(IconData, String, String)>[
-      (Icons.tag, l10n.packageVersion, widget.version),
+      (FIcons.tag, l10n.packageVersion, widget.version),
     ];
     if (pkg.creator != null) {
-      items.add((Icons.person_outline, l10n.packageCreator, pkg.creator!.login ?? '—'));
+      items.add((FIcons.user, l10n.packageCreator, pkg.creator!.login ?? '—'));
     }
     if (pkg.created_at != null) {
-      items.add((Icons.calendar_today_outlined, l10n.packageCreated, _formatDate(pkg.created_at!)));
+      items.add((
+        FIcons.calendar,
+        l10n.packageCreated,
+        _formatDate(pkg.created_at!),
+      ));
     }
     if (_files.isNotEmpty) {
-      items.add((Icons.insert_drive_file_outlined, l10n.packageFiles, '${_files.length}'));
-      items.add((Icons.storage_outlined, l10n.totalSize, _formatSize(_totalSize)));
+      items.add((FIcons.fileText, l10n.packageFiles, '${_files.length}'));
+      items.add((FIcons.hardDrive, l10n.totalSize, _formatSize(_totalSize)));
     }
 
     return Wrap(
@@ -378,19 +361,23 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
       children: items.map((item) {
         final (icon, label, value) = item;
         return SizedBox(
-          width: (MediaQuery.of(context).size.width - 64) / 2 - UIConstants.md / 2,
+          width:
+              (MediaQuery.of(context).size.width - 64) / 2 - UIConstants.md / 2,
           child: Row(
             children: [
-              Icon(icon, size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
+              Icon(icon, size: 14, color: theme.colorScheme.onSurfaceVariant),
               const SizedBox(width: 6),
-              Text(label, style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Theme.of(context).colorScheme.onSurfaceVariant,
-              )),
+              Text(
+                label,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
               const SizedBox(width: 4),
               Flexible(
                 child: Text(
                   value,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  style: theme.textTheme.bodySmall?.copyWith(
                     fontWeight: FontWeight.w500,
                   ),
                   overflow: TextOverflow.ellipsis,
@@ -404,15 +391,9 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
   }
 
   Widget _buildInstallSection(AppLocalizations l10n) {
+    final theme = Theme.of(context);
     final command = _installCommand();
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-          color: Theme.of(context).colorScheme.outlineVariant,
-        ),
-      ),
+    return FCard.raw(
       child: Padding(
         padding: const EdgeInsets.all(UIConstants.md),
         child: Column(
@@ -420,7 +401,7 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
           children: [
             Text(
               l10n.installation,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -432,7 +413,7 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
                 vertical: UIConstants.sm + 4,
               ),
               decoration: BoxDecoration(
-                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                color: theme.colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Row(
@@ -440,25 +421,26 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
                   Expanded(
                     child: SelectableText(
                       command,
-                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      style: theme.textTheme.bodySmall?.copyWith(
                         fontFamily: 'monospace',
                       ),
                     ),
                   ),
                   const SizedBox(width: UIConstants.sm),
-                  IconButton(
-                    icon: Icon(
-                      Icons.copy_outlined,
-                      size: 18,
-                      color: Theme.of(context).colorScheme.primary,
-                    ),
-                    tooltip: l10n.copy,
-                    onPressed: () {
+                  FTappable(
+                    onPress: () {
                       Clipboard.setData(ClipboardData(text: command));
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(l10n.copied)),
-                      );
+                      showFToast(context: context, title: Text(l10n.copied));
                     },
+                    semanticsLabel: l10n.copy,
+                    child: Padding(
+                      padding: const EdgeInsets.all(6),
+                      child: Icon(
+                        FIcons.copy,
+                        size: 18,
+                        color: theme.colorScheme.primary,
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -470,15 +452,9 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
   }
 
   Widget _buildMirrorsSection(AppLocalizations l10n) {
+    final theme = Theme.of(context);
     final url = _packageWebUrl();
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-          color: Theme.of(context).colorScheme.outlineVariant,
-        ),
-      ),
+    return FCard.raw(
       child: Padding(
         padding: const EdgeInsets.all(UIConstants.md),
         child: Column(
@@ -486,40 +462,45 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
           children: [
             Text(
               l10n.packageUrl,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
               ),
             ),
             const SizedBox(height: UIConstants.md),
             Row(
               children: [
-                Icon(Icons.open_in_browser, size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
+                Icon(
+                  FIcons.externalLink,
+                  size: 14,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
                 const SizedBox(width: UIConstants.sm),
                 Flexible(
                   child: Text(
                     url,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    style: theme.textTheme.bodySmall?.copyWith(
                       fontFamily: 'monospace',
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
                 const SizedBox(width: UIConstants.sm),
-                IconButton(
-                  icon: Icon(
-                    Icons.copy_outlined,
-                    size: 16,
-                    color: Theme.of(context).colorScheme.primary,
-                  ),
-                  tooltip: l10n.copy,
-                  onPressed: () {
+                FTappable(
+                  onPress: () {
                     Clipboard.setData(ClipboardData(text: url));
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(l10n.copied)),
-                    );
+                    showFToast(context: context, title: Text(l10n.copied));
                   },
+                  semanticsLabel: l10n.copy,
+                  child: Padding(
+                    padding: const EdgeInsets.all(6),
+                    child: Icon(
+                      FIcons.copy,
+                      size: 16,
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -530,15 +511,9 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
   }
 
   Widget _buildVersionsSection(AppLocalizations l10n) {
+    final theme = Theme.of(context);
     final versions = _versions;
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-          color: Theme.of(context).colorScheme.outlineVariant,
-        ),
-      ),
+    return FCard.raw(
       child: Padding(
         padding: const EdgeInsets.all(UIConstants.md),
         child: Column(
@@ -546,7 +521,7 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
           children: [
             Text(
               l10n.versions,
-              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -557,8 +532,8 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
                 child: Center(
                   child: Text(
                     l10n.noVersions,
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Theme.of(context).colorScheme.onSurfaceVariant,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ),
@@ -568,10 +543,7 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
             if (_versionsLoadingMore)
               const Padding(
                 padding: EdgeInsets.all(UIConstants.sm),
-                child: Center(child: SizedBox(
-                  width: 20, height: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )),
+                child: Center(child: FCircularProgress(size: .sm)),
               ),
           ],
         ),
@@ -580,9 +552,10 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
   }
 
   Widget _buildVersionItem(AppLocalizations l10n, Package v) {
+    final theme = Theme.of(context);
     final isCurrent = v.version == widget.version;
-    return InkWell(
-      onTap: isCurrent
+    return FTappable(
+      onPress: isCurrent
           ? null
           : () {
               Navigator.pushReplacement(
@@ -597,35 +570,35 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
                 ),
               );
             },
-      borderRadius: BorderRadius.circular(8),
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: UIConstants.sm, horizontal: UIConstants.xs),
+        padding: const EdgeInsets.symmetric(
+          vertical: UIConstants.sm,
+          horizontal: UIConstants.xs,
+        ),
         child: Row(
           children: [
             Icon(
-              isCurrent ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+              isCurrent ? FIcons.circleDot : FIcons.circle,
               size: 16,
               color: isCurrent
-                  ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).colorScheme.onSurfaceVariant,
+                  ? theme.colorScheme.primary
+                  : theme.colorScheme.onSurfaceVariant,
             ),
             const SizedBox(width: UIConstants.sm),
             Expanded(
               child: Text(
                 v.version ?? '—',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                style: theme.textTheme.bodyMedium?.copyWith(
                   fontWeight: isCurrent ? FontWeight.w600 : FontWeight.w400,
-                  color: isCurrent
-                      ? Theme.of(context).colorScheme.primary
-                      : null,
+                  color: isCurrent ? theme.colorScheme.primary : null,
                 ),
               ),
             ),
             if (v.created_at != null)
               Text(
                 _formatDateShort(v.created_at!),
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
           ],
@@ -635,32 +608,22 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
   }
 
   Widget _buildRepoSection(AppLocalizations l10n, Package pkg) {
+    final theme = Theme.of(context);
     final repo = pkg.repository!;
     final fullName = repo.full_name ?? repo.name ?? '—';
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-        side: BorderSide(
-          color: Theme.of(context).colorScheme.outlineVariant,
-        ),
-      ),
-      child: InkWell(
-        onTap: () {
+    return FCard.raw(
+      child: FTappable(
+        onPress: () {
           final parts = fullName.split('/');
           if (parts.length == 2) {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (_) => RepoDetailPage(
-                  owner: parts[0],
-                  repo: parts[1],
-                ),
+                builder: (_) => RepoDetailPage(owner: parts[0], repo: parts[1]),
               ),
             );
           }
         },
-        borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(UIConstants.md),
           child: Column(
@@ -668,7 +631,7 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
             children: [
               Text(
                 l10n.packageRepository,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -676,28 +639,31 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
               Row(
                 children: [
                   Icon(
-                    Icons.code,
+                    FIcons.code,
                     size: UIConstants.iconMd,
-                    color: Theme.of(context).colorScheme.primary,
+                    color: theme.colorScheme.primary,
                   ),
                   const SizedBox(width: UIConstants.sm),
                   Expanded(
                     child: Text(
                       fullName,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      style: theme.textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),
-                  const Icon(Icons.chevron_right),
+                  Icon(
+                    FIcons.chevronRight,
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
                 ],
               ),
               if (repo.description != null && repo.description!.isNotEmpty) ...[
                 const SizedBox(height: UIConstants.sm),
                 Text(
                   repo.description!,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
                   ),
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
@@ -711,66 +677,46 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
   }
 
   Widget _buildFilesSection(AppLocalizations l10n) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          l10n.packageFiles,
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.w600,
+    if (_files.isEmpty) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.packageFiles,
+            style: Theme.of(
+              context,
+            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
           ),
-        ),
-        const SizedBox(height: UIConstants.sm),
-        if (_files.isEmpty)
-          EmptyState(
-            icon: Icons.insert_drive_file_outlined,
-            title: l10n.noData,
-          )
-        else
-          ..._files.map(_buildFileItem),
-      ],
+          const SizedBox(height: UIConstants.sm),
+          AppEmpty(icon: FIcons.fileText, title: l10n.noData),
+        ],
+      );
+    }
+    return AppSection(
+      title: l10n.packageFiles,
+      children: _files.map(_buildFileTile).toList(),
     );
   }
 
-  Widget _buildFileItem(PackageFile file) {
-    return Card(
-      elevation: 0,
-      margin: const EdgeInsets.only(bottom: UIConstants.sm),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8),
-        side: BorderSide(
-          color: Theme.of(context).colorScheme.outlineVariant,
-        ),
+  Widget _buildFileTile(PackageFile file) {
+    final theme = Theme.of(context);
+    return AppTile(
+      leading: Icon(
+        FIcons.fileText,
+        size: UIConstants.iconMd,
+        color: theme.colorScheme.onSurfaceVariant,
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: UIConstants.md,
-          vertical: UIConstants.sm + 4,
-        ),
-        child: Row(
-          children: [
-            Icon(
-              Icons.insert_drive_file_outlined,
-              size: UIConstants.iconMd,
-              color: Theme.of(context).colorScheme.onSurfaceVariant,
-            ),
-            const SizedBox(width: UIConstants.sm),
-            Expanded(
-              child: Text(
-                file.name ?? '—',
-                style: Theme.of(context).textTheme.bodyMedium,
+      title: file.name ?? '—',
+      showChevron: false,
+      trailing: file.size != null
+          ? Text(
+              _formatSize(file.size!),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
               ),
-            ),
-            if (file.size != null)
-              Text(
-                _formatSize(file.size!),
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
-              ),
-          ],
-        ),
-      ),
+            )
+          : null,
+      onPress: null,
     );
   }
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../../core/animations/animated_wrapper.dart';
 import '../../core/constants/ui_constants.dart';
@@ -6,18 +7,16 @@ import '../../core/di/injection.dart';
 import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
-import '../widgets/empty_state.dart';
+import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_state_views.dart';
+import '../widgets/forui/app_tile.dart';
 import 'create_webhook_page.dart';
 
 class WebhookListPage extends StatefulWidget {
   final String owner;
   final String repo;
 
-  const WebhookListPage({
-    super.key,
-    required this.owner,
-    required this.repo,
-  });
+  const WebhookListPage({super.key, required this.owner, required this.repo});
 
   @override
   State<WebhookListPage> createState() => _WebhookListPageState();
@@ -65,10 +64,8 @@ class _WebhookListPageState extends State<WebhookListPage> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => CreateWebhookPage(
-          owner: widget.owner,
-          repo: widget.repo,
-        ),
+        builder: (_) =>
+            CreateWebhookPage(owner: widget.owner, repo: widget.repo),
       ),
     );
     if (result == true) {
@@ -80,52 +77,38 @@ class _WebhookListPageState extends State<WebhookListPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.webhooks)),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _createWebhook,
-        icon: const Icon(Icons.add),
-        label: Text(l10n.createWebhook),
-      ),
-      body: _buildBody(l10n),
+    return AppPage(
+      title: l10n.webhooks,
+      actions: [
+        FHeaderAction(
+          icon: const Icon(FIcons.plus),
+          semanticsLabel: l10n.createWebhook,
+          onPress: _createWebhook,
+        ),
+      ],
+      child: _buildBody(l10n),
     );
   }
 
   Widget _buildBody(AppLocalizations l10n) {
     if (_loading) {
-      return const Center(child: CircularProgressIndicator());
+      return const AppLoading();
     }
     if (_error != null) {
-      return _buildErrorState(l10n);
+      return AppError(message: _error!, onRetry: _loadHooks);
     }
     if (_hooks.isEmpty) {
-      return EmptyState(
-        icon: Icons.webhook,
+      return AppEmpty(
+        icon: FIcons.webhook,
         title: l10n.noWebhooks,
-        action: FilledButton.icon(
-          onPressed: _createWebhook,
-          icon: const Icon(Icons.add),
-          label: Text(l10n.createWebhook),
+        action: FButton(
+          prefix: const Icon(FIcons.plus, size: 16),
+          onPress: _createWebhook,
+          child: Text(l10n.createWebhook),
         ),
       );
     }
     return _buildHookList(l10n);
-  }
-
-  Widget _buildErrorState(AppLocalizations l10n) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text('${l10n.error}: $_error'),
-          const SizedBox(height: UIConstants.md),
-          FilledButton(
-            onPressed: _loadHooks,
-            child: Text(l10n.retry),
-          ),
-        ],
-      ),
-    );
   }
 
   Widget _buildHookList(AppLocalizations l10n) {
@@ -137,73 +120,56 @@ class _WebhookListPageState extends State<WebhookListPage> {
         itemCount: _hooks.length,
         itemBuilder: (context, index) {
           final hook = _hooks[index];
+          final active = hook.active == true;
           return FadeInWrapper(
             delay: Duration(milliseconds: index * 30),
-            child: Card(
-              margin: const EdgeInsets.only(bottom: UIConstants.md),
-              child: ListTile(
-                leading: Icon(
-                  Icons.webhook,
-                  color: hook.active == true
-                      ? theme.colorScheme.primary
-                      : theme.colorScheme.onSurfaceVariant,
-                ),
-                title: Text(
-                  hook.type?.toUpperCase() ?? l10n.webhook,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: UIConstants.md),
+              child: FCard.raw(
+                child: AppTile(
+                  leading: Icon(
+                    FIcons.webhook,
+                    size: UIConstants.iconMd,
+                    color: active
+                        ? theme.colorScheme.primary
+                        : theme.colorScheme.onSurfaceVariant,
                   ),
-                ),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (hook.config?['url'] != null)
-                      Text(
-                        hook.config!['url']!.toString(),
-                        style: theme.textTheme.bodySmall,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                  title: hook.type?.toUpperCase() ?? l10n.webhook,
+                  subtitle: hook.config?['url']?.toString(),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        active ? FIcons.circleCheck : FIcons.circleX,
+                        size: UIConstants.iconSm,
+                        color: active
+                            ? Colors.green
+                            : theme.colorScheme.onSurfaceVariant,
                       ),
-                    const SizedBox(height: UIConstants.xs),
-                    Row(
-                      children: [
-                        Icon(
-                          hook.active == true
-                              ? Icons.check_circle
-                              : Icons.cancel,
-                          size: UIConstants.iconSm,
-                          color: hook.active == true
+                      const SizedBox(width: UIConstants.xs),
+                      Text(
+                        active ? l10n.webhookActive : l10n.webhookInactive,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: active
                               ? Colors.green
                               : theme.colorScheme.onSurfaceVariant,
                         ),
-                        const SizedBox(width: UIConstants.xs),
-                        Text(
-                          hook.active == true
-                              ? l10n.webhookActive
-                              : l10n.webhookInactive,
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: hook.active == true
-                                ? Colors.green
-                                : theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => WebhookDetailPage(
-                        owner: widget.owner,
-                        repo: widget.repo,
-                        hook: hook,
                       ),
-                    ),
-                  ).then((_) => _loadHooks());
-                },
+                    ],
+                  ),
+                  onPress: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => WebhookDetailPage(
+                          owner: widget.owner,
+                          repo: widget.repo,
+                          hook: hook,
+                        ),
+                      ),
+                    ).then((_) => _loadHooks());
+                  },
+                ),
               ),
             ),
           );
@@ -235,23 +201,22 @@ class _WebhookDetailPageState extends State<WebhookDetailPage> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('${widget.hook.type?.toUpperCase() ?? l10n.webhook} #${widget.hook.id ?? 0}'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit),
-            tooltip: l10n.edit,
-            onPressed: () => _editWebhook(l10n),
-          ),
-          IconButton(
-            icon: const Icon(Icons.delete_outline),
-            tooltip: l10n.delete,
-            onPressed: () => _deleteWebhook(l10n),
-          ),
-        ],
-      ),
-      body: ListView(
+    return AppPage(
+      title:
+          '${widget.hook.type?.toUpperCase() ?? l10n.webhook} #${widget.hook.id ?? 0}',
+      actions: [
+        FHeaderAction(
+          icon: const Icon(FIcons.pencil),
+          semanticsLabel: l10n.edit,
+          onPress: () => _editWebhook(l10n),
+        ),
+        FHeaderAction(
+          icon: const Icon(FIcons.trash2),
+          semanticsLabel: l10n.delete,
+          onPress: () => _deleteWebhook(l10n),
+        ),
+      ],
+      child: ListView(
         padding: const EdgeInsets.all(UIConstants.md),
         children: [
           _buildInfoSection(l10n, theme),
@@ -265,7 +230,7 @@ class _WebhookDetailPageState extends State<WebhookDetailPage> {
   }
 
   Widget _buildInfoSection(AppLocalizations l10n, ThemeData theme) {
-    return Card(
+    return FCard.raw(
       child: Padding(
         padding: const EdgeInsets.all(UIConstants.md),
         child: Column(
@@ -273,7 +238,7 @@ class _WebhookDetailPageState extends State<WebhookDetailPage> {
           children: [
             Row(
               children: [
-                Icon(Icons.webhook, color: theme.colorScheme.primary),
+                Icon(FIcons.webhook, color: theme.colorScheme.primary),
                 const SizedBox(width: UIConstants.sm),
                 Text(
                   l10n.webhook,
@@ -282,27 +247,12 @@ class _WebhookDetailPageState extends State<WebhookDetailPage> {
                   ),
                 ),
                 const Spacer(),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: UIConstants.sm,
-                    vertical: UIConstants.xs,
-                  ),
-                  decoration: BoxDecoration(
-                    color: widget.hook.active == true
-                        ? Colors.green.withValues(alpha: 0.2)
-                        : theme.colorScheme.errorContainer,
-                    borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
-                  ),
+                FBadge(
+                  variant: widget.hook.active == true ? .primary : .destructive,
                   child: Text(
                     widget.hook.active == true
                         ? l10n.webhookActive
                         : l10n.webhookInactive,
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: widget.hook.active == true
-                          ? Colors.green
-                          : theme.colorScheme.error,
-                      fontWeight: FontWeight.bold,
-                    ),
                   ),
                 ),
               ],
@@ -327,13 +277,14 @@ class _WebhookDetailPageState extends State<WebhookDetailPage> {
 
   Widget _buildConfigSection(AppLocalizations l10n, ThemeData theme) {
     final config = widget.hook.config ?? {};
-    return Card(
+    return FCard.raw(
       child: Padding(
         padding: const EdgeInsets.all(UIConstants.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.configuration,
+            Text(
+              l10n.configuration,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
               ),
@@ -354,7 +305,7 @@ class _WebhookDetailPageState extends State<WebhookDetailPage> {
 
   Widget _buildEventsSection(AppLocalizations l10n, ThemeData theme) {
     final events = widget.hook.events ?? [];
-    return Card(
+    return FCard.raw(
       child: Padding(
         padding: const EdgeInsets.all(UIConstants.md),
         child: Column(
@@ -370,11 +321,9 @@ class _WebhookDetailPageState extends State<WebhookDetailPage> {
             Wrap(
               spacing: UIConstants.sm,
               runSpacing: UIConstants.xs,
-              children: events.map((event) => Chip(
-                label: Text(event),
-                materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                visualDensity: VisualDensity.compact,
-              )).toList(),
+              children: events
+                  .map((event) => FBadge(variant: .outline, child: Text(event)))
+                  .toList(),
             ),
             if (events.isEmpty)
               Text(
@@ -400,27 +349,26 @@ class _WebhookDetailPageState extends State<WebhookDetailPage> {
         ),
       ),
     );
-    if (result == true && context.mounted) {
+    if (result == true && mounted) {
       Navigator.of(context).pop(true);
     }
   }
 
   Future<void> _deleteWebhook(AppLocalizations l10n) async {
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showFDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (ctx, style, animation) => FDialog(
         title: Text(l10n.deleteWebhook),
-        content: Text(l10n.deleteWebhookConfirm),
+        body: Text(l10n.deleteWebhookConfirm),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
+          FButton(
+            variant: .outline,
+            onPress: () => Navigator.pop(ctx, false),
             child: Text(l10n.cancel),
           ),
-          FilledButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            style: FilledButton.styleFrom(
-              backgroundColor: Theme.of(context).colorScheme.error,
-            ),
+          FButton(
+            variant: .destructive,
+            onPress: () => Navigator.pop(ctx, true),
             child: Text(l10n.delete),
           ),
         ],
@@ -438,13 +386,13 @@ class _WebhookDetailPageState extends State<WebhookDetailPage> {
     if (mounted) {
       switch (result) {
         case Left(:final value):
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${l10n.error}: ${value.message}')),
+          showFToast(
+            context: context,
+            variant: .destructive,
+            title: Text('${l10n.error}: ${value.message}'),
           );
         case Right():
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(l10n.webhookDeleted)),
-          );
+          showFToast(context: context, title: Text(l10n.webhookDeleted));
           Navigator.of(context).pop(true);
       }
     }
@@ -479,12 +427,7 @@ class _InfoRow extends StatelessWidget {
               ),
             ),
           ),
-          Expanded(
-            child: Text(
-              value,
-              style: theme.textTheme.bodyMedium,
-            ),
-          ),
+          Expanded(child: Text(value, style: theme.textTheme.bodyMedium)),
         ],
       ),
     );

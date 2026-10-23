@@ -26,6 +26,10 @@
 - **Account & user pages**: SSH keys, access tokens, GPG keys, OAuth apps, follow lists, user/starred repositories, organizations and user management migrated to `AppPage`, Forui list rows, `FDialog` forms and toasts (`tokens` keeps its token-scope groups and creation dialog)
 - **File & diff viewers**: repository file, blame, history, compare, PR files and PR diff pages use `AppPage` toolbars with `FHeaderAction`, `FPopoverMenu` overflow actions, Forui state views and dialogs; diff/code rendering untouched
 - **Admin pages**: dashboard, hooks, cron, runners, emails and badges migrated to grouped `AppSection`/`AppTile` lists with Forui search, actions and dialogs
+- **Repo detail pages**: branch, commit, release, tag, label list, milestone, collaborators, branch/tag protections, repository settings and stargazers migrated to `AppPage`; stargazers uses `FTabs`, settings uses `FSwitch`, dialogs use `FDialog`
+- **Actions / webhook / wiki / package pages**: workflow runs (with `FPopoverMenu` filters), run detail, repo/org secrets & variables, webhook lists (incl. `FSelect`/`FSwitch` create dialog), wiki list/detail/edit, package list/detail — all on Forui widgets
+- **Activity & profile**: activity feed uses `AppPage` with Forui rows and `FIcons` glyphs; other-user profile uses `AppPage` and `AppError`
+- **Filter sheets**: issue and repository filter bottom sheets rebuilt with Forui chips (`FButton`), checkboxes (`FCheckbox`) and segmented type/order controls
 
 ### Added
 - `AppTheme` (brand palette, light/dark Forui themes, touch/desktop density)

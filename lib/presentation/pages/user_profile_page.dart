@@ -10,6 +10,8 @@ import '../../data/models/generated/generated_models.dart';
 import '../../domain/usecases/user_usecases.dart';
 import '../../l10n/app_localizations.dart';
 import '../widgets/org_avatar.dart';
+import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_state_views.dart';
 import '../widgets/premium_card.dart';
 import '../widgets/user_avatar.dart';
 import 'follow_page.dart';
@@ -84,9 +86,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      appBar: AppBar(title: Text(widget.username)),
-      body: _loading
+    return AppPage(
+      title: widget.username,
+      child: _loading
           ? _buildSkeleton()
           : _user == null
               ? _buildError(l10n)
@@ -324,26 +326,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
   }
 
   Widget _buildError(AppLocalizations l10n) {
-    return Center(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(
-            Icons.error_outline_rounded,
-            size: 64,
-            color: Theme.of(context).colorScheme.error,
-          ),
-          const SizedBox(height: 16),
-          Text(l10n.error, style: Theme.of(context).textTheme.bodyLarge),
-          const SizedBox(height: 16),
-          FilledButton.tonalIcon(
-            onPressed: _load,
-            icon: const Icon(Icons.refresh_rounded, size: 18),
-            label: Text(l10n.retry),
-          ),
-        ],
-      ),
-    );
+    return AppError(message: l10n.error, onRetry: _load);
   }
 }
 

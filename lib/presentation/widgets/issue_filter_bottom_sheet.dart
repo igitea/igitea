@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 import '../../l10n/app_localizations.dart';
 import '../models/issue_filter_state.dart';
 
@@ -97,10 +98,11 @@ class _IssueFilterBottomSheetState extends State<IssueFilterBottomSheet> {
                         runSpacing: 8,
                         children: widget.availableLabels.map((label) {
                           final isSelected = _state.labels.contains(label);
-                          return FilterChip(
-                            label: Text(label),
-                            selected: isSelected,
-                            onSelected: (_) => _toggleLabel(label),
+                          return FButton(
+                            variant: isSelected ? .primary : .outline,
+                            size: .xs,
+                            onPress: () => _toggleLabel(label),
+                            child: Text(label),
                           );
                         }).toList(),
                       ),
@@ -114,10 +116,11 @@ class _IssueFilterBottomSheetState extends State<IssueFilterBottomSheet> {
                         runSpacing: 8,
                         children: widget.availableMilestones.map((m) {
                           final isSelected = _state.milestones.contains(m);
-                          return FilterChip(
-                            label: Text(m),
-                            selected: isSelected,
-                            onSelected: (_) => _toggleMilestone(m),
+                          return FButton(
+                            variant: isSelected ? .primary : .outline,
+                            size: .xs,
+                            onPress: () => _toggleMilestone(m),
+                            child: Text(m),
                           );
                         }).toList(),
                       ),
@@ -125,34 +128,55 @@ class _IssueFilterBottomSheetState extends State<IssueFilterBottomSheet> {
                     ],
                     _SectionTitle(title: l10n.type),
                     const SizedBox(height: 8),
-                    SegmentedButton<String?>(
-                      segments: [
-                        ButtonSegment(value: null, label: Text(l10n.all)),
-                        ButtonSegment(value: 'issues', label: Text(l10n.issues)),
-                        ButtonSegment(value: 'pulls', label: Text(l10n.pullRequests)),
+                    Row(
+                      children: [
+                        for (final (value, label) in [
+                          (null, l10n.all),
+                          ('issues', l10n.issues),
+                          ('pulls', l10n.pullRequests),
+                        ])
+                          Expanded(
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 3),
+                              child: FButton(
+                                variant: _state.type == value ? .primary : .outline,
+                                size: .sm,
+                                onPress: () => _setType(value),
+                                child: Flexible(
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(label, maxLines: 1),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
                       ],
-                      selected: {_state.type},
-                      onSelectionChanged: (set) => _setType(set.first),
                     ),
                     const SizedBox(height: 16),
                     if (widget.showAssigneeFilters) ...[
-                      CheckboxListTile(
-                        title: Text(l10n.assignedToMe),
+                      FCheckbox(
+                        label: Text(l10n.assignedToMe),
                         value: _state.assignedToMe,
-                        onChanged: (v) => setState(() => _state = _state.copyWith(assignedToMe: v)),
-                        contentPadding: EdgeInsets.zero,
+                        onChange: (v) => setState(
+                          () => _state = _state.copyWith(assignedToMe: v),
+                        ),
                       ),
-                      CheckboxListTile(
-                        title: Text(l10n.createdByMe),
+                      const SizedBox(height: 8),
+                      FCheckbox(
+                        label: Text(l10n.createdByMe),
                         value: _state.createdByMe,
-                        onChanged: (v) => setState(() => _state = _state.copyWith(createdByMe: v)),
-                        contentPadding: EdgeInsets.zero,
+                        onChange: (v) => setState(
+                          () => _state = _state.copyWith(createdByMe: v),
+                        ),
                       ),
-                      CheckboxListTile(
-                        title: Text(l10n.mentionedMe),
+                      const SizedBox(height: 8),
+                      FCheckbox(
+                        label: Text(l10n.mentionedMe),
                         value: _state.mentionedMe,
-                        onChanged: (v) => setState(() => _state = _state.copyWith(mentionedMe: v)),
-                        contentPadding: EdgeInsets.zero,
+                        onChange: (v) => setState(
+                          () => _state = _state.copyWith(mentionedMe: v),
+                        ),
                       ),
                     ],
                   ],
@@ -164,15 +188,19 @@ class _IssueFilterBottomSheetState extends State<IssueFilterBottomSheet> {
               child: Row(
                 children: [
                   Expanded(
-                    child: OutlinedButton(
-                      onPressed: () => Navigator.pop(context, const IssueFilterState()),
+                    child: FButton(
+                      variant: .outline,
+                      onPress: () => Navigator.pop(
+                        context,
+                        const IssueFilterState(),
+                      ),
                       child: Text(l10n.reset),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: FilledButton(
-                      onPressed: () => Navigator.pop(context, _state),
+                    child: FButton(
+                      onPress: () => Navigator.pop(context, _state),
                       child: Text(l10n.apply),
                     ),
                   ),

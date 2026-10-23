@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../../core/animations/animated_wrapper.dart';
 import '../../core/constants/ui_constants.dart';
@@ -7,7 +8,9 @@ import '../../core/errors/failures.dart';
 import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
-import '../widgets/empty_state.dart';
+import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_state_views.dart';
+import '../widgets/forui/app_tile.dart';
 
 class OrgWebhookListPage extends StatefulWidget {
   final String org;
@@ -30,14 +33,23 @@ class _OrgWebhookListPageState extends State<OrgWebhookListPage> {
   }
 
   Future<void> _load() async {
-    setState(() { _loading = true; _error = null; });
+    setState(() {
+      _loading = true;
+      _error = null;
+    });
     final result = await Injection.listOrgHooksUseCase(widget.org);
     if (!mounted) return;
     switch (result) {
       case Right<Failure, List<Hook>>(:final value):
-        setState(() { _hooks = value; _loading = false; });
+        setState(() {
+          _hooks = value;
+          _loading = false;
+        });
       case Left<Failure, List<Hook>>(:final value):
-        setState(() { _error = value.message; _loading = false; });
+        setState(() {
+          _error = value.message;
+          _loading = false;
+        });
     }
   }
 
@@ -48,42 +60,62 @@ class _OrgWebhookListPageState extends State<OrgWebhookListPage> {
     String contentType = 'json';
     bool active = true;
 
-    final result = await showDialog<bool>(
+    final result = await showFDialog<bool>(
       context: context,
-      builder: (ctx) => StatefulBuilder(
+      builder: (ctx, style, animation) => StatefulBuilder(
         builder: (ctx, setDialogState) {
-          final l10n = AppLocalizations.of(ctx)!;
-          return AlertDialog(
+          return FDialog(
             title: Text(l10n.createWebhook),
-            content: SingleChildScrollView(
+            body: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  TextField(controller: urlCtrl, decoration: InputDecoration(labelText: l10n.webhookUrl, border: const OutlineInputBorder())),
-                  const SizedBox(height: 12),
-                  TextField(controller: secretCtrl, decoration: InputDecoration(labelText: l10n.webhookSecret, border: const OutlineInputBorder())),
-                  const SizedBox(height: 12),
-                  DropdownButtonFormField<String>(
-                    value: contentType,
-                    items: const [
-                      DropdownMenuItem(value: 'json', child: Text('JSON')),
-                      DropdownMenuItem(value: 'form', child: Text('Form')),
-                    ],
-                    onChanged: (v) => setDialogState(() => contentType = v ?? 'json'),
-                    decoration: InputDecoration(labelText: l10n.contentType, border: const OutlineInputBorder()),
+                  FTextField(
+                    control: FTextFieldControl.managed(controller: urlCtrl),
+                    label: Text(l10n.webhookUrl),
                   ),
                   const SizedBox(height: 12),
-                  SwitchListTile(title: Text(l10n.active), value: active, onChanged: (v) => setDialogState(() => active = v), contentPadding: EdgeInsets.zero),
+                  FTextField(
+                    control: FTextFieldControl.managed(controller: secretCtrl),
+                    label: Text(l10n.webhookSecret),
+                  ),
+                  const SizedBox(height: 12),
+                  FSelect<String>(
+                    items: const {'JSON': 'json', 'Form': 'form'},
+                    control: FSelectControl.lifted(
+                      value: contentType,
+                      onChange: (v) =>
+                          setDialogState(() => contentType = v ?? 'json'),
+                    ),
+                    label: Text(l10n.contentType),
+                  ),
+                  const SizedBox(height: 12),
+                  FSwitch(
+                    value: active,
+                    label: Text(l10n.active),
+                    onChange: (v) => setDialogState(() => active = v),
+                  ),
                 ],
               ),
             ),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
-              FilledButton(
-                onPressed: urlCtrl.text.trim().isEmpty ? null : () async {
+              FButton(
+                variant: .outline,
+                onPress: () => Navigator.pop(ctx, false),
+                child: Text(l10n.cancel),
+              ),
+              FButton(
+                onPress: () async {
+                  final url = urlCtrl.text.trim();
+                  if (url.isEmpty) return;
                   final r = await Injection.createOrgHookUseCase(widget.org, {
                     'type': 'gitea',
-                    'config': {'url': urlCtrl.text.trim(), 'content_type': contentType, if (secretCtrl.text.trim().isNotEmpty) 'secret': secretCtrl.text.trim()},
+                    'config': {
+                      'url': url,
+                      'content_type': contentType,
+                      if (secretCtrl.text.trim().isNotEmpty)
+                        'secret': secretCtrl.text.trim(),
+                    },
                     'active': active,
                     'events': ['push'],
                   });
@@ -98,7 +130,7 @@ class _OrgWebhookListPageState extends State<OrgWebhookListPage> {
     );
 
     if (result == true && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.created)));
+      showFToast(context: context, title: Text(l10n.created));
       _load();
     }
   }
@@ -106,48 +138,74 @@ class _OrgWebhookListPageState extends State<OrgWebhookListPage> {
   Future<void> _edit(Hook hook) async {
     final l10n = AppLocalizations.of(context)!;
     final config = hook.config ?? {};
-    final urlCtrl = TextEditingController(text: config['url']?.toString() ?? '');
+    final urlCtrl = TextEditingController(
+      text: config['url']?.toString() ?? '',
+    );
     final secretCtrl = TextEditingController();
     String contentType = config['content_type']?.toString() ?? 'json';
     bool active = hook.active ?? true;
 
-    final result = await showDialog<bool>(
+    final result = await showFDialog<bool>(
       context: context,
-      builder: (ctx) => StatefulBuilder(
+      builder: (ctx, style, animation) => StatefulBuilder(
         builder: (ctx, setDialogState) {
-          final l10n = AppLocalizations.of(ctx)!;
-          return AlertDialog(
+          return FDialog(
             title: Text(l10n.editWebhook),
-            content: SingleChildScrollView(
+            body: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  TextField(controller: urlCtrl, decoration: InputDecoration(labelText: l10n.webhookUrl, border: const OutlineInputBorder())),
-                  const SizedBox(height: 12),
-                  TextField(controller: secretCtrl, decoration: InputDecoration(labelText: l10n.webhookSecret, border: const OutlineInputBorder())),
-                  const SizedBox(height: 12),
-                  DropdownButtonFormField<String>(
-                    value: contentType,
-                    items: const [
-                      DropdownMenuItem(value: 'json', child: Text('JSON')),
-                      DropdownMenuItem(value: 'form', child: Text('Form')),
-                    ],
-                    onChanged: (v) => setDialogState(() => contentType = v ?? 'json'),
-                    decoration: InputDecoration(labelText: l10n.contentType, border: const OutlineInputBorder()),
+                  FTextField(
+                    control: FTextFieldControl.managed(controller: urlCtrl),
+                    label: Text(l10n.webhookUrl),
                   ),
                   const SizedBox(height: 12),
-                  SwitchListTile(title: Text(l10n.active), value: active, onChanged: (v) => setDialogState(() => active = v), contentPadding: EdgeInsets.zero),
+                  FTextField(
+                    control: FTextFieldControl.managed(controller: secretCtrl),
+                    label: Text(l10n.webhookSecret),
+                  ),
+                  const SizedBox(height: 12),
+                  FSelect<String>(
+                    items: const {'JSON': 'json', 'Form': 'form'},
+                    control: FSelectControl.lifted(
+                      value: contentType,
+                      onChange: (v) =>
+                          setDialogState(() => contentType = v ?? 'json'),
+                    ),
+                    label: Text(l10n.contentType),
+                  ),
+                  const SizedBox(height: 12),
+                  FSwitch(
+                    value: active,
+                    label: Text(l10n.active),
+                    onChange: (v) => setDialogState(() => active = v),
+                  ),
                 ],
               ),
             ),
             actions: [
-              TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
-              FilledButton(
-                onPressed: urlCtrl.text.trim().isEmpty ? null : () async {
-                  final r = await Injection.editOrgHookUseCase(widget.org, hook.id ?? 0, {
-                    'config': {'url': urlCtrl.text.trim(), 'content_type': contentType, if (secretCtrl.text.trim().isNotEmpty) 'secret': secretCtrl.text.trim()},
-                    'active': active,
-                  });
+              FButton(
+                variant: .outline,
+                onPress: () => Navigator.pop(ctx, false),
+                child: Text(l10n.cancel),
+              ),
+              FButton(
+                onPress: () async {
+                  final url = urlCtrl.text.trim();
+                  if (url.isEmpty) return;
+                  final r = await Injection.editOrgHookUseCase(
+                    widget.org,
+                    hook.id ?? 0,
+                    {
+                      'config': {
+                        'url': url,
+                        'content_type': contentType,
+                        if (secretCtrl.text.trim().isNotEmpty)
+                          'secret': secretCtrl.text.trim(),
+                      },
+                      'active': active,
+                    },
+                  );
                   if (ctx.mounted) Navigator.pop(ctx, r is Right);
                 },
                 child: Text(l10n.save),
@@ -159,21 +217,29 @@ class _OrgWebhookListPageState extends State<OrgWebhookListPage> {
     );
 
     if (result == true && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.saved)));
+      showFToast(context: context, title: Text(l10n.saved));
       _load();
     }
   }
 
   Future<void> _delete(int id) async {
     final l10n = AppLocalizations.of(context)!;
-    final ok = await showDialog<bool>(
+    final ok = await showFDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
+      builder: (ctx, style, animation) => FDialog(
         title: Text(l10n.delete),
-        content: Text(l10n.deleteLabelConfirm),
+        body: Text(l10n.deleteLabelConfirm),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
-          FilledButton(onPressed: () => Navigator.pop(ctx, true), child: Text(l10n.delete)),
+          FButton(
+            variant: .outline,
+            onPress: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          FButton(
+            variant: .destructive,
+            onPress: () => Navigator.pop(ctx, true),
+            child: Text(l10n.delete),
+          ),
         ],
       ),
     );
@@ -182,31 +248,40 @@ class _OrgWebhookListPageState extends State<OrgWebhookListPage> {
     if (!mounted) return;
     switch (result) {
       case Right<Failure, void>():
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.labelDeleted)));
+        showFToast(context: context, title: Text(l10n.labelDeleted));
         _load();
       case Left<Failure, void>():
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.error)));
+        showFToast(
+          context: context,
+          variant: .destructive,
+          title: Text(l10n.error),
+        );
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.webhooks)),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: _create,
-        icon: const Icon(Icons.add),
-        label: Text(l10n.createWebhook),
-      ),
-      body: _buildBody(l10n),
+    return AppPage(
+      title: l10n.webhooks,
+      actions: [
+        FHeaderAction(
+          icon: const Icon(FIcons.plus),
+          semanticsLabel: l10n.createWebhook,
+          onPress: _create,
+        ),
+      ],
+      child: _buildBody(l10n),
     );
   }
 
   Widget _buildBody(AppLocalizations l10n) {
-    if (_loading) return const Center(child: CircularProgressIndicator());
-    if (_error != null) return Center(child: Column(mainAxisSize: MainAxisSize.min, children: [Text(_error!), const SizedBox(height: 16), FilledButton(onPressed: _load, child: Text(l10n.retry))]));
-    if (_hooks.isEmpty) return EmptyState(icon: Icons.webhook, title: l10n.noData);
+    if (_loading) return const AppLoading();
+    if (_error != null) return AppError(message: _error!, onRetry: _load);
+    if (_hooks.isEmpty) {
+      return AppEmpty(icon: FIcons.webhook, title: l10n.noData);
+    }
+    final theme = Theme.of(context);
     return RefreshIndicator(
       onRefresh: _load,
       child: ListView.builder(
@@ -214,18 +289,35 @@ class _OrgWebhookListPageState extends State<OrgWebhookListPage> {
         itemCount: _hooks.length,
         itemBuilder: (context, index) {
           final hook = _hooks[index];
+          final active = hook.active == true;
           return FadeInWrapper(
             delay: Duration(milliseconds: index * 30),
-            child: Card(
-              elevation: 0,
-              margin: const EdgeInsets.only(bottom: UIConstants.sm),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: Theme.of(context).colorScheme.outlineVariant)),
-              child: ListTile(
-                leading: Icon(hook.active == true ? Icons.webhook : Icons.webhook_outlined, color: hook.active == true ? Theme.of(context).colorScheme.primary : null),
-                title: Text(hook.config?['url']?.toString() ?? '?'),
-                subtitle: Text(hook.type ?? ''),
-                onTap: () => _edit(hook),
-                trailing: IconButton(icon: const Icon(Icons.delete_outline), onPressed: () => _delete(hook.id!), tooltip: l10n.delete),
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: UIConstants.sm),
+              child: FCard.raw(
+                child: AppTile(
+                  leading: Icon(
+                    active ? FIcons.webhook : FIcons.webhookOff,
+                    size: UIConstants.iconMd,
+                    color: active ? theme.colorScheme.primary : null,
+                  ),
+                  title: hook.config?['url']?.toString() ?? '?',
+                  subtitle: hook.type ?? '',
+                  showChevron: false,
+                  trailing: FTappable(
+                    onPress: () => _delete(hook.id!),
+                    semanticsLabel: l10n.delete,
+                    child: Padding(
+                      padding: const EdgeInsets.all(6),
+                      child: Icon(
+                        FIcons.trash2,
+                        size: 16,
+                        color: theme.colorScheme.error,
+                      ),
+                    ),
+                  ),
+                  onPress: () => _edit(hook),
+                ),
               ),
             ),
           );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../../core/constants/ui_constants.dart';
 import '../../data/models/generated/generated_models.dart';
@@ -31,24 +32,24 @@ String describeActivity(Activity activity, AppLocalizations l10n) {
 
 IconData activityIcon(Activity activity) {
   return switch (activity.op_type) {
-    'create_repo' => Icons.add_circle_outline,
-    'push' || 'commit_repo' => Icons.commit,
-    'create_issue' => Icons.bug_report_outlined,
-    'create_pull_request' => Icons.merge_type,
+    'create_repo' => FIcons.circlePlus,
+    'push' || 'commit_repo' => FIcons.gitCommitHorizontal,
+    'create_issue' => FIcons.circleDot,
+    'create_pull_request' => FIcons.gitPullRequest,
     'merge_pull_request' ||
     'rebase_merge_pull_request' ||
     'squash_merge_pull_request' ||
     'auto_merge_pull_request' =>
-      Icons.call_merge,
-    'comment_issue' || 'comment_pull' => Icons.comment_outlined,
-    'publish_release' => Icons.rocket_launch_outlined,
-    'create_branch' => Icons.account_tree_outlined,
-    'delete_branch' => Icons.delete_outline,
-    'star_repo' => Icons.star_outline,
-    'fork_repo' => Icons.call_split,
-    'approve_pull_request' => Icons.check_circle_outline,
-    'reject_pull_request' => Icons.cancel_outlined,
-    _ => Icons.bolt_outlined,
+      FIcons.gitMerge,
+    'comment_issue' || 'comment_pull' => FIcons.messageSquare,
+    'publish_release' => FIcons.rocket,
+    'create_branch' => FIcons.gitBranchPlus,
+    'delete_branch' => FIcons.gitBranchMinus,
+    'star_repo' => FIcons.star,
+    'fork_repo' => FIcons.gitFork,
+    'approve_pull_request' => FIcons.circleCheck,
+    'reject_pull_request' => FIcons.circleX,
+    _ => FIcons.zap,
   };
 }
 
@@ -81,8 +82,8 @@ class ActivityTile extends StatelessWidget {
     final ref = shortRefName(activity.ref_name);
     final action = describeActivity(activity, l10n);
 
-    return InkWell(
-      onTap: onTap,
+    return FTappable(
+      onPress: onTap,
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: UIConstants.md,

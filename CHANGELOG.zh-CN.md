@@ -26,6 +26,10 @@
 - **账户与用户页**：SSH 密钥、访问令牌、GPG 密钥、OAuth 应用、关注列表、用户/星标仓库、组织列表、用户管理全部迁移到 `AppPage` + Forui 列表行/`FDialog`/Toast（令牌页保留作用域分组与创建弹窗）
 - **文件与 Diff 查看器**：仓库文件、Blame、历史、对比、PR 文件列表、PR Diff 页改用 `AppPage` 工具栏 + `FHeaderAction`、溢出菜单 `FPopoverMenu`、Forui 状态视图与弹窗；代码/Diff 渲染逻辑不动
 - **管理页**：仪表盘、Hooks、Cron、Runners、邮件、徽章改为分组 `AppSection`/`AppTile` 列表，搜索、操作与弹窗 Forui 化
+- **仓库详情子页**：分支、提交、Release、Tag、标签列表、里程碑、协作者、分支/标签保护、仓库设置、Stargazers 全部迁移到 `AppPage`；Stargazers 使用 `FTabs`，设置页使用 `FSwitch`，弹窗使用 `FDialog`
+- **Actions / Webhook / Wiki / 包页面**：工作流运行列表（`FPopoverMenu` 筛选）、运行详情、仓库与组织密钥/变量、Webhook 列表（创建弹窗改用 `FSelect`/`FSwitch`）、Wiki 列表/详情/编辑、包列表/详情全部 Forui 化
+- **活动流与用户主页**：活动流改用 `AppPage` + Forui 行与 `FIcons` 图标；他人主页改用 `AppPage` 与 `AppError`
+- **筛选面板**：议题与仓库筛选底部弹窗改用 Forui 标签按钮（`FButton`）、`FCheckbox` 与分段类型/排序控件
 
 ### Added
 - `AppTheme`（品牌色板、亮/暗 Forui 主题、触屏/桌面密度）
