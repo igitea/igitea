@@ -74,6 +74,8 @@ class _SearchPageState extends State<SearchPage> {
         context: context,
         side: FLayout.btt,
         mainAxisMaxRatio: 0.85,
+        constraints: const BoxConstraints(maxWidth: 560),
+        useSafeArea: true,
         builder: (_) =>
             RepoFilterBottomSheet(initialState: _repoFilterState.value),
       );
@@ -96,6 +98,8 @@ class _SearchPageState extends State<SearchPage> {
         context: context,
         side: FLayout.btt,
         mainAxisMaxRatio: 0.85,
+        constraints: const BoxConstraints(maxWidth: 560),
+        useSafeArea: true,
         builder: (_) => IssueFilterBottomSheet(
           initialState: _issueFilterState.value,
           availableLabels: const [],

@@ -106,6 +106,8 @@ class _IssueListPageState extends State<IssueListPage> {
         context: context,
         side: FLayout.btt,
         mainAxisMaxRatio: 0.85,
+        constraints: const BoxConstraints(maxWidth: 560),
+        useSafeArea: true,
         builder: (_) => IssueFilterBottomSheet(
           initialState: _filterState.value,
           availableLabels: labels.toList()..sort(),
