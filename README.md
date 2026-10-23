@@ -15,11 +15,11 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 ### Core
 - Cross-platform: Android, iOS, macOS, Linux, Windows, **Web**
 - Clean Architecture + Repository Pattern
-- Material 3 Design System with premium UI polish
+- **Forui** design system (shadcn-style) with a teal brand theme, light/dark palettes and adaptive navigation
 - Consistent 4px spacing grid and typography hierarchy across all pages
 - 120+ data models auto-generated from OpenAPI spec
 - 49+ domain use cases with `Either<Failure, T>` pattern
-- 298 tests passing, `flutter analyze` clean
+- 296 tests passing, `flutter analyze` clean (no errors)
 - Home page redesign (GitHub Mobile style): implementation spec in `docs/igitea-home-redesign-spec.md`
 
 ### Authentication
@@ -185,7 +185,7 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 | HTTP | http package |
 | Storage | path_provider, shared_preferences |
 | i18n | flutter_localizations |
-| UI | Material 3 |
+| UI | Forui 0.21 (Material 3 fallback for unmigrated screens) |
 | Links | url_launcher |
 | File Picker | file_picker |
 | Markdown | flutter_markdown |

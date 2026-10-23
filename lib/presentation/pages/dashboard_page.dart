@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
+
 import '../../core/animations/animated_wrapper.dart';
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
@@ -10,9 +12,10 @@ import '../../domain/usecases/user_usecases.dart';
 import '../../l10n/app_localizations.dart';
 import '../models/issue_filter_state.dart';
 import '../widgets/activity_tile.dart';
-import '../widgets/home/home_icon_tile.dart';
-import '../widgets/home/home_repo_tile.dart';
-import '../widgets/home/home_section_card.dart';
+import '../widgets/user_avatar.dart';
+import '../widgets/forui/app_section.dart';
+import '../widgets/forui/app_state_views.dart';
+import '../widgets/forui/app_tile.dart';
 import 'activity_page.dart';
 import 'issue_list_page.dart';
 import 'organizations_list_page.dart';
@@ -149,41 +152,36 @@ class _DashboardPageState extends State<DashboardPage> {
   // ── Section A: 我的工作 ────────────────────────────────────────────────
 
   Widget _buildMyWork(BuildContext context, AppLocalizations l10n) {
-    return HomeSectionCard(
+    return AppSection(
       title: '',
       showHeader: false,
       children: [
-        HomeIconTile(
-          iconBg: const Color(0xFF2EA043),
-          icon: Icons.bug_report_outlined,
+        AppTile(
+          leading: const _IconBox(color: Color(0xFF2EA043), icon: Icons.bug_report_outlined),
           title: l10n.issues,
-          onTap: () => _openIssues(context,
-              const IssueFilterState(type: 'issues')),
+          onPress: () =>
+              _openIssues(context, const IssueFilterState(type: 'issues')),
         ),
-        HomeIconTile(
-          iconBg: const Color(0xFF0969DA),
-          icon: Icons.merge_type,
+        AppTile(
+          leading: const _IconBox(color: Color(0xFF0969DA), icon: Icons.merge_type),
           title: l10n.pullRequests,
-          onTap: () => _openIssues(context,
-              const IssueFilterState(type: 'pulls')),
+          onPress: () =>
+              _openIssues(context, const IssueFilterState(type: 'pulls')),
         ),
-        HomeIconTile(
-          iconBg: const Color(0xFF57606A),
-          icon: Icons.trending_up,
+        AppTile(
+          leading: const _IconBox(color: Color(0xFF57606A), icon: Icons.trending_up),
           title: l10n.topRepositories,
-          onTap: () => _push(context, const RepoListPage()),
+          onPress: () => _push(context, const RepoListPage()),
         ),
-        HomeIconTile(
-          iconBg: const Color(0xFFBC4C00),
-          icon: Icons.business_outlined,
+        AppTile(
+          leading: const _IconBox(color: Color(0xFFBC4C00), icon: Icons.business_outlined),
           title: l10n.organisations,
-          onTap: () => _openOrganizations(context),
+          onPress: () => _openOrganizations(context),
         ),
-        HomeIconTile(
-          iconBg: const Color(0xFFBF8700),
-          icon: Icons.star_outline,
+        AppTile(
+          leading: const _IconBox(color: Color(0xFFBF8700), icon: Icons.star_outline),
           title: l10n.starredRepos,
-          onTap: () => _push(context, const StarredReposPage()),
+          onPress: () => _push(context, const StarredReposPage()),
         ),
       ],
     );
@@ -193,18 +191,18 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Widget _buildFavorites(BuildContext context, AppLocalizations l10n) {
     if (_favLoading) {
-      return HomeSectionCard(
+      return AppSection(
         title: l10n.favorites,
         children: const [
-          _HomePlaceholder(text: null, showProgress: true),
+          AppSectionPlaceholder(showProgress: true),
         ],
       );
     }
     if (_favError != null) {
-      return HomeSectionCard(
+      return AppSection(
         title: l10n.favorites,
         children: [
-          _HomePlaceholder(
+          AppSectionPlaceholder(
             text: '${l10n.error}: $_favError',
             onRetry: _loadFavorites,
           ),
@@ -212,21 +210,28 @@ class _DashboardPageState extends State<DashboardPage> {
       );
     }
     if (_favRepos.isEmpty) {
-      return HomeSectionCard(
+      return AppSection(
         title: l10n.favorites,
         children: [
-          _HomePlaceholder(text: l10n.noRepositoriesFound),
+          AppSectionPlaceholder(text: l10n.noRepositoriesFound),
         ],
       );
     }
-    return HomeSectionCard(
+    return AppSection(
       title: l10n.favorites,
       children: _favRepos.take(3).map((repo) {
-        return HomeRepoTile(
-          repo: repo,
-          onTap: () {
-            final owner = repo.owner?.login ?? repo.full_name?.split('/').firstOrNull ?? '';
-            final name = repo.name ?? repo.full_name?.split('/').lastOrNull ?? '';
+        final owner = repo.owner?.login ??
+            repo.full_name?.split('/').firstOrNull ??
+            '';
+        final name =
+            repo.name ?? repo.full_name?.split('/').lastOrNull ?? '';
+        return AppTile(
+          leading: repo.owner != null
+              ? UserAvatar(user: repo.owner!, radius: 16)
+              : const Icon(FIcons.globe, size: 18),
+          title: name,
+          subtitle: owner,
+          onPress: () {
             if (owner.isNotEmpty && name.isNotEmpty) {
               _push(context, RepoDetailPage(owner: owner, repo: name));
             }
@@ -239,25 +244,23 @@ class _DashboardPageState extends State<DashboardPage> {
   // ── Section C: 快捷方式 ────────────────────────────────────────────────
 
   Widget _buildShortcuts(BuildContext context, AppLocalizations l10n) {
-    return HomeSectionCard(
+    return AppSection(
       title: l10n.shortcuts,
       children: [
-        HomeIconTile(
-          iconBg: const Color(0xFF2EA043),
-          icon: Icons.alternate_email,
+        AppTile(
+          leading: const _IconBox(color: Color(0xFF2EA043), icon: Icons.alternate_email),
           title: l10n.issues,
           subtitle: l10n.mentioned,
-          onTap: () => _openIssues(
+          onPress: () => _openIssues(
             context,
             const IssueFilterState(type: 'issues', mentionedMe: true),
           ),
         ),
-        HomeIconTile(
-          iconBg: const Color(0xFF0969DA),
-          icon: Icons.rate_review_outlined,
+        AppTile(
+          leading: const _IconBox(color: Color(0xFF0969DA), icon: Icons.rate_review_outlined),
           title: l10n.pullRequests,
           subtitle: l10n.reviewRequested,
-          onTap: () => _openIssues(
+          onPress: () => _openIssues(
             context,
             const IssueFilterState(type: 'pulls', reviewRequested: true),
           ),
@@ -272,8 +275,10 @@ class _DashboardPageState extends State<DashboardPage> {
     final username = _username;
     final viewAllButton = username == null
         ? null
-        : TextButton(
-            onPressed: () => _push(
+        : FButton(
+            variant: .ghost,
+            size: .sm,
+            onPress: () => _push(
               context,
               ActivityPage(username: username),
             ),
@@ -281,19 +286,20 @@ class _DashboardPageState extends State<DashboardPage> {
           );
 
     if (_recentLoading) {
-      return HomeSectionCard(
+      return AppSection(
         title: l10n.recent,
+        trailing: viewAllButton,
         children: const [
-          _HomePlaceholder(text: null, showProgress: true),
+          AppSectionPlaceholder(showProgress: true),
         ],
       );
     }
     if (_recentError != null) {
-      return HomeSectionCard(
+      return AppSection(
         title: l10n.recent,
         trailing: viewAllButton,
         children: [
-          _HomePlaceholder(
+          AppSectionPlaceholder(
             text: '${l10n.error}: $_recentError',
             onRetry: _loadRecent,
           ),
@@ -301,15 +307,15 @@ class _DashboardPageState extends State<DashboardPage> {
       );
     }
     if (_recentActivities.isEmpty) {
-      return HomeSectionCard(
+      return AppSection(
         title: l10n.recent,
         trailing: viewAllButton,
         children: [
-          _HomePlaceholder(text: l10n.noActivity),
+          AppSectionPlaceholder(text: l10n.noActivity),
         ],
       );
     }
-    return HomeSectionCard(
+    return AppSection(
       title: l10n.recent,
       trailing: viewAllButton,
       children: _recentActivities.take(5).map((activity) {
@@ -364,46 +370,23 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 }
 
-/// 区块内的占位行：空态提示 / 加载指示 / 错误重试。
-class _HomePlaceholder extends StatelessWidget {
-  final String? text;
-  final bool showProgress;
-  final VoidCallback? onRetry;
+/// A small colored rounded square used as the leading icon of a home row.
+class _IconBox extends StatelessWidget {
+  final Color color;
+  final IconData icon;
 
-  const _HomePlaceholder({this.text, this.showProgress = false, this.onRetry});
+  const _IconBox({required this.color, required this.icon});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    if (showProgress) {
-      return const Padding(
-        padding: EdgeInsets.symmetric(vertical: 20),
-        child: Center(
-          child: SizedBox(
-            width: 24,
-            height: 24,
-            child: CircularProgressIndicator(strokeWidth: 2),
-          ),
-        ),
-      );
-    }
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        children: [
-          Text(
-            text ?? '',
-            textAlign: TextAlign.center,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-          if (onRetry != null) ...[
-            const SizedBox(height: UIConstants.sm),
-            TextButton(onPressed: onRetry, child: Text(AppLocalizations.of(context)!.retry)),
-          ],
-        ],
+    return Container(
+      width: 28,
+      height: 28,
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(7),
       ),
+      child: Icon(icon, color: Colors.white, size: 16),
     );
   }
 }

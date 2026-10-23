@@ -35,18 +35,7 @@ class _NotificationPageState extends State<NotificationPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.notifications),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.done_all),
-            tooltip: l10n.markAllRead,
-            onPressed: _markAllRead,
-          ),
-        ],
-      ),
-      body: ListenableBuilder(
+    return ListenableBuilder(
         listenable: Injection.notificationNotifier,
         builder: (context, _) {
           final state = Injection.notificationNotifier.state;
@@ -77,18 +66,7 @@ class _NotificationPageState extends State<NotificationPage> {
             _ => EmptyState(icon: Icons.notifications_none, title: l10n.noNotifications),
           };
         },
-      ),
     );
-  }
-
-  void _markAllRead() async {
-    final l10n = AppLocalizations.of(context)!;
-    await Injection.notificationNotifier.markAllRead();
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.allNotificationsMarkedAsRead)),
-      );
-    }
   }
 
   void _navigateTo(BuildContext context, NotificationThread notification) async {

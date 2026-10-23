@@ -2,6 +2,22 @@
 
 ## [Unreleased]
 
+### Changed
+- **Forui design system**: the app now renders through Forui (shadcn-style) — `forui` 0.21.3, a shared `FTheme` (teal brand, light/dark) wrapping every route, `FToaster`/`FTooltipGroup`, and an approximate Material theme so screens that are not migrated yet already match the new look
+- **Adaptive app shell**: `HomePage` rebuilt on `FScaffold`/`FHeader`; wide windows get an `FSidebar`, phones a `FBottomNavigationBar`; the header title and actions now follow the selected tab, and tab pages no longer nest their own app bars (removes the double header)
+- **Home dashboard**: sections are Forui cards with `FTappable` rows and `FButton` actions; loading/empty/error placeholders use the new Forui state views
+- **Cards**: `PremiumCard`/`PremiumListCard` now build on `FCard`, so repository, notification, search and profile cards share the Forui border, radius and press feedback
+- **Repo list**: Forui text-field search, `AppPage` scaffold, `AppEmpty`/`AppError` states
+- **Empty states**: `EmptyState` delegates to the Forui `AppEmpty`
+
+### Added
+- `AppTheme` (brand palette, light/dark Forui themes, touch/desktop density)
+- Shared Forui components: `AppPage`, `AppSection`, `AppTile`, `AppLoading`, `AppEmpty`, `AppError`, `AppSectionPlaceholder`
+- Tests for `AppSection`/`AppTile`, plus a home test asserting the header title follows the selected tab
+
+### Removed
+- Legacy home widgets `HomeIconTile`, `HomeRepoTile`, `HomeSectionCard`, `HomeRecentTile` and their tests (superseded by `AppSection`/`AppTile`)
+
 ## [0.37.0] - 2026-09-10
 
 ### Changed

@@ -1,13 +1,22 @@
 import 'package:flutter/material.dart';
-import '../../core/animations/app_animations.dart';
+import 'package:forui/forui.dart';
+
 import '../../core/constants/ui_constants.dart';
 
-class PremiumCard extends StatefulWidget {
+/// A Forui-styled card used for grouped content.
+///
+/// Keeps the historical API (padding/margin) so pages can migrate gradually
+/// while every card instantly adopts the Forui border, radius and typography.
+class PremiumCard extends StatelessWidget {
   final Widget child;
   final VoidCallback? onTap;
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
+
+  /// Kept for API compatibility. Cards now always use the theme surface color.
   final Color? color;
+
+  /// Kept for API compatibility. Forui cards are flat by design.
   final double? elevation;
 
   const PremiumCard({
@@ -21,50 +30,22 @@ class PremiumCard extends StatefulWidget {
   });
 
   @override
-  State<PremiumCard> createState() => _PremiumCardState();
-}
-
-class _PremiumCardState extends State<PremiumCard> {
-  bool _isPressed = false;
-
-  @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return AnimatedScale(
-      scale: _isPressed ? 0.98 : 1.0,
-      duration: AppAnimations.fast,
-      curve: AppAnimations.easeOut,
-      child: Card(
-        margin: widget.margin ?? UIConstants.cardMargin,
-        elevation: widget.elevation ?? 0,
-        color: widget.color ?? theme.colorScheme.surface,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(UIConstants.cardRadius),
-          side: BorderSide(
-            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
-            width: 0.5,
-          ),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Semantics(
-          button: widget.onTap != null,
-          child: InkWell(
-            onTap: widget.onTap,
-            onTapDown: (_) { if (mounted) setState(() => _isPressed = true); },
-            onTapUp: (_) { if (mounted) setState(() => _isPressed = false); },
-            onTapCancel: () { if (mounted) setState(() => _isPressed = false); },
-            borderRadius: BorderRadius.circular(UIConstants.cardRadius),
-            child: Padding(
-              padding: widget.padding ?? UIConstants.cardPadding,
-              child: widget.child,
-            ),
-          ),
-        ),
+    final body = Padding(
+      padding: padding ?? UIConstants.cardPadding,
+      child: child,
+    );
+
+    return Padding(
+      padding: margin ?? UIConstants.cardMargin,
+      child: FCard.raw(
+        child: onTap == null ? body : FTappable(onPress: onTap, child: body),
       ),
     );
   }
 }
 
+/// A card used as a row in a list.
 class PremiumListCard extends StatelessWidget {
   final Widget child;
   final VoidCallback? onTap;
@@ -81,26 +62,15 @@ class PremiumListCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Card(
-      margin: margin ?? UIConstants.cardMargin,
-      elevation: 0,
-      color: theme.colorScheme.surface,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(UIConstants.cardRadius),
-        side: BorderSide(
-          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
-          width: 0.5,
-        ),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(UIConstants.cardRadius),
-        child: Padding(
-          padding: padding ?? UIConstants.cardPadding,
-          child: child,
-        ),
+    final body = Padding(
+      padding: padding ?? UIConstants.cardPadding,
+      child: child,
+    );
+
+    return Padding(
+      padding: margin ?? UIConstants.cardMargin,
+      child: FCard.raw(
+        child: onTap == null ? body : FTappable(onPress: onTap, child: body),
       ),
     );
   }

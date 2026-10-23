@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:igitea/presentation/widgets/home/home_section_card.dart';
+import 'package:forui/forui.dart';
+import 'package:igitea/presentation/widgets/forui/app_section.dart';
 import 'package:igitea/widget_test_helpers.dart';
 
 void main() {
   testWidgets('renders title and children with dividers', (tester) async {
     await tester.pumpWidget(
       buildTestableWidget(
-        Material(
-          child: HomeSectionCard(
+        Scaffold(
+          body: AppSection(
             title: '收藏',
             children: [
               const SizedBox(height: 40, child: Text('row1')),
@@ -22,14 +23,15 @@ void main() {
     expect(find.text('收藏'), findsOneWidget);
     expect(find.text('row1'), findsOneWidget);
     expect(find.text('row2'), findsOneWidget);
-    expect(find.byType(Divider), findsOneWidget);
+    expect(find.byType(FDivider), findsOneWidget);
+    expect(find.byType(FCard), findsOneWidget);
   });
 
   testWidgets('hides header when showHeader is false', (tester) async {
     await tester.pumpWidget(
       buildTestableWidget(
-        Material(
-          child: HomeSectionCard(
+        Scaffold(
+          body: AppSection(
             title: '隐藏标题',
             showHeader: false,
             children: [const SizedBox(height: 40, child: Text('row'))],
@@ -42,16 +44,32 @@ void main() {
     expect(find.text('row'), findsOneWidget);
   });
 
-  testWidgets('renders nothing when children are empty', (tester) async {
+  testWidgets('renders trailing widget in the header', (tester) async {
     await tester.pumpWidget(
       buildTestableWidget(
-        const Material(
-          child: HomeSectionCard(title: '空', children: []),
+        Scaffold(
+          body: AppSection(
+            title: '最近',
+            trailing: const Text('查看全部'),
+            children: [const SizedBox(height: 40, child: Text('row'))],
+          ),
         ),
       ),
     );
 
-    expect(find.byType(HomeSectionCard), findsOneWidget);
-    expect(find.byType(Card), findsNothing);
+    expect(find.text('查看全部'), findsOneWidget);
+  });
+
+  testWidgets('renders nothing when children are empty', (tester) async {
+    await tester.pumpWidget(
+      buildTestableWidget(
+        const Scaffold(
+          body: AppSection(title: '空', children: []),
+        ),
+      ),
+    );
+
+    expect(find.byType(AppSection), findsOneWidget);
+    expect(find.byType(FCard), findsNothing);
   });
 }

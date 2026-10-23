@@ -59,6 +59,23 @@ void main() {
       expect(find.byType(DashboardPage), findsOneWidget);
     });
 
+    testWidgets('switches the header title with the selected tab', (
+      tester,
+    ) async {
+      Injection.authNotifier.state = testAuthState;
+
+      await tester.pumpWidget(testWidget());
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Inbox'));
+      await tester.pumpAndSettle();
+      expect(find.text('Notifications'), findsOneWidget);
+
+      await tester.tap(find.text('Profile'));
+      await tester.pumpAndSettle();
+      expect(find.text('Profile'), findsWidgets);
+    });
+
     testWidgets('renders SizedBox.shrink when not authenticated', (
       tester,
     ) async {

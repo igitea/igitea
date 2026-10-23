@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
-import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../domain/entities/auth_state.dart';
 import '../../l10n/app_localizations.dart';
 import '../widgets/user_avatar.dart';
 import 'dashboard_page.dart';
-import 'search_page.dart';
 import 'notification_page.dart';
 import 'profile_page.dart';
+import 'search_page.dart';
 
+/// The app shell: a Forui scaffold with a header, an adaptive navigation
+/// surface (sidebar on wide windows, bottom bar on phones) and the four main
+/// tabs.
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -47,114 +50,162 @@ class _HomePageState extends State<HomePage> {
         if (authState is! AuthAuthenticated) {
           return const SizedBox.shrink();
         }
-        final user = authState.user;
-        final isWide = MediaQuery.of(context).size.width >= 600;
 
-        return Scaffold(
-          appBar: AppBar(
-            leading: Padding(
-              padding: const EdgeInsets.only(left: UIConstants.sm),
-              child: InkWell(
-                onTap: () => _onDestinationSelected(3),
-                borderRadius: BorderRadius.circular(20),
-                child: Center(
-                  child: UserAvatar(user: user, radius: UIConstants.avatarLg),
-                ),
-              ),
-            ),
-            title: Text(l10n.myWork),
-            actions: [
-              IconButton(
-                icon: const Icon(Icons.search),
-                tooltip: l10n.explore,
-                onPressed: () => _onDestinationSelected(2),
-              ),
-            ],
+        final isWide = MediaQuery.sizeOf(context).width >= 720;
+
+        return FScaffold(
+          header: _buildHeader(context, l10n, authState),
+          sidebar: isWide ? _buildSidebar(context, l10n, authState) : null,
+          footer: isWide ? null : _buildBottomBar(l10n),
+          childPad: false,
+          child: IndexedStack(
+            index: _selectedIndex,
+            children: _pages,
           ),
-          body: Row(
-            children: [
-              if (isWide) _buildNavigationRail(l10n),
-              Expanded(
-                child: IndexedStack(
-                  index: _selectedIndex,
-                  children: _pages,
-                ),
-              ),
-            ],
-          ),
-          bottomNavigationBar:
-              isWide ? null : _buildNavigationBar(l10n),
         );
       },
     );
   }
 
-  Widget _buildNavigationRail(AppLocalizations l10n) {
-    final theme = Theme.of(context);
-    return NavigationRail(
-      selectedIndex: _selectedIndex,
-      onDestinationSelected: _onDestinationSelected,
-      labelType: NavigationRailLabelType.all,
-      leading: Semantics(
-        excludeSemantics: true,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: UIConstants.md),
-          child: Icon(
-            Icons.code,
-            color: theme.colorScheme.primary,
-            size: 32,
+  Widget _buildHeader(
+    BuildContext context,
+    AppLocalizations l10n,
+    AuthAuthenticated authState,
+  ) {
+    final title = switch (_selectedIndex) {
+      1 => l10n.notifications,
+      2 => l10n.explore,
+      3 => l10n.profile,
+      _ => l10n.myWork,
+    };
+
+    return FHeader.nested(
+      titleAlignment: Alignment.centerLeft,
+      prefixes: [
+        Padding(
+          padding: const EdgeInsets.only(right: 10),
+          child: FTappable(
+            onPress: () => _onDestinationSelected(3),
+            child: UserAvatar(user: authState.user, radius: 16),
           ),
         ),
-      ),
-      destinations: [
-        NavigationRailDestination(
-          icon: const Icon(Icons.home_outlined),
-          selectedIcon: const Icon(Icons.home),
+      ],
+      title: Text(title),
+      suffixes: switch (_selectedIndex) {
+        0 => [
+            FHeaderAction(
+              icon: const Icon(FIcons.search),
+              semanticsLabel: l10n.explore,
+              onPress: () => _onDestinationSelected(2),
+            ),
+            FHeaderAction(
+              icon: const Icon(FIcons.bell),
+              semanticsLabel: l10n.inbox,
+              onPress: () => _onDestinationSelected(1),
+            ),
+          ],
+        1 => [
+            FHeaderAction(
+              icon: const Icon(FIcons.checkCheck),
+              semanticsLabel: l10n.markAllRead,
+              onPress: _markAllRead,
+            ),
+          ],
+        _ => const [],
+      },
+    );
+  }
+
+  Future<void> _markAllRead() async {
+    final l10n = AppLocalizations.of(context)!;
+    await Injection.notificationNotifier.markAllRead();
+    if (!mounted) return;
+    showFToast(
+      context: context,
+      title: Text(l10n.allNotificationsMarkedAsRead),
+    );
+  }
+
+  Widget _buildBottomBar(AppLocalizations l10n) {
+    return FBottomNavigationBar(
+      index: _selectedIndex,
+      onChange: _onDestinationSelected,
+      children: [
+        FBottomNavigationBarItem(
+          icon: const Icon(FIcons.house),
           label: Text(l10n.home),
         ),
-        NavigationRailDestination(
-          icon: const Icon(Icons.inbox_outlined),
-          selectedIcon: const Icon(Icons.inbox),
+        FBottomNavigationBarItem(
+          icon: const Icon(FIcons.inbox),
           label: Text(l10n.inbox),
         ),
-        NavigationRailDestination(
-          icon: const Icon(Icons.explore_outlined),
-          selectedIcon: const Icon(Icons.explore),
+        FBottomNavigationBarItem(
+          icon: const Icon(FIcons.compass),
           label: Text(l10n.explore),
         ),
-        NavigationRailDestination(
-          icon: const Icon(Icons.person_outline),
-          selectedIcon: const Icon(Icons.person),
+        FBottomNavigationBarItem(
+          icon: const Icon(FIcons.user),
           label: Text(l10n.profile),
         ),
       ],
     );
   }
 
-  Widget _buildNavigationBar(AppLocalizations l10n) {
-    return NavigationBar(
-      selectedIndex: _selectedIndex,
-      onDestinationSelected: _onDestinationSelected,
-      destinations: [
-        NavigationDestination(
-          icon: const Icon(Icons.home_outlined),
-          selectedIcon: const Icon(Icons.home),
-          label: l10n.home,
+  Widget _buildSidebar(
+    BuildContext context,
+    AppLocalizations l10n,
+    AuthAuthenticated authState,
+  ) {
+    final items = [
+      (FIcons.house, l10n.home),
+      (FIcons.inbox, l10n.inbox),
+      (FIcons.compass, l10n.explore),
+      (FIcons.user, l10n.profile),
+    ];
+
+    return FSidebar(
+      header: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+        child: Row(
+          children: [
+            const Icon(FIcons.squareCode, size: 24),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                'iGitea',
+                style: TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 16,
+                  color: Theme.of(context).colorScheme.onSurface,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
         ),
-        NavigationDestination(
-          icon: const Icon(Icons.inbox_outlined),
-          selectedIcon: const Icon(Icons.inbox),
-          label: l10n.inbox,
+      ),
+      footer: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Text(
+          authState.user.login ?? '',
+          style: TextStyle(
+            fontSize: 13,
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+          ),
+          overflow: TextOverflow.ellipsis,
         ),
-        NavigationDestination(
-          icon: const Icon(Icons.explore_outlined),
-          selectedIcon: const Icon(Icons.explore),
-          label: l10n.explore,
-        ),
-        NavigationDestination(
-          icon: const Icon(Icons.person_outline),
-          selectedIcon: const Icon(Icons.person),
-          label: l10n.profile,
+      ),
+      children: [
+        FSidebarGroup(
+          children: [
+            for (var i = 0; i < items.length; i++)
+              FSidebarItem(
+                icon: Icon(items[i].$1),
+                label: Text(items[i].$2),
+                selected: _selectedIndex == i,
+                onPress: () => _onDestinationSelected(i),
+              ),
+          ],
         ),
       ],
     );

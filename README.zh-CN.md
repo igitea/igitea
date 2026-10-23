@@ -15,11 +15,11 @@
 ### 核心
 - 跨平台：Android、iOS、macOS、Linux、Windows、**Web**
 - Clean Architecture + Repository Pattern
-- Material 3 设计系统，高级 UI 打磨
+- **Forui** 设计系统（shadcn 风格）：品牌青绿主题、亮/暗色板、自适应导航
 - 统一的 4px 间距网格和字体层级，覆盖所有页面
 - 120+ 个数据模型，基于 OpenAPI 规范自动生成
 - 49+ 个领域用例，采用 `Either<Failure, T>` 模式
-- 298 个测试通过，`flutter analyze` 无错误
+- 296 个测试通过，`flutter analyze` 无错误
 - 首页改造（GitHub Mobile 风格）：实施规格见 `docs/igitea-home-redesign-spec.md`
 
 ### 认证
@@ -183,7 +183,7 @@
 | HTTP | http package |
 | 存储 | path_provider, shared_preferences |
 | 国际化 | flutter_localizations |
-| UI | Material 3 |
+| UI | Forui 0.21（未迁移页面回退 Material 3） |
 | 链接 | url_launcher |
 | 文件选择 | file_picker |
 | Markdown | flutter_markdown |

@@ -143,20 +143,19 @@ class _SearchPageState extends State<SearchPage>
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.search),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: [
-            Tab(icon: const Icon(Icons.source), text: l10n.repositories),
-            Tab(icon: const Icon(Icons.bug_report), text: l10n.issues),
-            Tab(icon: const Icon(Icons.person), text: l10n.users),
-          ],
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 10, 16, 0),
+          child: TabBar(
+            controller: _tabController,
+            tabs: [
+              Tab(icon: const Icon(Icons.source), text: l10n.repositories),
+              Tab(icon: const Icon(Icons.bug_report), text: l10n.issues),
+              Tab(icon: const Icon(Icons.person), text: l10n.users),
+            ],
+          ),
         ),
-      ),
-      body: Column(
-        children: [
           Padding(
             padding: const EdgeInsets.all(UIConstants.md),
             child: Row(
@@ -336,8 +335,7 @@ class _SearchPageState extends State<SearchPage>
               ],
             ),
           ),
-        ],
-      ),
+      ],
     );
   }
 }

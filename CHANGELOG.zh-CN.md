@@ -2,6 +2,22 @@
 
 ## [Unreleased]
 
+### Changed
+- **Forui 设计系统**：界面整体改用 Forui（shadcn 风格）——引入 `forui` 0.21.3，用统一的 `FTheme`（青绿品牌色、亮/暗色）包裹全部路由，接入 `FToaster`/`FTooltipGroup`，并生成近似的 Material 主题，让尚未迁移的页面也立刻呈现新风格
+- **自适应应用外壳**：`HomePage` 基于 `FScaffold`/`FHeader` 重写；宽屏使用 `FSidebar`，手机使用 `FBottomNavigationBar`；标题与操作按钮随当前 Tab 变化，Tab 页面不再各自嵌套 AppBar（消除双层标题栏）
+- **首页仪表盘**：区块改为 Forui 卡片 + `FTappable` 行 + `FButton` 操作，加载/空态/错误占位统一使用新的 Forui 状态组件
+- **卡片**：`PremiumCard`/`PremiumListCard` 改为基于 `FCard`，仓库、通知、搜索、个人资料等卡片共享 Forui 的边框、圆角与按压反馈
+- **仓库列表**：搜索框改用 Forui 文本框，页面改用 `AppPage` 外壳与 `AppEmpty`/`AppError` 状态
+- **空态**：`EmptyState` 统一委托给 Forui 的 `AppEmpty`
+
+### Added
+- `AppTheme`（品牌色板、亮/暗 Forui 主题、触屏/桌面密度）
+- 共享 Forui 组件：`AppPage`、`AppSection`、`AppTile`、`AppLoading`、`AppEmpty`、`AppError`、`AppSectionPlaceholder`
+- `AppSection`/`AppTile` 测试，以及「标题随 Tab 切换」的首页测试
+
+### Removed
+- 移除旧首页组件 `HomeIconTile`、`HomeRepoTile`、`HomeSectionCard`、`HomeRecentTile` 及其测试（由 `AppSection`/`AppTile` 取代）
+
 ## [0.37.0] - 2026-09-10
 
 ### Changed

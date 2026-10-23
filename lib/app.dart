@@ -1,4 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
+
 import 'core/di/injection.dart';
 import 'core/storage/auth_method_storage.dart';
 import 'core/storage/auth_storage.dart';
@@ -15,6 +18,7 @@ import 'presentation/pages/notification_page.dart';
 import 'presentation/pages/user_profile_page.dart';
 import 'presentation/pages/settings_page.dart';
 import 'presentation/pages/starred_repos_page.dart';
+import 'presentation/theme/app_theme.dart';
 
 class IGiteaApp extends StatefulWidget {
   const IGiteaApp({super.key});
@@ -100,26 +104,31 @@ class _IGiteaAppState extends State<IGiteaApp> {
         }
 
         final locale = Injection.themeNotifier.locale;
+        final touch = AppTheme.touchFor(defaultTargetPlatform);
         return MaterialApp(
           title: 'iGitea',
           debugShowCheckedModeBanner: false,
           locale: locale,
-          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          localizationsDelegates: [
+            ...AppLocalizations.localizationsDelegates,
+            FLocalizations.delegate,
+          ],
           supportedLocales: AppLocalizations.supportedLocales,
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
-            useMaterial3: true,
-          ),
-          darkTheme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(
-              seedColor: Colors.teal,
-              brightness: Brightness.dark,
-            ),
-            useMaterial3: true,
-          ),
+          theme: AppTheme.material(Brightness.light, touch: touch),
+          darkTheme: AppTheme.material(Brightness.dark, touch: touch),
           themeMode: Injection.themeNotifier.themeMode,
           home: home,
           onGenerateRoute: _onGenerateRoute,
+          builder: (context, child) {
+            final brightness = Theme.of(context).brightness;
+            return FTheme(
+              data: AppTheme.forui(brightness, touch: touch),
+              platform: touch ? FPlatformVariant.iOS : FPlatformVariant.macOS,
+              child: FToaster(
+                child: FTooltipGroup(child: child ?? const SizedBox.shrink()),
+              ),
+            );
+          },
         );
       },
     );

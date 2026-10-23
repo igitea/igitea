@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
+
 import '../../core/animations/animated_wrapper.dart';
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/repo_notifier.dart';
-import '../widgets/empty_state.dart';
+import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_state_views.dart';
 import '../widgets/premium_card.dart';
 import '../widgets/user_avatar.dart';
 import 'repo_detail_page.dart';
@@ -41,17 +44,20 @@ class _RepoListPageState extends State<RepoListPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.repoList)),
-      body: Column(
+
+    return AppPage(
+      title: l10n.repoList,
+      child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(UIConstants.md),
-            child: SearchBar(
-              controller: _searchController,
-              hintText: l10n.enterSearchQueryRepos,
-              leading: const Icon(Icons.search),
-              onChanged: _onSearch,
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+            child: FTextField(
+              control: FTextFieldControl.managed(
+                controller: _searchController,
+                onChange: (value) => _onSearch(value.text.trim()),
+              ),
+              hint: l10n.enterSearchQueryRepos,
+              textInputAction: TextInputAction.search,
             ),
           ),
           Expanded(
@@ -60,31 +66,20 @@ class _RepoListPageState extends State<RepoListPage> {
               builder: (context, _) {
                 final state = Injection.repoNotifier.state;
                 return switch (state) {
-                  RepoLoading() => const Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                  RepoError(:final message) => Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text('${l10n.error}: $message'),
-                        const SizedBox(height: UIConstants.md),
-                        FilledButton(
-                          onPressed: () => Injection.repoNotifier.searchRepos(),
-                          child: Text(l10n.retry),
-                        ),
-                      ],
-                    ),
+                  RepoLoading() => const AppLoading(),
+                  RepoError(:final message) => AppError(
+                    message: message,
+                    onRetry: () => Injection.repoNotifier.searchRepos(),
                   ),
                   SearchResultsLoaded(:final results) => _RepoList(
                     repos: results.data ?? [],
                   ),
-                  RepoInitial() => EmptyState(
-                    icon: Icons.search,
+                  RepoInitial() => AppEmpty(
+                    icon: FIcons.search,
                     title: l10n.searchRepositoriesHint,
                   ),
-                  _ => EmptyState(
-                    icon: Icons.search,
+                  _ => AppEmpty(
+                    icon: FIcons.search,
                     title: l10n.searchRepositoriesHint,
                   ),
                 };
@@ -106,12 +101,13 @@ class _RepoList extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     if (repos.isEmpty) {
-      return EmptyState(icon: Icons.folder_open, title: l10n.noRepositoriesFound);
+      return AppEmpty(icon: FIcons.folderOpen, title: l10n.noRepositoriesFound);
     }
     return RefreshIndicator(
       onRefresh: () => Injection.repoNotifier.searchRepos(),
       child: ListView.builder(
-        padding: UIConstants.pagePadding + const EdgeInsets.symmetric(vertical: UIConstants.sm),
+        padding: UIConstants.pagePadding +
+            const EdgeInsets.symmetric(vertical: UIConstants.sm),
         itemCount: repos.length,
         itemBuilder: (context, index) {
           final repo = repos[index];
@@ -152,7 +148,7 @@ class _RepoCard extends StatelessWidget {
                 UserAvatar(user: repo.owner!, radius: UIConstants.avatarSm)
               else
                 Icon(
-                  repo.private == true ? Icons.lock : Icons.public,
+                  repo.private == true ? FIcons.lock : FIcons.globe,
                   size: UIConstants.iconMd,
                   color: theme.colorScheme.primary,
                 ),
@@ -163,24 +159,17 @@ class _RepoCard extends StatelessWidget {
                     Flexible(
                       child: Text(
                         repo.full_name ?? repo.name ?? '',
-                        style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w500),
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                        ),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
                     if (repo.private == true) ...[
                       const SizedBox(width: UIConstants.sm),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.errorContainer,
-                          borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
-                        ),
-                        child: Text(
-                          l10n.private,
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: theme.colorScheme.onErrorContainer,
-                          ),
-                        ),
+                      FBadge(
+                        variant: .secondary,
+                        child: Text(l10n.private),
                       ),
                     ],
                   ],
@@ -189,7 +178,7 @@ class _RepoCard extends StatelessWidget {
             ],
           ),
           if (repo.description != null && repo.description!.isNotEmpty) ...[
-            const SizedBox(height: UIConstants.sm),
+            const SizedBox(height: UIConstants.xs),
             Text(
               repo.description!,
               maxLines: 2,
@@ -215,13 +204,27 @@ class _RepoCard extends StatelessWidget {
                 Text(repo.language!, style: theme.textTheme.labelSmall),
                 const SizedBox(width: UIConstants.md),
               ],
-              Icon(Icons.star_outline, size: UIConstants.iconSm, color: theme.colorScheme.onSurfaceVariant),
+              Icon(
+                FIcons.star,
+                size: UIConstants.iconSm,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
               const SizedBox(width: UIConstants.xs),
-              Text('${repo.stars_count ?? 0}', style: theme.textTheme.labelSmall),
+              Text(
+                '${repo.stars_count ?? 0}',
+                style: theme.textTheme.labelSmall,
+              ),
               const SizedBox(width: UIConstants.md),
-              Icon(Icons.call_split, size: UIConstants.iconSm, color: theme.colorScheme.onSurfaceVariant),
+              Icon(
+                FIcons.gitFork,
+                size: UIConstants.iconSm,
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
               const SizedBox(width: UIConstants.xs),
-              Text('${repo.forks_count ?? 0}', style: theme.textTheme.labelSmall),
+              Text(
+                '${repo.forks_count ?? 0}',
+                style: theme.textTheme.labelSmall,
+              ),
             ],
           ),
         ],
