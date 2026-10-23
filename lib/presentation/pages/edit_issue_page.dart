@@ -103,9 +103,7 @@ class _EditIssuePageState extends State<EditIssuePage> {
   Future<void> _save() async {
     final l10n = AppLocalizations.of(context)!;
     if (_titleController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(l10n.titleRequired)));
+      showFToast(context: context, title: Text(l10n.titleRequired));
       return;
     }
 
@@ -129,9 +127,11 @@ class _EditIssuePageState extends State<EditIssuePage> {
       final s = Injection.issueNotifier.state;
       if (s is IssueError) {
         setState(() => _isSaving = false);
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('${l10n.error}: ${s.message}')));
+        showFToast(
+          context: context,
+          variant: .destructive,
+          title: Text('${l10n.error}: ${s.message}'),
+        );
         return;
       }
     }
@@ -147,9 +147,7 @@ class _EditIssuePageState extends State<EditIssuePage> {
       setState(() => _isSaving = false);
       switch (labelResult) {
         case Left(:final value):
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('${l10n.error}: ${value.message}')),
-          );
+          showFToast(context: context, title: Text('${l10n.error}: ${value.message}'));
         case Right():
           Navigator.of(context).pop(true);
       }

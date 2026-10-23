@@ -168,10 +168,15 @@ class _CreateWebhookPageState extends State<CreateWebhookPage> {
               onChanged: (v) => setState(() => _contentType = v ?? 'json'),
             ),
             const SizedBox(height: UIConstants.md),
-            SwitchListTile(
-              title: Text(l10n.webhookActive),
-              value: _active,
-              onChanged: (v) => setState(() => _active = v),
+            FCard.raw(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                child: FSwitch(
+                  label: Text(l10n.webhookActive),
+                  value: _active,
+                  onChange: (v) => setState(() => _active = v),
+                ),
+              ),
             ),
             const SizedBox(height: UIConstants.sm),
             Text(
@@ -182,20 +187,21 @@ class _CreateWebhookPageState extends State<CreateWebhookPage> {
             ),
             const SizedBox(height: UIConstants.sm),
             ..._availableEvents.map(
-              (event) => CheckboxListTile(
-                title: Text(_eventLabel(event, l10n)),
-                value: _selectedEvents.contains(event),
-                onChanged: (v) {
-                  setState(() {
-                    if (v == true) {
-                      _selectedEvents.add(event);
-                    } else {
-                      _selectedEvents.remove(event);
-                    }
-                  });
-                },
-                controlAffinity: ListTileControlAffinity.trailing,
-                dense: true,
+              (event) => Padding(
+                padding: const EdgeInsets.only(bottom: 2),
+                child: FCheckbox(
+                  label: Text(_eventLabel(event, l10n)),
+                  value: _selectedEvents.contains(event),
+                  onChange: (v) {
+                    setState(() {
+                      if (v == true) {
+                        _selectedEvents.add(event);
+                      } else {
+                        _selectedEvents.remove(event);
+                      }
+                    });
+                  },
+                ),
               ),
             ),
           ],

@@ -6,6 +6,7 @@ import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/organization_notifier.dart';
+import '../widgets/forui/app_page.dart';
 import '../widgets/forui/app_state_views.dart';
 import '../widgets/forui/app_tile.dart';
 import '../widgets/user_avatar.dart';
@@ -21,14 +22,11 @@ class TeamDetailPage extends StatefulWidget {
   State<TeamDetailPage> createState() => _TeamDetailPageState();
 }
 
-class _TeamDetailPageState extends State<TeamDetailPage>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _TeamDetailPageState extends State<TeamDetailPage> {
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Injection.organizationNotifier.getTeam(widget.teamId);
     });
@@ -36,21 +34,48 @@ class _TeamDetailPageState extends State<TeamDetailPage>
 
   @override
   void dispose() {
-    _tabController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      body: ListenableBuilder(
-        listenable: Injection.organizationNotifier,
-        builder: (context, _) {
-          final state = Injection.organizationNotifier.teamDetailState;
-          return switch (state) {
+
+    return ListenableBuilder(
+      listenable: Injection.organizationNotifier,
+      builder: (context, _) {
+        final state = Injection.organizationNotifier.teamDetailState;
+        final loaded = state is OrgTeamDetailLoaded ? state.team : null;
+
+        return AppPage(
+          title: loaded?.name ?? l10n.teams,
+          actions: loaded == null
+              ? const []
+              : [
+                  FHeaderAction(
+                    icon: const Icon(FIcons.pencilLine),
+                    semanticsLabel: l10n.editTeam,
+                    onPress: () async {
+                      final result = await Navigator.push<bool>(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => EditTeamPage(team: loaded),
+                        ),
+                      );
+                      if (result == true && mounted) {
+                        Injection.organizationNotifier.getTeam(widget.teamId);
+                      }
+                    },
+                  ),
+                  FHeaderAction(
+                    icon: const Icon(FIcons.trash2),
+                    semanticsLabel: l10n.deleteTeam,
+                    onPress: () => _deleteTeam(loaded, l10n),
+                  ),
+                ],
+          child: switch (state) {
             OrgLoading() => const AppLoading(),
-            OrgError(:final message) => _ErrorView(
+            OrgError(:final message) => AppError(
               message: message,
               onRetry: () =>
                   Injection.organizationNotifier.getTeam(widget.teamId),
@@ -61,72 +86,36 @@ class _TeamDetailPageState extends State<TeamDetailPage>
               l10n,
             ),
             _ => const AppLoading(),
-          };
-        },
-      ),
+          },
+        );
+      },
     );
   }
 
   Widget _buildContent(BuildContext context, Team team, AppLocalizations l10n) {
-    return NestedScrollView(
-      headerSliverBuilder: (context, innerBoxIsScrolled) {
-        return [
-          SliverAppBar(
-            title: Text(team.name ?? ''),
-            pinned: true,
-            floating: true,
-            forceElevated: innerBoxIsScrolled,
-            actions: [
-              FTappable(
-                onPress: () async {
-                  final result = await Navigator.push<bool>(
-                    context,
-                    MaterialPageRoute(builder: (_) => EditTeamPage(team: team)),
-                  );
-                  if (result == true && mounted) {
-                    Injection.organizationNotifier.getTeam(widget.teamId);
-                  }
-                },
-                semanticsLabel: l10n.editTeam,
-                child: const Padding(
-                  padding: EdgeInsets.all(12),
-                  child: Icon(FIcons.pencilLine),
-                ),
+    return Column(
+      children: [
+        _TeamHeader(team: team),
+        Expanded(
+          child: FTabs(
+            expands: true,
+            children: [
+              FTabEntry(
+                label: Text(l10n.info),
+                child: _InfoTab(team: team),
               ),
-              FTappable(
-                onPress: () => _deleteTeam(team, l10n),
-                semanticsLabel: l10n.deleteTeam,
-                child: const Padding(
-                  padding: EdgeInsets.all(12),
-                  child: Icon(FIcons.trash2),
-                ),
+              FTabEntry(
+                label: Text(l10n.members),
+                child: _MembersTab(teamId: widget.teamId),
+              ),
+              FTabEntry(
+                label: Text(l10n.repositories),
+                child: _ReposTab(teamId: widget.teamId),
               ),
             ],
           ),
-          SliverToBoxAdapter(child: _TeamHeader(team: team)),
-          SliverPersistentHeader(
-            delegate: _SliverTabBarDelegate(
-              TabBar(
-                controller: _tabController,
-                tabs: [
-                  Tab(icon: const Icon(FIcons.info), text: l10n.info),
-                  Tab(icon: const Icon(FIcons.users), text: l10n.members),
-                  Tab(icon: const Icon(FIcons.folder), text: l10n.repositories),
-                ],
-              ),
-            ),
-            pinned: true,
-          ),
-        ];
-      },
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _InfoTab(team: team),
-          _MembersTab(teamId: widget.teamId),
-          _ReposTab(teamId: widget.teamId),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -648,53 +637,3 @@ class _ReposTabState extends State<_ReposTab> {
   }
 }
 
-class _ErrorView extends StatelessWidget {
-  final String message;
-  final VoidCallback onRetry;
-
-  const _ErrorView({required this.message, required this.onRetry});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(message),
-          const SizedBox(height: 16),
-          FButton(onPress: onRetry, child: Text(l10n.retry)),
-        ],
-      ),
-    );
-  }
-}
-
-class _SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
-  final TabBar _tabBar;
-
-  _SliverTabBarDelegate(this._tabBar);
-
-  @override
-  double get minExtent => _tabBar.preferredSize.height;
-
-  @override
-  double get maxExtent => _tabBar.preferredSize.height;
-
-  @override
-  Widget build(
-    BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
-  ) {
-    return Container(
-      color: Theme.of(context).colorScheme.surface,
-      child: _tabBar,
-    );
-  }
-
-  @override
-  bool shouldRebuild(_SliverTabBarDelegate oldDelegate) {
-    return false;
-  }
-}

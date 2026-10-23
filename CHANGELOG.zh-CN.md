@@ -32,6 +32,8 @@
 - **筛选面板**：议题与仓库筛选底部弹窗改用 Forui 标签按钮（`FButton`）、`FCheckbox` 与分段类型/排序控件
 - **Material 收尾清理**：议题/团队/组织详情、议题列表、个人主页、仓库详情、PR 详情、新建仓库页不再使用 Material 卡片/行/输入框/按钮/标签/弹窗/图标；保存筛选、Topics、Fork、依赖等弹窗统一为 `FDialog`
 - **筛选面板改用 `FSheet`**：议题与仓库筛选在议题列表、仓库详情、搜索页均以 Forui 模态面板（`showFSheet`）打开
+- **清除最后的 Material 外壳**：团队/组织详情改为 `AppPage` + `FTabs`（去掉折叠式 Material 头部与可滑动 `TabBarView`），组织的溢出操作收进 `FPopoverMenu`
+- **一致性收尾**：新建/编辑表单中剩余的 `SwitchListTile`/`CheckboxListTile` 改为 `FSwitch`/`FCheckbox`，剩余筛选 `Chip` 改为 `AppFilterChip`，最后一批 Material 图标与 SnackBar 也替换完毕
 
 ### Added
 - `AppTheme`（品牌色板、亮/暗 Forui 主题、触屏/桌面密度）

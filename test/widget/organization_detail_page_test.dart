@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:igitea/core/di/injection.dart';
 import 'package:igitea/presentation/pages/organization_detail_page.dart';
+import 'package:igitea/presentation/widgets/forui/app_page.dart';
 import 'package:igitea/widget_test_helpers.dart';
 
 void main() {
@@ -15,6 +16,6 @@ void main() {
     ));
     await tester.pump();
 
-    expect(find.byType(Scaffold), findsOneWidget);
+    expect(find.byType(AppPage), findsOneWidget);
   });
 }

@@ -11,6 +11,7 @@ import '../../presentation/state/issue_notifier.dart';
 import '../../presentation/state/repo_notifier.dart';
 import '../models/issue_filter_state.dart';
 import '../models/repo_filter_state.dart';
+import '../widgets/forui/app_filter_chip.dart';
 import '../widgets/forui/app_state_views.dart';
 import '../widgets/issue_filter_bottom_sheet.dart';
 import '../widgets/premium_card.dart';
@@ -228,9 +229,9 @@ class _SearchPageState extends State<SearchPage> {
                   runSpacing: UIConstants.sm,
                   children: [
                     if (filter.sort != null)
-                      Chip(
-                        label: Text(filter.sort!),
-                        onDeleted: () {
+                      AppFilterChip(
+                        label: filter.sort!,
+                        onRemove: () {
                           _repoFilterState.value = filter.copyWith(
                             clearSort: true,
                           );
@@ -238,9 +239,9 @@ class _SearchPageState extends State<SearchPage> {
                         },
                       ),
                     if (filter.order != null)
-                      Chip(
-                        label: Text(filter.order!),
-                        onDeleted: () {
+                      AppFilterChip(
+                        label: filter.order!,
+                        onRemove: () {
                           _repoFilterState.value = filter.copyWith(
                             clearOrder: true,
                           );
@@ -248,9 +249,9 @@ class _SearchPageState extends State<SearchPage> {
                         },
                       ),
                     if (filter.private == true)
-                      Chip(
-                        label: Text(l10n.privateReposOnly),
-                        onDeleted: () {
+                      AppFilterChip(
+                        label: l10n.privateReposOnly,
+                        onRemove: () {
                           _repoFilterState.value = filter.copyWith(
                             private: false,
                           );
@@ -258,9 +259,9 @@ class _SearchPageState extends State<SearchPage> {
                         },
                       ),
                     if (filter.archived == true)
-                      Chip(
-                        label: Text(l10n.includeArchived),
-                        onDeleted: () {
+                      AppFilterChip(
+                        label: l10n.includeArchived,
+                        onRemove: () {
                           _repoFilterState.value = filter.copyWith(
                             archived: false,
                           );
@@ -268,9 +269,9 @@ class _SearchPageState extends State<SearchPage> {
                         },
                       ),
                     if (filter.template == true)
-                      Chip(
-                        label: Text(l10n.templatesOnly),
-                        onDeleted: () {
+                      AppFilterChip(
+                        label: l10n.templatesOnly,
+                        onRemove: () {
                           _repoFilterState.value = filter.copyWith(
                             template: false,
                           );
@@ -294,9 +295,9 @@ class _SearchPageState extends State<SearchPage> {
                   runSpacing: UIConstants.sm,
                   children: [
                     ...filter.labels.map(
-                      (label) => Chip(
-                        label: Text(label),
-                        onDeleted: () {
+                      (label) => AppFilterChip(
+                        label: label,
+                        onRemove: () {
                           _issueFilterState.value = filter.copyWith(
                             labels: filter.labels.difference({label}),
                           );
@@ -305,9 +306,9 @@ class _SearchPageState extends State<SearchPage> {
                       ),
                     ),
                     ...filter.milestones.map(
-                      (m) => Chip(
-                        label: Text(m),
-                        onDeleted: () {
+                      (m) => AppFilterChip(
+                        label: m,
+                        onRemove: () {
                           _issueFilterState.value = filter.copyWith(
                             milestones: filter.milestones.difference({m}),
                           );
@@ -316,9 +317,9 @@ class _SearchPageState extends State<SearchPage> {
                       ),
                     ),
                     if (filter.type != null)
-                      Chip(
-                        label: Text(filter.type!),
-                        onDeleted: () {
+                      AppFilterChip(
+                        label: filter.type!,
+                        onRemove: () {
                           _issueFilterState.value = filter.copyWith(
                             clearType: true,
                           );
@@ -326,9 +327,9 @@ class _SearchPageState extends State<SearchPage> {
                         },
                       ),
                     if (filter.assignedToMe)
-                      Chip(
-                        label: Text(l10n.assignedToMe),
-                        onDeleted: () {
+                      AppFilterChip(
+                        label: l10n.assignedToMe,
+                        onRemove: () {
                           _issueFilterState.value = filter.copyWith(
                             assignedToMe: false,
                           );
@@ -336,9 +337,9 @@ class _SearchPageState extends State<SearchPage> {
                         },
                       ),
                     if (filter.createdByMe)
-                      Chip(
-                        label: Text(l10n.createdByMe),
-                        onDeleted: () {
+                      AppFilterChip(
+                        label: l10n.createdByMe,
+                        onRemove: () {
                           _issueFilterState.value = filter.copyWith(
                             createdByMe: false,
                           );
@@ -346,9 +347,9 @@ class _SearchPageState extends State<SearchPage> {
                         },
                       ),
                     if (filter.mentionedMe)
-                      Chip(
-                        label: Text(l10n.mentionedMe),
-                        onDeleted: () {
+                      AppFilterChip(
+                        label: l10n.mentionedMe,
+                        onRemove: () {
                           _issueFilterState.value = filter.copyWith(
                             mentionedMe: false,
                           );
@@ -835,7 +836,7 @@ class _SearchUserCardState extends State<_SearchUserCard> {
               ],
             ),
           ),
-          const Icon(Icons.chevron_right, size: 18),
+          const Icon(FIcons.chevronRight, size: 18),
         ],
       ),
     );

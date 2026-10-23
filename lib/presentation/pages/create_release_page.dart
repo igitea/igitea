@@ -174,17 +174,31 @@ class _CreateReleasePageState extends State<CreateReleasePage> {
                   keyboardType: TextInputType.multiline,
                 ),
                 const SizedBox(height: UIConstants.md),
-                SwitchListTile(
-                  title: Text(l10n.draft),
-                  value: _draft,
-                  onChanged: (v) => setState(() => _draft = v),
-                  contentPadding: EdgeInsets.zero,
+                FCard.raw(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 2,
+                    ),
+                    child: FSwitch(
+                      label: Text(l10n.draft),
+                      value: _draft,
+                      onChange: (v) => setState(() => _draft = v),
+                    ),
+                  ),
                 ),
-                SwitchListTile(
-                  title: Text(l10n.preRelease),
-                  value: _prerelease,
-                  onChanged: (v) => setState(() => _prerelease = v),
-                  contentPadding: EdgeInsets.zero,
+                FCard.raw(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 2,
+                    ),
+                    child: FSwitch(
+                      label: Text(l10n.preRelease),
+                      value: _prerelease,
+                      onChange: (v) => setState(() => _prerelease = v),
+                    ),
+                  ),
                 ),
               ],
             ),

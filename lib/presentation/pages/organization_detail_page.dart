@@ -7,6 +7,7 @@ import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/organization_notifier.dart';
 import '../widgets/empty_state.dart';
+import '../widgets/forui/app_page.dart';
 import '../widgets/forui/app_state_views.dart';
 import '../widgets/org_avatar.dart';
 import '../widgets/premium_card.dart';
@@ -27,14 +28,11 @@ class OrganizationDetailPage extends StatefulWidget {
   State<OrganizationDetailPage> createState() => _OrganizationDetailPageState();
 }
 
-class _OrganizationDetailPageState extends State<OrganizationDetailPage>
-    with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _OrganizationDetailPageState extends State<OrganizationDetailPage> {
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Injection.organizationNotifier.getOrg(widget.orgName);
     });
@@ -42,30 +40,107 @@ class _OrganizationDetailPageState extends State<OrganizationDetailPage>
 
   @override
   void dispose() {
-    _tabController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Scaffold(
-      body: ListenableBuilder(
-        listenable: Injection.organizationNotifier,
-        builder: (context, _) {
-          final state = Injection.organizationNotifier.state;
-          return switch (state) {
+
+    return ListenableBuilder(
+      listenable: Injection.organizationNotifier,
+      builder: (context, _) {
+        final state = Injection.organizationNotifier.state;
+        final loaded = state is OrgLoaded ? state.org : null;
+
+        return AppPage(
+          title: loaded?.username ?? widget.orgName,
+          actions: loaded == null
+              ? const []
+              : [
+                  FHeaderAction(
+                    icon: const Icon(FIcons.pencilLine),
+                    semanticsLabel: l10n.edit,
+                    onPress: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => EditOrgPage(org: loaded)),
+                      ).then((result) {
+                        if (result == true) {
+                          Injection.organizationNotifier.getOrg(
+                            widget.orgName,
+                          );
+                        }
+                      });
+                    },
+                  ),
+                  FHeaderAction(
+                    icon: const Icon(FIcons.trash2),
+                    semanticsLabel: l10n.deleteOrganization,
+                    onPress: () =>
+                        _confirmDeleteOrg(loaded.name ?? widget.orgName),
+                  ),
+                  FPopoverMenu(
+                    menuAnchor: Alignment.topRight,
+                    childAnchor: Alignment.bottomRight,
+                    menu: [
+                      FItemGroup(
+                        children: [
+                          FItem(
+                            prefix: const Icon(FIcons.webhook),
+                            title: Text(l10n.webhooks),
+                            onPress: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    OrgWebhookListPage(org: loaded.name ?? ''),
+                              ),
+                            ),
+                          ),
+                          FItem(
+                            prefix: const Icon(FIcons.lock),
+                            title: Text(l10n.actionsSecretsTitle),
+                            onPress: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    OrgActionsSecretsPage(org: loaded.name ?? ''),
+                              ),
+                            ),
+                          ),
+                          FItem(
+                            prefix: const Icon(FIcons.code),
+                            title: Text(l10n.actionsVariablesTitle),
+                            onPress: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => OrgActionsVariablesPage(
+                                  org: loaded.name ?? '',
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                    builder: (context, controller, child) => FHeaderAction(
+                      icon: const Icon(FIcons.ellipsisVertical),
+                      onPress: () => controller.toggle(),
+                    ),
+                  ),
+                ],
+          child: switch (state) {
             OrgLoading() => const AppLoading(),
-            OrgError(:final message) => _ErrorView(
+            OrgError(:final message) => AppError(
               message: message,
               onRetry: () =>
                   Injection.organizationNotifier.getOrg(widget.orgName),
             ),
             OrgLoaded(:final org) => _buildContent(context, org, l10n),
             _ => const AppLoading(),
-          };
-        },
-      ),
+          },
+        );
+      },
     );
   }
 
@@ -74,113 +149,26 @@ class _OrganizationDetailPageState extends State<OrganizationDetailPage>
     Organization org,
     AppLocalizations l10n,
   ) {
-    return NestedScrollView(
-      headerSliverBuilder: (context, innerBoxIsScrolled) {
-        return [
-          SliverAppBar(
-            title: Text(org.username ?? widget.orgName),
-            pinned: true,
-            floating: true,
-            forceElevated: innerBoxIsScrolled,
-            actions: [
-              FTappable(
-                onPress: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => EditOrgPage(org: org)),
-                  ).then((result) {
-                    if (result == true) {
-                      Injection.organizationNotifier.getOrg(widget.orgName);
-                    }
-                  });
-                },
-                semanticsLabel: l10n.edit,
-                child: const Padding(
-                  padding: EdgeInsets.all(12),
-                  child: Icon(FIcons.pencilLine),
-                ),
+    return Column(
+      children: [
+        _OrgHeader(org: org),
+        Expanded(
+          child: FTabs(
+            expands: true,
+            children: [
+              FTabEntry(label: Text(l10n.info), child: _InfoTab(org: org)),
+              FTabEntry(
+                label: Text(l10n.repositories),
+                child: _ReposTab(orgName: widget.orgName),
               ),
-              FTappable(
-                onPress: () => _confirmDeleteOrg(org.name ?? widget.orgName),
-                semanticsLabel: l10n.deleteOrganization,
-                child: const Padding(
-                  padding: EdgeInsets.all(12),
-                  child: Icon(FIcons.trash2),
-                ),
-              ),
-              FTappable(
-                onPress: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => OrgWebhookListPage(org: org.name ?? ''),
-                    ),
-                  );
-                },
-                semanticsLabel: l10n.webhooks,
-                child: const Padding(
-                  padding: EdgeInsets.all(12),
-                  child: Icon(FIcons.webhook),
-                ),
-              ),
-              FTappable(
-                onPress: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) =>
-                          OrgActionsSecretsPage(org: org.name ?? ''),
-                    ),
-                  );
-                },
-                semanticsLabel: l10n.actionsSecretsTitle,
-                child: const Padding(
-                  padding: EdgeInsets.all(12),
-                  child: Icon(FIcons.lock),
-                ),
-              ),
-              FTappable(
-                onPress: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) =>
-                          OrgActionsVariablesPage(org: org.name ?? ''),
-                    ),
-                  );
-                },
-                semanticsLabel: l10n.actionsVariablesTitle,
-                child: const Padding(
-                  padding: EdgeInsets.all(12),
-                  child: Icon(FIcons.code),
-                ),
+              FTabEntry(
+                label: Text(l10n.teams),
+                child: _TeamsTab(orgName: widget.orgName),
               ),
             ],
           ),
-          SliverToBoxAdapter(child: _OrgHeader(org: org)),
-          SliverPersistentHeader(
-            delegate: _SliverTabBarDelegate(
-              TabBar(
-                controller: _tabController,
-                tabs: [
-                  Tab(icon: const Icon(FIcons.info), text: l10n.info),
-                  Tab(icon: const Icon(FIcons.folder), text: l10n.repositories),
-                  Tab(icon: const Icon(FIcons.users), text: l10n.teams),
-                ],
-              ),
-            ),
-            pinned: true,
-          ),
-        ];
-      },
-      body: TabBarView(
-        controller: _tabController,
-        children: [
-          _InfoTab(org: org),
-          _ReposTab(orgName: widget.orgName),
-          _TeamsTab(orgName: widget.orgName),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -901,53 +889,3 @@ class _TeamBadge extends StatelessWidget {
   }
 }
 
-class _ErrorView extends StatelessWidget {
-  final String message;
-  final VoidCallback onRetry;
-
-  const _ErrorView({required this.message, required this.onRetry});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(message),
-          const SizedBox(height: 16),
-          FButton(onPress: onRetry, child: Text(l10n.retry)),
-        ],
-      ),
-    );
-  }
-}
-
-class _SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
-  final TabBar _tabBar;
-
-  _SliverTabBarDelegate(this._tabBar);
-
-  @override
-  double get minExtent => _tabBar.preferredSize.height;
-
-  @override
-  double get maxExtent => _tabBar.preferredSize.height;
-
-  @override
-  Widget build(
-    BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
-  ) {
-    return Container(
-      color: Theme.of(context).colorScheme.surface,
-      child: _tabBar,
-    );
-  }
-
-  @override
-  bool shouldRebuild(_SliverTabBarDelegate oldDelegate) {
-    return false;
-  }
-}

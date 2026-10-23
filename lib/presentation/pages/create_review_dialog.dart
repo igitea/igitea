@@ -49,8 +49,10 @@ class _CreateReviewDialogState extends State<CreateReviewDialog> {
     } catch (e) {
       if (mounted) {
         setState(() => _submitting = false);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('${l10n.error}: $e')),
+        showFToast(
+          context: context,
+          variant: .destructive,
+          title: Text('${l10n.error}: $e'),
         );
       }
     }

@@ -260,15 +260,31 @@ class _MigrateRepoPageState extends State<MigrateRepoPage> {
                 ),
               ),
               const SizedBox(height: 8),
-              SwitchListTile(
-                title: Text(l10n.private),
-                value: _private,
-                onChanged: (v) => setState(() => _private = v),
+              FCard.raw(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 2,
+                  ),
+                  child: FSwitch(
+                    label: Text(l10n.private),
+                    value: _private,
+                    onChange: (v) => setState(() => _private = v),
+                  ),
+                ),
               ),
-              SwitchListTile(
-                title: Text(l10n.mirror),
-                value: _mirror,
-                onChanged: (v) => setState(() => _mirror = v),
+              FCard.raw(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 2,
+                  ),
+                  child: FSwitch(
+                    label: Text(l10n.mirror),
+                    value: _mirror,
+                    onChange: (v) => setState(() => _mirror = v),
+                  ),
+                ),
               ),
               if (_mirror) ...[
                 const SizedBox(height: 8),
@@ -288,40 +304,96 @@ class _MigrateRepoPageState extends State<MigrateRepoPage> {
                 ),
               ),
               const SizedBox(height: 8),
-              CheckboxListTile(
-                title: Text(l10n.issues),
-                value: _issues,
-                onChanged: (v) => setState(() => _issues = v ?? true),
+              FCard.raw(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 2,
+                  ),
+                  child: FCheckbox(
+                    label: Text(l10n.issues),
+                    value: _issues,
+                    onChange: (v) => setState(() => _issues = v),
+                  ),
+                ),
               ),
-              CheckboxListTile(
-                title: Text(l10n.labels),
-                value: _labels,
-                onChanged: (v) => setState(() => _labels = v ?? true),
+              FCard.raw(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 2,
+                  ),
+                  child: FCheckbox(
+                    label: Text(l10n.labels),
+                    value: _labels,
+                    onChange: (v) => setState(() => _labels = v),
+                  ),
+                ),
               ),
-              CheckboxListTile(
-                title: Text(l10n.milestones),
-                value: _milestones,
-                onChanged: (v) => setState(() => _milestones = v ?? true),
+              FCard.raw(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 2,
+                  ),
+                  child: FCheckbox(
+                    label: Text(l10n.milestones),
+                    value: _milestones,
+                    onChange: (v) => setState(() => _milestones = v),
+                  ),
+                ),
               ),
-              CheckboxListTile(
-                title: Text(l10n.pullRequests),
-                value: _pullRequests,
-                onChanged: (v) => setState(() => _pullRequests = v ?? true),
+              FCard.raw(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 2,
+                  ),
+                  child: FCheckbox(
+                    label: Text(l10n.pullRequests),
+                    value: _pullRequests,
+                    onChange: (v) => setState(() => _pullRequests = v),
+                  ),
+                ),
               ),
-              CheckboxListTile(
-                title: Text(l10n.releases),
-                value: _releases,
-                onChanged: (v) => setState(() => _releases = v ?? true),
+              FCard.raw(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 2,
+                  ),
+                  child: FCheckbox(
+                    label: Text(l10n.releases),
+                    value: _releases,
+                    onChange: (v) => setState(() => _releases = v),
+                  ),
+                ),
               ),
-              CheckboxListTile(
-                title: Text(l10n.wiki),
-                value: _wiki,
-                onChanged: (v) => setState(() => _wiki = v ?? true),
+              FCard.raw(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 2,
+                  ),
+                  child: FCheckbox(
+                    label: Text(l10n.wiki),
+                    value: _wiki,
+                    onChange: (v) => setState(() => _wiki = v),
+                  ),
+                ),
               ),
-              CheckboxListTile(
-                title: const Text('LFS'),
-                value: _lfs,
-                onChanged: (v) => setState(() => _lfs = v ?? false),
+              FCard.raw(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 2,
+                  ),
+                  child: FCheckbox(
+                    label: const Text('LFS'),
+                    value: _lfs,
+                    onChange: (v) => setState(() => _lfs = v),
+                  ),
+                ),
               ),
             ],
           ),

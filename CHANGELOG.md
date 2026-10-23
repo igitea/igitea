@@ -32,6 +32,8 @@
 - **Filter sheets**: issue and repository filter bottom sheets rebuilt with Forui chips (`FButton`), checkboxes (`FCheckbox`) and segmented type/order controls
 - **Final Material sweep**: issue/team/organization detail, issue list, profiles, repo detail, PR detail and create-repo pages no longer use Material cards, tiles, text fields, buttons, chips, dialogs or icons; save-filter, topics, fork and dependency dialogs are `FDialog`s
 - **Filter sheets on `FSheet`**: issue and repository filters now open as Forui modal sheets (`showFSheet`) from the issue list, repository detail and search pages
+- **Last Material chrome removed**: team and organization detail pages now use `AppPage` + `FTabs` (collapsing Material headers and swipeable `TabBarView`s are gone), organization overflow actions live in an `FPopoverMenu`
+- **Consistency pass**: remaining `SwitchListTile`/`CheckboxListTile` in create/edit forms replaced with `FSwitch`/`FCheckbox`, remaining filter `Chip`s with `AppFilterChip`, and the last Material icons/snackbars replaced
 
 ### Added
 - `AppTheme` (brand palette, light/dark Forui themes, touch/desktop density)

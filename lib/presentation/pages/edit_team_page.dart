@@ -131,17 +131,31 @@ class _EditTeamPageState extends State<EditTeamPage> {
               onChanged: (v) => setState(() => _permission = v ?? 'read'),
             ),
             const SizedBox(height: UIConstants.md),
-            SwitchListTile(
-              title: Text(l10n.teamCanCreateOrgRepos),
-              value: _canCreateRepo,
-              onChanged: (v) => setState(() => _canCreateRepo = v),
-              contentPadding: EdgeInsets.zero,
+            FCard.raw(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 2,
+                ),
+                child: FSwitch(
+                  label: Text(l10n.teamCanCreateOrgRepos),
+                  value: _canCreateRepo,
+                  onChange: (v) => setState(() => _canCreateRepo = v),
+                ),
+              ),
             ),
-            SwitchListTile(
-              title: Text(l10n.teamIncludesAllRepos),
-              value: _includesAllRepos,
-              onChanged: (v) => setState(() => _includesAllRepos = v),
-              contentPadding: EdgeInsets.zero,
+            FCard.raw(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 2,
+                ),
+                child: FSwitch(
+                  label: Text(l10n.teamIncludesAllRepos),
+                  value: _includesAllRepos,
+                  onChange: (v) => setState(() => _includesAllRepos = v),
+                ),
+              ),
             ),
           ],
         ),

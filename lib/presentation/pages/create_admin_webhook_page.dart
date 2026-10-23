@@ -132,10 +132,15 @@ class _CreateAdminWebhookPageState extends State<CreateAdminWebhookPage> {
               },
             ),
             const SizedBox(height: 16),
-            SwitchListTile(
-              title: Text(l10n.webhookActive),
-              value: _active,
-              onChanged: (v) => setState(() => _active = v),
+            FCard.raw(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                child: FSwitch(
+                  label: Text(l10n.webhookActive),
+                  value: _active,
+                  onChange: (v) => setState(() => _active = v),
+                ),
+              ),
             ),
             const SizedBox(height: 16),
             Text(
@@ -157,18 +162,21 @@ class _CreateAdminWebhookPageState extends State<CreateAdminWebhookPage> {
                 'star': l10n.webhookStarEvents,
                 'fork': l10n.webhookForkEvents,
               };
-              return CheckboxListTile(
-                title: Text(eventLabels[event] ?? event),
-                value: _selectedEvents.contains(event),
-                onChanged: (checked) {
-                  setState(() {
-                    if (checked == true) {
-                      _selectedEvents.add(event);
-                    } else {
-                      _selectedEvents.remove(event);
-                    }
-                  });
-                },
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 2),
+                child: FCheckbox(
+                  label: Text(eventLabels[event] ?? event),
+                  value: _selectedEvents.contains(event),
+                  onChange: (checked) {
+                    setState(() {
+                      if (checked == true) {
+                        _selectedEvents.add(event);
+                      } else {
+                        _selectedEvents.remove(event);
+                      }
+                    });
+                  },
+                ),
               );
             }),
           ],

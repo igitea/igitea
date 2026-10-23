@@ -67,9 +67,11 @@ class _SettingsPageState extends State<SettingsPage> {
         case Right<Failure, GeneralAPISettings>(value: final v):
           _apiSettings = v;
         case Left<Failure, GeneralAPISettings>(value: final f):
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(f.message)));
+          showFToast(
+            context: context,
+            variant: .destructive,
+            title: Text(f.message),
+          );
         default:
           break;
       }
@@ -77,9 +79,11 @@ class _SettingsPageState extends State<SettingsPage> {
         case Right<Failure, GeneralUISettings>(value: final v):
           _uiSettings = v;
         case Left<Failure, GeneralUISettings>(value: final f):
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(f.message)));
+          showFToast(
+            context: context,
+            variant: .destructive,
+            title: Text(f.message),
+          );
         default:
           break;
       }
@@ -87,9 +91,11 @@ class _SettingsPageState extends State<SettingsPage> {
         case Right<Failure, GeneralAttachmentSettings>(value: final v):
           _attachmentSettings = v;
         case Left<Failure, GeneralAttachmentSettings>(value: final f):
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(f.message)));
+          showFToast(
+            context: context,
+            variant: .destructive,
+            title: Text(f.message),
+          );
         default:
           break;
       }
@@ -97,9 +103,11 @@ class _SettingsPageState extends State<SettingsPage> {
         case Right<Failure, GeneralRepoSettings>(value: final v):
           _repoSettings = v;
         case Left<Failure, GeneralRepoSettings>(value: final f):
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(f.message)));
+          showFToast(
+            context: context,
+            variant: .destructive,
+            title: Text(f.message),
+          );
         default:
           break;
       }
@@ -431,7 +439,8 @@ class _SettingsPageState extends State<SettingsPage> {
     if (_settingsLoading) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(l10n.loadingSettings)));
+      );
+          showFToast(context: context, variant: .destructive, title: Text(l10n.loadingSettings));
       return;
     }
     Navigator.of(context).push(
