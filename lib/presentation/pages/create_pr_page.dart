@@ -65,6 +65,7 @@ class _CreatePRPageState extends State<CreatePRPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return AppPage(
+      maxContentWidth: 760,
       title: l10n.newPullRequest,
       child: _branchesLoading
           ? const AppLoading()

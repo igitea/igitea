@@ -86,6 +86,7 @@ class _CreateOrgPageState extends State<CreateOrgPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return AppPage(
+      maxContentWidth: 760,
       title: l10n.createOrganization,
       actions: [
         if (_isLoading)

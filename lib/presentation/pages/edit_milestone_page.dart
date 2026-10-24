@@ -111,6 +111,7 @@ class _EditMilestonePageState extends State<EditMilestonePage> {
     final l10n = AppLocalizations.of(context)!;
 
     return AppPage(
+      maxContentWidth: 760,
       title: l10n.editMilestone,
       actions: [
         if (_isSaving)

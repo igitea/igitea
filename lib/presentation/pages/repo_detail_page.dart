@@ -1050,14 +1050,6 @@ class _CodeTabState extends State<_CodeTab> {
     );
   }
 
-  String get _breadcrumbText {
-    final parts = [widget.owner, widget.repo];
-    if (_currentPath.isNotEmpty) {
-      parts.addAll(_currentPath.split('/'));
-    }
-    return parts.join(' / ');
-  }
-
   Widget _buildFileList(
     List<ContentsResponse> contents,
     AppLocalizations l10n,

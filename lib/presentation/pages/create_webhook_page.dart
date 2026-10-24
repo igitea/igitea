@@ -121,6 +121,7 @@ class _CreateWebhookPageState extends State<CreateWebhookPage> {
     final l10n = AppLocalizations.of(context)!;
 
     return AppPage(
+      maxContentWidth: 760,
       title: widget.hook != null ? l10n.editWebhook : l10n.createWebhook,
       actions: [
         FHeaderAction(
@@ -170,7 +171,10 @@ class _CreateWebhookPageState extends State<CreateWebhookPage> {
             const SizedBox(height: UIConstants.md),
             FCard.raw(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 2,
+                ),
                 child: FSwitch(
                   label: Text(l10n.webhookActive),
                   value: _active,

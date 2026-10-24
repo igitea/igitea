@@ -6,6 +6,8 @@ import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/issue_notifier.dart';
+import '../theme/app_palette.dart';
+import '../widgets/app_surface.dart';
 import '../widgets/forui/app_page.dart';
 
 class CreateIssuePage extends StatefulWidget {
@@ -70,46 +72,77 @@ class _CreateIssuePageState extends State<CreateIssuePage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+
     return AppPage(
       title: l10n.newIssue,
+      maxContentWidth: 760,
       child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
+        padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            FTextFormField(
-              control: FTextFieldControl.managed(controller: _titleController),
-              label: Text(l10n.title),
-              textInputAction: TextInputAction.next,
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return l10n.requiredField;
-                }
-                return null;
-              },
+            AppSurface(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  FTextFormField(
+                    control: FTextFieldControl.managed(
+                      controller: _titleController,
+                    ),
+                    label: Text(l10n.title),
+                    textInputAction: TextInputAction.next,
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return l10n.requiredField;
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 18),
+                  FTextField(
+                    control: FTextFieldControl.managed(
+                      controller: _bodyController,
+                    ),
+                    label: Text(l10n.body),
+                    maxLines: 10,
+                    minLines: 6,
+                    textAlignVertical: TextAlignVertical.top,
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: UIConstants.md),
             if (!_labelsLoading && _labels.isNotEmpty) ...[
-              _buildLabelSection(l10n),
-              const SizedBox(height: UIConstants.md),
+              const SizedBox(height: 16),
+              AppSurface(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+                child: _buildLabelSection(l10n),
+              ),
             ],
             if (!_milestonesLoading && _milestones.isNotEmpty) ...[
-              _buildMilestoneSection(l10n),
-              const SizedBox(height: UIConstants.md),
+              const SizedBox(height: 16),
+              AppSurface(
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+                child: _buildMilestoneSection(l10n),
+              ),
             ],
-            FTextField(
-              control: FTextFieldControl.managed(controller: _bodyController),
-              label: Text(l10n.body),
-              maxLines: 10,
-              minLines: 5,
-              textAlignVertical: TextAlignVertical.top,
-            ),
-            const SizedBox(height: UIConstants.lg),
-            FButton(
-              onPress: _isLoading ? null : _submit,
-              child: _isLoading
-                  ? const FCircularProgress(size: .sm)
-                  : Text(l10n.submit),
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                FButton(
+                  variant: .outline,
+                  onPress: _isLoading ? null : () => Navigator.pop(context),
+                  child: Text(l10n.cancel),
+                ),
+                const SizedBox(width: 10),
+                FButton(
+                  onPress: _isLoading ? null : _submit,
+                  prefix: _isLoading
+                      ? const FCircularProgress(size: .xs)
+                      : null,
+                  child: Text(l10n.submit),
+                ),
+              ],
             ),
           ],
         ),
@@ -122,8 +155,16 @@ class _CreateIssuePageState extends State<CreateIssuePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(l10n.labels, style: theme.textTheme.titleSmall),
-        const SizedBox(height: UIConstants.sm),
+        Text(
+          l10n.labels,
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.4,
+            color: Theme.of(context).extension<AppPalette>()!.textSecondary,
+          ),
+        ),
+        const SizedBox(height: 8),
         Wrap(
           spacing: UIConstants.sm,
           runSpacing: UIConstants.sm,
@@ -162,26 +203,35 @@ class _CreateIssuePageState extends State<CreateIssuePage> {
   }
 
   Widget _buildMilestoneSection(AppLocalizations l10n) {
+    final palette = context.palette;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(l10n.milestone, style: Theme.of(context).textTheme.titleSmall),
-        const SizedBox(height: UIConstants.sm),
-        DropdownButtonFormField<int?>(
-          initialValue: _selectedMilestoneId,
-          decoration: InputDecoration(
-            labelText: l10n.selectMilestone,
-            border: const OutlineInputBorder(),
+        Text(
+          l10n.milestone,
+          style: TextStyle(
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.4,
+            color: palette.textSecondary,
           ),
-          items: [
-            DropdownMenuItem(value: null, child: Text(l10n.none)),
-            ..._milestones.map(
-              (m) => DropdownMenuItem(value: m.id, child: Text(m.title ?? '')),
-            ),
-          ],
-          onChanged: (value) {
-            setState(() => _selectedMilestoneId = value);
+        ),
+        const SizedBox(height: 8),
+        FSelect<int>(
+          items: {
+            l10n.none: -1,
+            for (final milestone in _milestones)
+              milestone.title ?? '': milestone.id ?? -1,
           },
+          control: FSelectControl.lifted(
+            value: _selectedMilestoneId ?? -1,
+            onChange: (value) {
+              setState(() {
+                _selectedMilestoneId = value == -1 ? null : value;
+              });
+            },
+          ),
+          hint: l10n.selectMilestone,
         ),
       ],
     );

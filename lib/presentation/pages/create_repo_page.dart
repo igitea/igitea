@@ -9,7 +9,10 @@ import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../domain/usecases/repo_usecases.dart';
 import '../../l10n/app_localizations.dart';
+import '../theme/app_palette.dart';
+import '../widgets/app_surface.dart';
 import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_state_views.dart';
 
 class CreateRepoPage extends StatefulWidget {
   const CreateRepoPage({super.key});
@@ -82,111 +85,121 @@ class _CreateRepoPageState extends State<CreateRepoPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
+    final palette = context.palette;
 
     return AppPage(
       title: l10n.createRepository,
-      actions: [
-        FHeaderAction(
-          icon: _isLoading
-              ? const FCircularProgress(size: .xs)
-              : const Icon(FIcons.plus),
-          onPress: _isLoading ? null : _create,
-        ),
-      ],
+      maxContentWidth: 760,
       child: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.all(UIConstants.md),
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
           children: [
             if (_error != null) ...[
-              Container(
-                padding: const EdgeInsets.all(UIConstants.md),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.errorContainer,
-                  borderRadius: BorderRadius.circular(UIConstants.cardRadius),
-                ),
-                child: Text(
-                  _error!,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onErrorContainer,
-                  ),
-                ),
+              FAlert(
+                variant: .destructive,
+                title: Text(friendlyErrorMessage(context, _error!)),
               ),
-              const SizedBox(height: UIConstants.md),
+              const SizedBox(height: 16),
             ],
-            FTextFormField(
-              control: FTextFieldControl.managed(controller: _nameController),
-              label: Text(l10n.repositoryName),
-              hint: l10n.repositoryNameHint,
-              textInputAction: TextInputAction.next,
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9_.-]')),
-              ],
-              validator: (value) {
-                if (value == null || value.trim().isEmpty) {
-                  return l10n.repositoryNameRequired;
-                }
-                return null;
-              },
-            ),
-            const SizedBox(height: UIConstants.md),
-            FTextField(
-              control: FTextFieldControl.managed(
-                controller: _descriptionController,
-              ),
-              label: Text(l10n.description),
-              hint: l10n.descriptionHint,
-              maxLines: 3,
-              textInputAction: TextInputAction.done,
-            ),
-            const SizedBox(height: UIConstants.md),
-            FCard.raw(
-              child: Padding(
-                padding: const EdgeInsets.all(UIConstants.md),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l10n.visibility,
-                      style: theme.textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
+            AppSurface(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  FTextFormField(
+                    control: FTextFieldControl.managed(
+                      controller: _nameController,
+                    ),
+                    label: Text(l10n.repositoryName),
+                    hint: l10n.repositoryNameHint,
+                    textInputAction: TextInputAction.next,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                        RegExp(r'[a-zA-Z0-9_.-]'),
                       ),
+                    ],
+                    validator: (value) {
+                      if (value == null || value.trim().isEmpty) {
+                        return l10n.repositoryNameRequired;
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 18),
+                  FTextField(
+                    control: FTextFieldControl.managed(
+                      controller: _descriptionController,
                     ),
-                    const SizedBox(height: UIConstants.sm),
-                    _VisibilityOption(
-                      title: l10n.public,
-                      subtitle: l10n.publicDescription,
-                      icon: FIcons.globe,
-                      isSelected: !_isPrivate,
-                      onTap: () => setState(() => _isPrivate = false),
-                    ),
-                    const FDivider(),
-                    _VisibilityOption(
-                      title: l10n.private,
-                      subtitle: l10n.privateDescription,
-                      icon: FIcons.lock,
-                      isSelected: _isPrivate,
-                      onTap: () => setState(() => _isPrivate = true),
-                    ),
-                  ],
-                ),
+                    label: Text(l10n.description),
+                    hint: l10n.descriptionHint,
+                    maxLines: 3,
+                    textInputAction: TextInputAction.done,
+                  ),
+                ],
               ),
             ),
-            const SizedBox(height: UIConstants.md),
-            FCard.raw(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: UIConstants.md,
-                  vertical: UIConstants.sm,
-                ),
-                child: FSwitch(
-                  label: Text(l10n.initializeWithReadme),
-                  description: Text(l10n.initializeWithReadmeDescription),
-                  value: _autoInit,
-                  onChange: (value) => setState(() => _autoInit = value),
-                ),
+            const SizedBox(height: 16),
+            AppSurface(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 6),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.visibility,
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.4,
+                      color: palette.textSecondary,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  _VisibilityOption(
+                    title: l10n.public,
+                    subtitle: l10n.publicDescription,
+                    icon: FIcons.globe,
+                    isSelected: !_isPrivate,
+                    onTap: () => setState(() => _isPrivate = false),
+                  ),
+                  const FDivider(),
+                  _VisibilityOption(
+                    title: l10n.private,
+                    subtitle: l10n.privateDescription,
+                    icon: FIcons.lock,
+                    isSelected: _isPrivate,
+                    onTap: () => setState(() => _isPrivate = true),
+                  ),
+                ],
               ),
+            ),
+            const SizedBox(height: 16),
+            AppSurface(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              child: FSwitch(
+                label: Text(l10n.initializeWithReadme),
+                description: Text(l10n.initializeWithReadmeDescription),
+                value: _autoInit,
+                onChange: (value) => setState(() => _autoInit = value),
+              ),
+            ),
+            const SizedBox(height: 24),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                FButton(
+                  variant: .outline,
+                  onPress: _isLoading ? null : () => Navigator.pop(context),
+                  child: Text(l10n.cancel),
+                ),
+                const SizedBox(width: 10),
+                FButton(
+                  onPress: _isLoading ? null : _create,
+                  prefix: _isLoading
+                      ? const FCircularProgress(size: .xs)
+                      : const Icon(FIcons.plus, size: 14),
+                  child: Text(l10n.createRepository),
+                ),
+              ],
             ),
           ],
         ),

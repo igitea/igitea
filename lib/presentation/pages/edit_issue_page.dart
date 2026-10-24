@@ -161,6 +161,7 @@ class _EditIssuePageState extends State<EditIssuePage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return AppPage(
+      maxContentWidth: 760,
       title: l10n.editIssue,
       child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),

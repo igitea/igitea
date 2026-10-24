@@ -125,6 +125,7 @@ class _MigrateRepoPageState extends State<MigrateRepoPage> {
     final theme = Theme.of(context);
 
     return AppPage(
+      maxContentWidth: 760,
       title: l10n.importRepository,
       actions: [
         FHeaderAction(

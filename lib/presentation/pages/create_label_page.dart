@@ -203,6 +203,7 @@ class _CreateLabelPageState extends State<CreateLabelPage> {
     final l10n = AppLocalizations.of(context)!;
 
     return AppPage(
+      maxContentWidth: 760,
       title: l10n.createLabel,
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(UIConstants.md),

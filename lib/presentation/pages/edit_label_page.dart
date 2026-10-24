@@ -247,6 +247,7 @@ class _EditLabelPageState extends State<EditLabelPage> {
     final l10n = AppLocalizations.of(context)!;
 
     return AppPage(
+      maxContentWidth: 760,
       title: l10n.editLabel,
       actions: [
         FHeaderAction(

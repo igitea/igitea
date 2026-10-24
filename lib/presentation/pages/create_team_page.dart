@@ -84,6 +84,7 @@ class _CreateTeamPageState extends State<CreateTeamPage> {
     final l10n = AppLocalizations.of(context)!;
 
     return AppPage(
+      maxContentWidth: 760,
       title: l10n.createTeam,
       actions: [
         FHeaderAction(

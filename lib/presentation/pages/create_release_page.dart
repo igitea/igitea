@@ -128,6 +128,7 @@ class _CreateReleasePageState extends State<CreateReleasePage> {
     final l10n = AppLocalizations.of(context)!;
 
     return AppPage(
+      maxContentWidth: 760,
       title: l10n.createRelease,
       actions: [
         FHeaderAction(

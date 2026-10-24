@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Changed
+- **Forms**: create repository and create issue are rebuilt as grouped surface cards with a 760px reading measure, explicit cancel/create footer actions, a Forui milestone selector and friendly error alerts; every create/edit form now shares the narrower form width
 - **Profile repositories**: your profile now lists recent repositories with language/star metadata, a view-all action and skeleton/error states
 - **Search**: debounced live search across repositories, issues and users; results are compact grouped rows with language/star/fork metadata, and clearing the query returns to the contextual prompt
 - **Mobile shell**: removed the duplicated bell action, fixed header action order on phones, and verified narrow layouts for the dashboard, profile and explore screens

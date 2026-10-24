@@ -84,6 +84,7 @@ class _CreateAdminWebhookPageState extends State<CreateAdminWebhookPage> {
     final theme = Theme.of(context);
 
     return AppPage(
+      maxContentWidth: 760,
       title: l10n.createWebhook,
       actions: [
         FHeaderAction(
@@ -134,7 +135,10 @@ class _CreateAdminWebhookPageState extends State<CreateAdminWebhookPage> {
             const SizedBox(height: 16),
             FCard.raw(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 2),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 2,
+                ),
                 child: FSwitch(
                   label: Text(l10n.webhookActive),
                   value: _active,

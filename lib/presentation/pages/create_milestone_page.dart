@@ -102,6 +102,7 @@ class _CreateMilestonePageState extends State<CreateMilestonePage> {
     final l10n = AppLocalizations.of(context)!;
 
     return AppPage(
+      maxContentWidth: 760,
       title: l10n.createMilestone,
       actions: [
         if (_isSaving)

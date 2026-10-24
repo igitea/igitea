@@ -102,6 +102,7 @@ class _EditOrgPageState extends State<EditOrgPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return AppPage(
+      maxContentWidth: 760,
       title: l10n.editOrganization,
       actions: [
         if (_isLoading)

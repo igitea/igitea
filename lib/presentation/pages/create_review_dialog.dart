@@ -40,10 +40,7 @@ class _CreateReviewDialogState extends State<CreateReviewDialog> {
         owner: widget.owner,
         repo: widget.repo,
         index: widget.index,
-        body: {
-          'body': _bodyController.text.trim(),
-          'event': _event,
-        },
+        body: {'body': _bodyController.text.trim(), 'event': _event},
       );
       if (mounted) Navigator.of(context).pop(true);
     } catch (e) {
@@ -119,8 +116,8 @@ class _CreateReviewDialogState extends State<CreateReviewDialog> {
                   _event == 'APPROVED'
                       ? l10n.approve
                       : _event == 'REQUEST_CHANGES'
-                          ? l10n.requestChanges
-                          : l10n.comment,
+                      ? l10n.requestChanges
+                      : l10n.comment,
                 ),
         ),
       ],
