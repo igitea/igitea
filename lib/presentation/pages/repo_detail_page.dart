@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:ui' show FontFeature;
 
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ import '../../core/errors/failures.dart';
 import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../domain/usecases/issue_usecases.dart';
+import '../../domain/usecases/repo_usecases.dart';
 import '../../domain/entities/auth_state.dart';
 import '../../domain/entities/issue_state.dart';
 import '../../l10n/app_localizations.dart';
@@ -27,6 +29,7 @@ import '../widgets/forui/app_section.dart';
 import '../widgets/forui/app_state_views.dart';
 import '../widgets/forui/app_tile.dart';
 import '../theme/app_palette.dart';
+import '../widgets/app_markdown.dart';
 import '../widgets/app_skeleton.dart';
 import '../widgets/app_surface.dart';
 import '../widgets/forui/app_chrome.dart';
@@ -206,6 +209,15 @@ class _RepoDetailPageState extends State<RepoDetailPage> {
             owner: widget.owner,
             repoName: widget.repo,
             languages: _languages,
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+          child: _ReadmePreview(
+            owner: widget.owner,
+            repo: widget.repo,
+            ref: repo.default_branch,
+            l10n: l10n,
           ),
         ),
         Padding(
@@ -2318,6 +2330,146 @@ class _ReleaseRow extends StatelessWidget {
     if (diff.inHours > 0) return l10n.ago('${diff.inHours}h');
     if (diff.inMinutes > 0) return l10n.ago('${diff.inMinutes}m');
     return l10n.justNow;
+  }
+}
+
+class _ReadmePreview extends StatefulWidget {
+  final String owner;
+  final String repo;
+  final String? ref;
+  final AppLocalizations l10n;
+
+  const _ReadmePreview({
+    required this.owner,
+    required this.repo,
+    required this.ref,
+    required this.l10n,
+  });
+
+  @override
+  State<_ReadmePreview> createState() => _ReadmePreviewState();
+}
+
+class _ReadmePreviewState extends State<_ReadmePreview> {
+  String? _content;
+  bool _loading = true;
+  bool _failed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _load();
+  }
+
+  Future<void> _load() async {
+    final result = await Injection.getRepoContentsUseCase(
+      GetRepoContentsParams(
+        owner: widget.owner,
+        repo: widget.repo,
+        path: 'README.md',
+        ref: widget.ref,
+      ),
+    );
+    if (!mounted) return;
+    switch (result) {
+      case Left<Failure, List<ContentsResponse>>():
+        setState(() {
+          _loading = false;
+          _failed = true;
+        });
+      case Right<Failure, List<ContentsResponse>>(:final value):
+        String? decoded;
+        if (value.isNotEmpty && value.first.content != null) {
+          try {
+            final cleaned = value.first.content!.replaceAll(RegExp(r'\s'), '');
+            decoded = utf8.decode(base64Decode(cleaned));
+          } catch (_) {
+            decoded = null;
+          }
+        }
+        setState(() {
+          _loading = false;
+          _content = decoded;
+          _failed = decoded == null;
+        });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_failed) return const SizedBox.shrink();
+    final palette = context.palette;
+
+    if (_loading) {
+      return AppSurface(
+        padding: const EdgeInsets.all(20),
+        child: AppSkeleton(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: const [
+              SkeletonLine(widthFactor: 0.22, height: 10),
+              SizedBox(height: 14),
+              SkeletonLine(widthFactor: 0.7, height: 12),
+              SizedBox(height: 8),
+              SkeletonLine(widthFactor: 0.9, height: 9),
+              SizedBox(height: 6),
+              SkeletonLine(widthFactor: 0.8, height: 9),
+              SizedBox(height: 6),
+              SkeletonLine(widthFactor: 0.45, height: 9),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final content = _content?.trim() ?? '';
+    if (content.isEmpty) return const SizedBox.shrink();
+    final preview = content.length > 2600
+        ? '${content.substring(0, 2600)}\n\n…'
+        : content;
+
+    return AppSurface(
+      padding: const EdgeInsets.fromLTRB(24, 18, 24, 24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(FIcons.bookOpen, size: 13, color: palette.textSecondary),
+              const SizedBox(width: 6),
+              Text(
+                'README.md',
+                style: TextStyle(
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: 0.4,
+                  color: palette.textSecondary,
+                ),
+              ),
+              const Spacer(),
+              FButton(
+                variant: FButtonVariant.ghost,
+                size: FButtonSizeVariant.sm,
+                onPress: () => Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => RepoFilePage(
+                      owner: widget.owner,
+                      repo: widget.repo,
+                      path: 'README.md',
+                      name: 'README.md',
+                      ref: widget.ref,
+                    ),
+                  ),
+                ),
+                child: Text(widget.l10n.viewAll),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          AppMarkdown(data: preview),
+        ],
+      ),
+    );
   }
 }
 

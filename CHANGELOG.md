@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Changed
+- **Repository README**: the overview now includes a README preview card with a loading skeleton, shared Markdown styling and a "View all" action; it hides automatically when the repository has no README
 - **Login & inbox polish**: transport errors on the login screen now use the localized friendly message; the inbox header hides "mark all read" when there are no notifications; boot splash spinner is clearer
 - **Milestones**: grouped rows with progress bars, due-date chips (overdue in red), open/closed counts and a labelled create action
 - **Notifications**: compact grouped rows with unread tint, subject icons, repository/time metadata, unread dots and a consistent load-more action
