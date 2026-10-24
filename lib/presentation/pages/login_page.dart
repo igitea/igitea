@@ -10,6 +10,7 @@ import '../../domain/entities/auth_state.dart';
 import '../../l10n/app_localizations.dart';
 import '../theme/app_palette.dart';
 import '../widgets/app_surface.dart';
+import '../widgets/forui/app_state_views.dart';
 import '../widgets/forui/app_chrome.dart';
 
 class LoginPage extends StatefulWidget {
@@ -275,7 +276,12 @@ class _LoginPageState extends State<LoginPage> {
                                 if (errorMessage != null) ...[
                                   FAlert(
                                     variant: .destructive,
-                                    title: Text(errorMessage),
+                                    title: Text(
+                                      friendlyErrorMessage(
+                                        context,
+                                        errorMessage,
+                                      ),
+                                    ),
                                   ),
                                   const SizedBox(height: 16),
                                 ],

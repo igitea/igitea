@@ -304,11 +304,11 @@ class _BootSplash extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             SizedBox(
-              width: 18,
-              height: 18,
+              width: 20,
+              height: 20,
               child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: palette.brand.withValues(alpha: 0.7),
+                strokeWidth: 2.2,
+                color: palette.brand.withValues(alpha: 0.8),
               ),
             ),
           ],

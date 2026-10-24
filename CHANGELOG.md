@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Changed
+- **Login & inbox polish**: transport errors on the login screen now use the localized friendly message; the inbox header hides "mark all read" when there are no notifications; boot splash spinner is clearer
 - **Milestones**: grouped rows with progress bars, due-date chips (overdue in red), open/closed counts and a labelled create action
 - **Notifications**: compact grouped rows with unread tint, subject icons, repository/time metadata, unread dots and a consistent load-more action
 - **PR detail**: constrained to a 980px reading measure with consistent page padding

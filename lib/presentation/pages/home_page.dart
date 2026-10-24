@@ -8,6 +8,7 @@ import '../../core/constants/app_constants.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../domain/entities/auth_state.dart';
+import '../state/notification_notifier.dart';
 import '../../l10n/app_localizations.dart';
 import '../theme/app_palette.dart';
 import '../widgets/forui/app_chrome.dart';
@@ -50,7 +51,10 @@ class _HomePageState extends State<HomePage> {
     final l10n = AppLocalizations.of(context)!;
 
     return ListenableBuilder(
-      listenable: Injection.authNotifier,
+      listenable: Listenable.merge([
+        Injection.authNotifier,
+        Injection.notificationNotifier,
+      ]),
       builder: (context, _) {
         final authState = Injection.authNotifier.state;
         if (authState is! AuthAuthenticated) {
@@ -88,6 +92,7 @@ class _HomePageState extends State<HomePage> {
                 authState,
                 isWide: isWide,
                 topInset: topInset,
+                canMarkAllRead: _hasNotifications,
               ),
               footer: isWide ? null : _buildBottomBar(l10n),
               childPad: false,
@@ -106,6 +111,11 @@ class _HomePageState extends State<HomePage> {
         : SingleActivator(key, control: true);
   }
 
+  bool get _hasNotifications {
+    final state = Injection.notificationNotifier.state;
+    return state is NotificationListLoaded && state.notifications.isNotEmpty;
+  }
+
   String _title(AppLocalizations l10n) => switch (_selectedIndex) {
     1 => l10n.notifications,
     2 => l10n.explore,
@@ -119,6 +129,7 @@ class _HomePageState extends State<HomePage> {
     AuthAuthenticated authState, {
     required bool isWide,
     required double topInset,
+    required bool canMarkAllRead,
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -147,7 +158,7 @@ class _HomePageState extends State<HomePage> {
             label: l10n.inbox,
             onPress: () => _select(1),
           ),
-        if (_selectedIndex == 1)
+        if (_selectedIndex == 1 && canMarkAllRead)
           AppIconButton(
             icon: FIcons.checkCheck,
             label: l10n.markAllRead,
