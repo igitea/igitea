@@ -185,6 +185,7 @@ class _PRDetailPageState extends State<PRDetailPage> {
     return AppPage(
       title: l10n.pullRequestNumber(widget.index),
       subtitle: '${widget.owner}/${widget.repo}',
+      maxContentWidth: 980,
       actions: [
         if (Injection.repoNotifier.pullRequestDetailState
             is PullRequestDetailDataLoaded) ...[
@@ -291,7 +292,7 @@ class _PRContent extends StatelessWidget {
 
     return SingleChildScrollView(
       controller: scrollController,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

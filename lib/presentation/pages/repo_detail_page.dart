@@ -2790,95 +2790,47 @@ class _MilestonesTabState extends State<_MilestonesTab> {
     return Stack(
       children: [
         if (milestones.isEmpty)
-          EmptyState(icon: FIcons.flag, title: widget.l10n.noMilestones)
+          AppEmpty(icon: FIcons.flag, title: widget.l10n.noMilestones)
         else
-          ListView.builder(
-            padding: EdgeInsets.only(
-              bottom: 80,
-              left: UIConstants.md,
-              right: UIConstants.md,
-              top: UIConstants.sm,
-            ),
-            itemCount: milestones.length,
-            itemBuilder: (context, index) {
-              final milestone = milestones[index];
-              final total =
-                  (milestone.open_issues ?? 0) + (milestone.closed_issues ?? 0);
-              final progress = total > 0
-                  ? (milestone.closed_issues ?? 0) / total
-                  : 0.0;
-              return FadeInWrapper(
-                delay: Duration(milliseconds: index * 20),
-                child: PremiumListCard(
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => MilestoneDetailPage(
-                          owner: widget.owner,
-                          repo: widget.repo,
-                          milestone: milestone,
-                        ),
-                      ),
-                    );
-                  },
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              milestone.title ?? '',
-                              style: theme.textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.w600,
-                              ),
+          ListView(
+            padding: const EdgeInsets.fromLTRB(20, 4, 20, 80),
+            children: [
+              AppSection(
+                title: '',
+                showHeader: false,
+                children: [
+                  for (final milestone in milestones)
+                    _MilestoneRow(
+                      milestone: milestone,
+                      dueText: milestone.due_on != null
+                          ? _formatDate(milestone.due_on!)
+                          : null,
+                      overdue:
+                          milestone.due_on?.isBefore(DateTime.now()) ?? false,
+                      l10n: widget.l10n,
+                      onPress: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => MilestoneDetailPage(
+                              owner: widget.owner,
+                              repo: widget.repo,
+                              milestone: milestone,
                             ),
                           ),
-                          if (milestone.due_on != null)
-                            Text(
-                              _formatDate(milestone.due_on!),
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant
-                                    .withValues(alpha: 0.7),
-                              ),
-                            ),
-                        ],
-                      ),
-                      const SizedBox(height: UIConstants.sm),
-                      FDeterminateProgress(value: progress),
-                      const SizedBox(height: UIConstants.xs),
-                      Row(
-                        children: [
-                          Text(
-                            '${(progress * 100).toStringAsFixed(0)}%',
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant
-                                  .withValues(alpha: 0.7),
-                            ),
-                          ),
-                          const Spacer(),
-                          Text(
-                            '${milestone.open_issues ?? 0} ${widget.l10n.open} \u00b7 ${milestone.closed_issues ?? 0} ${widget.l10n.closed}',
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant
-                                  .withValues(alpha: 0.7),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
+                        );
+                      },
+                    ),
+                ],
+              ),
+            ],
           ),
         Positioned(
-          right: UIConstants.md,
-          bottom: UIConstants.md,
-          child: FButton.icon(
-            variant: .primary,
+          right: 20,
+          bottom: 20,
+          child: FButton(
+            prefix: const Icon(FIcons.plus, size: 14),
             onPress: _createMilestone,
-            child: const Icon(FIcons.plus),
+            child: Text(widget.l10n.createMilestone),
           ),
         ),
       ],
@@ -2893,6 +2845,159 @@ class _MilestonesTabState extends State<_MilestonesTab> {
     if (diff.inDays > 0) return widget.l10n.ago('${diff.inDays}d');
     if (diff.inHours > 0) return widget.l10n.ago('${diff.inHours}h');
     return widget.l10n.justNow;
+  }
+}
+
+class _MilestoneRow extends StatefulWidget {
+  final Milestone milestone;
+  final String? dueText;
+  final bool overdue;
+  final AppLocalizations l10n;
+  final VoidCallback onPress;
+
+  const _MilestoneRow({
+    required this.milestone,
+    required this.dueText,
+    required this.overdue,
+    required this.l10n,
+    required this.onPress,
+  });
+
+  @override
+  State<_MilestoneRow> createState() => _MilestoneRowState();
+}
+
+class _MilestoneRowState extends State<_MilestoneRow> {
+  bool _hovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    final theme = Theme.of(context);
+    final milestone = widget.milestone;
+    final open = milestone.open_issues ?? 0;
+    final closed = milestone.closed_issues ?? 0;
+    final total = open + closed;
+    final progress = total > 0 ? closed / total : 0.0;
+    final done = total > 0 && closed == total;
+
+    return FTappable(
+      onPress: widget.onPress,
+      child: MouseRegion(
+        onEnter: (_) => setState(() => _hovered = true),
+        onExit: (_) => setState(() => _hovered = false),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 140),
+          color: _hovered
+              ? palette.surfaceMuted.withValues(alpha: 0.55)
+              : Colors.transparent,
+          padding: const EdgeInsets.fromLTRB(14, 12, 12, 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Icon(
+                    FIcons.flag,
+                    size: 14,
+                    color: done ? palette.success : palette.textSecondary,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      milestone.title ?? '',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                        color: palette.textPrimary,
+                      ),
+                    ),
+                  ),
+                  if (widget.dueText != null) ...[
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: widget.overdue
+                            ? palette.dangerSoft
+                            : palette.surfaceMuted,
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            FIcons.calendarClock,
+                            size: 10,
+                            color: widget.overdue
+                                ? palette.danger
+                                : palette.textSecondary,
+                          ),
+                          const SizedBox(width: 3),
+                          Text(
+                            widget.dueText!,
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w500,
+                              color: widget.overdue
+                                  ? palette.danger
+                                  : palette.textSecondary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                  ],
+                  Icon(
+                    FIcons.chevronRight,
+                    size: 13,
+                    color: palette.textSecondary.withValues(alpha: 0.7),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 9),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(3),
+                child: LinearProgressIndicator(
+                  value: progress,
+                  minHeight: 5,
+                  backgroundColor: palette.surfaceMuted,
+                  valueColor: AlwaysStoppedAnimation(
+                    done ? palette.success : palette.brand,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 6),
+              Row(
+                children: [
+                  Text(
+                    '${(progress * 100).toStringAsFixed(0)}%',
+                    style: TextStyle(
+                      fontSize: 10.5,
+                      fontWeight: FontWeight.w500,
+                      color: palette.textSecondary,
+                    ),
+                  ),
+                  const Spacer(),
+                  Text(
+                    '${widget.l10n.open} $open · ${widget.l10n.closed} $closed',
+                    style: TextStyle(
+                      fontSize: 10.5,
+                      color: palette.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
 

@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 
-import '../../core/animations/animated_wrapper.dart';
-import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/notification_notifier.dart';
+import '../theme/app_palette.dart';
+import '../widgets/forui/app_section.dart';
 import '../widgets/forui/app_state_views.dart';
-import '../widgets/premium_card.dart';
-import '../widgets/user_avatar.dart';
 import 'commit_detail_page.dart';
 import 'issue_detail_page.dart';
 import 'pr_detail_page.dart';
@@ -198,129 +196,174 @@ class _NotificationList extends StatelessWidget {
     if (notifications.isEmpty) {
       return AppEmpty(icon: FIcons.bellOff, title: l10n.noNotifications);
     }
-    return RefreshIndicator(
-      onRefresh: () => Injection.notificationNotifier.listNotifications(),
-      child: ListView.builder(
-        padding:
-            UIConstants.pagePadding +
-            const EdgeInsets.symmetric(vertical: UIConstants.sm),
-        itemCount: notifications.length + (hasMore ? 1 : 0),
-        itemBuilder: (context, index) {
-          if (index == notifications.length) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Injection.notificationNotifier.notifLoadingMore
-                    ? const FCircularProgress(size: .sm)
-                    : FButton(
-                        variant: .outline,
-                        size: .sm,
-                        onPress: () => Injection.notificationNotifier
-                            .loadMoreNotifications(),
-                        child: Text(l10n.loadMore),
-                      ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final inset = constraints.maxWidth > 940
+            ? (constraints.maxWidth - 900) / 2
+            : 20.0;
+        return RefreshIndicator(
+          onRefresh: () => Injection.notificationNotifier.listNotifications(),
+          child: ListView(
+            padding: EdgeInsets.fromLTRB(inset, 16, inset, 32),
+            children: [
+              AppSection(
+                title: '',
+                showHeader: false,
+                children: [
+                  for (final notification in notifications)
+                    _NotificationRow(
+                      notification: notification,
+                      l10n: l10n,
+                      onTap: () => onNotificationTap(notification),
+                    ),
+                ],
               ),
-            );
-          }
-          final notification = notifications[index];
-          return FadeInWrapper(
-            delay: Duration(milliseconds: index * 30),
-            child: _NotificationCard(
-              notification: notification,
-              l10n: l10n,
-              onTap: () => onNotificationTap(notification),
-            ),
-          );
-        },
-      ),
+              if (hasMore)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  child: Center(
+                    child: Injection.notificationNotifier.notifLoadingMore
+                        ? const FCircularProgress(size: .sm)
+                        : FButton(
+                            variant: .outline,
+                            size: .sm,
+                            onPress: () => Injection.notificationNotifier
+                                .loadMoreNotifications(),
+                            child: Text(l10n.loadMore),
+                          ),
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
     );
   }
 }
 
-class _NotificationCard extends StatelessWidget {
+class _NotificationRow extends StatefulWidget {
   final NotificationThread notification;
   final AppLocalizations l10n;
   final VoidCallback onTap;
 
-  const _NotificationCard({
+  const _NotificationRow({
     required this.notification,
     required this.l10n,
     required this.onTap,
   });
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final subject = notification.subject;
-    final isUnread = notification.unread == true;
-    final iconData = _subjectIcon(subject?.type?.value);
+  State<_NotificationRow> createState() => _NotificationRowState();
+}
 
-    return PremiumListCard(
-      onTap: onTap,
-      child: Row(
-        children: [
-          if (notification.repository?.owner != null)
-            UserAvatar(
-              user: notification.repository!.owner!,
-              radius: UIConstants.avatarMd,
-            )
-          else
-            Container(
-              padding: const EdgeInsets.all(UIConstants.sm),
-              decoration: BoxDecoration(
-                color: isUnread
-                    ? theme.colorScheme.primaryContainer.withValues(alpha: 0.5)
-                    : theme.colorScheme.surfaceContainerHighest.withValues(
-                        alpha: 0.5,
-                      ),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                iconData,
-                size: UIConstants.iconMd,
-                color: isUnread
-                    ? theme.colorScheme.primary
-                    : theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-          const SizedBox(width: UIConstants.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  subject?.title ?? l10n.noTitle,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: isUnread
-                      ? theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        )
-                      : theme.textTheme.bodyMedium,
+class _NotificationRowState extends State<_NotificationRow> {
+  bool _hovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    final theme = Theme.of(context);
+    final subject = widget.notification.subject;
+    final isUnread = widget.notification.unread == true;
+    final iconData = _subjectIcon(subject?.type?.value);
+    final repo = widget.notification.repository?.full_name ?? '';
+    final time = _relativeTime(widget.notification.updated_at);
+
+    return FTappable(
+      onPress: widget.onTap,
+      child: MouseRegion(
+        onEnter: (_) => setState(() => _hovered = true),
+        onExit: (_) => setState(() => _hovered = false),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 140),
+          color: _hovered
+              ? palette.surfaceMuted.withValues(alpha: 0.55)
+              : isUnread
+              ? palette.brandSoft.withValues(alpha: 0.42)
+              : Colors.transparent,
+          padding: const EdgeInsets.fromLTRB(14, 11, 12, 11),
+          child: Row(
+            children: [
+              Container(
+                width: 26,
+                height: 26,
+                decoration: BoxDecoration(
+                  color: isUnread ? palette.brandSoft : palette.surfaceMuted,
+                  borderRadius: BorderRadius.circular(7),
                 ),
-                const SizedBox(height: UIConstants.xs),
-                if (notification.repository?.full_name != null)
-                  Text(
-                    notification.repository!.full_name!,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-              ],
-            ),
-          ),
-          if (isUnread)
-            Container(
-              width: 8,
-              height: 8,
-              decoration: BoxDecoration(
-                color: theme.colorScheme.primary,
-                shape: BoxShape.circle,
+                child: Icon(
+                  iconData,
+                  size: 13,
+                  color: isUnread ? palette.brand : palette.textSecondary,
+                ),
               ),
-            ),
-        ],
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      subject?.title ?? widget.l10n.noTitle,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        fontSize: 13,
+                        fontWeight: isUnread
+                            ? FontWeight.w600
+                            : FontWeight.w500,
+                        color: palette.textPrimary,
+                      ),
+                    ),
+                    if (repo.isNotEmpty || time.isNotEmpty) ...[
+                      const SizedBox(height: 2),
+                      Text(
+                        [
+                          if (repo.isNotEmpty) repo,
+                          if (time.isNotEmpty) time,
+                        ].join(' · '),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: palette.textSecondary,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              if (isUnread)
+                Container(
+                  width: 6,
+                  height: 6,
+                  margin: const EdgeInsets.only(left: 8),
+                  decoration: BoxDecoration(
+                    color: palette.brand,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              const SizedBox(width: 4),
+              Icon(
+                FIcons.chevronRight,
+                size: 13,
+                color: palette.textSecondary.withValues(alpha: 0.7),
+              ),
+            ],
+          ),
+        ),
       ),
     );
+  }
+
+  String _relativeTime(DateTime? date) {
+    if (date == null) return '';
+    final diff = DateTime.now().difference(date);
+    if (diff.inDays > 365) return widget.l10n.ago('${diff.inDays ~/ 365}y');
+    if (diff.inDays > 30) return widget.l10n.ago('${diff.inDays ~/ 30}mo');
+    if (diff.inDays > 0) return widget.l10n.ago('${diff.inDays}d');
+    if (diff.inHours > 0) return widget.l10n.ago('${diff.inHours}h');
+    if (diff.inMinutes > 0) return widget.l10n.ago('${diff.inMinutes}m');
+    return widget.l10n.justNow;
   }
 
   IconData _subjectIcon(String? type) {

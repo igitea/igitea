@@ -3,6 +3,9 @@
 ## [Unreleased]
 
 ### Changed
+- **Milestones**: grouped rows with progress bars, due-date chips (overdue in red), open/closed counts and a labelled create action
+- **Notifications**: compact grouped rows with unread tint, subject icons, repository/time metadata, unread dots and a consistent load-more action
+- **PR detail**: constrained to a 980px reading measure with consistent page padding
 - **Releases & tags**: release and Git-tag lists now use grouped compact rows with prerelease/draft badges, author/date metadata and download menus, matching the commit and branch lists
 - **Repository subpages**: commit history and branches now use grouped, compact rows with author/time/SHA chips, default-branch and protected badges; Chinese labels now distinguish Git tags (`Git 标签`) from issue labels (`议题标签`)
 - **Forms**: create repository and create issue are rebuilt as grouped surface cards with a 760px reading measure, explicit cancel/create footer actions, a Forui milestone selector and friendly error alerts; every create/edit form now shares the narrower form width
