@@ -121,6 +121,13 @@ class AppLocalizationsKo extends AppLocalizations {
   String get error => '오류';
 
   @override
+  String get requestTimedOut =>
+      'The server took too long to respond. Please try again.';
+
+  @override
+  String get networkError => '네트워크 오류';
+
+  @override
   String get noData => '데이터 없음';
 
   @override
@@ -474,9 +481,6 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get loginFailed => '로그인 실패';
-
-  @override
-  String get networkError => '네트워크 오류';
 
   @override
   String get unknownError => '알 수 없는 오류가 발생했습니다';

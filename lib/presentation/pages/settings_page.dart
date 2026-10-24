@@ -124,6 +124,7 @@ class _SettingsPageState extends State<SettingsPage> {
         authState is AuthAuthenticated && authState.user.is_admin == true;
 
     return AppPage(
+      maxContentWidth: 780,
       title: l10n.settings,
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
@@ -437,10 +438,12 @@ class _SettingsPageState extends State<SettingsPage> {
   void _showServerSettings(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     if (_settingsLoading) {
-      ScaffoldMessenger.of(
-        context,
+      ScaffoldMessenger.of(context);
+      showFToast(
+        context: context,
+        variant: .destructive,
+        title: Text(l10n.loadingSettings),
       );
-          showFToast(context: context, variant: .destructive, title: Text(l10n.loadingSettings));
       return;
     }
     Navigator.of(context).push(
@@ -476,6 +479,7 @@ class ServerSettingsPage extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return AppPage(
+      maxContentWidth: 780,
       title: l10n.serverSettings,
       child: ListView(
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),

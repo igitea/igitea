@@ -14,6 +14,8 @@ import '../models/repo_filter_state.dart';
 import '../widgets/forui/app_filter_chip.dart';
 import '../widgets/forui/app_state_views.dart';
 import '../widgets/issue_filter_bottom_sheet.dart';
+import '../theme/app_palette.dart';
+import '../widgets/forui/app_chrome.dart';
 import '../widgets/premium_card.dart';
 import '../widgets/repo_filter_bottom_sheet.dart';
 import '../widgets/user_avatar.dart';
@@ -23,6 +25,10 @@ import 'user_profile_page.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
+
+  /// Shared focus node so the shell's ⌘K shortcut and header prompt can focus
+  /// the search field.
+  static final FocusNode searchFocusNode = FocusNode();
 
   @override
   State<SearchPage> createState() => _SearchPageState();
@@ -146,80 +152,72 @@ class _SearchPageState extends State<SearchPage> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-          child: Row(
-            children: [
-              for (final (index, label) in [
-                (0, l10n.repositories),
-                (1, l10n.issues),
-                (2, l10n.users),
-              ])
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 3),
-                    child: FButton(
-                      variant: _tabIndex == index ? .primary : .outline,
-                      size: .sm,
-                      onPress: () => setState(() => _tabIndex = index),
-                      child: Flexible(
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: Text(label, maxLines: 1),
-                        ),
-                      ),
+          padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final tabWidth = (constraints.maxWidth - 46)
+                  .clamp(180.0, 420.0)
+                  .toDouble();
+              return Row(
+                children: [
+                  SizedBox(
+                    width: tabWidth,
+                    child: AppSegmentedControl(
+                      index: _tabIndex,
+                      labels: [l10n.repositories, l10n.issues, l10n.users],
+                      onChanged: (index) => setState(() => _tabIndex = index),
                     ),
                   ),
-                ),
-            ],
+                  const Spacer(),
+                  if (_tabIndex != 2)
+                    Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        AppIconButton(
+                          icon: FIcons.listFilter,
+                          label: l10n.moreFilters,
+                          selected: _hasActiveFilters,
+                          onPress: _showFilterSheet,
+                        ),
+                        if (_hasActiveFilters)
+                          Positioned(
+                            right: 7,
+                            top: 6,
+                            child: Container(
+                              width: 5,
+                              height: 5,
+                              decoration: BoxDecoration(
+                                color: context.palette.brand,
+                                shape: BoxShape.circle,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                ],
+              );
+            },
           ),
         ),
         Padding(
-          padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-          child: Row(
-            children: [
-              Expanded(
-                child: FTextField(
-                  control: FTextFieldControl.managed(
-                    controller: _searchController,
-                  ),
-                  hint: l10n.search,
-                  textInputAction: TextInputAction.search,
-                  onSubmit: (_) {
-                    _onSearch();
-                    FocusScope.of(context).unfocus();
-                  },
-                  clearable: (value) => value.text.isNotEmpty,
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 4),
+          child: FTextField(
+            control: FTextFieldControl.managed(controller: _searchController),
+            focusNode: SearchPage.searchFocusNode,
+            hint: l10n.search,
+            textInputAction: TextInputAction.search,
+            onSubmit: (_) {
+              _onSearch();
+              FocusScope.of(context).unfocus();
+            },
+            clearable: (value) => value.text.isNotEmpty,
+            prefixBuilder: (context, style, variants) =>
+                FTextField.prefixIconBuilder(
+                  context,
+                  style,
+                  variants,
+                  const Icon(FIcons.search, size: 16),
                 ),
-              ),
-              const SizedBox(width: 8),
-              if (_tabIndex != 2)
-                FTappable(
-                  onPress: _showFilterSheet,
-                  semanticsLabel: l10n.moreFilters,
-                  child: Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Icon(FIcons.listFilter, size: 18),
-                      ),
-                      if (_hasActiveFilters)
-                        Positioned(
-                          right: 5,
-                          top: 5,
-                          child: Container(
-                            width: 7,
-                            height: 7,
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primary,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-            ],
           ),
         ),
         if (_tabIndex == 0)
@@ -228,7 +226,7 @@ class _SearchPageState extends State<SearchPage> {
             builder: (context, filter, _) {
               if (!filter.hasFilters) return const SizedBox.shrink();
               return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: UIConstants.md),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Wrap(
                   spacing: UIConstants.sm,
                   runSpacing: UIConstants.sm,
@@ -294,7 +292,7 @@ class _SearchPageState extends State<SearchPage> {
             builder: (context, filter, _) {
               if (!filter.hasFilters) return const SizedBox.shrink();
               return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: UIConstants.md),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Wrap(
                   spacing: UIConstants.sm,
                   runSpacing: UIConstants.sm,

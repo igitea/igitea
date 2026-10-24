@@ -120,6 +120,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get error => '错误';
 
   @override
+  String get requestTimedOut => '服务器响应超时，请稍后重试。';
+
+  @override
+  String get networkError => '网络错误';
+
+  @override
   String get noData => '暂无数据';
 
   @override
@@ -473,9 +479,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get loginFailed => '登录失败';
-
-  @override
-  String get networkError => '网络错误';
 
   @override
   String get unknownError => '发生未知错误';
@@ -2584,6 +2587,9 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get error => '錯誤';
 
   @override
+  String get networkError => '網路錯誤';
+
+  @override
   String get noData => '暫無資料';
 
   @override
@@ -2897,9 +2903,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get loginFailed => '登入失敗';
-
-  @override
-  String get networkError => '網路錯誤';
 
   @override
   String get unknownError => '發生未知錯誤';

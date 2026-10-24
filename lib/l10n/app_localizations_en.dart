@@ -121,6 +121,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get error => 'Error';
 
   @override
+  String get requestTimedOut =>
+      'The server took too long to respond. Please try again.';
+
+  @override
+  String get networkError => 'Network error';
+
+  @override
   String get noData => 'No data';
 
   @override
@@ -475,9 +482,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loginFailed => 'Login failed';
-
-  @override
-  String get networkError => 'Network error';
 
   @override
   String get unknownError => 'Unknown error occurred';

@@ -8,7 +8,7 @@
 
 | 主页 | 登录 | 个人资料 | 仓库 |
 |:----:|:----:|:--------:|:----:|
-| <img src="doc/home.png" width="200" /> | <img src="doc/login.png" width="200" /> | <img src="doc/profile.png" width="200" /> | <img src="doc/repos.png" width="200" /> |
+| <img src="doc/home.png" width="260" /> | <img src="doc/login.png" width="260" /> | <img src="doc/profile.png" width="260" /> | <img src="doc/repos.png" width="260" /> |
 
 ## 功能特性
 
@@ -16,7 +16,8 @@
 - 跨平台：Android、iOS、macOS、Linux、Windows、**Web**
 - Clean Architecture + Repository Pattern
 - **Forui** 设计系统（shadcn 风格）：品牌青绿主题、亮/暗色板、自适应导航
-- 统一的 4px 间距网格和字体层级，覆盖所有页面
+- **桌面优先的界面焕新**：自建侧边栏外壳、编辑式仪表盘、卡片化仓库概览、紧凑 Issue 行、骨架屏与淡入淡出转场
+- 基于设计令牌的色板、字体、间距与动效体系，并支持系统「减少动态效果」
 - 120+ 个数据模型，基于 OpenAPI 规范自动生成
 - 49+ 个领域用例，采用 `Either<Failure, T>` 模式
 - 293 个测试通过，`flutter analyze` 无错误
@@ -183,7 +184,7 @@
 | HTTP | http package |
 | 存储 | path_provider, shared_preferences |
 | 国际化 | flutter_localizations |
-| UI | Forui 0.21（未迁移页面回退 Material 3） |
+| UI | Forui 0.21 + 自建设计令牌（语义色板、动效、表面） |
 | 链接 | url_launcher |
 | 文件选择 | file_picker |
 | Markdown | flutter_markdown |

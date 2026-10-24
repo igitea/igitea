@@ -3,6 +3,15 @@
 ## [Unreleased]
 
 ### Changed
+- **UI quality pass — "Precision Instrument"**: a token-driven refresh built around a warm-neutral canvas, hairline surfaces, semantic Git colors and a single teal accent; new `AppPalette` theme extension, `AppSurface` hover cards, `AppSkeleton` shimmer placeholders and `AppSegmentedControl`
+- **Desktop shell**: hand-built sidebar with animated active indicator and account card, a quieter top bar with ⌘K search prompt and theme toggle, ⌘1–⌘4 tab shortcuts, and a macOS window that extends under a transparent title bar with a new brand icon
+- **Dashboard**: editorial date/hero card, responsive five-tile work grid, two-column favorites/shortcuts + activity rail, skeleton loading, create-repository action and compact repository rows
+- **Repository overview**: the tinted gradient header was replaced by a surface card with identity, meta, inline stats, language distribution, topics and copyable clone URLs
+- **Explore / Issues / Login / Settings**: compact segmented controls and search-first layouts, compact issue rows with inline labels, a branded login card, friendlier empty/error states and timeout/network messages
+- **Profiles**: card-based headers with inline stats for both the signed-in user and public profiles, grouped account rows and a calmer sign-out row
+- **Motion**: fade-through page transitions, state-preserving cross-faded tab switches, hover transitions and shimmer skeletons; all motion collapses under the OS "reduce motion" setting
+- **Typography & color**: Inter line heights restored for Material widgets, semantic error/warning/info/purple tokens, focus rings and hover states shared by Forui and legacy Material surfaces
+- **Boot & chrome**: branded boot splash, window state restoration disabled so the app always opens at a comfortable desktop size, refreshed README screenshots
 - **Forui design system**: the app now renders through Forui (shadcn-style) — `forui` 0.21.3, a shared `FTheme` (teal brand, light/dark) wrapping every route, `FToaster`/`FTooltipGroup`, and an approximate Material theme so screens that are not migrated yet already match the new look
 - **Adaptive app shell**: `HomePage` rebuilt on `FScaffold`/`FHeader`; wide windows get an `FSidebar`, phones a `FBottomNavigationBar`; the header title and actions now follow the selected tab, and tab pages no longer nest their own app bars (removes the double header)
 - **Home dashboard**: sections are Forui cards with `FTappable` rows and `FButton` actions; loading/empty/error placeholders use the new Forui state views

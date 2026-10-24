@@ -11,6 +11,8 @@ import '../../domain/entities/issue_state.dart';
 import '../../l10n/app_localizations.dart';
 import '../../presentation/state/issue_notifier.dart';
 import '../models/issue_filter_state.dart';
+import '../theme/app_palette.dart';
+import '../widgets/forui/app_chrome.dart';
 import '../widgets/forui/app_filter_chip.dart';
 import '../widgets/forui/app_page.dart';
 import '../widgets/forui/app_state_views.dart';
@@ -210,11 +212,12 @@ class _IssueListPageState extends State<IssueListPage> {
     final l10n = AppLocalizations.of(context)!;
     return AppPage(
       title: l10n.issues,
+      maxContentWidth: 980,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+            padding: const EdgeInsets.fromLTRB(20, 14, 20, 4),
             child: FTextField(
               control: FTextFieldControl.managed(
                 controller: _searchController,
@@ -222,40 +225,57 @@ class _IssueListPageState extends State<IssueListPage> {
               ),
               hint: l10n.searchIssues,
               clearable: (value) => value.text.isNotEmpty,
+              prefixBuilder: (context, style, variants) =>
+                  FTextField.prefixIconBuilder(
+                    context,
+                    style,
+                    variants,
+                    const Icon(FIcons.search, size: 16),
+                  ),
             ),
           ),
           FadeInWrapper(
             child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: UIConstants.md,
-                vertical: UIConstants.sm,
-              ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: _FilterChips(
-                      selectedState:
-                          Injection.issueNotifier.issuesListFilter ?? 'open',
-                      onSelected: (state) {
-                        setState(() {});
-                        Injection.issueNotifier.searchIssues(
-                          _searchQuery,
-                          state: state,
-                          filters: _filterState.value,
-                        );
-                      },
-                      l10n: l10n,
-                    ),
-                  ),
-                  FTappable(
-                    onPress: _showFilterSheet,
-                    semanticsLabel: l10n.moreFilters,
-                    child: const Padding(
-                      padding: EdgeInsets.all(8),
-                      child: Icon(FIcons.listFilter, size: 18),
-                    ),
-                  ),
-                ],
+              padding: const EdgeInsets.fromLTRB(20, 10, 20, 6),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final options = [
+                    ('open', l10n.open),
+                    ('closed', l10n.closed),
+                    ('all', l10n.all),
+                  ];
+                  final selected =
+                      Injection.issueNotifier.issuesListFilter ?? 'open';
+                  final index = options.indexWhere(
+                    (option) => option.$1 == selected,
+                  );
+                  return Row(
+                    children: [
+                      SizedBox(
+                        width: (constraints.maxWidth - 48).clamp(180, 260),
+                        child: AppSegmentedControl(
+                          index: index < 0 ? 0 : index,
+                          labels: [for (final option in options) option.$2],
+                          onChanged: (i) {
+                            setState(() {});
+                            Injection.issueNotifier.searchIssues(
+                              _searchQuery,
+                              state: options[i].$1,
+                              filters: _filterState.value,
+                            );
+                          },
+                        ),
+                      ),
+                      const Spacer(),
+                      AppIconButton(
+                        icon: FIcons.listFilter,
+                        label: l10n.moreFilters,
+                        selected: _filterState.value.hasFilters,
+                        onPress: _showFilterSheet,
+                      ),
+                    ],
+                  );
+                },
               ),
             ),
           ),
@@ -439,41 +459,6 @@ class _IssueListPageState extends State<IssueListPage> {
   }
 }
 
-class _FilterChips extends StatelessWidget {
-  final String? selectedState;
-  final ValueChanged<String?> onSelected;
-  final AppLocalizations l10n;
-
-  const _FilterChips({
-    required this.selectedState,
-    required this.onSelected,
-    required this.l10n,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final options = [
-      ('open', l10n.open),
-      ('closed', l10n.closed),
-      ('all', l10n.all),
-    ];
-
-    return Wrap(
-      spacing: 6,
-      children: [
-        for (final (value, label) in options)
-          FButton(
-            variant: selectedState == value ? .primary : .outline,
-            size: .xs,
-            mainAxisSize: .min,
-            onPress: () => onSelected(value),
-            child: Text(label),
-          ),
-      ],
-    );
-  }
-}
-
 class _IssueList extends StatefulWidget {
   final List<Issue> issues;
   final bool hasMore;
@@ -588,10 +573,10 @@ class _IssueCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final palette = context.palette;
     final isOpen = issue.state?.isOpen == true;
     final stateIcon = isOpen ? FIcons.circleDot : FIcons.circleCheck;
-    final stateColor = isOpen ? Colors.green : Colors.purple;
+    final stateColor = isOpen ? palette.success : palette.purple;
 
     final repoFullName = issue.repository?.full_name ?? '';
     final owner = issue.repository?.owner ?? '';
@@ -601,94 +586,128 @@ class _IssueCard extends StatelessWidget {
 
     return PremiumListCard(
       onTap: canNavigate ? onTap : null,
+      padding: const EdgeInsets.fromLTRB(14, 11, 12, 11),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(stateIcon, size: UIConstants.iconSm, color: stateColor),
-              const SizedBox(width: UIConstants.sm),
+              Padding(
+                padding: const EdgeInsets.only(top: 2),
+                child: Icon(stateIcon, size: 16, color: stateColor),
+              ),
+              const SizedBox(width: 10),
               Expanded(
-                child: Text(
-                  issue.title ?? l10n.untitled,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            issue.title ?? l10n.untitled,
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: palette.textPrimary,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (issue.number != null)
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8),
+                            child: Text(
+                              '#${issue.number}',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: palette.textSecondary,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 3),
+                    Row(
+                      children: [
+                        if (issue.user != null) ...[
+                          UserAvatar(user: issue.user!, radius: 9),
+                          const SizedBox(width: 5),
+                          Text(
+                            issue.user!.login ?? '',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: palette.textSecondary,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                        ],
+                        if (repoFullName.isNotEmpty) ...[
+                          Flexible(
+                            child: Text(
+                              repoFullName,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: palette.textSecondary,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                        ],
+                        if (issue.updated_at != null)
+                          Text(
+                            _formatDate(issue.updated_at!, l10n),
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: palette.textSecondary.withValues(
+                                alpha: 0.8,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
-              if (issue.number != null)
-                Text(
-                  '#${issue.number}',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant.withValues(
-                      alpha: 0.7,
+              const SizedBox(width: 10),
+              if ((issue.comments ?? 0) > 0)
+                Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      FIcons.messageSquare,
+                      size: 12,
+                      color: palette.textSecondary,
                     ),
-                  ),
+                    const SizedBox(width: 3),
+                    Text(
+                      '${issue.comments}',
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: palette.textSecondary,
+                      ),
+                    ),
+                  ],
+                )
+              else
+                Icon(
+                  FIcons.chevronRight,
+                  size: 14,
+                  color: palette.textSecondary.withValues(alpha: 0.7),
                 ),
-            ],
-          ),
-          const SizedBox(height: UIConstants.sm),
-          Row(
-            children: [
-              if (issue.user != null) ...[
-                UserAvatar(user: issue.user!, radius: UIConstants.avatarXs),
-                const SizedBox(width: UIConstants.xs),
-                Text(
-                  issue.user!.login ?? '',
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-              const Spacer(),
-              if (repoFullName.isNotEmpty) ...[
-                Text(
-                  repoFullName,
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
             ],
           ),
           if (issue.labels != null && issue.labels!.isNotEmpty) ...[
-            const SizedBox(height: UIConstants.sm),
-            _LabelRow(labels: issue.labels!),
+            const SizedBox(height: 7),
+            Padding(
+              padding: const EdgeInsets.only(left: 26),
+              child: _LabelRow(labels: issue.labels!),
+            ),
           ],
-          const SizedBox(height: UIConstants.sm),
-          Row(
-            children: [
-              if (issue.comments != null) ...[
-                Icon(
-                  FIcons.messageSquare,
-                  size: UIConstants.iconXs,
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-                const SizedBox(width: UIConstants.xs),
-                Text(
-                  '${issue.comments}',
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant.withValues(
-                      alpha: 0.7,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: UIConstants.md),
-              ],
-              if (issue.updated_at != null) ...[
-                Text(
-                  _formatDate(issue.updated_at!, l10n),
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant.withValues(
-                      alpha: 0.7,
-                    ),
-                  ),
-                ),
-              ],
-            ],
-          ),
         ],
       ),
     );
@@ -730,7 +749,10 @@ class _LabelRow extends StatelessWidget {
       runSpacing: 3,
       children: [
         ...labels.take(maxShow).map((label) {
-          final c = _color(label.color);
+          final raw = _color(label.color);
+          final c = Theme.of(context).brightness == Brightness.dark
+              ? Color.lerp(raw, Colors.white, 0.28)!
+              : raw;
           return Container(
             padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
             decoration: BoxDecoration(

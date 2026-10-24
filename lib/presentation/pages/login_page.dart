@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 
+import '../../core/constants/app_constants.dart';
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../core/storage/auth_method_storage.dart';
 import '../../core/storage/auth_storage.dart';
 import '../../domain/entities/auth_state.dart';
 import '../../l10n/app_localizations.dart';
+import '../theme/app_palette.dart';
+import '../widgets/app_surface.dart';
+import '../widgets/forui/app_chrome.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -246,22 +250,53 @@ class _LoginPageState extends State<LoginPage> {
                       return Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          _buildBrand(theme, l10n),
-                          const SizedBox(height: 28),
-                          _buildModeSelector(l10n, isLoading),
-                          const SizedBox(height: 16),
-                          if (errorMessage != null) ...[
-                            FAlert(
-                              variant: .destructive,
-                              title: Text(errorMessage),
+                          _buildBrand(context, theme, l10n),
+                          const SizedBox(height: 24),
+                          AppSurface(
+                            padding: const EdgeInsets.all(20),
+                            radius: 18,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                AppSegmentedControl(
+                                  index: _mode,
+                                  labels: [
+                                    l10n.account,
+                                    l10n.token,
+                                    l10n.oauth2,
+                                  ],
+                                  onChanged: (index) {
+                                    if (!isLoading) {
+                                      setState(() => _mode = index);
+                                    }
+                                  },
+                                ),
+                                const SizedBox(height: 18),
+                                if (errorMessage != null) ...[
+                                  FAlert(
+                                    variant: .destructive,
+                                    title: Text(errorMessage),
+                                  ),
+                                  const SizedBox(height: 16),
+                                ],
+                                switch (_mode) {
+                                  1 => _buildTokenForm(isLoading, l10n),
+                                  2 => _buildOAuth2Form(theme, isLoading, l10n),
+                                  _ => _buildBasicAuthForm(isLoading, l10n),
+                                },
+                              ],
                             ),
-                            const SizedBox(height: 16),
-                          ],
-                          switch (_mode) {
-                            1 => _buildTokenForm(isLoading, l10n),
-                            2 => _buildOAuth2Form(theme, isLoading, l10n),
-                            _ => _buildBasicAuthForm(isLoading, l10n),
-                          },
+                          ),
+                          const SizedBox(height: 18),
+                          Text(
+                            'iGitea v$appVersion',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              fontSize: 10.5,
+                              color: context.palette.textSecondary.withValues(
+                                alpha: 0.7,
+                              ),
+                            ),
+                          ),
                         ],
                       );
                     },
@@ -275,17 +310,23 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Widget _buildBrand(ThemeData theme, AppLocalizations l10n) {
+  Widget _buildBrand(
+    BuildContext context,
+    ThemeData theme,
+    AppLocalizations l10n,
+  ) {
     return Column(
       children: [
-        Icon(FIcons.squareCode, size: 56, color: theme.colorScheme.primary),
-        const SizedBox(height: 12),
+        const BrandMark(size: 46, iconSize: 24),
+        const SizedBox(height: 14),
         Text(
           l10n.appTitle,
           textAlign: TextAlign.center,
           style: theme.textTheme.headlineMedium?.copyWith(
+            fontSize: 26,
             fontWeight: FontWeight.w700,
-            color: theme.colorScheme.primary,
+            letterSpacing: -0.6,
+            color: context.palette.textPrimary,
           ),
         ),
         const SizedBox(height: 4),
@@ -293,35 +334,10 @@ class _LoginPageState extends State<LoginPage> {
           l10n.connectToGitea,
           textAlign: TextAlign.center,
           style: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant,
+            fontSize: 12.5,
+            color: context.palette.textSecondary,
           ),
         ),
-      ],
-    );
-  }
-
-  Widget _buildModeSelector(AppLocalizations l10n, bool isLoading) {
-    final labels = [l10n.account, l10n.token, l10n.oauth2];
-
-    return Row(
-      children: [
-        for (var i = 0; i < labels.length; i++)
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 3),
-              child: FButton(
-                variant: _mode == i ? .primary : .outline,
-                size: .sm,
-                onPress: isLoading ? null : () => setState(() => _mode = i),
-                child: Flexible(
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(labels[i], maxLines: 1),
-                  ),
-                ),
-              ),
-            ),
-          ),
       ],
     );
   }

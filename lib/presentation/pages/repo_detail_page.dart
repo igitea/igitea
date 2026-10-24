@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 
 import '../../core/animations/animated_wrapper.dart';
@@ -24,6 +25,10 @@ import '../widgets/forui/app_page.dart';
 import '../widgets/forui/app_section.dart';
 import '../widgets/forui/app_state_views.dart';
 import '../widgets/forui/app_tile.dart';
+import '../theme/app_palette.dart';
+import '../widgets/app_surface.dart';
+import '../widgets/forui/app_chrome.dart';
+import '../widgets/language_dot.dart';
 import '../widgets/premium_card.dart';
 import '../widgets/user_avatar.dart';
 import '../widgets/file_icon.dart';
@@ -46,34 +51,6 @@ import 'webhook_list_page.dart';
 import 'label_list_page.dart';
 import 'actions_list_page.dart';
 import 'repo_stargazers_page.dart';
-
-const _languageColors = <String, Color>{
-  'Dart': Color(0xFF00B4AB),
-  'TypeScript': Color(0xFF3178C6),
-  'JavaScript': Color(0xFFF7DF1E),
-  'Python': Color(0xFF3572A5),
-  'Java': Color(0xFFB07219),
-  'Go': Color(0xFF00ADD8),
-  'Rust': Color(0xFFDEA584),
-  'C': Color(0xFF555555),
-  'C++': Color(0xFFF34B7D),
-  'C#': Color(0xFF178600),
-  'Ruby': Color(0xFFCC342D),
-  'PHP': Color(0xFF4F5D95),
-  'Swift': Color(0xFFF05138),
-  'Kotlin': Color(0xFFA97BFF),
-  'Shell': Color(0xFF89E051),
-  'HTML': Color(0xFFE34C26),
-  'CSS': Color(0xFF563D7C),
-  'Lua': Color(0xFF000080),
-  'Scala': Color(0xFFDC322F),
-  'Vue': Color(0xFF41B883),
-  'Objective-C': Color(0xFF438EFF),
-  'Perl': Color(0xFF0298C3),
-  'Haskell': Color(0xFF5E5086),
-  'Elixir': Color(0xFF6E4A7E),
-  'Clojure': Color(0xFFDB5855),
-};
 
 class RepoDetailPage extends StatefulWidget {
   final String owner;
@@ -226,37 +203,17 @@ class _RepoDetailPageState extends State<RepoDetailPage> {
             l10n: l10n,
             owner: widget.owner,
             repoName: widget.repo,
-          ),
-        ),
-        if (_languages.isNotEmpty)
-          Padding(
-            padding: UIConstants.pagePadding.copyWith(
-              top: UIConstants.sm,
-              bottom: UIConstants.sm,
-            ),
-            child: _LanguageBar(languages: _languages),
-          ),
-        Padding(
-          padding: UIConstants.pagePadding.copyWith(
-            top: UIConstants.md,
-            bottom: UIConstants.sm,
-          ),
-          child: Text(
-            l10n.repositorySections,
-            style: Theme.of(
-              context,
-            ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+            languages: _languages,
           ),
         ),
         Padding(
-          padding: UIConstants.pagePadding,
+          padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
           child: AppSection(
-            title: '',
-            showHeader: false,
+            title: l10n.repositorySections,
             children: [
               for (final section in sections)
                 AppTile(
-                  leading: Icon(section.icon, size: 18),
+                  leading: _SectionIcon(icon: section.icon),
                   title: section.title,
                   onPress: () => _navigateToSection(
                     context,
@@ -393,34 +350,27 @@ class _RepoHeader extends StatelessWidget {
   final AppLocalizations l10n;
   final String owner;
   final String repoName;
+  final Map<String, int> languages;
 
   const _RepoHeader({
     required this.repo,
     required this.l10n,
     required this.owner,
     required this.repoName,
+    required this.languages,
   });
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final description = repo.description?.trim() ?? '';
+    final login = repo.owner?.login ?? owner;
 
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            colorScheme.primaryContainer.withValues(alpha: 0.3),
-            colorScheme.surface,
-          ],
-        ),
-      ),
-      child: Padding(
-        padding:
-            UIConstants.pagePadding +
-            const EdgeInsets.symmetric(vertical: UIConstants.md),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+      child: AppSurface(
+        padding: const EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -428,156 +378,143 @@ class _RepoHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (repo.owner != null)
-                  UserAvatar(user: repo.owner!, radius: UIConstants.avatarXl)
+                  UserAvatar(user: repo.owner!, radius: 24)
                 else
-                  FAvatar.raw(
-                    size: UIConstants.avatarXl * 2,
-                    style: .delta(
-                      backgroundColor: colorScheme.primaryContainer,
+                  Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      color: palette.brandSoft,
+                      borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
                       FIcons.folderGit2,
-                      color: colorScheme.onPrimaryContainer,
+                      size: 22,
+                      color: palette.brand,
                     ),
                   ),
-                const SizedBox(width: UIConstants.md),
+                const SizedBox(width: 14),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Row(
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 8,
+                        runSpacing: 6,
                         children: [
-                          Flexible(
-                            child: Text(
-                              repo.full_name ?? repo.name ?? '',
-                              style: theme.textTheme.titleMedium?.copyWith(
-                                fontWeight: FontWeight.w600,
-                              ),
-                              overflow: TextOverflow.ellipsis,
+                          Text(
+                            repo.full_name ?? repo.name ?? '',
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontSize: 19,
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: -0.4,
+                              height: 1.2,
+                              color: palette.textPrimary,
                             ),
                           ),
-                          if (repo.private == true) ...[
-                            const SizedBox(width: UIConstants.sm),
-                            _Badge(
+                          if (repo.private == true)
+                            _RepoBadge(
+                              icon: FIcons.lock,
                               label: l10n.private,
-                              color: colorScheme.error,
-                              backgroundColor: colorScheme.errorContainer,
+                              color: palette.textSecondary,
+                              background: palette.surfaceMuted,
                             ),
-                          ],
-                          if (repo.archived == true) ...[
-                            const SizedBox(width: UIConstants.sm),
-                            _Badge(
+                          if (repo.archived == true)
+                            _RepoBadge(
+                              icon: FIcons.archive,
                               label: l10n.archived,
-                              color: colorScheme.tertiary,
-                              backgroundColor: colorScheme.tertiaryContainer,
+                              color: palette.warning,
+                              background: palette.warningSoft,
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 5),
+                      Wrap(
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: 8,
+                        runSpacing: 4,
+                        children: [
+                          Text(
+                            '@$login',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: palette.textSecondary,
+                            ),
+                          ),
+                          if (repo.language != null &&
+                              repo.language!.isNotEmpty) ...[
+                            const _MetaDot(),
+                            LanguageDot(language: repo.language),
+                          ],
+                          if (repo.default_branch != null &&
+                              repo.default_branch!.isNotEmpty) ...[
+                            const _MetaDot(),
+                            Icon(
+                              FIcons.gitBranch,
+                              size: 11,
+                              color: palette.textSecondary,
+                            ),
+                            const SizedBox(width: 3),
+                            Text(
+                              repo.default_branch!,
+                              style: TextStyle(
+                                fontSize: 11.5,
+                                color: palette.textSecondary,
+                              ),
                             ),
                           ],
                         ],
                       ),
-                      if (repo.owner?.login != null) ...[
-                        const SizedBox(height: UIConstants.xs),
-                        Text(
-                          '@${repo.owner!.login!}',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
                     ],
                   ),
                 ),
               ],
             ),
-            if (repo.description != null && repo.description!.isNotEmpty) ...[
-              const SizedBox(height: UIConstants.sm),
+            if (description.isNotEmpty) ...[
+              const SizedBox(height: 14),
               Text(
-                repo.description!,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: colorScheme.onSurfaceVariant,
+                description,
+                style: TextStyle(
+                  fontSize: 13,
+                  height: 1.5,
+                  color: palette.textSecondary,
                 ),
               ),
             ],
-            const SizedBox(height: UIConstants.md),
-            _StatsGrid(
+            const SizedBox(height: 18),
+            _StatsRow(repo: repo, l10n: l10n, owner: owner, repoName: repoName),
+            if (languages.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              Container(height: 1, color: palette.border),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Text(
+                    l10n.language,
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      letterSpacing: 0.4,
+                      color: palette.textSecondary,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              _LanguageBar(languages: languages),
+            ],
+            const SizedBox(height: 16),
+            Container(height: 1, color: palette.border),
+            const SizedBox(height: 14),
+            _TopicsRow(
               repo: repo,
               l10n: l10n,
               owner: owner,
               repoName: repoName,
             ),
-            const SizedBox(height: UIConstants.sm),
-            Wrap(
-              spacing: UIConstants.sm,
-              runSpacing: UIConstants.xs,
-              children: [
-                if (repo.language != null && repo.language!.isNotEmpty)
-                  _LanguageBadge(language: repo.language!),
-                if (repo.default_branch != null)
-                  _Badge(
-                    icon: FIcons.gitBranch,
-                    label: repo.default_branch!,
-                    color: colorScheme.primary,
-                    backgroundColor: colorScheme.primaryContainer,
-                  ),
-              ],
-            ),
-            const SizedBox(height: UIConstants.sm),
-            Row(
-              children: [
-                Text(
-                  l10n.topics,
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                const Spacer(),
-                FTooltip(
-                  tipBuilder: (context, controller) =>
-                      Text('${l10n.edit} ${l10n.topics}'),
-                  child: FTappable(
-                    onPress: () => showTopicEditDialog(
-                      context,
-                      owner,
-                      repoName,
-                      repo.topics ?? [],
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(4),
-                      child: Icon(
-                        FIcons.pencil,
-                        size: 14,
-                        color: theme.colorScheme.primary,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: UIConstants.xs),
-            if (repo.topics != null && repo.topics!.isNotEmpty)
-              Wrap(
-                spacing: UIConstants.xs,
-                runSpacing: UIConstants.xs,
-                children: repo.topics!
-                    .map(
-                      (t) => FBadge(
-                        variant: .outline,
-                        child: Text(t, style: const TextStyle(fontSize: 11)),
-                      ),
-                    )
-                    .toList(),
-              )
-            else
-              Text(
-                l10n.noTopics,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                  fontStyle: FontStyle.italic,
-                ),
-              ),
-            if (repo.clone_url != null || repo.ssh_url != null) ...[
-              const SizedBox(height: UIConstants.sm),
-              _CloneUrls(repo: repo, l10n: l10n),
-            ],
+            const SizedBox(height: 14),
+            _CloneUrls(repo: repo, l10n: l10n),
           ],
         ),
       ),
@@ -585,13 +522,68 @@ class _RepoHeader extends StatelessWidget {
   }
 }
 
-class _StatsGrid extends StatelessWidget {
+class _MetaDot extends StatelessWidget {
+  const _MetaDot();
+
+  @override
+  Widget build(BuildContext context) {
+    return Text(
+      '·',
+      style: TextStyle(fontSize: 12, color: context.palette.borderStrong),
+    );
+  }
+}
+
+class _RepoBadge extends StatelessWidget {
+  const _RepoBadge({
+    required this.label,
+    required this.color,
+    required this.background,
+    this.icon,
+  });
+
+  final String label;
+  final Color color;
+  final Color background;
+  final IconData? icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2.5),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(icon, size: 10, color: color),
+            const SizedBox(width: 3),
+          ],
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.2,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StatsRow extends StatelessWidget {
   final Repository repo;
   final AppLocalizations l10n;
   final String owner;
   final String repoName;
 
-  const _StatsGrid({
+  const _StatsRow({
     required this.repo,
     required this.l10n,
     required this.owner,
@@ -600,175 +592,193 @@ class _StatsGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
+    final stats = <_StatData>[
+      _StatData(
+        icon: FIcons.star,
+        value: '${repo.stars_count ?? 0}',
+        label: l10n.stars,
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => RepoStargazersPage(owner: owner, repo: repoName),
+          ),
+        ),
+      ),
+      _StatData(
+        icon: FIcons.gitFork,
+        value: '${repo.forks_count ?? 0}',
+        label: l10n.forks,
+      ),
+      _StatData(
+        icon: FIcons.eye,
+        value: '${repo.watchers_count ?? 0}',
+        label: l10n.watchers,
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => RepoStargazersPage(owner: owner, repo: repoName),
+          ),
+        ),
+      ),
+      _StatData(
+        icon: FIcons.circleDot,
+        value: '${repo.open_issues_count ?? 0}',
+        label: l10n.issues,
+      ),
+    ];
+
     return Row(
       children: [
-        Expanded(
-          child: _StatCard(
-            icon: FIcons.star,
-            value: '${repo.stars_count ?? 0}',
-            label: l10n.stars,
-            onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) =>
-                    RepoStargazersPage(owner: owner, repo: repoName),
-              ),
+        for (var i = 0; i < stats.length; i++) ...[
+          if (i > 0)
+            Container(
+              width: 1,
+              height: 26,
+              margin: const EdgeInsets.symmetric(horizontal: 12),
+              color: palette.border,
             ),
-          ),
-        ),
-        const SizedBox(width: UIConstants.sm),
-        Expanded(
-          child: _StatCard(
-            icon: FIcons.gitFork,
-            value: '${repo.forks_count ?? 0}',
-            label: l10n.forks,
-          ),
-        ),
-        const SizedBox(width: UIConstants.sm),
-        Expanded(
-          child: _StatCard(
-            icon: FIcons.eye,
-            value: '${repo.watchers_count ?? 0}',
-            label: l10n.watchers,
-            onTap: () => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) =>
-                    RepoStargazersPage(owner: owner, repo: repoName),
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(width: UIConstants.sm),
-        Expanded(
-          child: _StatCard(
-            icon: FIcons.bug,
-            value: '${repo.open_issues_count ?? 0}',
-            label: l10n.issues,
-          ),
-        ),
+          Expanded(child: _StatItem(data: stats[i])),
+        ],
       ],
     );
   }
 }
 
-class _StatCard extends StatelessWidget {
-  final IconData icon;
-  final String value;
-  final String label;
-  final VoidCallback? onTap;
-
-  const _StatCard({
+class _StatData {
+  const _StatData({
     required this.icon,
     required this.value,
     required this.label,
     this.onTap,
   });
 
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final child = Container(
-      padding: const EdgeInsets.symmetric(
-        vertical: UIConstants.sm,
-        horizontal: UIConstants.xs,
-      ),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
-      ),
-      child: Column(
-        children: [
-          Icon(
-            icon,
-            size: UIConstants.iconSm,
-            color: theme.colorScheme.onSurfaceVariant,
-          ),
-          const SizedBox(height: UIConstants.xs),
-          Text(
-            value,
-            style: theme.textTheme.labelMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          Text(
-            label,
-            style: theme.textTheme.labelSmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ],
-      ),
-    );
-    if (onTap != null) {
-      return FTappable(onPress: onTap, child: child);
-    }
-    return child;
-  }
+  final IconData icon;
+  final String value;
+  final String label;
+  final VoidCallback? onTap;
 }
 
-class _LanguageBadge extends StatelessWidget {
-  final String language;
+class _StatItem extends StatelessWidget {
+  const _StatItem({required this.data});
 
-  const _LanguageBadge({required this.language});
+  final _StatData data;
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Row(
+    final palette = context.palette;
+    final content = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
-          width: 10,
-          height: 10,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: _languageColors[language] ?? const Color(0xFF8B949E),
-          ),
+        Row(
+          children: [
+            Icon(data.icon, size: 13, color: palette.textSecondary),
+            const SizedBox(width: 5),
+            Text(
+              data.value,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: palette.textPrimary,
+              ),
+            ),
+          ],
         ),
-        const SizedBox(width: UIConstants.xs),
-        Text(language, style: theme.textTheme.labelSmall),
+        const SizedBox(height: 1),
+        Text(
+          data.label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyle(fontSize: 10.5, color: palette.textSecondary),
+        ),
       ],
     );
+    if (data.onTap == null) return content;
+    return FTappable(onPress: data.onTap, child: content);
   }
 }
 
-class _Badge extends StatelessWidget {
-  final String label;
-  final Color color;
-  final Color backgroundColor;
-  final IconData? icon;
+class _TopicsRow extends StatelessWidget {
+  final Repository repo;
+  final AppLocalizations l10n;
+  final String owner;
+  final String repoName;
 
-  const _Badge({
-    required this.label,
-    required this.color,
-    required this.backgroundColor,
-    this.icon,
+  const _TopicsRow({
+    required this.repo,
+    required this.l10n,
+    required this.owner,
+    required this.repoName,
   });
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: UIConstants.sm,
-        vertical: UIConstants.xs,
-      ),
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (icon != null) ...[
-            Icon(icon, size: 12, color: color),
-            const SizedBox(width: UIConstants.xs),
+    final palette = context.palette;
+    final topics = repo.topics ?? const <String>[];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Text(
+              l10n.topics,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.4,
+                color: palette.textSecondary,
+              ),
+            ),
+            const Spacer(),
+            AppIconButton(
+              icon: FIcons.pencil,
+              label: '${l10n.edit} ${l10n.topics}',
+              size: 26,
+              iconSize: 13,
+              onPress: () =>
+                  showTopicEditDialog(context, owner, repoName, topics),
+            ),
           ],
-          Text(
-            label,
-            style: theme.textTheme.labelSmall?.copyWith(color: color),
+        ),
+        const SizedBox(height: 7),
+        if (topics.isNotEmpty)
+          Wrap(
+            spacing: 6,
+            runSpacing: 6,
+            children: [
+              for (final topic in topics)
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 9,
+                    vertical: 3,
+                  ),
+                  decoration: BoxDecoration(
+                    color: palette.brandSoft,
+                    borderRadius: BorderRadius.circular(100),
+                  ),
+                  child: Text(
+                    topic,
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w500,
+                      color: palette.brand,
+                    ),
+                  ),
+                ),
+            ],
+          )
+        else
+          Row(
+            children: [
+              Icon(FIcons.tag, size: 12, color: palette.textSecondary),
+              const SizedBox(width: 6),
+              Text(
+                l10n.noTopics,
+                style: TextStyle(fontSize: 11.5, color: palette.textSecondary),
+              ),
+            ],
           ),
-        ],
-      ),
+      ],
     );
   }
 }
@@ -781,70 +791,86 @@ class _CloneUrls extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final palette = context.palette;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        Row(
+          children: [
+            Icon(FIcons.link2, size: 12, color: palette.textSecondary),
+            const SizedBox(width: 6),
+            Text(
+              l10n.cloneUrl,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 0.4,
+                color: palette.textSecondary,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 7),
         if (repo.clone_url != null)
-          _UrlRow(
-            label: l10n.https,
-            url: repo.clone_url!,
-            theme: theme,
-            l10n: l10n,
-          ),
+          _CloneRow(label: 'HTTPS', url: repo.clone_url!, l10n: l10n),
         if (repo.ssh_url != null)
-          _UrlRow(
-            label: l10n.ssh,
-            url: repo.ssh_url!,
-            theme: theme,
-            l10n: l10n,
-          ),
+          _CloneRow(label: 'SSH', url: repo.ssh_url!, l10n: l10n),
       ],
     );
   }
 }
 
-class _UrlRow extends StatelessWidget {
+class _CloneRow extends StatelessWidget {
   final String label;
   final String url;
-  final ThemeData theme;
   final AppLocalizations l10n;
 
-  const _UrlRow({
-    required this.label,
-    required this.url,
-    required this.theme,
-    required this.l10n,
-  });
+  const _CloneRow({required this.label, required this.url, required this.l10n});
 
   @override
   Widget build(BuildContext context) {
+    final palette = context.palette;
     return Container(
-      margin: const EdgeInsets.only(bottom: UIConstants.xs),
-      padding: const EdgeInsets.symmetric(
-        horizontal: UIConstants.sm,
-        vertical: UIConstants.xs,
-      ),
+      margin: const EdgeInsets.only(bottom: 6),
+      padding: const EdgeInsets.fromLTRB(10, 5, 5, 5),
       decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
-        borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
+        color: palette.surfaceMuted.withValues(alpha: 0.55),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: palette.border),
       ),
       child: Row(
         children: [
           SizedBox(
-            width: 48,
-            child: Text(label, style: theme.textTheme.labelSmall),
+            width: 44,
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 9.5,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.5,
+                color: palette.textSecondary,
+              ),
+            ),
           ),
           Expanded(
             child: Text(
               url,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant.withValues(
-                  alpha: 0.7,
-                ),
-              ),
+              maxLines: 1,
               overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 11.5, color: palette.textSecondary),
             ),
+          ),
+          AppIconButton(
+            icon: FIcons.copy,
+            label: l10n.copy,
+            size: 24,
+            iconSize: 13,
+            onPress: () async {
+              await Clipboard.setData(ClipboardData(text: url));
+              if (context.mounted) {
+                showFToast(context: context, title: Text(l10n.copied));
+              }
+            },
           ),
         ],
       ),
@@ -3013,7 +3039,7 @@ class _LanguageBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final palette = context.palette;
     final total = languages.values.fold<int>(0, (sum, v) => sum + v);
     if (total == 0) return const SizedBox.shrink();
 
@@ -3025,18 +3051,21 @@ class _LanguageBar extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ClipRRect(
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.circular(3),
           child: SizedBox(
-            height: 8,
+            height: 5,
             child: Row(
               children: top.map((e) {
                 final ratio = e.value / total;
-                final color =
-                    _languageColors[e.key] ??
-                    Color((e.key.hashCode & 0xFFFFFF) + 0xFF000000);
+                final color = languageColor(
+                  e.key,
+                  fallback: palette.textSecondary,
+                );
                 return Expanded(
                   flex: (ratio * 1000).round(),
-                  child: Container(color: color),
+                  child: Container(
+                    color: Color.lerp(color, palette.surface, 0.08),
+                  ),
                 );
               }).toList(),
             ),
@@ -3044,31 +3073,33 @@ class _LanguageBar extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Wrap(
-          spacing: 12,
-          runSpacing: 4,
+          spacing: 14,
+          runSpacing: 5,
           children: top.map((e) {
             final ratio = e.value / total;
-            final color =
-                _languageColors[e.key] ??
-                Color((e.key.hashCode & 0xFFFFFF) + 0xFF000000);
+            final color = languageColor(e.key, fallback: palette.textSecondary);
             return Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
-                  width: 8,
-                  height: 8,
+                  width: 7,
+                  height: 7,
                   decoration: BoxDecoration(
                     color: color,
                     shape: BoxShape.circle,
                   ),
                 ),
+                const SizedBox(width: 5),
+                Text(
+                  e.key,
+                  style: TextStyle(fontSize: 11, color: palette.textSecondary),
+                ),
                 const SizedBox(width: 4),
-                Text(e.key, style: theme.textTheme.labelSmall),
-                const SizedBox(width: 2),
                 Text(
                   '${(ratio * 100).toStringAsFixed(1)}%',
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
+                  style: TextStyle(
+                    fontSize: 10.5,
+                    color: palette.textSecondary.withValues(alpha: 0.75),
                   ),
                 ),
               ],
@@ -3229,6 +3260,26 @@ class _TopicEditDialogState extends State<_TopicEditDialog> {
           child: Text(widget.l10n.save),
         ),
       ],
+    );
+  }
+}
+
+class _SectionIcon extends StatelessWidget {
+  const _SectionIcon({required this.icon});
+
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    return Container(
+      width: 28,
+      height: 28,
+      decoration: BoxDecoration(
+        color: palette.brandSoft,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Icon(icon, size: 14, color: palette.brand),
     );
   }
 }

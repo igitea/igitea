@@ -12,10 +12,12 @@ import '../../presentation/state/user_notifier.dart';
 import '../../core/animations/animated_wrapper.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/org_avatar.dart';
+import '../theme/app_palette.dart';
+import '../widgets/app_surface.dart';
+import '../widgets/forui/app_chrome.dart';
 import '../widgets/forui/app_section.dart';
 import '../widgets/forui/app_state_views.dart';
 import '../widgets/forui/app_tile.dart';
-import '../widgets/premium_card.dart';
 import '../widgets/user_avatar.dart';
 import 'create_org_page.dart';
 import 'create_repo_page.dart';
@@ -157,97 +159,107 @@ class _ProfileContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return RefreshIndicator(
-      onRefresh: () async => onRefresh(),
-      child: ListView(
-        padding: const EdgeInsets.only(bottom: UIConstants.xl),
-        children: [
-          FadeInWrapper(child: _UserHeader(user: user)),
-          const SizedBox(height: UIConstants.md),
-          _StatsRow(user: user, l10n: l10n),
-          const SizedBox(height: UIConstants.md),
-          _InfoCards(user: user, l10n: l10n),
-          if (orgs.isNotEmpty) ...[
-            const SizedBox(height: UIConstants.md),
-            _OrgsSection(orgs: orgs, loading: orgsLoading, l10n: l10n),
-          ],
-          const SizedBox(height: UIConstants.md),
-          const SizedBox(height: UIConstants.md),
-          Padding(
-            padding: UIConstants.pagePadding,
-            child: AppSection(
-              title: l10n.account,
-              children: [
-                AppTile(
-                  leading: const Icon(FIcons.plus),
-                  title: l10n.createRepository,
-                  onPress: () async {
-                    final result = await Navigator.of(context).push<bool>(
-                      MaterialPageRoute(builder: (_) => const CreateRepoPage()),
-                    );
-                    if (result == true && context.mounted) {
-                      await Injection.userNotifier.listCurrentUserRepos();
-                    }
-                  },
-                ),
-                AppTile(
-                  leading: const Icon(FIcons.import),
-                  title: l10n.importRepository,
-                  onPress: () async {
-                    final result = await Navigator.of(context).push<bool>(
-                      MaterialPageRoute(
-                        builder: (_) => const MigrateRepoPage(),
-                      ),
-                    );
-                    if (result == true && context.mounted) {
-                      await Injection.userNotifier.listCurrentUserRepos();
-                    }
-                  },
-                ),
-                AppTile(
-                  leading: const Icon(FIcons.star),
-                  title: l10n.starredRepos,
-                  onPress: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const StarredReposPage()),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final inset = constraints.maxWidth > 940
+            ? (constraints.maxWidth - 900) / 2
+            : 20.0;
+        return RefreshIndicator(
+          color: context.palette.brand,
+          backgroundColor: context.palette.surface,
+          onRefresh: () async => onRefresh(),
+          child: ListView(
+            padding: EdgeInsets.fromLTRB(inset, 20, inset, 32),
+            children: [
+              FadeInWrapper(child: _UserHeader(user: user)),
+              const SizedBox(height: 16),
+              _StatsRow(user: user, l10n: l10n),
+              const SizedBox(height: 16),
+              _InfoCards(user: user, l10n: l10n),
+              if (orgs.isNotEmpty) ...[
+                const SizedBox(height: 20),
+                _OrgsSection(orgs: orgs, loading: orgsLoading, l10n: l10n),
+              ],
+              const SizedBox(height: 20),
+              AppSection(
+                title: l10n.account,
+                children: [
+                  AppTile(
+                    leading: const _AccountIcon(FIcons.plus),
+                    title: l10n.createRepository,
+                    onPress: () async {
+                      final result = await Navigator.of(context).push<bool>(
+                        MaterialPageRoute(
+                          builder: (_) => const CreateRepoPage(),
+                        ),
+                      );
+                      if (result == true && context.mounted) {
+                        await Injection.userNotifier.listCurrentUserRepos();
+                      }
+                    },
                   ),
-                ),
-                AppTile(
-                  leading: const Icon(FIcons.package),
-                  title: l10n.packages,
-                  onPress: () => Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (_) => PackageListPage(owner: user.login ?? ''),
+                  AppTile(
+                    leading: const _AccountIcon(FIcons.import),
+                    title: l10n.importRepository,
+                    onPress: () async {
+                      final result = await Navigator.of(context).push<bool>(
+                        MaterialPageRoute(
+                          builder: (_) => const MigrateRepoPage(),
+                        ),
+                      );
+                      if (result == true && context.mounted) {
+                        await Injection.userNotifier.listCurrentUserRepos();
+                      }
+                    },
+                  ),
+                  AppTile(
+                    leading: const _AccountIcon(FIcons.star),
+                    title: l10n.starredRepos,
+                    onPress: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => const StarredReposPage(),
+                      ),
                     ),
                   ),
-                ),
-                AppTile(
-                  leading: const Icon(FIcons.mail),
-                  title: l10n.emails,
-                  onPress: () => Navigator.of(
-                    context,
-                  ).push(MaterialPageRoute(builder: (_) => const EmailsPage())),
-                ),
-                AppTile(
-                  leading: const Icon(FIcons.keyRound),
-                  title: l10n.gpgKeys,
-                  onPress: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const GpgKeysPage()),
+                  AppTile(
+                    leading: const _AccountIcon(FIcons.package),
+                    title: l10n.packages,
+                    onPress: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            PackageListPage(owner: user.login ?? ''),
+                      ),
+                    ),
                   ),
-                ),
-                AppTile(
-                  leading: const Icon(FIcons.settings),
-                  title: l10n.settings,
-                  onPress: () => Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const SettingsPage()),
+                  AppTile(
+                    leading: const _AccountIcon(FIcons.mail),
+                    title: l10n.emails,
+                    onPress: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const EmailsPage()),
+                    ),
                   ),
-                ),
-              ],
-            ),
+                  AppTile(
+                    leading: const _AccountIcon(FIcons.keyRound),
+                    title: l10n.gpgKeys,
+                    onPress: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const GpgKeysPage()),
+                    ),
+                  ),
+                  AppTile(
+                    leading: const _AccountIcon(FIcons.settings),
+                    title: l10n.settings,
+                    onPress: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const SettingsPage()),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              _SignOutButton(),
+            ],
           ),
-          const SizedBox(height: UIConstants.lg),
-          _SignOutButton(),
-        ],
-      ),
+        );
+      },
     );
   }
 }
@@ -261,69 +273,94 @@ class _UserHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
-            theme.colorScheme.surface,
-          ],
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          UIConstants.lg,
-          UIConstants.lg,
-          UIConstants.lg,
-          UIConstants.md,
-        ),
-        child: Column(
-          children: [
-            UserAvatar(user: user, radius: UIConstants.avatarXxl),
-            const SizedBox(height: UIConstants.sm),
-            Text(
-              user.full_name ?? user.login ?? l10n.unknownUser,
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            if (user.login != null) ...[
-              const SizedBox(height: UIConstants.xs),
-              Text(
-                '@${user.login}',
-                style: theme.textTheme.bodyLarge?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-            ],
-            if (user.description != null && user.description!.isNotEmpty) ...[
-              const SizedBox(height: UIConstants.sm),
-              Text(
-                user.description!,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-            if (user.is_admin == true) ...[
-              const SizedBox(height: UIConstants.sm),
-              FBadge(
-                variant: .primary,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
+    final palette = context.palette;
+    final description = user.description?.trim() ?? '';
+
+    return AppSurface(
+      padding: const EdgeInsets.all(20),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          UserAvatar(user: user, radius: 28),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 8,
+                  runSpacing: 6,
                   children: [
-                    const Icon(FIcons.shieldCheck, size: 12),
-                    const SizedBox(width: 4),
-                    Text(l10n.admin),
+                    Text(
+                      user.full_name?.isNotEmpty == true
+                          ? user.full_name!
+                          : user.login ?? l10n.unknownUser,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -0.4,
+                        height: 1.2,
+                        color: palette.textPrimary,
+                      ),
+                    ),
+                    if (user.is_admin == true)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2.5,
+                        ),
+                        decoration: BoxDecoration(
+                          color: palette.brandSoft,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              FIcons.shieldCheck,
+                              size: 10,
+                              color: palette.brand,
+                            ),
+                            const SizedBox(width: 3),
+                            Text(
+                              l10n.admin,
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                                color: palette.brand,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                   ],
                 ),
-              ),
-            ],
-          ],
-        ),
+                if (user.login != null) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    '@${user.login}',
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      color: palette.textSecondary,
+                    ),
+                  ),
+                ],
+                if (description.isNotEmpty) ...[
+                  const SizedBox(height: 10),
+                  Text(
+                    description,
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      height: 1.5,
+                      color: palette.textSecondary,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -337,8 +374,9 @@ class _StatsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: UIConstants.pagePadding,
+    final palette = context.palette;
+    return AppSurface(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       child: Row(
         children: [
           Expanded(
@@ -354,7 +392,7 @@ class _StatsRow extends StatelessWidget {
               },
             ),
           ),
-          const SizedBox(width: UIConstants.sm),
+          Container(width: 1, height: 28, color: palette.border),
           Expanded(
             child: _StatItem(
               label: l10n.followers,
@@ -371,7 +409,7 @@ class _StatsRow extends StatelessWidget {
               },
             ),
           ),
-          const SizedBox(width: UIConstants.sm),
+          Container(width: 1, height: 28, color: palette.border),
           Expanded(
             child: _StatItem(
               label: l10n.following,
@@ -403,28 +441,28 @@ class _StatItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return PremiumCard(
-      onTap: onTap,
-      padding: const EdgeInsets.symmetric(vertical: UIConstants.md),
-      child: Column(
-        children: [
-          Text(
-            value,
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+    final palette = context.palette;
+    final content = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            letterSpacing: -0.3,
+            color: palette.textPrimary,
           ),
-          const SizedBox(height: UIConstants.xs),
-          Text(
-            label,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          style: TextStyle(fontSize: 11, color: palette.textSecondary),
+        ),
+      ],
     );
+    if (onTap == null) return content;
+    return FTappable(onPress: onTap, child: content);
   }
 }
 
@@ -469,10 +507,7 @@ class _InfoCards extends StatelessWidget {
 
     if (items.isEmpty) return const SizedBox.shrink();
 
-    return Padding(
-      padding: UIConstants.pagePadding,
-      child: AppSection(title: '', showHeader: false, children: items),
-    );
+    return AppSection(title: l10n.accountInfo, children: items);
   }
 
   String _formatDate(DateTime date) {
@@ -525,65 +560,65 @@ class _OrgsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: UIConstants.pagePadding,
+          padding: const EdgeInsets.fromLTRB(3, 0, 3, 8),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              FTappable(
-                onPress: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => OrganizationsListPage(orgs: orgs),
-                    ),
-                  );
-                },
-                child: Row(
-                  children: [
-                    Text(
-                      l10n.organisations,
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
+              Expanded(
+                child: FTappable(
+                  onPress: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => OrganizationsListPage(orgs: orgs),
                       ),
-                    ),
-                    const SizedBox(width: UIConstants.xs),
-                    Semantics(
-                      excludeSemantics: true,
-                      child: Icon(
+                    );
+                  },
+                  child: Row(
+                    children: [
+                      Text(
+                        l10n.organisations,
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.4,
+                          color: context.palette.textSecondary,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      Icon(
                         FIcons.chevronRight,
-                        size: 18,
-                        color: theme.colorScheme.onSurfaceVariant,
+                        size: 13,
+                        color: context.palette.textSecondary,
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-              FTappable(
+              AppIconButton(
+                icon: FIcons.plus,
+                label: l10n.organisations,
+                size: 28,
+                iconSize: 15,
                 onPress: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const CreateOrgPage()),
                   );
                 },
-                child: const Padding(
-                  padding: EdgeInsets.all(6),
-                  child: Icon(FIcons.plus),
-                ),
               ),
             ],
           ),
         ),
-        const SizedBox(height: UIConstants.sm),
+        const SizedBox(height: 8),
         SizedBox(
           height: 56,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
-            padding: UIConstants.pagePadding,
+            padding: EdgeInsets.zero,
             itemCount: orgs.length,
             separatorBuilder: (_, _) => const SizedBox(width: UIConstants.md),
             itemBuilder: (context, index) {
@@ -630,17 +665,18 @@ class _SignOutButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Padding(
-      padding: UIConstants.pagePadding,
-      child: SizedBox(
-        width: double.infinity,
-        child: FButton(
-          variant: .destructive,
-          prefix: const Icon(FIcons.logOut),
+    return AppSection(
+      title: '',
+      showHeader: false,
+      children: [
+        AppTile(
+          leading: Icon(FIcons.logOut, size: 16, color: context.palette.danger),
+          title: l10n.signOut,
+          destructive: true,
+          showChevron: false,
           onPress: () => _handleSignOut(context),
-          child: Text(l10n.signOut),
         ),
-      ),
+      ],
     );
   }
 
@@ -667,6 +703,25 @@ class _SignOutButton extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _AccountIcon extends StatelessWidget {
+  const _AccountIcon(this.icon);
+
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 28,
+      height: 28,
+      decoration: BoxDecoration(
+        color: context.palette.surfaceMuted,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Icon(icon, size: 14, color: context.palette.textSecondary),
     );
   }
 }

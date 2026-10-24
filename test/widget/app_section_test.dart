@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:forui/forui.dart';
+import 'package:igitea/presentation/widgets/app_surface.dart';
 import 'package:igitea/presentation/widgets/forui/app_section.dart';
 import 'package:igitea/widget_test_helpers.dart';
 
@@ -23,8 +23,7 @@ void main() {
     expect(find.text('收藏'), findsOneWidget);
     expect(find.text('row1'), findsOneWidget);
     expect(find.text('row2'), findsOneWidget);
-    expect(find.byType(FDivider), findsOneWidget);
-    expect(find.byType(FCard), findsOneWidget);
+    expect(find.byType(AppSurface), findsOneWidget);
   });
 
   testWidgets('hides header when showHeader is false', (tester) async {
@@ -70,6 +69,6 @@ void main() {
     );
 
     expect(find.byType(AppSection), findsOneWidget);
-    expect(find.byType(FCard), findsNothing);
+    expect(find.byType(AppSurface), findsNothing);
   });
 }

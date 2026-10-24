@@ -8,7 +8,7 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 
 | Home | Login | Profile | Repositories |
 |:----:|:-----:|:-------:|:------------:|
-| <img src="doc/home.png" width="200" /> | <img src="doc/login.png" width="200" /> | <img src="doc/profile.png" width="200" /> | <img src="doc/repos.png" width="200" /> |
+| <img src="doc/home.png" width="260" /> | <img src="doc/login.png" width="260" /> | <img src="doc/profile.png" width="260" /> | <img src="doc/repos.png" width="260" /> |
 
 ## Features
 
@@ -16,7 +16,8 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 - Cross-platform: Android, iOS, macOS, Linux, Windows, **Web**
 - Clean Architecture + Repository Pattern
 - **Forui** design system (shadcn-style) with a teal brand theme, light/dark palettes and adaptive navigation
-- Consistent 4px spacing grid and typography hierarchy across all pages
+- **Refreshed desktop-first UI**: hand-built sidebar shell, editorial dashboard, card-based repository overview, compact issue rows, skeleton loading and fade-through transitions
+- Token-driven palette, typography, spacing and motion with reduced-motion support
 - 120+ data models auto-generated from OpenAPI spec
 - 49+ domain use cases with `Either<Failure, T>` pattern
 - 293 tests passing, `flutter analyze` clean (no errors)
@@ -185,7 +186,7 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 | HTTP | http package |
 | Storage | path_provider, shared_preferences |
 | i18n | flutter_localizations |
-| UI | Forui 0.21 (Material 3 fallback for unmigrated screens) |
+| UI | Forui 0.21 + custom design tokens (semantic palette, motion, surfaces) |
 | Links | url_launcher |
 | File Picker | file_picker |
 | Markdown | flutter_markdown |

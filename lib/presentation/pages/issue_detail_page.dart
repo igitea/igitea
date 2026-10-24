@@ -284,6 +284,7 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
     final l10n = AppLocalizations.of(context)!;
     return AppPage(
       title: l10n.issueNumber(widget.index),
+      maxContentWidth: 980,
       actions: [
         if (Injection.issueNotifier.state is IssueDetailLoaded)
           FHeaderAction(

@@ -36,6 +36,8 @@
   "retry": "重试",
   "loading": "加载中...",
   "error": "错误",
+  "requestTimedOut": "服务器响应超时，请稍后重试。",
+  "networkError": "无法连接服务器，请检查网络后重试。",
   "noData": "暂无数据",
   "searchRepos": "搜索仓库",
   "searchIssues": "搜索问题",

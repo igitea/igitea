@@ -10,6 +10,8 @@ import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../domain/usecases/user_usecases.dart';
 import '../../l10n/app_localizations.dart';
+import '../theme/app_palette.dart';
+import '../widgets/app_surface.dart';
 import '../widgets/org_avatar.dart';
 import '../widgets/forui/app_page.dart';
 import '../widgets/forui/app_section.dart';
@@ -97,55 +99,58 @@ class _UserProfilePageState extends State<UserProfilePage> {
           ? _buildSkeleton()
           : _user == null
           ? _buildError(l10n)
-          : RefreshIndicator(
-              onRefresh: _load,
-              child: ListView(
-                padding: const EdgeInsets.only(bottom: UIConstants.xl),
-                children: [
-                  FadeInWrapper(
-                    child: _UserHeader(
-                      user: _user!,
-                      isFollowing: _isFollowing,
-                      followLoading: _followLoading,
-                      onToggleFollow: _toggleFollow,
-                    ),
-                  ),
-                  const SizedBox(height: UIConstants.md),
-                  Padding(
-                    padding: UIConstants.pagePadding,
-                    child: _StatsRow(
-                      user: _user!,
-                      reposCount: _repos.length,
-                      username: widget.username,
-                    ),
-                  ),
-                  const SizedBox(height: UIConstants.md),
-                  _InfoCards(user: _user!, l10n: l10n),
-                  if (_orgs.isNotEmpty) ...[
-                    const SizedBox(height: UIConstants.md),
-                    _OrgsSection(orgs: _orgs, l10n: l10n),
-                  ],
-                  const SizedBox(height: UIConstants.md),
-                  Padding(
-                    padding: UIConstants.pagePadding,
-                    child: Text(
-                      l10n.repositories,
-                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: UIConstants.sm),
-                  ..._repos
-                      .take(5)
-                      .map(
-                        (r) => Padding(
-                          padding: UIConstants.pagePadding,
-                          child: FadeInWrapper(child: _RepoItem(repo: r)),
+          : LayoutBuilder(
+              builder: (context, constraints) {
+                final inset = constraints.maxWidth > 940
+                    ? (constraints.maxWidth - 900) / 2
+                    : 20.0;
+                return RefreshIndicator(
+                  color: context.palette.brand,
+                  backgroundColor: context.palette.surface,
+                  onRefresh: _load,
+                  child: ListView(
+                    padding: EdgeInsets.fromLTRB(inset, 20, inset, 32),
+                    children: [
+                      FadeInWrapper(
+                        child: _UserHeader(
+                          user: _user!,
+                          isFollowing: _isFollowing,
+                          followLoading: _followLoading,
+                          onToggleFollow: _toggleFollow,
                         ),
                       ),
-                ],
-              ),
+                      const SizedBox(height: 16),
+                      _StatsRow(
+                        user: _user!,
+                        reposCount: _repos.length,
+                        username: widget.username,
+                      ),
+                      const SizedBox(height: 16),
+                      _InfoCards(user: _user!, l10n: l10n),
+                      if (_orgs.isNotEmpty) ...[
+                        const SizedBox(height: 20),
+                        _OrgsSection(orgs: _orgs, l10n: l10n),
+                      ],
+                      const SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(3, 0, 3, 8),
+                        child: Text(
+                          l10n.repositories,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: 0.4,
+                            color: context.palette.textSecondary,
+                          ),
+                        ),
+                      ),
+                      ..._repos
+                          .take(5)
+                          .map((r) => FadeInWrapper(child: _RepoItem(repo: r))),
+                    ],
+                  ),
+                );
+              },
             ),
     );
   }
@@ -363,102 +368,117 @@ class _UserHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
-            theme.colorScheme.surface,
-          ],
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          UIConstants.lg,
-          UIConstants.lg,
-          UIConstants.lg,
-          UIConstants.md,
-        ),
-        child: Column(
-          children: [
-            UserAvatar(user: user, radius: UIConstants.avatarXxl),
-            const SizedBox(height: UIConstants.sm),
-            Text(
-              user.full_name ?? user.login ?? l10n.unknownUser,
-              style: theme.textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w600,
-              ),
+    final palette = context.palette;
+    final description = user.description?.trim() ?? '';
+
+    final followButton = followLoading
+        ? const SizedBox(
+            width: 64,
+            height: 32,
+            child: Padding(
+              padding: EdgeInsets.all(7),
+              child: FCircularProgress(size: FCircularProgressSizeVariant.xs),
             ),
-            if (user.login != null) ...[
-              const SizedBox(height: UIConstants.xs),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    '@${user.login}',
-                    style: theme.textTheme.bodyLarge?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                  const SizedBox(width: UIConstants.sm),
-                  SizedBox(
-                    height: 28,
-                    child: followLoading
-                        ? const SizedBox(
-                            width: 28,
-                            height: 28,
-                            child: Padding(
-                              padding: EdgeInsets.all(4),
-                              child: FCircularProgress(size: .xs),
-                            ),
-                          )
-                        : isFollowing
-                        ? FButton(
-                            variant: .outline,
-                            size: .xs,
-                            mainAxisSize: .min,
-                            onPress: onToggleFollow,
-                            child: Text(l10n.unfollow),
-                          )
-                        : FButton(
-                            size: .xs,
-                            mainAxisSize: .min,
-                            onPress: onToggleFollow,
-                            child: Text(l10n.follow),
-                          ),
-                  ),
-                ],
-              ),
-            ],
-            if (user.description != null && user.description!.isNotEmpty) ...[
-              const SizedBox(height: UIConstants.sm),
-              Text(
-                user.description!,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ],
-            if (user.is_admin == true) ...[
-              const SizedBox(height: UIConstants.sm),
-              FBadge(
-                variant: .primary,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
+          )
+        : isFollowing
+        ? FButton(
+            variant: FButtonVariant.outline,
+            size: FButtonSizeVariant.sm,
+            onPress: onToggleFollow,
+            child: Text(l10n.unfollow),
+          )
+        : FButton(
+            size: FButtonSizeVariant.sm,
+            onPress: onToggleFollow,
+            child: Text(l10n.follow),
+          );
+
+    return AppSurface(
+      padding: const EdgeInsets.all(20),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          UserAvatar(user: user, radius: 28),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: 8,
+                  runSpacing: 6,
                   children: [
-                    const Icon(FIcons.shield, size: UIConstants.iconSm),
-                    const SizedBox(width: 4),
-                    Text(l10n.admin),
+                    Text(
+                      user.full_name?.isNotEmpty == true
+                          ? user.full_name!
+                          : user.login ?? l10n.unknownUser,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: -0.4,
+                        height: 1.2,
+                        color: palette.textPrimary,
+                      ),
+                    ),
+                    if (user.is_admin == true)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 2.5,
+                        ),
+                        decoration: BoxDecoration(
+                          color: palette.brandSoft,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              FIcons.shieldCheck,
+                              size: 10,
+                              color: palette.brand,
+                            ),
+                            const SizedBox(width: 3),
+                            Text(
+                              l10n.admin,
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                                color: palette.brand,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                   ],
                 ),
-              ),
-            ],
-          ],
-        ),
+                if (user.login != null) ...[
+                  const SizedBox(height: 4),
+                  Text(
+                    '@${user.login}',
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      color: palette.textSecondary,
+                    ),
+                  ),
+                ],
+                if (description.isNotEmpty) ...[
+                  const SizedBox(height: 10),
+                  Text(
+                    description,
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      height: 1.5,
+                      color: palette.textSecondary,
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+          if (user.login != null) ...[const SizedBox(width: 12), followButton],
+        ],
       ),
     );
   }
@@ -478,98 +498,89 @@ class _StatsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Row(
-      children: [
-        Expanded(
-          child: _StatItem(
-            label: l10n.repositories,
-            value: '$reposCount',
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => UserReposPage(username: username),
-                ),
-              );
-            },
+    final palette = context.palette;
+    final stats = <_StatData>[
+      _StatData(
+        label: l10n.repositories,
+        value: '$reposCount',
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => UserReposPage(username: username)),
+        ),
+      ),
+      _StatData(
+        label: l10n.followers,
+        value: '${user.followers_count ?? 0}',
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) =>
+                FollowPage(username: username, type: FollowType.followers),
           ),
         ),
-        const SizedBox(width: UIConstants.sm),
-        Expanded(
-          child: _StatItem(
-            label: l10n.followers,
-            value: '${user.followers_count ?? 0}',
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => FollowPage(
-                    username: username,
-                    type: FollowType.followers,
-                  ),
-                ),
-              );
-            },
+      ),
+      _StatData(
+        label: l10n.following,
+        value: '${user.following_count ?? 0}',
+        onTap: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) =>
+                FollowPage(username: username, type: FollowType.following),
           ),
         ),
-        const SizedBox(width: UIConstants.sm),
-        Expanded(
-          child: _StatItem(
-            label: l10n.following,
-            value: '${user.following_count ?? 0}',
-            onTap: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => FollowPage(
-                    username: username,
-                    type: FollowType.following,
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-        const SizedBox(width: UIConstants.sm),
-        Expanded(
-          child: _StatItem(
-            label: l10n.stars,
-            value: '${user.starred_repos_count ?? 0}',
-          ),
-        ),
-      ],
+      ),
+      _StatData(label: l10n.stars, value: '${user.starred_repos_count ?? 0}'),
+    ];
+
+    return AppSurface(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+      child: Row(
+        children: [
+          for (var i = 0; i < stats.length; i++) ...[
+            if (i > 0) Container(width: 1, height: 28, color: palette.border),
+            Expanded(child: _StatItem(data: stats[i])),
+          ],
+        ],
+      ),
     );
   }
 }
 
-class _StatItem extends StatelessWidget {
+class _StatData {
+  const _StatData({required this.label, required this.value, this.onTap});
+
   final String label;
   final String value;
   final VoidCallback? onTap;
+}
 
-  const _StatItem({required this.label, required this.value, this.onTap});
+class _StatItem extends StatelessWidget {
+  final _StatData data;
+
+  const _StatItem({required this.data});
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return PremiumCard(
-      onTap: onTap,
-      padding: const EdgeInsets.symmetric(vertical: UIConstants.md),
-      child: Column(
-        children: [
-          Text(
-            value,
-            style: theme.textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+    final palette = context.palette;
+    final content = Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          data.value,
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            letterSpacing: -0.3,
+            color: palette.textPrimary,
           ),
-          const SizedBox(height: UIConstants.xs),
-          Text(
-            label,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ],
-      ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          data.label,
+          style: TextStyle(fontSize: 11, color: palette.textSecondary),
+        ),
+      ],
     );
+    if (data.onTap == null) return content;
+    return FTappable(onPress: data.onTap, child: content);
   }
 }
 
@@ -614,10 +625,7 @@ class _InfoCards extends StatelessWidget {
 
     if (items.isEmpty) return const SizedBox.shrink();
 
-    return Padding(
-      padding: UIConstants.pagePadding,
-      child: AppSection(title: '', showHeader: false, children: items),
-    );
+    return AppSection(title: l10n.accountInfo, children: items);
   }
 
   String _formatDate(DateTime date) {

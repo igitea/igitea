@@ -335,6 +335,18 @@ abstract class AppLocalizations {
   /// **'Error'**
   String get error;
 
+  /// No description provided for @requestTimedOut.
+  ///
+  /// In en, this message translates to:
+  /// **'The server took too long to respond. Please try again.'**
+  String get requestTimedOut;
+
+  /// No description provided for @networkError.
+  ///
+  /// In en, this message translates to:
+  /// **'Network error'**
+  String get networkError;
+
   /// No description provided for @noData.
   ///
   /// In en, this message translates to:
@@ -940,12 +952,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Login failed'**
   String get loginFailed;
-
-  /// No description provided for @networkError.
-  ///
-  /// In en, this message translates to:
-  /// **'Network error'**
-  String get networkError;
 
   /// No description provided for @unknownError.
   ///

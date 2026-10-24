@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 
 import '../../core/animations/animated_wrapper.dart';
-import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../core/errors/failures.dart';
 import '../../core/utils/either.dart';
@@ -11,20 +10,29 @@ import '../../domain/entities/auth_state.dart';
 import '../../domain/usecases/user_usecases.dart';
 import '../../l10n/app_localizations.dart';
 import '../models/issue_filter_state.dart';
+import '../theme/app_palette.dart';
 import '../widgets/activity_tile.dart';
-import '../widgets/user_avatar.dart';
+import '../widgets/app_skeleton.dart';
+import '../widgets/app_surface.dart';
+import '../widgets/forui/app_chrome.dart';
 import '../widgets/forui/app_section.dart';
 import '../widgets/forui/app_state_views.dart';
 import '../widgets/forui/app_tile.dart';
+import '../widgets/language_dot.dart';
+import '../widgets/user_avatar.dart';
 import 'activity_page.dart';
+import 'create_repo_page.dart';
 import 'issue_list_page.dart';
 import 'organizations_list_page.dart';
 import 'repo_detail_page.dart';
 import 'repo_list_page.dart';
 import 'starred_repos_page.dart';
 
-/// 首页（GitHub Mobile 风格）：
-/// Section A 我的工作 → Section B 收藏 → Section C 快捷方式 → Section D 最近。
+/// The home dashboard.
+///
+/// A calm overview: a greeting card, five work destinations, the repositories
+/// you actually use, and a live activity rail. The layout folds from two
+/// columns to one as the window narrows.
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
 
@@ -33,9 +41,8 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
-  // Favorites and recent activities are kept in local state so this page
-  // never clobbers the shared UserNotifier lists used elsewhere
-  // (profile page repos, ActivityPage pagination).
+  // Kept in local state so this page never clobbers the shared UserNotifier
+  // lists used elsewhere (profile page repos, ActivityPage pagination).
   List<Repository> _favRepos = [];
   bool _favLoading = true;
   String? _favError;
@@ -67,10 +74,12 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Future<void> _loadFavorites() async {
-    setState(() {
-      _favLoading = true;
-      _favError = null;
-    });
+    if (_favRepos.isEmpty) {
+      setState(() {
+        _favLoading = true;
+        _favError = null;
+      });
+    }
     final result = await Injection.listCurrentUserReposUseCase(
       const ListCurrentUserReposParams(limit: 3),
     );
@@ -96,10 +105,12 @@ class _DashboardPageState extends State<DashboardPage> {
       setState(() => _recentLoading = false);
       return;
     }
-    setState(() {
-      _recentLoading = true;
-      _recentError = null;
-    });
+    if (_recentActivities.isEmpty) {
+      setState(() {
+        _recentLoading = true;
+        _recentError = null;
+      });
+    }
     final result = await Injection.getUserActivitiesUseCase(
       GetUserActivitiesParams(username: username, page: 1, limit: 5),
     );
@@ -124,113 +135,187 @@ class _DashboardPageState extends State<DashboardPage> {
     final l10n = AppLocalizations.of(context)!;
 
     return RefreshIndicator(
+      color: context.palette.brand,
+      backgroundColor: context.palette.surface,
       onRefresh: _loadAll,
-      child: ListView(
-        padding: const EdgeInsets.all(UIConstants.md),
-        children: [
-          FadeInWrapper(child: _buildMyWork(context, l10n)),
-          const SizedBox(height: UIConstants.lg),
-          FadeInWrapper(
-            delay: const Duration(milliseconds: 50),
-            child: _buildFavorites(context, l10n),
-          ),
-          const SizedBox(height: UIConstants.lg),
-          FadeInWrapper(
-            delay: const Duration(milliseconds: 100),
-            child: _buildShortcuts(context, l10n),
-          ),
-          const SizedBox(height: UIConstants.lg),
-          FadeInWrapper(
-            delay: const Duration(milliseconds: 150),
-            child: _buildRecent(context, l10n),
-          ),
-        ],
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final wide = constraints.maxWidth >= 920;
+          final inset = constraints.maxWidth >= 1000 ? 32.0 : 20.0;
+
+          return ListView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: EdgeInsets.fromLTRB(inset, 20, inset, 48),
+            children: [
+              Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 1120),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      FadeInWrapper(
+                        duration: const Duration(milliseconds: 320),
+                        child: _Hero(
+                          dateText: _today(context),
+                          title: l10n.myWork,
+                          refreshLabel: l10n.refresh,
+                          onRefresh: _loadAll,
+                          onAction: () =>
+                              _push(context, const CreateRepoPage()),
+                          actionLabel: l10n.createRepository,
+                        ),
+                      ),
+                      const SizedBox(height: 18),
+                      FadeInWrapper(
+                        delay: const Duration(milliseconds: 40),
+                        duration: const Duration(milliseconds: 320),
+                        child: _buildWorkGrid(context, l10n),
+                      ),
+                      const SizedBox(height: 26),
+                      if (wide)
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              flex: 7,
+                              child: Column(
+                                children: [
+                                  _buildFavorites(context, l10n),
+                                  const SizedBox(height: 24),
+                                  _buildShortcuts(context, l10n),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 20),
+                            Expanded(
+                              flex: 5,
+                              child: _buildRecent(context, l10n),
+                            ),
+                          ],
+                        )
+                      else ...[
+                        _buildFavorites(context, l10n),
+                        const SizedBox(height: 24),
+                        _buildShortcuts(context, l10n),
+                        const SizedBox(height: 24),
+                        _buildRecent(context, l10n),
+                      ],
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
 
-  // ── Section A: 我的工作 ────────────────────────────────────────────────
+  String _today(BuildContext context) {
+    final localization = MaterialLocalizations.of(context);
+    return localization.formatMediumDate(DateTime.now()).toUpperCase();
+  }
 
-  Widget _buildMyWork(BuildContext context, AppLocalizations l10n) {
-    return AppSection(
-      title: '',
-      showHeader: false,
-      children: [
-        AppTile(
-          leading: const _IconBox(color: Color(0xFF2EA043), icon: FIcons.circleDot),
-          title: l10n.issues,
-          onPress: () =>
-              _openIssues(context, const IssueFilterState(type: 'issues')),
-        ),
-        AppTile(
-          leading: const _IconBox(color: Color(0xFF0969DA), icon: FIcons.gitPullRequest),
-          title: l10n.pullRequests,
-          onPress: () =>
-              _openIssues(context, const IssueFilterState(type: 'pulls')),
-        ),
-        AppTile(
-          leading: const _IconBox(color: Color(0xFF57606A), icon: FIcons.trendingUp),
-          title: l10n.topRepositories,
-          onPress: () => _push(context, const RepoListPage()),
-        ),
-        AppTile(
-          leading: const _IconBox(color: Color(0xFFBC4C00), icon: FIcons.building2),
-          title: l10n.organisations,
-          onPress: () => _openOrganizations(context),
-        ),
-        AppTile(
-          leading: const _IconBox(color: Color(0xFFBF8700), icon: FIcons.star),
-          title: l10n.starredRepos,
-          onPress: () => _push(context, const StarredReposPage()),
-        ),
-      ],
+  // ── Work destinations ──────────────────────────────────────────────────
+
+  Widget _buildWorkGrid(BuildContext context, AppLocalizations l10n) {
+    final palette = context.palette;
+    final tiles = <_WorkTileData>[
+      _WorkTileData(
+        icon: FIcons.circleDot,
+        color: palette.success,
+        soft: palette.successSoft,
+        label: l10n.issues,
+        onPress: () =>
+            _openIssues(context, const IssueFilterState(type: 'issues')),
+      ),
+      _WorkTileData(
+        icon: FIcons.gitPullRequest,
+        color: palette.purple,
+        soft: palette.purpleSoft,
+        label: l10n.pullRequests,
+        onPress: () =>
+            _openIssues(context, const IssueFilterState(type: 'pulls')),
+      ),
+      _WorkTileData(
+        icon: FIcons.trendingUp,
+        color: palette.info,
+        soft: palette.infoSoft,
+        label: l10n.topRepositories,
+        onPress: () => _push(context, const RepoListPage()),
+      ),
+      _WorkTileData(
+        icon: FIcons.building2,
+        color: palette.warning,
+        soft: palette.warningSoft,
+        label: l10n.organisations,
+        onPress: () => _openOrganizations(context),
+      ),
+      _WorkTileData(
+        icon: FIcons.star,
+        color: palette.brand,
+        soft: palette.brandSoft,
+        label: l10n.starredRepos,
+        onPress: () => _push(context, const StarredReposPage()),
+      ),
+    ];
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final columns = constraints.maxWidth >= 760
+            ? 5
+            : constraints.maxWidth >= 460
+            ? 3
+            : 2;
+        const spacing = 12.0;
+        final width =
+            (constraints.maxWidth - spacing * (columns - 1)) / columns;
+        return Wrap(
+          spacing: spacing,
+          runSpacing: spacing,
+          children: [
+            for (final tile in tiles)
+              SizedBox(
+                width: width,
+                child: _WorkTile(data: tile),
+              ),
+          ],
+        );
+      },
     );
   }
 
-  // ── Section B: 收藏（我的仓库 top3）──────────────────────────────────
+  // ── Favorites ──────────────────────────────────────────────────────────
 
   Widget _buildFavorites(BuildContext context, AppLocalizations l10n) {
-    if (_favLoading) {
-      return AppSection(
-        title: l10n.favorites,
-        children: const [
-          AppSectionPlaceholder(showProgress: true),
-        ],
-      );
+    if (_favLoading && _favRepos.isEmpty) {
+      return _SectionSkeleton(title: l10n.favorites, rows: 3);
     }
-    if (_favError != null) {
+    if (_favError != null && _favRepos.isEmpty) {
       return AppSection(
         title: l10n.favorites,
-        children: [
-          AppSectionPlaceholder(
-            text: '${l10n.error}: $_favError',
-            onRetry: _loadFavorites,
-          ),
-        ],
+        children: [_InlineError(message: _favError!, onRetry: _loadFavorites)],
       );
     }
     if (_favRepos.isEmpty) {
       return AppSection(
         title: l10n.favorites,
         children: [
-          AppSectionPlaceholder(text: l10n.noRepositoriesFound),
+          _InlineEmpty(icon: FIcons.folderOpen, text: l10n.noRepositoriesFound),
         ],
       );
     }
+
     return AppSection(
       title: l10n.favorites,
       children: _favRepos.take(3).map((repo) {
-        final owner = repo.owner?.login ??
-            repo.full_name?.split('/').firstOrNull ??
-            '';
-        final name =
-            repo.name ?? repo.full_name?.split('/').lastOrNull ?? '';
-        return AppTile(
-          leading: repo.owner != null
-              ? UserAvatar(user: repo.owner!, radius: 16)
-              : const Icon(FIcons.globe, size: 18),
-          title: name,
-          subtitle: owner,
+        final owner =
+            repo.owner?.login ?? repo.full_name?.split('/').firstOrNull ?? '';
+        final name = repo.name ?? repo.full_name?.split('/').lastOrNull ?? '';
+        return _RepoRow(
+          repo: repo,
+          owner: owner,
+          name: name,
           onPress: () {
             if (owner.isNotEmpty && name.isNotEmpty) {
               _push(context, RepoDetailPage(owner: owner, repo: name));
@@ -241,14 +326,19 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // ── Section C: 快捷方式 ────────────────────────────────────────────────
+  // ── Shortcuts ──────────────────────────────────────────────────────────
 
   Widget _buildShortcuts(BuildContext context, AppLocalizations l10n) {
+    final palette = context.palette;
     return AppSection(
       title: l10n.shortcuts,
       children: [
         AppTile(
-          leading: const _IconBox(color: Color(0xFF2EA043), icon: FIcons.atSign),
+          leading: _SoftIcon(
+            icon: FIcons.atSign,
+            color: palette.success,
+            soft: palette.successSoft,
+          ),
           title: l10n.issues,
           subtitle: l10n.mentioned,
           onPress: () => _openIssues(
@@ -257,7 +347,11 @@ class _DashboardPageState extends State<DashboardPage> {
           ),
         ),
         AppTile(
-          leading: const _IconBox(color: Color(0xFF0969DA), icon: FIcons.messageSquare),
+          leading: _SoftIcon(
+            icon: FIcons.messageSquare,
+            color: palette.info,
+            soft: palette.infoSoft,
+          ),
           title: l10n.pullRequests,
           subtitle: l10n.reviewRequested,
           onPress: () => _openIssues(
@@ -269,55 +363,44 @@ class _DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // ── Section D: 近期活动（activities top5 + 查看全部）──────────────────
+  // ── Recent activity ────────────────────────────────────────────────────
 
   Widget _buildRecent(BuildContext context, AppLocalizations l10n) {
     final username = _username;
-    final viewAllButton = username == null
+    final viewAll = username == null
         ? null
         : FButton(
-            variant: .ghost,
-            size: .sm,
-            onPress: () => _push(
-              context,
-              ActivityPage(username: username),
-            ),
+            variant: FButtonVariant.ghost,
+            size: FButtonSizeVariant.sm,
+            onPress: () => _push(context, ActivityPage(username: username)),
             child: Text(l10n.viewAll),
           );
 
-    if (_recentLoading) {
-      return AppSection(
-        title: l10n.recent,
-        trailing: viewAllButton,
-        children: const [
-          AppSectionPlaceholder(showProgress: true),
-        ],
+    if (_recentLoading && _recentActivities.isEmpty) {
+      return _SectionSkeleton(
+        title: l10n.recentActivity,
+        rows: 4,
+        trailing: viewAll,
       );
     }
-    if (_recentError != null) {
+    if (_recentError != null && _recentActivities.isEmpty) {
       return AppSection(
-        title: l10n.recent,
-        trailing: viewAllButton,
-        children: [
-          AppSectionPlaceholder(
-            text: '${l10n.error}: $_recentError',
-            onRetry: _loadRecent,
-          ),
-        ],
+        title: l10n.recentActivity,
+        trailing: viewAll,
+        children: [_InlineError(message: _recentError!, onRetry: _loadRecent)],
       );
     }
     if (_recentActivities.isEmpty) {
       return AppSection(
-        title: l10n.recent,
-        trailing: viewAllButton,
-        children: [
-          AppSectionPlaceholder(text: l10n.noActivity),
-        ],
+        title: l10n.recentActivity,
+        trailing: viewAll,
+        children: [_InlineEmpty(icon: FIcons.activity, text: l10n.noActivity)],
       );
     }
+
     return AppSection(
-      title: l10n.recent,
-      trailing: viewAllButton,
+      title: l10n.recentActivity,
+      trailing: viewAll,
       children: _recentActivities.take(5).map((activity) {
         return ActivityTile(
           activity: activity,
@@ -350,7 +433,7 @@ class _DashboardPageState extends State<DashboardPage> {
     return l10n.justNow;
   }
 
-  // ── 导航 ────────────────────────────────────────────────────────────────
+  // ── Navigation ─────────────────────────────────────────────────────────
 
   void _openIssues(BuildContext context, IssueFilterState filter) {
     _push(context, IssueListPage(initialFilter: filter));
@@ -370,12 +453,232 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 }
 
-/// A small colored rounded square used as the leading icon of a home row.
-class _IconBox extends StatelessWidget {
-  final Color color;
-  final IconData icon;
+// ── Building blocks ──────────────────────────────────────────────────────
 
-  const _IconBox({required this.color, required this.icon});
+class _Hero extends StatelessWidget {
+  const _Hero({
+    required this.dateText,
+    required this.title,
+    required this.refreshLabel,
+    required this.onRefresh,
+    required this.onAction,
+    required this.actionLabel,
+  });
+
+  final String dateText;
+  final String title;
+  final String refreshLabel;
+  final VoidCallback onRefresh;
+  final VoidCallback onAction;
+  final String actionLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    final theme = Theme.of(context);
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final compact = constraints.maxWidth < 560;
+
+        final heading = Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 5,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: palette.brand,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: 7),
+                Text(
+                  dateText,
+                  style: TextStyle(
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 0.5,
+                    color: palette.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            Text(
+              title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.headlineSmall?.copyWith(
+                fontSize: 25,
+                fontWeight: FontWeight.w600,
+                letterSpacing: -0.6,
+                color: palette.textPrimary,
+              ),
+            ),
+          ],
+        );
+
+        final actions = Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AppIconButton(
+              icon: FIcons.refreshCw,
+              label: refreshLabel,
+              onPress: onRefresh,
+            ),
+            const SizedBox(width: 8),
+            FButton(
+              variant: FButtonVariant.primary,
+              size: FButtonSizeVariant.sm,
+              prefix: const Icon(FIcons.plus, size: 14),
+              onPress: onAction,
+              child: Text(actionLabel),
+            ),
+          ],
+        );
+
+        return ClipRRect(
+          borderRadius: BorderRadius.circular(18),
+          child: Container(
+            decoration: BoxDecoration(
+              color: palette.surface,
+              borderRadius: BorderRadius.circular(18),
+              border: Border.all(
+                color: palette.brand.withValues(
+                  alpha: palette.isDark ? 0.24 : 0.16,
+                ),
+              ),
+              boxShadow: palette.cardShadow,
+            ),
+            child: Stack(
+              children: [
+                Positioned(
+                  right: -60,
+                  top: -90,
+                  child: IgnorePointer(
+                    child: Container(
+                      width: 260,
+                      height: 260,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: RadialGradient(
+                          colors: [
+                            palette.brand.withValues(
+                              alpha: palette.isDark ? 0.20 : 0.13,
+                            ),
+                            palette.brand.withValues(alpha: 0),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(compact ? 20 : 24, 20, 20, 20),
+                  child: compact
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            heading,
+                            const SizedBox(height: 16),
+                            actions,
+                          ],
+                        )
+                      : Row(
+                          children: [
+                            Expanded(child: heading),
+                            const SizedBox(width: 16),
+                            actions,
+                          ],
+                        ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _WorkTileData {
+  const _WorkTileData({
+    required this.icon,
+    required this.color,
+    required this.soft,
+    required this.label,
+    required this.onPress,
+  });
+
+  final IconData icon;
+  final Color color;
+  final Color soft;
+  final String label;
+  final VoidCallback onPress;
+}
+
+class _WorkTile extends StatelessWidget {
+  const _WorkTile({required this.data});
+
+  final _WorkTileData data;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    final theme = Theme.of(context);
+
+    return AppSurface(
+      onPress: data.onPress,
+      padding: const EdgeInsets.fromLTRB(13, 12, 12, 12),
+      child: SizedBox(
+        height: 58,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                _SoftIcon(icon: data.icon, color: data.color, soft: data.soft),
+                const Spacer(),
+                Icon(
+                  FIcons.chevronRight,
+                  size: 14,
+                  color: palette.textSecondary.withValues(alpha: 0.7),
+                ),
+              ],
+            ),
+            const Spacer(),
+            Text(
+              data.label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontSize: 12.5,
+                fontWeight: FontWeight.w600,
+                color: palette.textPrimary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _SoftIcon extends StatelessWidget {
+  const _SoftIcon({
+    required this.icon,
+    required this.color,
+    required this.soft,
+  });
+
+  final IconData icon;
+  final Color color;
+  final Color soft;
 
   @override
   Widget build(BuildContext context) {
@@ -383,10 +686,267 @@ class _IconBox extends StatelessWidget {
       width: 28,
       height: 28,
       decoration: BoxDecoration(
-        color: color,
-        borderRadius: BorderRadius.circular(7),
+        color: soft,
+        borderRadius: BorderRadius.circular(8),
       ),
-      child: Icon(icon, color: Colors.white, size: 16),
+      child: Icon(icon, size: 15, color: color),
     );
   }
+}
+
+class _RepoRow extends StatefulWidget {
+  const _RepoRow({
+    required this.repo,
+    required this.owner,
+    required this.name,
+    required this.onPress,
+  });
+
+  final Repository repo;
+  final String owner;
+  final String name;
+  final VoidCallback onPress;
+
+  @override
+  State<_RepoRow> createState() => _RepoRowState();
+}
+
+class _RepoRowState extends State<_RepoRow> {
+  bool _hovered = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    final theme = Theme.of(context);
+    final description = widget.repo.description?.trim() ?? '';
+
+    return FTappable(
+      onPress: widget.onPress,
+      semanticsLabel: '${widget.owner}/${widget.name}',
+      child: MouseRegion(
+        onEnter: (_) => setState(() => _hovered = true),
+        onExit: (_) => setState(() => _hovered = false),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 140),
+          color: _hovered
+              ? palette.surfaceMuted.withValues(alpha: 0.55)
+              : Colors.transparent,
+          padding: const EdgeInsets.fromLTRB(14, 10, 12, 10),
+          child: Row(
+            children: [
+              if (widget.repo.owner != null)
+                UserAvatar(user: widget.repo.owner!, radius: 14)
+              else
+                Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    color: palette.surfaceMuted,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    widget.repo.private == true
+                        ? FIcons.lock
+                        : FIcons.folderGit,
+                    size: 14,
+                    color: palette.textSecondary,
+                  ),
+                ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text.rich(
+                      TextSpan(
+                        children: [
+                          if (widget.owner.isNotEmpty)
+                            TextSpan(
+                              text: '${widget.owner}/',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: palette.textSecondary,
+                              ),
+                            ),
+                          TextSpan(
+                            text: widget.name,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: palette.textPrimary,
+                            ),
+                          ),
+                        ],
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    if (description.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 2),
+                        child: Text(
+                          description,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 11.5,
+                            color: palette.textSecondary,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              if (widget.repo.language != null)
+                LanguageDot(language: widget.repo.language),
+              if (widget.repo.language != null) const SizedBox(width: 14),
+              Icon(FIcons.star, size: 12, color: palette.textSecondary),
+              const SizedBox(width: 3),
+              Text(
+                _compact(widget.repo.stars_count ?? 0),
+                style: TextStyle(fontSize: 11, color: palette.textSecondary),
+              ),
+              const SizedBox(width: 6),
+              Icon(
+                FIcons.chevronRight,
+                size: 14,
+                color: palette.textSecondary.withValues(alpha: 0.7),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _InlineError extends StatelessWidget {
+  const _InlineError({required this.message, required this.onRetry});
+
+  final String message;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    final l10n = AppLocalizations.of(context)!;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(14, 12, 10, 12),
+      child: Row(
+        children: [
+          Icon(FIcons.circleAlert, size: 15, color: palette.danger),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              friendlyErrorMessage(context, message),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 11.5, color: palette.textSecondary),
+            ),
+          ),
+          FButton(
+            variant: FButtonVariant.ghost,
+            size: FButtonSizeVariant.sm,
+            onPress: onRetry,
+            child: Text(l10n.retry),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _InlineEmpty extends StatelessWidget {
+  const _InlineEmpty({required this.icon, required this.text});
+
+  final IconData icon;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 18),
+      child: Row(
+        children: [
+          Icon(icon, size: 15, color: palette.textSecondary),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(fontSize: 12, color: palette.textSecondary),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _SectionSkeleton extends StatelessWidget {
+  const _SectionSkeleton({
+    required this.title,
+    required this.rows,
+    this.trailing,
+  });
+
+  final String title;
+  final int rows;
+  final Widget? trailing;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    return AppSection(
+      title: title,
+      trailing: trailing,
+      children: [
+        AppSkeleton(
+          child: Column(
+            children: List.generate(rows, (index) {
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 28,
+                      height: 28,
+                      decoration: BoxDecoration(
+                        color: palette.surfaceMuted,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    const Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          SkeletonLine(widthFactor: 0.45, height: 9),
+                          SizedBox(height: 6),
+                          SkeletonLine(widthFactor: 0.7, height: 8),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+String _compact(int value) {
+  if (value >= 1000000) {
+    return '${(value / 1000000).toStringAsFixed(1)}m';
+  }
+  if (value >= 1000) {
+    final digits = value >= 10000 ? 0 : 1;
+    return '${(value / 1000).toStringAsFixed(digits)}k';
+  }
+  return '$value';
 }

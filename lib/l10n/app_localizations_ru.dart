@@ -121,6 +121,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get error => 'Ошибка';
 
   @override
+  String get requestTimedOut =>
+      'The server took too long to respond. Please try again.';
+
+  @override
+  String get networkError => 'Ошибка сети';
+
+  @override
   String get noData => 'Нет данных';
 
   @override
@@ -476,9 +483,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get loginFailed => 'Ошибка входа';
-
-  @override
-  String get networkError => 'Ошибка сети';
 
   @override
   String get unknownError => 'Произошла неизвестная ошибка';

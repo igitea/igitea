@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:forui/forui.dart';
 
 import '../../core/constants/ui_constants.dart';
+import 'app_surface.dart';
 
-/// A Forui-styled card used for grouped content.
+/// A card used for grouped content.
 ///
 /// Keeps the historical API (padding/margin) so pages can migrate gradually
-/// while every card instantly adopts the Forui border, radius and typography.
+/// while every card instantly adopts the shared surface, border and hover
+/// treatment.
 class PremiumCard extends StatelessWidget {
   final Widget child;
   final VoidCallback? onTap;
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
 
-  /// Kept for API compatibility. Cards now always use the theme surface color.
+  /// Kept for API compatibility. Cards always use the theme surface color.
   final Color? color;
 
-  /// Kept for API compatibility. Forui cards are flat by design.
+  /// Kept for API compatibility. Cards are flat surfaces with a hairline.
   final double? elevation;
 
   const PremiumCard({
@@ -31,16 +32,11 @@ class PremiumCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final body = Padding(
+    return AppSurface(
+      onPress: onTap,
       padding: padding ?? UIConstants.cardPadding,
+      margin: margin ?? UIConstants.cardMargin,
       child: child,
-    );
-
-    return Padding(
-      padding: margin ?? UIConstants.cardMargin,
-      child: FCard.raw(
-        child: onTap == null ? body : FTappable(onPress: onTap, child: body),
-      ),
     );
   }
 }
@@ -62,16 +58,11 @@ class PremiumListCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final body = Padding(
+    return AppSurface(
+      onPress: onTap,
       padding: padding ?? UIConstants.cardPadding,
+      margin: margin ?? UIConstants.cardMargin,
       child: child,
-    );
-
-    return Padding(
-      padding: margin ?? UIConstants.cardMargin,
-      child: FCard.raw(
-        child: onTap == null ? body : FTappable(onPress: onTap, child: body),
-      ),
     );
   }
 }

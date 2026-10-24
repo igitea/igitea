@@ -36,6 +36,8 @@
   "retry": "Retry",
   "loading": "Loading...",
   "error": "Error",
+  "requestTimedOut": "The server took too long to respond. Please try again.",
+  "networkError": "Could not reach the server. Check your connection and try again.",
   "noData": "No data",
   "searchRepos": "Search repositories",
   "searchIssues": "Search issues",

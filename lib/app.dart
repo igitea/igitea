@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 
+import 'core/animations/app_animations.dart';
 import 'core/di/injection.dart';
 import 'core/storage/auth_method_storage.dart';
 import 'core/storage/auth_storage.dart';
@@ -18,7 +19,9 @@ import 'presentation/pages/notification_page.dart';
 import 'presentation/pages/user_profile_page.dart';
 import 'presentation/pages/settings_page.dart';
 import 'presentation/pages/starred_repos_page.dart';
+import 'presentation/theme/app_palette.dart';
 import 'presentation/theme/app_theme.dart';
+import 'presentation/widgets/forui/app_chrome.dart';
 
 class IGiteaApp extends StatefulWidget {
   const IGiteaApp({super.key});
@@ -28,6 +31,8 @@ class IGiteaApp extends StatefulWidget {
 }
 
 class _IGiteaAppState extends State<IGiteaApp> {
+  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
+  bool _wasAuthenticated = false;
   String? _lastBaseUrl;
   String? _lastToken;
   AuthMethod? _lastMethod;
@@ -36,9 +41,15 @@ class _IGiteaAppState extends State<IGiteaApp> {
   void initState() {
     super.initState();
     Injection.initialize();
-    _tryRestoreSession().catchError((e) => debugPrint('Session restore error: $e'));
-    Injection.themeNotifier.loadThemeMode().catchError((e) => debugPrint('Theme load error: $e'));
-    Injection.themeNotifier.loadLocale().catchError((e) => debugPrint('Locale load error: $e'));
+    _tryRestoreSession().catchError(
+      (e) => debugPrint('Session restore error: $e'),
+    );
+    Injection.themeNotifier.loadThemeMode().catchError(
+      (e) => debugPrint('Theme load error: $e'),
+    );
+    Injection.themeNotifier.loadLocale().catchError(
+      (e) => debugPrint('Locale load error: $e'),
+    );
   }
 
   Future<void> _tryRestoreSession() async {
@@ -62,7 +73,9 @@ class _IGiteaAppState extends State<IGiteaApp> {
     String? username,
     String? password,
   }) {
-    if (baseUrl == _lastBaseUrl && token == _lastToken && method == _lastMethod) {
+    if (baseUrl == _lastBaseUrl &&
+        token == _lastToken &&
+        method == _lastMethod) {
       return;
     }
     _lastBaseUrl = baseUrl;
@@ -79,26 +92,35 @@ class _IGiteaAppState extends State<IGiteaApp> {
   @override
   Widget build(BuildContext context) {
     return ListenableBuilder(
-      listenable: Listenable.merge([Injection.authNotifier, Injection.themeNotifier]),
+      listenable: Listenable.merge([
+        Injection.authNotifier,
+        Injection.themeNotifier,
+      ]),
       builder: (context, child) {
         final state = Injection.authNotifier.state;
 
         if (state is AuthAuthenticated) {
+          _wasAuthenticated = true;
           _applyAuth(
             baseUrl: state.baseUrl,
             token: state.token,
             method: state.method,
             username: state.username,
           );
+        } else if (_wasAuthenticated) {
+          // Signing out must leave the user on the login screen, not on a
+          // settings/detail route that belonged to the old session.
+          _wasAuthenticated = false;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _navigatorKey.currentState?.popUntil((route) => route.isFirst);
+          });
         }
 
         Widget home;
         if (state is AuthAuthenticated) {
           home = const HomePage();
         } else if (state is AuthLoading) {
-          home = const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
+          home = const _BootSplash();
         } else {
           home = const LoginPage();
         }
@@ -106,6 +128,7 @@ class _IGiteaAppState extends State<IGiteaApp> {
         final locale = Injection.themeNotifier.locale;
         final touch = AppTheme.touchFor(defaultTargetPlatform);
         return MaterialApp(
+          navigatorKey: _navigatorKey,
           title: 'iGitea',
           debugShowCheckedModeBanner: false,
           locale: locale,
@@ -117,6 +140,8 @@ class _IGiteaAppState extends State<IGiteaApp> {
           theme: AppTheme.material(Brightness.light, touch: touch),
           darkTheme: AppTheme.material(Brightness.dark, touch: touch),
           themeMode: Injection.themeNotifier.themeMode,
+          themeAnimationDuration: AppAnimations.slow,
+          themeAnimationCurve: AppAnimations.easeOut,
           home: home,
           onGenerateRoute: _onGenerateRoute,
           builder: (context, child) {
@@ -169,13 +194,15 @@ class _IGiteaAppState extends State<IGiteaApp> {
       case 'issue':
         if (index != null && owner != null && repo != null) {
           return MaterialPageRoute(
-            builder: (_) => IssueDetailPage(owner: owner, repo: repo, index: index),
+            builder: (_) =>
+                IssueDetailPage(owner: owner, repo: repo, index: index),
           );
         }
       case 'pull':
         if (index != null && owner != null && repo != null) {
           return MaterialPageRoute(
-            builder: (_) => PRDetailPage(owner: owner, repo: repo, index: index),
+            builder: (_) =>
+                PRDetailPage(owner: owner, repo: repo, index: index),
           );
         }
       case 'repo':
@@ -230,18 +257,12 @@ class _IGiteaAppState extends State<IGiteaApp> {
 
     if (orgPattern.hasMatch(path)) {
       final match = orgPattern.firstMatch(path)!;
-      return {
-        'type': 'org',
-        'orgName': match.group(1)!,
-      };
+      return {'type': 'org', 'orgName': match.group(1)!};
     }
 
     if (userPattern.hasMatch(path)) {
       final match = userPattern.firstMatch(path)!;
-      return {
-        'type': 'user',
-        'username': match.group(1)!,
-      };
+      return {'type': 'user', 'username': match.group(1)!};
     }
 
     if (repoPattern.hasMatch(path)) {
@@ -254,5 +275,45 @@ class _IGiteaAppState extends State<IGiteaApp> {
     }
 
     return null;
+  }
+}
+
+/// A quiet branded splash shown while the saved session is restored.
+class _BootSplash extends StatelessWidget {
+  const _BootSplash();
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    return ColoredBox(
+      color: palette.canvas,
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const BrandMark(size: 42, iconSize: 22),
+            const SizedBox(height: 14),
+            Text(
+              'iGitea',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.4,
+                color: palette.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: 18,
+              height: 18,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: palette.brand.withValues(alpha: 0.7),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

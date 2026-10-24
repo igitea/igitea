@@ -26,21 +26,16 @@ class _FadeInWrapperState extends State<FadeInWrapper>
   @override
   void initState() {
     super.initState();
-    _controller = AnimationController(
-      vsync: this,
-      duration: widget.duration,
-    );
+    _controller = AnimationController(vsync: this, duration: widget.duration);
 
     _opacity = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(parent: _controller, curve: AppAnimations.easeOut),
     );
 
-    _offset = Tween<Offset>(
-      begin: const Offset(0, 0.02),
-      end: Offset.zero,
-    ).animate(
-      CurvedAnimation(parent: _controller, curve: AppAnimations.easeOut),
-    );
+    _offset = Tween<Offset>(begin: const Offset(0, 0.02), end: Offset.zero)
+        .animate(
+          CurvedAnimation(parent: _controller, curve: AppAnimations.easeOut),
+        );
 
     if (widget.delay == Duration.zero) {
       _controller.forward();
@@ -61,10 +56,7 @@ class _FadeInWrapperState extends State<FadeInWrapper>
   Widget build(BuildContext context) {
     return FadeTransition(
       opacity: _opacity,
-      child: SlideTransition(
-        position: _offset,
-        child: widget.child,
-      ),
+      child: SlideTransition(position: _offset, child: widget.child),
     );
   }
 }
@@ -89,7 +81,9 @@ class StaggeredFadeIn extends StatelessWidget {
       padding: padding,
       children: children.asMap().entries.map((entry) {
         return FadeInWrapper(
-          delay: baseDelay + Duration(milliseconds: entry.key * staggerDelay.inMilliseconds),
+          delay:
+              baseDelay +
+              Duration(milliseconds: entry.key * staggerDelay.inMilliseconds),
           child: entry.value,
         );
       }).toList(),

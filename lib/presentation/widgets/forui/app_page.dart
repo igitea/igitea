@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 
-/// A standard pushed page: Forui scaffold + nested header with a back action.
+import 'app_chrome.dart';
+
+/// A standard pushed page: Forui scaffold + the shared top bar with a back
+/// action.
 ///
 /// Centralising this keeps every secondary screen visually consistent and makes
-/// new pages a one-liner.
+/// new pages a one-liner. Content is centred and width-capped on large desktop
+/// windows so forms and detail panes never stretch into unreadable lines.
 class AppPage extends StatelessWidget {
   final String title;
   final Widget child;
@@ -17,6 +21,9 @@ class AppPage extends StatelessWidget {
   /// Whether to show the back button. Useful for root pages.
   final bool canPop;
 
+  /// Max content width on wide windows; null keeps the content full-bleed.
+  final double? maxContentWidth;
+
   const AppPage({
     super.key,
     required this.title,
@@ -25,25 +32,55 @@ class AppPage extends StatelessWidget {
     this.footer,
     this.childPad = false,
     this.canPop = true,
+    this.maxContentWidth = 1120,
   });
 
   @override
   Widget build(BuildContext context) {
     return FScaffold(
-      header: FHeader.nested(
-        titleAlignment: Alignment.centerLeft,
-        prefixes: [
-          if (canPop)
-            FHeaderAction.back(onPress: () => Navigator.maybePop(context)),
-        ],
-        title: Text(title),
-        suffixes: actions,
+      header: AppTopBar(
+        topInset: windowTopInset(context),
+        title: title,
+        leading: canPop
+            ? AppIconButton(
+                icon: FIcons.chevronLeft,
+                label: MaterialLocalizations.of(context).backButtonTooltip,
+                onPress: () => Navigator.maybePop(context),
+              )
+            : null,
+        actions: actions,
+        height: 52,
       ),
       footer: footer,
       childPad: childPad,
       // A transparent Material ancestor keeps legacy Material widgets (InkWell,
       // ListTile, Chip, ...) working on pages that are not fully migrated yet.
-      child: Material(color: Colors.transparent, child: child),
+      child: Material(
+        color: Colors.transparent,
+        child: _Constrained(maxWidth: maxContentWidth, child: child),
+      ),
+    );
+  }
+}
+
+class _Constrained extends StatelessWidget {
+  const _Constrained({required this.maxWidth, required this.child});
+
+  final double? maxWidth;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    if (maxWidth == null) return child;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final extra = constraints.maxWidth - maxWidth!;
+        if (extra <= 0) return child;
+        return Padding(
+          padding: EdgeInsets.symmetric(horizontal: extra / 2),
+          child: child,
+        );
+      },
     );
   }
 }

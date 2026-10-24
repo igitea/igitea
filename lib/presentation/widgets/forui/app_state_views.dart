@@ -2,6 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 
 import '../../../l10n/app_localizations.dart';
+import '../../theme/app_palette.dart';
+
+/// Turns low-level transport failures into a short, human sentence.
+String friendlyErrorMessage(BuildContext context, String message) {
+  final l10n = AppLocalizations.of(context)!;
+  final lower = message.toLowerCase();
+  if (lower.contains('timed out') || lower.contains('timeout')) {
+    return l10n.requestTimedOut;
+  }
+  if (lower.contains('network') ||
+      lower.contains('connection') ||
+      lower.contains('socket') ||
+      lower.contains('failed host lookup')) {
+    return l10n.networkError;
+  }
+  return message;
+}
 
 /// A centered loading indicator used while a page's first data load runs.
 class AppLoading extends StatelessWidget {
@@ -52,30 +69,55 @@ class AppEmpty extends StatelessWidget {
     final theme = Theme.of(context);
     final muted = theme.colorScheme.onSurfaceVariant;
 
+    final palette = context.palette;
+
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(40),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, size: 40, color: muted.withValues(alpha: 0.7)),
-            const SizedBox(height: 12),
+            Container(
+              width: 46,
+              height: 46,
+              decoration: BoxDecoration(
+                color: palette.surfaceMuted,
+                shape: BoxShape.circle,
+                border: Border.all(color: palette.border),
+              ),
+              child: Icon(icon, size: 20, color: muted),
+            ),
+            const SizedBox(height: 14),
             Text(
               title,
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyLarge?.copyWith(
+                fontSize: 14,
                 fontWeight: FontWeight.w600,
+                color: palette.textPrimary,
               ),
             ),
             if (subtitle != null) ...[
               const SizedBox(height: 4),
-              Text(
-                subtitle!,
-                textAlign: TextAlign.center,
-                style: theme.textTheme.bodySmall?.copyWith(color: muted),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 340),
+                child: Text(
+                  subtitle!,
+                  textAlign: TextAlign.center,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    fontSize: 12,
+                    color: muted,
+                  ),
+                ),
               ),
             ],
-            if (action != null) ...[const SizedBox(height: 16), action!],
+            if (action != null) ...[
+              const SizedBox(height: 18),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 240),
+                child: action!,
+              ),
+            ],
           ],
         ),
       ),
@@ -96,14 +138,24 @@ class AppError extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
+    final palette = context.palette;
+
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(32),
+        padding: const EdgeInsets.all(40),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(FIcons.circleAlert, size: 40, color: theme.colorScheme.error),
-            const SizedBox(height: 12),
+            Container(
+              width: 46,
+              height: 46,
+              decoration: BoxDecoration(
+                color: palette.dangerSoft,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(FIcons.circleAlert, size: 20, color: palette.danger),
+            ),
+            const SizedBox(height: 14),
             Text(
               title ?? l10n.error,
               textAlign: TextAlign.center,
@@ -112,11 +164,14 @@ class AppError extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 4),
-            Text(
-              message,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 360),
+              child: Text(
+                friendlyErrorMessage(context, message),
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
               ),
             ),
             if (onRetry != null) ...[
