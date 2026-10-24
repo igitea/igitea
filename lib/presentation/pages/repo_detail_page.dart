@@ -2145,16 +2145,26 @@ class _ReleasesTabState extends State<_ReleasesTab> {
                         icon: FIcons.rocket,
                         title: widget.l10n.noReleases,
                       )
-                    : ListView.builder(
-                        padding:
-                            UIConstants.pagePadding +
-                            EdgeInsets.only(bottom: 80),
-                        itemCount: releases.length + (hasMore ? 1 : 0),
-                        itemBuilder: (context, index) {
-                          if (index == releases.length) {
-                            return Center(
-                              child: Padding(
-                                padding: const EdgeInsets.all(16),
+                    : ListView(
+                        padding: const EdgeInsets.fromLTRB(20, 4, 20, 80),
+                        children: [
+                          AppSection(
+                            title: '',
+                            showHeader: false,
+                            children: [
+                              for (final release in releases)
+                                _ReleaseRow(
+                                  release: release,
+                                  owner: widget.owner,
+                                  repo: widget.repo,
+                                  l10n: widget.l10n,
+                                ),
+                            ],
+                          ),
+                          if (hasMore)
+                            Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 12),
+                              child: Center(
                                 child:
                                     Injection.repoNotifier.releasesLoadingMore
                                     ? const SizedBox(
@@ -2170,22 +2180,11 @@ class _ReleasesTabState extends State<_ReleasesTab> {
                                               widget.owner,
                                               widget.repo,
                                             ),
-                                        child: const Text('Load more releases'),
+                                        child: Text(widget.l10n.loadMore),
                                       ),
                               ),
-                            );
-                          }
-                          final release = releases[index];
-                          return FadeInWrapper(
-                            delay: Duration(milliseconds: index * 20),
-                            child: _ReleaseItem(
-                              release: release,
-                              owner: widget.owner,
-                              repo: widget.repo,
-                              l10n: widget.l10n,
                             ),
-                          );
-                        },
+                        ],
                       ),
               _ => EmptyState(
                 icon: FIcons.rocket,
@@ -2210,13 +2209,13 @@ class _ReleasesTabState extends State<_ReleasesTab> {
   }
 }
 
-class _ReleaseItem extends StatelessWidget {
+class _ReleaseRow extends StatelessWidget {
   final Release release;
   final String owner;
   final String repo;
   final AppLocalizations l10n;
 
-  const _ReleaseItem({
+  const _ReleaseRow({
     required this.release,
     required this.owner,
     required this.repo,
@@ -2225,9 +2224,80 @@ class _ReleaseItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return PremiumListCard(
-      onTap: () {
+    final palette = context.palette;
+    final author = release.author?.login ?? release.author?.full_name ?? '';
+    final date = release.published_at != null
+        ? _formatDate(release.published_at!)
+        : '';
+    final title = release.name?.trim().isNotEmpty == true
+        ? release.name!.trim()
+        : (release.tag_name ?? '');
+
+    return AppTile(
+      leading: Container(
+        width: 26,
+        height: 26,
+        decoration: BoxDecoration(
+          color: palette.brandSoft,
+          borderRadius: BorderRadius.circular(7),
+        ),
+        child: Icon(FIcons.rocket, size: 13, color: palette.brand),
+      ),
+      title: title,
+      subtitle: [
+        if (release.tag_name != null && release.tag_name != title)
+          release.tag_name!,
+        if (author.isNotEmpty) author,
+        if (date.isNotEmpty) date,
+      ].join(' · '),
+      showChevron: false,
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (release.prerelease == true) ...[
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: palette.warningSoft,
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: Text(
+                l10n.preRelease,
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                  color: palette.warning,
+                ),
+              ),
+            ),
+            const SizedBox(width: 6),
+          ],
+          if (release.draft == true) ...[
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: palette.surfaceMuted,
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: Text(
+                l10n.draft,
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                  color: palette.textSecondary,
+                ),
+              ),
+            ),
+            const SizedBox(width: 6),
+          ],
+          Icon(
+            FIcons.chevronRight,
+            size: 13,
+            color: palette.textSecondary.withValues(alpha: 0.7),
+          ),
+        ],
+      ),
+      onPress: () {
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -2236,83 +2306,6 @@ class _ReleaseItem extends StatelessWidget {
           ),
         );
       },
-      child: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(UIConstants.sm),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              FIcons.rocket,
-              size: UIConstants.iconMd,
-              color: theme.colorScheme.primary,
-            ),
-          ),
-          const SizedBox(width: UIConstants.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        release.tag_name ?? '',
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    if (release.prerelease == true) ...[
-                      const SizedBox(width: UIConstants.sm),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: UIConstants.sm,
-                          vertical: UIConstants.xs,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.orange.withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(
-                            UIConstants.badgeRadius,
-                          ),
-                        ),
-                        child: Text(
-                          l10n.preRelease,
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: Colors.orange,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-                if (release.author != null) ...[
-                  const SizedBox(height: UIConstants.xs),
-                  Text(
-                    release.author!.login ?? release.author!.full_name ?? '',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant.withValues(
-                        alpha: 0.7,
-                      ),
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-          if (release.published_at != null)
-            Text(
-              _formatDate(release.published_at!),
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant.withValues(
-                  alpha: 0.7,
-                ),
-              ),
-            ),
-        ],
-      ),
     );
   }
 
@@ -2323,6 +2316,7 @@ class _ReleaseItem extends StatelessWidget {
     if (diff.inDays > 30) return l10n.ago('${diff.inDays ~/ 30}mo');
     if (diff.inDays > 0) return l10n.ago('${diff.inDays}d');
     if (diff.inHours > 0) return l10n.ago('${diff.inHours}h');
+    if (diff.inMinutes > 0) return l10n.ago('${diff.inMinutes}m');
     return l10n.justNow;
   }
 }
@@ -2938,116 +2932,98 @@ class _TagsTabState extends State<_TagsTab> {
           TagsLoaded(:final tags) =>
             tags.isEmpty
                 ? EmptyState(icon: FIcons.tag, title: widget.l10n.noTags)
-                : ListView.builder(
-                    padding:
-                        UIConstants.pagePadding +
-                        const EdgeInsets.symmetric(vertical: UIConstants.sm),
-                    itemCount: tags.length,
-                    itemBuilder: (context, index) {
-                      final tag = tags[index];
-                      return FadeInWrapper(
-                        delay: Duration(milliseconds: index * 20),
-                        child: PremiumListCard(
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => TagDetailPage(tag: tag),
-                              ),
-                            );
-                          },
-                          child: Row(
-                            children: [
-                              Container(
-                                padding: const EdgeInsets.all(UIConstants.sm),
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context)
-                                      .colorScheme
-                                      .primaryContainer
-                                      .withValues(alpha: 0.5),
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Icon(
-                                  FIcons.tag,
-                                  size: UIConstants.iconMd,
-                                  color: Theme.of(context).colorScheme.primary,
-                                ),
-                              ),
-                              const SizedBox(width: UIConstants.md),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      tag.name ?? '',
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyMedium
-                                          ?.copyWith(
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                    ),
-                                    if (tag.commit?.sha != null) ...[
-                                      const SizedBox(height: UIConstants.xs),
-                                      Text(
-                                        tag.commit!.sha!.substring(0, 7),
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodySmall
-                                            ?.copyWith(
-                                              fontFamily: 'monospace',
-                                              color: Theme.of(context)
-                                                  .colorScheme
-                                                  .onSurfaceVariant
-                                                  .withValues(alpha: 0.7),
-                                            ),
-                                      ),
-                                    ],
-                                  ],
-                                ),
-                              ),
-                              if (tag.tarball_url != null ||
-                                  tag.zipball_url != null)
-                                FPopoverMenu(
-                                  menuAnchor: Alignment.topRight,
-                                  childAnchor: Alignment.bottomRight,
-                                  menuBuilder: (context, controller, _) => [
-                                    FItemGroup(
-                                      children: [
-                                        if (tag.tarball_url != null)
-                                          FItem(
-                                            title: Text(
-                                              widget.l10n.downloadTarball,
-                                            ),
-                                          ),
-                                        if (tag.zipball_url != null)
-                                          FItem(
-                                            title: Text(
-                                              widget.l10n.downloadZipball,
-                                            ),
-                                          ),
-                                      ],
-                                    ),
-                                  ],
-                                  builder: (context, controller, child) =>
-                                      FTappable(
-                                        onPress: () => controller.toggle(),
-                                        child: const Padding(
-                                          padding: EdgeInsets.all(8),
-                                          child: Icon(
-                                            FIcons.ellipsisVertical,
-                                            size: UIConstants.iconMd,
-                                          ),
-                                        ),
-                                      ),
-                                ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
+                : ListView(
+                    padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+                    children: [
+                      AppSection(
+                        title: '',
+                        showHeader: false,
+                        children: [
+                          for (final tag in tags)
+                            _TagRow(tag: tag, l10n: widget.l10n),
+                        ],
+                      ),
+                    ],
                   ),
           _ => EmptyState(icon: FIcons.tag, title: widget.l10n.noTags),
         };
+      },
+    );
+  }
+}
+
+class _TagRow extends StatelessWidget {
+  final Tag tag;
+  final AppLocalizations l10n;
+
+  const _TagRow({required this.tag, required this.l10n});
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    final sha = tag.commit?.sha;
+    final hasDownloads = tag.tarball_url != null || tag.zipball_url != null;
+
+    return AppTile(
+      leading: Container(
+        width: 26,
+        height: 26,
+        decoration: BoxDecoration(
+          color: palette.brandSoft,
+          borderRadius: BorderRadius.circular(7),
+        ),
+        child: Icon(FIcons.tag, size: 13, color: palette.brand),
+      ),
+      title: tag.name ?? '',
+      subtitle: sha != null && sha.length >= 7 ? sha.substring(0, 7) : null,
+      showChevron: false,
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (hasDownloads)
+            FPopoverMenu(
+              menuAnchor: Alignment.topRight,
+              childAnchor: Alignment.bottomRight,
+              menuBuilder: (context, controller, _) => [
+                FItemGroup(
+                  children: [
+                    if (tag.tarball_url != null)
+                      FItem(
+                        prefix: const Icon(FIcons.download, size: 14),
+                        title: Text(l10n.downloadTarball),
+                      ),
+                    if (tag.zipball_url != null)
+                      FItem(
+                        prefix: const Icon(FIcons.download, size: 14),
+                        title: Text(l10n.downloadZipball),
+                      ),
+                  ],
+                ),
+              ],
+              builder: (context, controller, child) => FTappable(
+                onPress: () => controller.toggle(),
+                child: Padding(
+                  padding: const EdgeInsets.all(6),
+                  child: Icon(
+                    FIcons.ellipsisVertical,
+                    size: 14,
+                    color: palette.textSecondary,
+                  ),
+                ),
+              ),
+            ),
+          const SizedBox(width: 2),
+          Icon(
+            FIcons.chevronRight,
+            size: 13,
+            color: palette.textSecondary.withValues(alpha: 0.7),
+          ),
+        ],
+      ),
+      onPress: () {
+        Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (_) => TagDetailPage(tag: tag)));
       },
     );
   }
