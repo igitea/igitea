@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.40.0] - 2026-10-24
+
 ### Changed
 - **Issue & PR detail polish**: issue state now uses semantic green/purple badges, 20px page padding, and comment-load failures show a localized friendly message instead of raw transport text
 - **Repository README**: the overview now includes a README preview card with a loading skeleton, shared Markdown styling and a "View all" action; it hides automatically when the repository has no README
