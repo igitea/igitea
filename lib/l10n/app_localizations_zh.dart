@@ -214,7 +214,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get noComments => '暂无评论';
 
   @override
-  String get labels => '标签';
+  String get labels => '议题标签';
 
   @override
   String get milestones => '里程碑';
@@ -1101,7 +1101,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get changedFiles => '变更的文件';
 
   @override
-  String get tags => '标签';
+  String get tags => 'Git 标签';
 
   @override
   String get noCommits => '暂无提交';
@@ -2681,7 +2681,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get noComments => '暫無評論';
 
   @override
-  String get labels => '標籤';
+  String get labels => '議題標籤';
 
   @override
   String get milestones => '里程碑';
@@ -3525,7 +3525,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get changedFiles => '变更的檔案';
 
   @override
-  String get tags => '標籤';
+  String get tags => 'Git 標籤';
 
   @override
   String get noCommits => '暂无提交';

@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Changed
+- **Repository subpages**: commit history and branches now use grouped, compact rows with author/time/SHA chips, default-branch and protected badges; Chinese labels now distinguish Git tags (`Git 标签`) from issue labels (`议题标签`)
 - **Forms**: create repository and create issue are rebuilt as grouped surface cards with a 760px reading measure, explicit cancel/create footer actions, a Forui milestone selector and friendly error alerts; every create/edit form now shares the narrower form width
 - **Profile repositories**: your profile now lists recent repositories with language/star metadata, a view-all action and skeleton/error states
 - **Search**: debounced live search across repositories, issues and users; results are compact grouped rows with language/star/fork metadata, and clearing the query returns to the contextual prompt

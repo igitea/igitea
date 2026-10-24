@@ -2449,23 +2449,23 @@ class _CommitsTabState extends State<_CommitsTab> {
                     icon: FIcons.gitCommitVertical,
                     title: widget.l10n.noCommits,
                   )
-                : ListView.builder(
-                    padding:
-                        UIConstants.pagePadding +
-                        const EdgeInsets.symmetric(vertical: UIConstants.sm),
-                    itemCount: commits.length,
-                    itemBuilder: (context, index) {
-                      final commit = commits[index];
-                      return FadeInWrapper(
-                        delay: Duration(milliseconds: index * 20),
-                        child: _CommitItem(
-                          commit: commit,
-                          owner: widget.owner,
-                          repo: widget.repo,
-                          l10n: widget.l10n,
-                        ),
-                      );
-                    },
+                : ListView(
+                    padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+                    children: [
+                      AppSection(
+                        title: '',
+                        showHeader: false,
+                        children: [
+                          for (final commit in commits)
+                            _CommitItem(
+                              commit: commit,
+                              owner: widget.owner,
+                              repo: widget.repo,
+                              l10n: widget.l10n,
+                            ),
+                        ],
+                      ),
+                    ],
                   ),
           _ => EmptyState(
             icon: FIcons.gitCommitVertical,
@@ -2492,9 +2492,62 @@ class _CommitItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return PremiumListCard(
-      onTap: () {
+    final palette = context.palette;
+    final message = (commit.commit?.message ?? '').split('\n').first;
+    final login = commit.author?.login ?? '';
+    final date = commit.created != null ? _formatDate(commit.created!) : '';
+
+    return AppTile(
+      leading: commit.author != null
+          ? UserAvatar(user: commit.author!, radius: 14)
+          : Container(
+              width: 28,
+              height: 28,
+              decoration: BoxDecoration(
+                color: palette.surfaceMuted,
+                borderRadius: BorderRadius.circular(7),
+              ),
+              child: Icon(
+                FIcons.gitCommitHorizontal,
+                size: 14,
+                color: palette.textSecondary,
+              ),
+            ),
+      title: message,
+      subtitle: [
+        if (login.isNotEmpty) login,
+        if (date.isNotEmpty) date,
+      ].join(' · '),
+      showChevron: false,
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (commit.sha != null)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: palette.surfaceMuted,
+                borderRadius: BorderRadius.circular(4),
+                border: Border.all(color: palette.border),
+              ),
+              child: Text(
+                commit.sha!.substring(0, 7),
+                style: TextStyle(
+                  fontSize: 10,
+                  fontFamily: 'monospace',
+                  color: palette.textSecondary,
+                ),
+              ),
+            ),
+          const SizedBox(width: 6),
+          Icon(
+            FIcons.chevronRight,
+            size: 13,
+            color: palette.textSecondary.withValues(alpha: 0.7),
+          ),
+        ],
+      ),
+      onPress: () {
         if (commit.sha != null) {
           Navigator.of(context).push(
             MaterialPageRoute(
@@ -2504,76 +2557,6 @@ class _CommitItem extends StatelessWidget {
           );
         }
       },
-      child: Row(
-        children: [
-          commit.author != null
-              ? UserAvatar(user: commit.author!, radius: UIConstants.avatarMd)
-              : Container(
-                  padding: const EdgeInsets.all(UIConstants.xs),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainerHighest,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(FIcons.user, size: UIConstants.iconMd),
-                ),
-          const SizedBox(width: UIConstants.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  commit.commit?.message ?? '',
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    fontWeight: FontWeight.w600,
-                  ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: UIConstants.xs),
-                Row(
-                  children: [
-                    if (commit.author?.login != null)
-                      Text(
-                        commit.author!.login!,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    if (commit.created != null) ...[
-                      const SizedBox(width: UIConstants.sm),
-                      Text(
-                        _formatDate(commit.created!),
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: theme.colorScheme.onSurfaceVariant.withValues(
-                            alpha: 0.7,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ],
-            ),
-          ),
-          if (commit.sha != null)
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: UIConstants.sm,
-                vertical: UIConstants.xs,
-              ),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainerHighest,
-                borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
-              ),
-              child: Text(
-                commit.sha!.substring(0, 7),
-                style: theme.textTheme.labelSmall?.copyWith(
-                  fontFamily: 'monospace',
-                ),
-              ),
-            ),
-        ],
-      ),
     );
   }
 
@@ -2630,86 +2613,117 @@ class _BranchesTabState extends State<_BranchesTab> {
           BranchesLoaded(:final branches) =>
             branches.isEmpty
                 ? EmptyState(icon: FIcons.gitBranch, title: l10n.noBranches)
-                : ListView.builder(
-                    padding:
-                        UIConstants.pagePadding +
-                        const EdgeInsets.symmetric(vertical: UIConstants.sm),
-                    itemCount: branches.length,
-                    itemBuilder: (context, index) {
-                      final branch = branches[index];
-                      final isDefault = branch.name == widget.defaultBranch;
-                      return FadeInWrapper(
-                        delay: Duration(milliseconds: index * 20),
-                        child: PremiumListCard(
-                          onTap: () {
-                            Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (_) => _RepoSectionPage(
-                                  owner: widget.owner,
-                                  repo: widget.repo,
-                                  sectionId: 'code',
-                                  defaultBranch: branch.name,
-                                ),
-                              ),
-                            );
-                          },
-                          child: Row(
-                            children: [
-                              Icon(
-                                FIcons.gitBranch,
-                                size: UIConstants.iconMd,
-                                color: isDefault
-                                    ? Theme.of(context).colorScheme.primary
-                                    : Theme.of(
-                                        context,
-                                      ).colorScheme.onSurfaceVariant,
-                              ),
-                              const SizedBox(width: UIConstants.md),
-                              Expanded(
-                                child: Text(
-                                  branch.name ?? '',
-                                  style: Theme.of(context).textTheme.bodyMedium
-                                      ?.copyWith(
-                                        fontWeight: isDefault
-                                            ? FontWeight.w600
-                                            : null,
-                                      ),
-                                ),
-                              ),
-                              if (isDefault)
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: UIConstants.sm,
-                                    vertical: UIConstants.xs,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Theme.of(
-                                      context,
-                                    ).colorScheme.primaryContainer,
-                                    borderRadius: BorderRadius.circular(
-                                      UIConstants.badgeRadius,
-                                    ),
-                                  ),
-                                  child: Text(
-                                    l10n.defaultBranch,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .labelSmall
-                                        ?.copyWith(
-                                          color: Theme.of(
-                                            context,
-                                          ).colorScheme.onPrimaryContainer,
-                                        ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
+                : ListView(
+                    padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+                    children: [
+                      AppSection(
+                        title: '',
+                        showHeader: false,
+                        children: [
+                          for (final branch in branches)
+                            _BranchRow(
+                              branch: branch,
+                              owner: widget.owner,
+                              repo: widget.repo,
+                              isDefault: branch.name == widget.defaultBranch,
+                              l10n: l10n,
+                            ),
+                        ],
+                      ),
+                    ],
                   ),
           _ => EmptyState(icon: FIcons.gitBranch, title: l10n.noBranches),
         };
+      },
+    );
+  }
+}
+
+class _BranchRow extends StatelessWidget {
+  final Branch branch;
+  final String owner;
+  final String repo;
+  final bool isDefault;
+  final AppLocalizations l10n;
+
+  const _BranchRow({
+    required this.branch,
+    required this.owner,
+    required this.repo,
+    required this.isDefault,
+    required this.l10n,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    final commit = branch.commit;
+    final message = (commit?.message ?? '').split('\n').first;
+    final shortSha = commit?.id != null && commit!.id!.length >= 7
+        ? commit.id!.substring(0, 7)
+        : '';
+
+    return AppTile(
+      leading: Container(
+        width: 26,
+        height: 26,
+        decoration: BoxDecoration(
+          color: isDefault ? palette.brandSoft : palette.surfaceMuted,
+          borderRadius: BorderRadius.circular(7),
+        ),
+        child: Icon(
+          FIcons.gitBranch,
+          size: 13,
+          color: isDefault ? palette.brand : palette.textSecondary,
+        ),
+      ),
+      title: branch.name ?? '',
+      subtitle: message.isNotEmpty
+          ? [if (shortSha.isNotEmpty) shortSha, message].join(' · ')
+          : null,
+      showChevron: false,
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (isDefault)
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: palette.brandSoft,
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: Text(
+                l10n.defaultBranch,
+                style: TextStyle(
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                  color: palette.brand,
+                ),
+              ),
+            ),
+          if (branch.protected == true) ...[
+            const SizedBox(width: 6),
+            Icon(FIcons.shield, size: 12, color: palette.warning),
+          ],
+          const SizedBox(width: 6),
+          Icon(
+            FIcons.chevronRight,
+            size: 13,
+            color: palette.textSecondary.withValues(alpha: 0.7),
+          ),
+        ],
+      ),
+      onPress: () {
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => _RepoSectionPage(
+              owner: owner,
+              repo: repo,
+              sectionId: 'code',
+              defaultBranch: branch.name,
+            ),
+          ),
+        );
       },
     );
   }
