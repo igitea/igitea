@@ -6,7 +6,6 @@ import 'package:flutter_code_editor/flutter_code_editor.dart';
 import 'package:flutter_highlight/flutter_highlight.dart';
 import 'package:flutter_highlight/themes/github.dart';
 import 'package:flutter_highlight/themes/vs2015.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:forui/forui.dart';
 import 'package:highlight/highlight.dart';
 import 'package:highlight/languages/all.dart';
@@ -18,6 +17,9 @@ import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../domain/usecases/repo_usecases.dart';
 import '../../l10n/app_localizations.dart';
+import '../theme/app_palette.dart';
+import '../widgets/app_markdown.dart';
+import '../widgets/app_surface.dart';
 import '../widgets/forui/app_page.dart';
 import '../widgets/forui/app_state_views.dart';
 import 'file_history_page.dart';
@@ -221,6 +223,7 @@ class _RepoFilePageState extends State<RepoFilePage> {
       },
       child: AppPage(
         title: widget.name,
+        subtitle: '${widget.owner}/${widget.repo} · ${widget.path}',
         actions: [
           if (_isEditing && _hasChanges)
             FHeaderAction(
@@ -518,8 +521,18 @@ class _RepoFilePageState extends State<RepoFilePage> {
         return _buildTooLarge(l10n, isMarkdown: true);
       }
       return SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: MarkdownBody(data: _decodedContent!),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 900),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
+              child: AppSurface(
+                padding: const EdgeInsets.fromLTRB(36, 28, 36, 36),
+                child: AppMarkdown(data: _decodedContent!),
+              ),
+            ),
+          ),
+        ),
       );
     }
 
@@ -609,6 +622,7 @@ class _RepoFilePageState extends State<RepoFilePage> {
   }
 
   Widget _buildSelectableCode(ThemeData theme) {
+    final palette = context.palette;
     final lang = _languageForHighlight(_fileExtension);
     final isDark = theme.brightness == Brightness.dark;
     final codeTheme = isDark ? vs2015Theme : githubTheme;
@@ -622,7 +636,7 @@ class _RepoFilePageState extends State<RepoFilePage> {
     // only builds what's on screen — a single HighlightView over a huge file
     // builds one giant TextSpan tree and freezes the UI.
     return Container(
-      color: isDark ? const Color(0xFF1E1E1E) : const Color(0xFFF5F5F5),
+      color: palette.surface,
       child: ListView.builder(
         itemCount: chunkCount,
         itemBuilder: (context, chunkIndex) {
@@ -672,9 +686,7 @@ class _RepoFilePageState extends State<RepoFilePage> {
                 // Line numbers
                 Container(
                   width: lineNumberWidth,
-                  color: isDark
-                      ? const Color(0xFF252526)
-                      : const Color(0xFFEEEEEE),
+                  color: palette.surfaceMuted,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,

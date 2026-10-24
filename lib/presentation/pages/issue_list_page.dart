@@ -118,7 +118,7 @@ class _IssueListPageState extends State<IssueListPage> {
       );
 
       if (result != null) {
-        _filterState.value = result;
+        setState(() => _filterState.value = result);
         _forceReload();
       }
     } finally {
@@ -211,7 +211,9 @@ class _IssueListPageState extends State<IssueListPage> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return AppPage(
-      title: l10n.issues,
+      title: _filterState.value.type == 'pulls'
+          ? l10n.pullRequests
+          : l10n.issues,
       maxContentWidth: 980,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -447,6 +449,7 @@ class _IssueListPageState extends State<IssueListPage> {
                     onLoadMore: () => Injection.issueNotifier.loadMoreIssues(),
                     onIssueTap: _navigateToIssue,
                     l10n: l10n,
+                    isPullRequest: _filterState.value.type == 'pulls',
                   ),
                   _ => const AppLoading(),
                 };
@@ -467,6 +470,7 @@ class _IssueList extends StatefulWidget {
   final VoidCallback onLoadMore;
   final void Function(String owner, String repo, int index) onIssueTap;
   final AppLocalizations l10n;
+  final bool isPullRequest;
 
   const _IssueList({
     required this.issues,
@@ -476,6 +480,7 @@ class _IssueList extends StatefulWidget {
     required this.onLoadMore,
     required this.onIssueTap,
     required this.l10n,
+    required this.isPullRequest,
   });
 
   @override
@@ -509,15 +514,18 @@ class _IssueListState extends State<_IssueList> {
   @override
   Widget build(BuildContext context) {
     if (widget.issues.isEmpty && !widget.loadingMore) {
-      return AppEmpty(icon: FIcons.circleDot, title: widget.l10n.noIssuesFound);
+      return AppEmpty(
+        icon: widget.isPullRequest ? FIcons.gitPullRequest : FIcons.circleDot,
+        title: widget.isPullRequest
+            ? widget.l10n.noPullRequests
+            : widget.l10n.noIssuesFound,
+      );
     }
     return RefreshIndicator(
       onRefresh: () async => widget.onRefresh(),
       child: ListView.builder(
         controller: _scrollController,
-        padding:
-            UIConstants.pagePadding +
-            const EdgeInsets.symmetric(vertical: UIConstants.sm),
+        padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
         itemCount:
             widget.issues.length +
             (widget.hasMore || widget.loadingMore ? 1 : 0),

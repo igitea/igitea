@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:forui/forui.dart';
 
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../core/utils/either.dart';
 import '../../l10n/app_localizations.dart';
+import '../widgets/app_markdown.dart';
 import '../widgets/forui/app_page.dart';
 
 class WikiEditPage extends StatefulWidget {
@@ -138,7 +138,7 @@ class _WikiEditPageState extends State<WikiEditPage> {
   Widget _buildPreview() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(UIConstants.md),
-      child: MarkdownBody(data: _contentController.text, selectable: true),
+      child: AppMarkdown(data: _contentController.text, selectable: true),
     );
   }
 

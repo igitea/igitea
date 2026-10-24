@@ -178,6 +178,8 @@ class AppError extends StatelessWidget {
               const SizedBox(height: 16),
               FButton(
                 variant: .outline,
+                size: .sm,
+                mainAxisSize: .min,
                 onPress: onRetry,
                 child: Text(l10n.retry),
               ),

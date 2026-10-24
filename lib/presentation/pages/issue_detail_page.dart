@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/animations/animated_wrapper.dart';
 import '../../core/di/injection.dart';
@@ -14,6 +13,7 @@ import '../../l10n/app_localizations.dart';
 import '../../presentation/state/issue_notifier.dart';
 import '../../presentation/state/repo_notifier.dart';
 import '../../presentation/state/user_notifier.dart';
+import '../widgets/app_markdown.dart';
 import '../widgets/forui/app_page.dart';
 import '../widgets/forui/app_state_views.dart';
 import '../widgets/forui/app_tile.dart';
@@ -284,6 +284,7 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
     final l10n = AppLocalizations.of(context)!;
     return AppPage(
       title: l10n.issueNumber(widget.index),
+      subtitle: '${widget.owner}/${widget.repo}',
       maxContentWidth: 980,
       actions: [
         if (Injection.issueNotifier.state is IssueDetailLoaded)
@@ -653,7 +654,7 @@ class _IssueContent extends StatelessWidget {
           ),
 
           if (issue.body != null && issue.body!.isNotEmpty)
-            MarkdownBody(
+            AppMarkdown(
               data: issue.body!,
               selectable: true,
               onTapLink: (text, href, title) {
@@ -1529,12 +1530,9 @@ class _CommentItemState extends State<_CommentItem> {
                           )
                         else if (widget.comment.body != null &&
                             widget.comment.body!.isNotEmpty)
-                          MarkdownBody(
+                          AppMarkdown(
                             data: widget.comment.body!,
                             selectable: true,
-                            styleSheet: MarkdownStyleSheet.fromTheme(
-                              theme,
-                            ).copyWith(p: theme.textTheme.bodyMedium),
                             onTapLink: (text, href, title) {
                               if (href != null) {
                                 launchUrl(

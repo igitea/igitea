@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:forui/forui.dart';
 
 import '../../core/animations/animated_wrapper.dart';
@@ -11,6 +10,7 @@ import '../../data/models/generated/generated_models.dart';
 import '../../domain/usecases/issue_usecases.dart';
 import '../../domain/entities/issue_state.dart';
 import '../../l10n/app_localizations.dart';
+import '../widgets/app_markdown.dart';
 import '../widgets/forui/app_page.dart';
 import '../widgets/forui/app_state_views.dart';
 import '../widgets/premium_card.dart';
@@ -223,7 +223,7 @@ class _MilestoneDetailPageState extends State<MilestoneDetailPage> {
                 if (_milestone.description != null &&
                     _milestone.description!.isNotEmpty) ...[
                   const SizedBox(height: UIConstants.md),
-                  MarkdownBody(data: _milestone.description!, shrinkWrap: true),
+                  AppMarkdown(data: _milestone.description!, shrinkWrap: true),
                 ],
                 const SizedBox(height: UIConstants.md),
                 _buildStatRow(l10n, total, progress),

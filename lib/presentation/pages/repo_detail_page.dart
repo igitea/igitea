@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui' show FontFeature;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -26,6 +27,7 @@ import '../widgets/forui/app_section.dart';
 import '../widgets/forui/app_state_views.dart';
 import '../widgets/forui/app_tile.dart';
 import '../theme/app_palette.dart';
+import '../widgets/app_skeleton.dart';
 import '../widgets/app_surface.dart';
 import '../widgets/forui/app_chrome.dart';
 import '../widgets/language_dot.dart';
@@ -951,76 +953,92 @@ class _CodeTabState extends State<_CodeTab> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
+    final palette = context.palette;
+
     return Column(
       children: [
-        if (_pathStack.isNotEmpty)
-          Container(
-            margin: const EdgeInsets.symmetric(
-              horizontal: UIConstants.md,
-              vertical: UIConstants.sm,
-            ),
-            padding: const EdgeInsets.symmetric(
-              horizontal: UIConstants.sm,
-              vertical: UIConstants.xs,
-            ),
-            decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceContainerHighest.withValues(
-                alpha: 0.3,
-              ),
-              borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
-            ),
-            child: Row(
-              children: [
-                FTappable(
-                  onPress: _navigateUp,
-                  child: const Padding(
-                    padding: EdgeInsets.all(4),
-                    child: Icon(FIcons.arrowLeft, size: UIConstants.iconMd),
-                  ),
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: palette.surface,
+                  borderRadius: BorderRadius.circular(7),
+                  border: Border.all(color: palette.border),
                 ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(
+                      FIcons.gitBranch,
+                      size: 11,
+                      color: palette.textSecondary,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      widget.defaultBranch ?? 'main',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w500,
+                        color: palette.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (_currentPath.isNotEmpty) ...[
+                const SizedBox(width: 8),
+                Icon(
+                  FIcons.chevronRight,
+                  size: 12,
+                  color: palette.textSecondary,
+                ),
+                const SizedBox(width: 4),
                 Expanded(
                   child: Text(
-                    _breadcrumbText,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
+                    _currentPath,
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 11.5,
+                      color: palette.textSecondary,
+                    ),
                   ),
                 ),
               ],
-            ),
+              const Spacer(),
+              if (_pathStack.isNotEmpty)
+                AppIconButton(
+                  icon: FIcons.arrowUp,
+                  label: MaterialLocalizations.of(context).backButtonTooltip,
+                  size: 28,
+                  iconSize: 15,
+                  onPress: _navigateUp,
+                ),
+            ],
           ),
+        ),
         Expanded(
           child: ListenableBuilder(
             listenable: Injection.repoNotifier,
             builder: (context, _) {
               final state = Injection.repoNotifier.contentsState;
               return switch (state) {
-                ContentsLoading() => const AppLoading(),
-                ContentsError(:final message) => Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text('${l10n.error}: $message'),
-                      const SizedBox(height: UIConstants.md),
-                      FButton(
-                        variant: .outline,
-                        onPress: () => Injection.repoNotifier.loadContents(
-                          widget.owner,
-                          widget.repo,
-                          path: _currentPath.isEmpty ? null : _currentPath,
-                          ref: widget.defaultBranch,
-                        ),
-                        child: Text(l10n.retry),
-                      ),
-                    ],
+                ContentsLoading() => _CodeSkeleton(),
+                ContentsError(:final message) => AppError(
+                  message: message,
+                  onRetry: () => Injection.repoNotifier.loadContents(
+                    widget.owner,
+                    widget.repo,
+                    path: _currentPath.isEmpty ? null : _currentPath,
+                    ref: widget.defaultBranch,
                   ),
                 ),
                 ContentsLoaded(:final contents) => _buildFileList(
                   contents,
-                  theme,
                   l10n,
                 ),
                 _ => const AppLoading(),
@@ -1042,36 +1060,89 @@ class _CodeTabState extends State<_CodeTab> {
 
   Widget _buildFileList(
     List<ContentsResponse> contents,
-    ThemeData theme,
     AppLocalizations l10n,
   ) {
     if (contents.isEmpty) {
       return EmptyState(icon: FIcons.folderOpen, title: l10n.emptyDirectory);
     }
-    final dirs = contents.where((c) => c.type == 'dir').toList();
-    final files = contents.where((c) => c.type != 'dir').toList();
+    final dirs = contents.where((c) => c.type == 'dir').toList()
+      ..sort((a, b) => (a.name ?? '').compareTo(b.name ?? ''));
+    final files = contents.where((c) => c.type != 'dir').toList()
+      ..sort((a, b) => (a.name ?? '').compareTo(b.name ?? ''));
     final sorted = [...dirs, ...files];
-    return ListView.builder(
-      padding:
-          UIConstants.pagePadding +
-          const EdgeInsets.symmetric(vertical: UIConstants.sm),
-      itemCount: sorted.length,
-      itemBuilder: (context, index) {
-        final item = sorted[index];
-        return FadeInWrapper(
-          delay: Duration(milliseconds: index * 20),
-          child: _FileItem(
-            item: item,
-            onTap: () {
-              if (item.type == 'dir') {
-                _navigateTo(item.path ?? item.name ?? '');
-              } else {
-                _openFile(item);
-              }
-            },
-          ),
-        );
-      },
+
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(20, 2, 20, 28),
+      children: [
+        AppSection(
+          title: '',
+          showHeader: false,
+          children: [
+            for (final item in sorted)
+              _FileItem(
+                item: item,
+                onTap: () {
+                  if (item.type == 'dir') {
+                    _navigateTo(item.path ?? item.name ?? '');
+                  } else {
+                    _openFile(item);
+                  }
+                },
+              ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _CodeSkeleton extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(20, 2, 20, 28),
+      children: [
+        AppSection(
+          title: '',
+          showHeader: false,
+          children: [
+            AppSkeleton(
+              child: Column(
+                children: List.generate(6, (index) {
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(14, 11, 14, 11),
+                    child: Row(
+                      children: [
+                        Container(
+                          width: 26,
+                          height: 26,
+                          decoration: BoxDecoration(
+                            color: palette.surfaceMuted,
+                            borderRadius: BorderRadius.circular(7),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: const [
+                              SkeletonLine(widthFactor: 0.42, height: 9),
+                              SizedBox(height: 5),
+                              SkeletonLine(widthFactor: 0.22, height: 7),
+                            ],
+                          ),
+                        ),
+                        const SkeletonBox(width: 30, height: 8),
+                      ],
+                    ),
+                  );
+                }),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
@@ -1084,39 +1155,47 @@ class _FileItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final palette = context.palette;
     final isDir = item.type == 'dir';
-    return Container(
-      margin: const EdgeInsets.only(bottom: UIConstants.xs),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(UIConstants.badgeRadius),
-        border: Border.all(
-          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
-          width: 0.5,
+    final size = item.size;
+
+    return AppTile(
+      leading: Container(
+        width: 26,
+        height: 26,
+        decoration: BoxDecoration(
+          color: isDir ? palette.brandSoft : palette.surfaceMuted,
+          borderRadius: BorderRadius.circular(7),
         ),
-      ),
-      child: AppTile(
-        leading: Icon(
+        child: Icon(
           isDir ? FIcons.folder : fileIcon(item.type, item.name),
-          size: UIConstants.iconMd,
-          color: isDir ? Colors.blue : theme.colorScheme.onSurfaceVariant,
+          size: 13,
+          color: isDir ? palette.brand : palette.textSecondary,
         ),
-        title: item.name ?? '',
-        showChevron: false,
-        trailing: item.size != null && !isDir
-            ? Text(
-                _formatSize(item.size!),
-                style: theme.textTheme.labelSmall?.copyWith(
-                  fontFamily: 'monospace',
-                  color: theme.colorScheme.onSurfaceVariant.withValues(
-                    alpha: 0.7,
-                  ),
-                ),
-              )
-            : null,
-        onPress: onTap,
       ),
+      title: item.name ?? '',
+      showChevron: false,
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (size != null && !isDir)
+            Text(
+              _formatSize(size),
+              style: TextStyle(
+                fontSize: 10.5,
+                fontFeatures: const [FontFeature.tabularFigures()],
+                color: palette.textSecondary.withValues(alpha: 0.8),
+              ),
+            ),
+          const SizedBox(width: 6),
+          Icon(
+            FIcons.chevronRight,
+            size: 14,
+            color: palette.textSecondary.withValues(alpha: 0.7),
+          ),
+        ],
+      ),
+      onPress: onTap,
     );
   }
 
@@ -1256,179 +1335,167 @@ class _IssuesTabState extends State<_IssuesTab> {
             Column(
               children: [
                 Padding(
-                  padding:
-                      UIConstants.pagePadding +
-                      const EdgeInsets.only(top: UIConstants.sm),
-                  child: Column(
-                    children: [
-                      Row(
+                  padding: const EdgeInsets.fromLTRB(20, 14, 20, 4),
+                  child: FTextField(
+                    control: FTextFieldControl.managed(
+                      controller: _searchController,
+                      onChange: (value) {
+                        setState(() => _searchQuery = value.text);
+                        _debounceTimer?.cancel();
+                        _debounceTimer = Timer(
+                          const Duration(milliseconds: 300),
+                          _loadIssues,
+                        );
+                      },
+                    ),
+                    hint: widget.l10n.searchIssues,
+                    prefixBuilder: (context, style, variants) =>
+                        FTextField.prefixIconBuilder(
+                          context,
+                          style,
+                          variants,
+                          const Icon(FIcons.search, size: 16),
+                        ),
+                    clearable: (value) => value.text.isNotEmpty,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 6),
+                  child: ValueListenableBuilder<IssueFilterState>(
+                    valueListenable: _filterState,
+                    builder: (context, filter, _) {
+                      return Column(
                         children: [
-                          Expanded(
-                            child: FTextField(
-                              control: FTextFieldControl.managed(
-                                controller: _searchController,
-                                onChange: (value) {
-                                  setState(() => _searchQuery = value.text);
-                                  _debounceTimer?.cancel();
-                                  _debounceTimer = Timer(
-                                    const Duration(milliseconds: 300),
-                                    _loadIssues,
-                                  );
-                                },
-                              ),
-                              hint: widget.l10n.searchIssues,
-                              prefixBuilder: (context, style, variants) =>
-                                  const Padding(
-                                    padding: EdgeInsets.only(left: 12),
-                                    child: Icon(FIcons.search, size: 16),
-                                  ),
-                              clearable: (value) => value.text.isNotEmpty,
-                            ),
-                          ),
-                          const SizedBox(width: UIConstants.sm),
-                          FTooltip(
-                            tipBuilder: (context, controller) =>
-                                Text(widget.l10n.moreFilters),
-                            child: FTappable(
-                              onPress: _showFilterSheet,
-                              semanticsLabel: widget.l10n.moreFilters,
-                              child: const Padding(
-                                padding: EdgeInsets.all(8),
-                                child: Icon(FIcons.listFilter),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: UIConstants.sm),
-                      Wrap(
-                        spacing: UIConstants.sm,
-                        children: [
-                          for (final option in [
-                            ('open', widget.l10n.open),
-                            ('closed', widget.l10n.closed),
-                            ('all', widget.l10n.all),
-                          ])
-                            FButton(
-                              variant: _selectedFilter == option.$1
-                                  ? .primary
-                                  : .outline,
-                              size: .xs,
-                              mainAxisSize: .min,
-                              onPress: () => setState(() {
-                                _selectedFilter = option.$1;
-                                _loadIssues();
-                              }),
-                              child: Text(option.$2),
-                            ),
-                        ],
-                      ),
-                      ValueListenableBuilder<IssueFilterState>(
-                        valueListenable: _filterState,
-                        builder: (context, filter, _) {
-                          if (!filter.hasFilters) {
-                            return const SizedBox.shrink();
-                          }
-                          return Padding(
-                            padding: const EdgeInsets.only(top: UIConstants.sm),
-                            child: Wrap(
-                              spacing: UIConstants.sm,
-                              runSpacing: UIConstants.sm,
-                              children: [
-                                ...filter.labels.map(
-                                  (label) => AppFilterChip(
-                                    label: label,
-                                    onRemove: () {
-                                      _filterState.value = filter.copyWith(
-                                        labels: filter.labels.difference({
-                                          label,
-                                        }),
-                                      );
+                          Row(
+                            children: [
+                              SizedBox(
+                                width: 240,
+                                child: AppSegmentedControl(
+                                  index: [
+                                    'open',
+                                    'closed',
+                                    'all',
+                                  ].indexOf(_selectedFilter),
+                                  labels: [
+                                    widget.l10n.open,
+                                    widget.l10n.closed,
+                                    widget.l10n.all,
+                                  ],
+                                  onChanged: (index) {
+                                    final value = [
+                                      'open',
+                                      'closed',
+                                      'all',
+                                    ][index];
+                                    setState(() {
+                                      _selectedFilter = value;
                                       _loadIssues();
-                                    },
-                                  ),
+                                    });
+                                  },
                                 ),
-                                ...filter.milestones.map(
-                                  (m) => AppFilterChip(
-                                    label: m,
-                                    onRemove: () {
-                                      _filterState.value = filter.copyWith(
-                                        milestones: filter.milestones
-                                            .difference({m}),
-                                      );
-                                      _loadIssues();
-                                    },
+                              ),
+                              const Spacer(),
+                              AppIconButton(
+                                icon: FIcons.listFilter,
+                                label: widget.l10n.moreFilters,
+                                selected: filter.hasFilters,
+                                onPress: _showFilterSheet,
+                              ),
+                            ],
+                          ),
+                          if (filter.hasFilters)
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                top: UIConstants.sm,
+                              ),
+                              child: Wrap(
+                                spacing: UIConstants.sm,
+                                runSpacing: UIConstants.sm,
+                                children: [
+                                  ...filter.labels.map(
+                                    (label) => AppFilterChip(
+                                      label: label,
+                                      onRemove: () {
+                                        _filterState.value = filter.copyWith(
+                                          labels: filter.labels.difference({
+                                            label,
+                                          }),
+                                        );
+                                        _loadIssues();
+                                      },
+                                    ),
                                   ),
-                                ),
-                                if (filter.type != null)
-                                  AppFilterChip(
-                                    label: filter.type!,
-                                    onRemove: () {
-                                      _filterState.value = filter.copyWith(
-                                        clearType: true,
-                                      );
-                                      _loadIssues();
-                                    },
+                                  ...filter.milestones.map(
+                                    (m) => AppFilterChip(
+                                      label: m,
+                                      onRemove: () {
+                                        _filterState.value = filter.copyWith(
+                                          milestones: filter.milestones
+                                              .difference({m}),
+                                        );
+                                        _loadIssues();
+                                      },
+                                    ),
                                   ),
-                                if (filter.assignedToMe)
-                                  AppFilterChip(
-                                    label: widget.l10n.assignedToMe,
-                                    onRemove: () {
-                                      _filterState.value = filter.copyWith(
-                                        assignedToMe: false,
-                                      );
-                                      _loadIssues();
-                                    },
-                                  ),
-                                if (filter.createdByMe)
-                                  AppFilterChip(
-                                    label: widget.l10n.createdByMe,
-                                    onRemove: () {
-                                      _filterState.value = filter.copyWith(
-                                        createdByMe: false,
-                                      );
-                                      _loadIssues();
-                                    },
-                                  ),
-                                if (filter.mentionedMe)
-                                  AppFilterChip(
-                                    label: widget.l10n.mentionedMe,
-                                    onRemove: () {
-                                      _filterState.value = filter.copyWith(
-                                        mentionedMe: false,
-                                      );
-                                      _loadIssues();
-                                    },
-                                  ),
-                              ],
+                                  if (filter.type != null)
+                                    AppFilterChip(
+                                      label: filter.type!,
+                                      onRemove: () {
+                                        _filterState.value = filter.copyWith(
+                                          clearType: true,
+                                        );
+                                        _loadIssues();
+                                      },
+                                    ),
+                                  if (filter.assignedToMe)
+                                    AppFilterChip(
+                                      label: widget.l10n.assignedToMe,
+                                      onRemove: () {
+                                        _filterState.value = filter.copyWith(
+                                          assignedToMe: false,
+                                        );
+                                        _loadIssues();
+                                      },
+                                    ),
+                                  if (filter.createdByMe)
+                                    AppFilterChip(
+                                      label: widget.l10n.createdByMe,
+                                      onRemove: () {
+                                        _filterState.value = filter.copyWith(
+                                          createdByMe: false,
+                                        );
+                                        _loadIssues();
+                                      },
+                                    ),
+                                  if (filter.mentionedMe)
+                                    AppFilterChip(
+                                      label: widget.l10n.mentionedMe,
+                                      onRemove: () {
+                                        _filterState.value = filter.copyWith(
+                                          mentionedMe: false,
+                                        );
+                                        _loadIssues();
+                                      },
+                                    ),
+                                ],
+                              ),
                             ),
-                          );
-                        },
-                      ),
-                    ],
+                        ],
+                      );
+                    },
                   ),
                 ),
                 Expanded(
                   child: switch (issuesState) {
                     IssuesListLoading() => const AppLoading(),
-                    IssuesListError(:final message) => Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('${widget.l10n.error}: $message'),
-                          const SizedBox(height: UIConstants.md),
-                          FButton(
-                            variant: .outline,
-                            onPress: _loadIssues,
-                            child: Text(widget.l10n.retry),
-                          ),
-                        ],
-                      ),
+                    IssuesListError(:final message) => AppError(
+                      message: message,
+                      onRetry: _loadIssues,
                     ),
                     IssuesListLoaded(:final issues) =>
                       issues.isEmpty
-                          ? EmptyState(
-                              icon: FIcons.bug,
+                          ? AppEmpty(
+                              icon: FIcons.circleDot,
                               title: widget.l10n.noIssues,
                             )
                           : RefreshIndicator(
@@ -1436,11 +1503,12 @@ class _IssuesTabState extends State<_IssuesTab> {
                                 _loadIssues();
                               },
                               child: ListView.builder(
-                                padding:
-                                    UIConstants.pagePadding +
-                                    const EdgeInsets.symmetric(
-                                      vertical: UIConstants.sm,
-                                    ),
+                                padding: const EdgeInsets.fromLTRB(
+                                  20,
+                                  4,
+                                  20,
+                                  24,
+                                ),
                                 itemCount: issues.length,
                                 itemBuilder: (context, index) {
                                   final issue = issues[index];
@@ -1469,8 +1537,10 @@ class _IssuesTabState extends State<_IssuesTab> {
               right: UIConstants.md,
               bottom: UIConstants.md,
               child: _canCreateIssue()
-                  ? FButton.icon(
+                  ? FButton(
                       variant: .primary,
+                      size: .sm,
+                      prefix: const Icon(FIcons.plus, size: 14),
                       onPress: () async {
                         final result = await Navigator.of(context).push<Issue>(
                           MaterialPageRoute(
@@ -1485,7 +1555,7 @@ class _IssuesTabState extends State<_IssuesTab> {
                           _loadIssues();
                         }
                       },
-                      child: const Icon(FIcons.plus),
+                      child: Text(widget.l10n.newIssue),
                     )
                   : const SizedBox.shrink(),
             ),
@@ -1738,63 +1808,56 @@ class _PullRequestsTabState extends State<_PullRequestsTab> {
             Column(
               children: [
                 Padding(
-                  padding:
-                      UIConstants.pagePadding +
-                      const EdgeInsets.only(top: UIConstants.sm),
-                  child: Wrap(
-                    spacing: UIConstants.sm,
+                  padding: const EdgeInsets.fromLTRB(20, 14, 20, 6),
+                  child: Row(
                     children: [
-                      for (final option in [
-                        ('open', widget.l10n.open),
-                        ('closed', widget.l10n.closed),
-                        ('all', widget.l10n.all),
-                      ])
-                        FButton(
-                          variant: _selectedFilter == option.$1
-                              ? .primary
-                              : .outline,
-                          size: .xs,
-                          mainAxisSize: .min,
-                          onPress: () => setState(() {
-                            _selectedFilter = option.$1;
-                            _loadPullRequests();
-                          }),
-                          child: Text(option.$2),
+                      SizedBox(
+                        width: 240,
+                        child: AppSegmentedControl(
+                          index: [
+                            'open',
+                            'closed',
+                            'all',
+                          ].indexOf(_selectedFilter),
+                          labels: [
+                            widget.l10n.open,
+                            widget.l10n.closed,
+                            widget.l10n.all,
+                          ],
+                          onChanged: (index) {
+                            final value = ['open', 'closed', 'all'][index];
+                            setState(() {
+                              _selectedFilter = value;
+                              _loadPullRequests();
+                            });
+                          },
                         ),
+                      ),
                     ],
                   ),
                 ),
                 Expanded(
                   child: switch (state) {
                     PullRequestsLoading() => const AppLoading(),
-                    PullRequestsError(:final message) => Center(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text('${widget.l10n.error}: $message'),
-                          const SizedBox(height: UIConstants.md),
-                          FButton(
-                            variant: .outline,
-                            onPress: _loadPullRequests,
-                            child: Text(widget.l10n.retry),
-                          ),
-                        ],
-                      ),
+                    PullRequestsError(:final message) => AppError(
+                      message: message,
+                      onRetry: _loadPullRequests,
                     ),
                     PullRequestsLoaded(:final pullRequests, :final hasMore) =>
                       pullRequests.isEmpty
-                          ? EmptyState(
-                              icon: FIcons.gitMerge,
+                          ? AppEmpty(
+                              icon: FIcons.gitPullRequest,
                               title: widget.l10n.noPullRequests,
                             )
                           : RefreshIndicator(
                               onRefresh: () async => _loadPullRequests(),
                               child: ListView.builder(
-                                padding:
-                                    UIConstants.pagePadding +
-                                    const EdgeInsets.symmetric(
-                                      vertical: UIConstants.sm,
-                                    ),
+                                padding: const EdgeInsets.fromLTRB(
+                                  20,
+                                  4,
+                                  20,
+                                  24,
+                                ),
                                 itemCount:
                                     pullRequests.length + (hasMore ? 1 : 0),
                                 itemBuilder: (context, index) {
@@ -1821,7 +1884,9 @@ class _PullRequestsTabState extends State<_PullRequestsTab> {
                                                       widget.repo,
                                                       state: _selectedFilter,
                                                     ),
-                                                child: const Text('Load more'),
+                                                child: Text(
+                                                  widget.l10n.loadMore,
+                                                ),
                                               ),
                                       ),
                                     );
@@ -1840,8 +1905,8 @@ class _PullRequestsTabState extends State<_PullRequestsTab> {
                                 },
                               ),
                             ),
-                    _ => EmptyState(
-                      icon: FIcons.gitMerge,
+                    _ => AppEmpty(
+                      icon: FIcons.gitPullRequest,
                       title: widget.l10n.noPullRequests,
                     ),
                   },
@@ -1852,8 +1917,10 @@ class _PullRequestsTabState extends State<_PullRequestsTab> {
               right: UIConstants.md,
               bottom: UIConstants.md,
               child: _canCreatePR()
-                  ? FButton.icon(
+                  ? FButton(
                       variant: .primary,
+                      size: .sm,
+                      prefix: const Icon(FIcons.plus, size: 14),
                       onPress: () async {
                         final result = await Navigator.of(context)
                             .push<PullRequest>(
@@ -1869,7 +1936,7 @@ class _PullRequestsTabState extends State<_PullRequestsTab> {
                           _loadPullRequests();
                         }
                       },
-                      child: const Icon(FIcons.plus),
+                      child: Text(widget.l10n.newPullRequest),
                     )
                   : const SizedBox.shrink(),
             ),
@@ -2073,21 +2140,11 @@ class _ReleasesTabState extends State<_ReleasesTab> {
             final state = Injection.repoNotifier.releasesState;
             return switch (state) {
               ReleasesLoading() => const AppLoading(),
-              ReleasesError(:final message) => Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text('${widget.l10n.error}: $message'),
-                    const SizedBox(height: UIConstants.md),
-                    FButton(
-                      variant: .outline,
-                      onPress: () => Injection.repoNotifier.listReleases(
-                        widget.owner,
-                        widget.repo,
-                      ),
-                      child: Text(widget.l10n.retry),
-                    ),
-                  ],
+              ReleasesError(:final message) => AppError(
+                message: message,
+                onRetry: () => Injection.repoNotifier.listReleases(
+                  widget.owner,
+                  widget.repo,
                 ),
               ),
               ReleasesLoaded(:final releases, :final hasMore) =>
@@ -2308,7 +2365,11 @@ class _RepoSectionPage extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final title = _getTitle(l10n);
 
-    return AppPage(title: title, child: _buildSection(l10n));
+    return AppPage(
+      title: title,
+      subtitle: '$owner/$repo',
+      child: _buildSection(l10n),
+    );
   }
 
   String _getTitle(AppLocalizations l10n) {
@@ -2385,22 +2446,10 @@ class _CommitsTabState extends State<_CommitsTab> {
         final state = Injection.repoNotifier.commitsState;
         return switch (state) {
           CommitsLoading() => const AppLoading(),
-          CommitsError(:final message) => Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('${widget.l10n.error}: $message'),
-                const SizedBox(height: UIConstants.md),
-                FButton(
-                  variant: .outline,
-                  onPress: () => Injection.repoNotifier.listCommits(
-                    widget.owner,
-                    widget.repo,
-                  ),
-                  child: Text(widget.l10n.retry),
-                ),
-              ],
-            ),
+          CommitsError(:final message) => AppError(
+            message: message,
+            onRetry: () =>
+                Injection.repoNotifier.listCommits(widget.owner, widget.repo),
           ),
           CommitsLoaded(:final commits) =>
             commits.isEmpty
@@ -2581,22 +2630,10 @@ class _BranchesTabState extends State<_BranchesTab> {
         final state = Injection.repoNotifier.branchesState;
         return switch (state) {
           BranchesLoading() => const AppLoading(),
-          BranchesError(:final message) => Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('${l10n.error}: $message'),
-                const SizedBox(height: UIConstants.md),
-                FButton(
-                  variant: .outline,
-                  onPress: () => Injection.repoNotifier.listBranches(
-                    widget.owner,
-                    widget.repo,
-                  ),
-                  child: Text(l10n.retry),
-                ),
-              ],
-            ),
+          BranchesError(:final message) => AppError(
+            message: message,
+            onRetry: () =>
+                Injection.repoNotifier.listBranches(widget.owner, widget.repo),
           ),
           BranchesLoaded(:final branches) =>
             branches.isEmpty
@@ -2732,21 +2769,11 @@ class _MilestonesTabState extends State<_MilestonesTab> {
         final state = Injection.issueNotifier.state;
         return switch (state) {
           IssueLoading() => const AppLoading(),
-          IssueError(:final message) => Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('${widget.l10n.error}: $message'),
-                const SizedBox(height: UIConstants.md),
-                FButton(
-                  variant: .outline,
-                  onPress: () => Injection.issueNotifier.listMilestones(
-                    widget.owner,
-                    widget.repo,
-                  ),
-                  child: Text(widget.l10n.retry),
-                ),
-              ],
+          IssueError(:final message) => AppError(
+            message: message,
+            onRetry: () => Injection.issueNotifier.listMilestones(
+              widget.owner,
+              widget.repo,
             ),
           ),
           MilestonesLoaded(:final milestones) => _buildMilestonesList(
@@ -2897,22 +2924,10 @@ class _TagsTabState extends State<_TagsTab> {
         final state = Injection.repoNotifier.tagsState;
         return switch (state) {
           TagsLoading() => const AppLoading(),
-          TagsError(:final message) => Center(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text('${widget.l10n.error}: $message'),
-                const SizedBox(height: UIConstants.md),
-                FButton(
-                  variant: .outline,
-                  onPress: () => Injection.repoNotifier.listTags(
-                    widget.owner,
-                    widget.repo,
-                  ),
-                  child: Text(widget.l10n.retry),
-                ),
-              ],
-            ),
+          TagsError(:final message) => AppError(
+            message: message,
+            onRetry: () =>
+                Injection.repoNotifier.listTags(widget.owner, widget.repo),
           ),
           TagsLoaded(:final tags) =>
             tags.isEmpty

@@ -7,6 +7,7 @@ import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../widgets/activity_tile.dart';
 import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_section.dart';
 import '../widgets/forui/app_state_views.dart';
 import 'repo_detail_page.dart';
 
@@ -63,6 +64,7 @@ class _ActivityPageState extends State<ActivityPage> {
     final l10n = AppLocalizations.of(context)!;
     return AppPage(
       title: l10n.recentActivity,
+      maxContentWidth: 900,
       child: ListenableBuilder(
         listenable: Injection.userNotifier,
         builder: (context, _) {
@@ -89,35 +91,29 @@ class _ActivityPageState extends State<ActivityPage> {
           return RefreshIndicator(
             onRefresh: () =>
                 Injection.userNotifier.getUserActivities(widget.username),
-            child: ListView.builder(
+            child: ListView(
               controller: _scrollController,
               physics: const AlwaysScrollableScrollPhysics(),
-              itemCount: activities.length +
-                  (notifier.activitiesHasMore ? 1 : 0),
-              itemBuilder: (context, index) {
-                if (index >= activities.length) {
-                  return const Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+              children: [
+                AppSection(
+                  title: '',
+                  showHeader: false,
+                  children: [
+                    for (final activity in activities)
+                      ActivityTile(
+                        activity: activity,
+                        timeText: _formatDate(activity.created, l10n),
+                        onTap: () => _openRepo(activity),
+                      ),
+                  ],
+                ),
+                if (notifier.activitiesHasMore)
+                  const Padding(
                     padding: EdgeInsets.symmetric(vertical: UIConstants.md),
                     child: Center(child: FCircularProgress(size: .sm)),
-                  );
-                }
-                final activity = activities[index];
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 6),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface,
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      color: Theme.of(context).colorScheme.outlineVariant,
-                    ),
                   ),
-                  child: ActivityTile(
-                    activity: activity,
-                    timeText: _formatDate(activity.created, l10n),
-                    onTap: () => _openRepo(activity),
-                  ),
-                );
-              },
+              ],
             ),
           );
         },
@@ -129,8 +125,7 @@ class _ActivityPageState extends State<ActivityPage> {
     final repo = activity.repo;
     final owner =
         repo?.owner?.login ?? repo?.full_name?.split('/').firstOrNull ?? '';
-    final name =
-        repo?.name ?? repo?.full_name?.split('/').lastOrNull ?? '';
+    final name = repo?.name ?? repo?.full_name?.split('/').lastOrNull ?? '';
     if (owner.isEmpty || name.isEmpty) return;
     Navigator.of(context).push(
       MaterialPageRoute(

@@ -11,6 +11,7 @@ import '../../data/models/generated/generated_models.dart';
 import '../../domain/usecases/user_usecases.dart';
 import '../../l10n/app_localizations.dart';
 import '../theme/app_palette.dart';
+import '../widgets/app_skeleton.dart';
 import '../widgets/app_surface.dart';
 import '../widgets/org_avatar.dart';
 import '../widgets/forui/app_page.dart';
@@ -156,190 +157,86 @@ class _UserProfilePageState extends State<UserProfilePage> {
   }
 
   Widget _buildSkeleton() {
-    final theme = Theme.of(context);
+    final palette = context.palette;
     return ListView(
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
       children: [
-        Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                theme.colorScheme.primaryContainer.withValues(alpha: 0.3),
-                theme.colorScheme.surface,
-              ],
-            ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(24, 24, 24, 16),
-            child: Column(
-              children: [
-                FAvatar.raw(
-                  size: 80,
-                  style: .delta(
-                    backgroundColor: theme.colorScheme.surfaceContainerHighest,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Container(
-                  width: 140,
-                  height: 16,
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Container(
-                  width: 100,
-                  height: 12,
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainerHighest,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Row(
-            children: List.generate(
-              4,
-              (i) => Expanded(
-                child: Padding(
-                  padding: EdgeInsets.only(left: i > 0 ? 8 : 0),
-                  child: FCard.raw(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      child: Column(
-                        children: [
-                          Container(
-                            width: 32,
-                            height: 16,
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.surfaceContainerHighest,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          Container(
-                            width: 48,
-                            height: 10,
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.surfaceContainerHighest,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: FCard.raw(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                children: List.generate(
-                  2,
-                  (i) => Padding(
-                    padding: EdgeInsets.only(bottom: i < 1 ? 12 : 0),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 20,
-                          height: 20,
-                          decoration: BoxDecoration(
-                            color: theme.colorScheme.surfaceContainerHighest,
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Container(
-                            height: 14,
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.surfaceContainerHighest,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 16),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Container(
-            width: 100,
-            height: 14,
-            decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(4),
-            ),
-          ),
-        ),
-        const SizedBox(height: 12),
-        ...List.generate(
-          3,
-          (i) => Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            child: FCard.raw(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
+        AppSkeleton(
+          child: Column(
+            children: [
+              AppSurface(
+                padding: const EdgeInsets.all(20),
                 child: Row(
                   children: [
-                    Container(
-                      width: 20,
-                      height: 20,
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.surfaceContainerHighest,
-                        borderRadius: BorderRadius.circular(4),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
+                    const SkeletonBox(width: 56, height: 56, radius: 28),
+                    const SizedBox(width: 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Container(
-                            width: 120,
-                            height: 14,
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.surfaceContainerHighest,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                          ),
-                          const SizedBox(height: 6),
-                          Container(
-                            width: 180,
-                            height: 10,
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.surfaceContainerHighest,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                          ),
+                        children: const [
+                          SkeletonLine(widthFactor: 0.35, height: 14),
+                          SizedBox(height: 8),
+                          SkeletonLine(widthFactor: 0.22, height: 9),
+                          SizedBox(height: 6),
+                          SkeletonLine(widthFactor: 0.52, height: 8),
                         ],
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
+              const SizedBox(height: 16),
+              AppSurface(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 18,
+                ),
+                child: Row(
+                  children: [
+                    for (var i = 0; i < 3; i++) ...[
+                      if (i > 0)
+                        Container(width: 1, height: 28, color: palette.border),
+                      Expanded(
+                        child: Column(
+                          children: const [
+                            SkeletonLine(widthFactor: 0.35, height: 14),
+                            SizedBox(height: 6),
+                            SkeletonLine(widthFactor: 0.55, height: 8),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              AppSurface(
+                padding: const EdgeInsets.symmetric(vertical: 6),
+                child: Column(
+                  children: List.generate(4, (index) {
+                    return Padding(
+                      padding: const EdgeInsets.fromLTRB(14, 11, 14, 11),
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 26,
+                            height: 26,
+                            decoration: BoxDecoration(
+                              color: palette.surfaceMuted,
+                              borderRadius: BorderRadius.circular(7),
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          const Expanded(
+                            child: SkeletonLine(widthFactor: 0.55, height: 9),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                ),
+              ),
+            ],
           ),
         ),
       ],

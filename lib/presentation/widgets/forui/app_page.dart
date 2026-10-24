@@ -11,6 +11,7 @@ import 'app_chrome.dart';
 /// windows so forms and detail panes never stretch into unreadable lines.
 class AppPage extends StatelessWidget {
   final String title;
+  final String? subtitle;
   final Widget child;
   final List<Widget> actions;
   final Widget? footer;
@@ -28,6 +29,7 @@ class AppPage extends StatelessWidget {
     super.key,
     required this.title,
     required this.child,
+    this.subtitle,
     this.actions = const [],
     this.footer,
     this.childPad = false,
@@ -41,6 +43,7 @@ class AppPage extends StatelessWidget {
       header: AppTopBar(
         topInset: windowTopInset(context),
         title: title,
+        subtitle: subtitle,
         leading: canPop
             ? AppIconButton(
                 icon: FIcons.chevronLeft,

@@ -3,6 +3,10 @@
 ## [Unreleased]
 
 ### Changed
+- **Repository code browsing**: the code tab is now a single surface card with a branch pill, path context, teal folder icons, file sizes, skeleton rows and a friendly retry state; README previews, issue/PR bodies and wiki content share one styled Markdown document view
+- **Repository issue & pull-request tabs**: consistent segmented state controls, an icon filter action, localized empty/error states and labelled create buttons; every repo section page now carries an `owner/repo` subtitle
+- **Lists & loading**: activity and follower lists are grouped into single card sections, and public-profile loading uses a structured skeleton instead of a gradient placeholder
+- **Dark-mode audit**: verified the new navigation, repository overview, code skeleton, file list and Markdown reader in the macOS dark theme
 - **UI quality pass — "Precision Instrument"**: a token-driven refresh built around a warm-neutral canvas, hairline surfaces, semantic Git colors and a single teal accent; new `AppPalette` theme extension, `AppSurface` hover cards, `AppSkeleton` shimmer placeholders and `AppSegmentedControl`
 - **Desktop shell**: hand-built sidebar with animated active indicator and account card, a quieter top bar with ⌘K search prompt and theme toggle, ⌘1–⌘4 tab shortcuts, and a macOS window that extends under a transparent title bar with a new brand icon
 - **Dashboard**: editorial date/hero card, responsive five-tile work grid, two-column favorites/shortcuts + activity rail, skeleton loading, create-repository action and compact repository rows

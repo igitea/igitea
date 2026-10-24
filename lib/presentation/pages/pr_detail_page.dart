@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/animations/animated_wrapper.dart';
 import '../../core/di/injection.dart';
@@ -12,6 +11,7 @@ import '../../domain/entities/issue_state.dart';
 import '../../l10n/app_localizations.dart';
 import '../../presentation/state/issue_notifier.dart';
 import '../../presentation/state/repo_notifier.dart';
+import '../widgets/app_markdown.dart';
 import '../widgets/forui/app_page.dart';
 import '../widgets/forui/app_state_views.dart';
 import '../widgets/user_avatar.dart';
@@ -184,6 +184,7 @@ class _PRDetailPageState extends State<PRDetailPage> {
     final l10n = AppLocalizations.of(context)!;
     return AppPage(
       title: l10n.pullRequestNumber(widget.index),
+      subtitle: '${widget.owner}/${widget.repo}',
       actions: [
         if (Injection.repoNotifier.pullRequestDetailState
             is PullRequestDetailDataLoaded) ...[
@@ -494,7 +495,7 @@ class _PRContent extends StatelessWidget {
           const FDivider(),
 
           if (pr.body != null && pr.body!.isNotEmpty)
-            MarkdownBody(
+            AppMarkdown(
               data: pr.body!,
               selectable: true,
               onTapLink: (text, href, title) {
@@ -1216,7 +1217,7 @@ class _CommentItemState extends State<_CommentItem> {
               const SizedBox(height: 8),
               if (widget.comment.body != null &&
                   widget.comment.body!.isNotEmpty)
-                MarkdownBody(
+                AppMarkdown(
                   data: widget.comment.body!,
                   selectable: true,
                   onTapLink: (text, href, title) {

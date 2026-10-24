@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
@@ -8,6 +7,7 @@ import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/issue_notifier.dart';
+import '../widgets/app_markdown.dart';
 import '../widgets/forui/app_page.dart';
 
 class EditIssuePage extends StatefulWidget {
@@ -147,7 +147,10 @@ class _EditIssuePageState extends State<EditIssuePage> {
       setState(() => _isSaving = false);
       switch (labelResult) {
         case Left(:final value):
-          showFToast(context: context, title: Text('${l10n.error}: ${value.message}'));
+          showFToast(
+            context: context,
+            title: Text('${l10n.error}: ${value.message}'),
+          );
         case Right():
           Navigator.of(context).pop(true);
       }
@@ -352,7 +355,7 @@ class _EditIssuePageState extends State<EditIssuePage> {
               border: Border.all(color: Theme.of(context).colorScheme.outline),
               borderRadius: BorderRadius.circular(UIConstants.chipRadius),
             ),
-            child: MarkdownBody(
+            child: AppMarkdown(
               data: _bodyController.text.isEmpty
                   ? l10n.noDescriptionProvided
                   : _bodyController.text,

@@ -8,6 +8,7 @@ import '../../data/models/generated/generated_models.dart';
 import '../../domain/usecases/user_usecases.dart';
 import '../../l10n/app_localizations.dart';
 import '../widgets/forui/app_page.dart';
+import '../widgets/forui/app_section.dart';
 import '../widgets/forui/app_state_views.dart';
 import '../widgets/forui/app_tile.dart';
 import '../widgets/user_avatar.dart';
@@ -58,7 +59,7 @@ class _FollowPageState extends State<FollowPage> {
     final title = widget.type == FollowType.followers
         ? l10n.followers
         : l10n.following;
-    return AppPage(title: title, child: _buildBody(l10n));
+    return AppPage(title: title, maxContentWidth: 820, child: _buildBody(l10n));
   }
 
   Widget _buildBody(AppLocalizations l10n) {
@@ -70,27 +71,28 @@ class _FollowPageState extends State<FollowPage> {
 
     return RefreshIndicator(
       onRefresh: _load,
-      child: ListView.builder(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 32),
-        itemCount: _users.length,
-        itemBuilder: (context, index) {
-          final user = _users[index];
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: FCard.raw(
-              child: AppTile(
-                leading: UserAvatar(user: user, radius: 18),
-                title: user.login ?? '',
-                subtitle: user.full_name,
-                onPress: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => UserProfilePage(username: user.login ?? ''),
+      child: ListView(
+        padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+        children: [
+          AppSection(
+            title: '',
+            showHeader: false,
+            children: [
+              for (final user in _users)
+                AppTile(
+                  leading: UserAvatar(user: user, radius: 18),
+                  title: user.login ?? '',
+                  subtitle: user.full_name,
+                  onPress: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          UserProfilePage(username: user.login ?? ''),
+                    ),
                   ),
                 ),
-              ),
-            ),
-          );
-        },
+            ],
+          ),
+        ],
       ),
     );
   }

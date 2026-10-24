@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:forui/forui.dart';
 
 import '../../core/animations/animated_wrapper.dart';
@@ -10,6 +9,7 @@ import '../../core/di/injection.dart';
 import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
+import '../widgets/app_markdown.dart';
 import '../widgets/forui/app_page.dart';
 import '../widgets/forui/app_state_views.dart';
 import '../widgets/forui/app_tile.dart';
@@ -316,7 +316,7 @@ class _WikiDetailPageState extends State<WikiDetailPage> {
     return FadeInWrapper(
       child: SingleChildScrollView(
         padding: const EdgeInsets.all(UIConstants.md),
-        child: MarkdownBody(
+        child: AppMarkdown(
           data: _page?.content_base64 != null
               ? utf8.decode(base64Decode(_page!.content_base64!))
               : l10n.noContent,
