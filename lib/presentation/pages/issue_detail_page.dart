@@ -14,6 +14,7 @@ import '../../presentation/state/issue_notifier.dart';
 import '../../presentation/state/repo_notifier.dart';
 import '../../presentation/state/user_notifier.dart';
 import '../widgets/app_markdown.dart';
+import '../theme/app_palette.dart';
 import '../widgets/forui/app_page.dart';
 import '../widgets/forui/app_state_views.dart';
 import '../widgets/forui/app_tile.dart';
@@ -384,7 +385,7 @@ class _IssueContent extends StatelessWidget {
 
     return SingleChildScrollView(
       controller: scrollController,
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(20, 20, 20, 32),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -395,18 +396,16 @@ class _IssueContent extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
                   color: isOpen
-                      ? theme.colorScheme.primary.withValues(alpha: 0.12)
-                      : theme.colorScheme.onSurfaceVariant.withValues(
-                          alpha: 0.12,
-                        ),
+                      ? context.palette.successSoft
+                      : context.palette.purpleSoft,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
                   isOpen ? l10n.open : l10n.closed,
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: isOpen
-                        ? theme.colorScheme.primary
-                        : theme.colorScheme.onSurfaceVariant,
+                        ? context.palette.success
+                        : context.palette.purple,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -695,7 +694,10 @@ class _IssueContent extends StatelessWidget {
                 ),
                 CommentsError(:final message) => Column(
                   children: [
-                    Text('${l10n.failedToLoadComments}: $message'),
+                    Text(
+                      '${l10n.failedToLoadComments}\n${friendlyErrorMessage(context, message)}',
+                      textAlign: TextAlign.center,
+                    ),
                     FButton(
                       variant: .ghost,
                       size: .sm,

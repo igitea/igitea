@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Changed
+- **Issue & PR detail polish**: issue state now uses semantic green/purple badges, 20px page padding, and comment-load failures show a localized friendly message instead of raw transport text
 - **Repository README**: the overview now includes a README preview card with a loading skeleton, shared Markdown styling and a "View all" action; it hides automatically when the repository has no README
 - **Login & inbox polish**: transport errors on the login screen now use the localized friendly message; the inbox header hides "mark all read" when there are no notifications; boot splash spinner is clearer
 - **Milestones**: grouped rows with progress bars, due-date chips (overdue in red), open/closed counts and a labelled create action

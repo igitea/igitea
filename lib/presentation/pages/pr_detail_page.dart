@@ -534,7 +534,10 @@ class _PRContent extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   child: Column(
                     children: [
-                      Text('${l10n.failedToLoadComments}: $message'),
+                      Text(
+                        '${l10n.failedToLoadComments}\n${friendlyErrorMessage(context, message)}',
+                        textAlign: TextAlign.center,
+                      ),
                       const SizedBox(height: 8),
                       FButton(
                         variant: .outline,
