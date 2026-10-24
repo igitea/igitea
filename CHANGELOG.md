@@ -3,6 +3,9 @@
 ## [Unreleased]
 
 ### Changed
+- **Profile repositories**: your profile now lists recent repositories with language/star metadata, a view-all action and skeleton/error states
+- **Search**: debounced live search across repositories, issues and users; results are compact grouped rows with language/star/fork metadata, and clearing the query returns to the contextual prompt
+- **Mobile shell**: removed the duplicated bell action, fixed header action order on phones, and verified narrow layouts for the dashboard, profile and explore screens
 - **Repository code browsing**: the code tab is now a single surface card with a branch pill, path context, teal folder icons, file sizes, skeleton rows and a friendly retry state; README previews, issue/PR bodies and wiki content share one styled Markdown document view
 - **Repository issue & pull-request tabs**: consistent segmented state controls, an icon filter action, localized empty/error states and labelled create buttons; every repo section page now carries an `owner/repo` subtitle
 - **Lists & loading**: activity and follower lists are grouped into single card sections, and public-profile loading uses a structured skeleton instead of a gradient placeholder

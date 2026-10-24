@@ -677,6 +677,9 @@ class AppLocalizationsPt extends AppLocalizations {
   String get failedToLoadProfile => 'Falha ao carregar perfil';
 
   @override
+  String get failedToLoadRepositories => 'Failed to load repositories';
+
+  @override
   String get unknownUser => 'Usuário Desconhecido';
 
   @override

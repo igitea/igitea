@@ -127,16 +127,20 @@ class _HomePageState extends State<HomePage> {
       title: _title(l10n),
       height: 52,
       actions: [
-        if (isWide) ...[
+        if (isWide)
           AppSearchPrompt(
             label: l10n.search,
             hint: defaultTargetPlatform == TargetPlatform.macOS
                 ? '⌘K'
                 : 'Ctrl K',
-            onPress: () => _select(2),
+            onPress: _openSearch,
           ),
-          const SizedBox(width: 8),
-        ],
+        if (!isWide)
+          AppIconButton(
+            icon: FIcons.search,
+            label: l10n.search,
+            onPress: _openSearch,
+          ),
         if (_selectedIndex == 0)
           AppIconButton(
             icon: FIcons.bell,
@@ -158,18 +162,6 @@ class _HomePageState extends State<HomePage> {
             );
           },
         ),
-        if (!isWide)
-          AppIconButton(
-            icon: FIcons.search,
-            label: l10n.search,
-            onPress: _openSearch,
-          ),
-        if (!isWide)
-          AppIconButton(
-            icon: FIcons.bell,
-            label: l10n.inbox,
-            onPress: () => _select(1),
-          ),
       ],
     );
   }

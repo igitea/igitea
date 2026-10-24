@@ -202,6 +202,7 @@
   "enterSearchQueryIssues": "Enter a search query to find issues",
   "noIssuesFound": "No issues found.",
   "failedToLoadProfile": "Failed to load profile",
+  "failedToLoadRepositories": "Failed to load repositories",
   "unknownUser": "Unknown User",
   "admin": "Admin",
   "repos": "Repos",

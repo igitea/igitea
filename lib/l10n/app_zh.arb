@@ -276,6 +276,7 @@
   "enterSearchQueryIssues": "输入搜索关键词查找 Issue",
   "noIssuesFound": "未找到 Issue",
   "failedToLoadProfile": "加载个人主页失败",
+  "failedToLoadRepositories": "加载仓库失败",
   "unknownUser": "未知用户",
   "admin": "管理员",
   "repos": "仓库",

@@ -671,6 +671,9 @@ class AppLocalizationsKo extends AppLocalizations {
   String get failedToLoadProfile => '프로필을 불러오지 못했습니다';
 
   @override
+  String get failedToLoadRepositories => 'Failed to load repositories';
+
+  @override
   String get unknownUser => '알 수 없는 사용자';
 
   @override

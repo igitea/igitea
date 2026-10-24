@@ -13,11 +13,13 @@ import '../../core/animations/animated_wrapper.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/org_avatar.dart';
 import '../theme/app_palette.dart';
+import '../widgets/app_skeleton.dart';
 import '../widgets/app_surface.dart';
 import '../widgets/forui/app_chrome.dart';
 import '../widgets/forui/app_section.dart';
 import '../widgets/forui/app_state_views.dart';
 import '../widgets/forui/app_tile.dart';
+import '../widgets/language_dot.dart';
 import '../widgets/user_avatar.dart';
 import 'create_org_page.dart';
 import 'create_repo_page.dart';
@@ -28,6 +30,7 @@ import 'gpg_keys_page.dart';
 import 'user_repos_page.dart';
 import 'package_list_page.dart';
 import 'organization_detail_page.dart';
+import 'repo_detail_page.dart';
 import 'organizations_list_page.dart';
 import 'settings_page.dart';
 import 'starred_repos_page.dart';
@@ -102,6 +105,10 @@ class _ProfilePageState extends State<ProfilePage> {
             user: user,
             orgs: _orgs,
             orgsLoading: _orgsLoading,
+            repos: Injection.userNotifier.repos,
+            reposLoading: Injection.userNotifier.reposLoading,
+            reposError: Injection.userNotifier.reposError,
+            onRetryRepos: () => Injection.userNotifier.listCurrentUserRepos(),
             onRefresh: _refresh,
           ),
           _ => const _LoadingView(),
@@ -147,12 +154,20 @@ class _ProfileContent extends StatelessWidget {
   final User user;
   final List<Organization> orgs;
   final bool orgsLoading;
+  final List<Repository> repos;
+  final bool reposLoading;
+  final String? reposError;
+  final VoidCallback onRetryRepos;
   final VoidCallback onRefresh;
 
   const _ProfileContent({
     required this.user,
     required this.orgs,
     required this.orgsLoading,
+    required this.repos,
+    required this.reposLoading,
+    required this.reposError,
+    required this.onRetryRepos,
     required this.onRefresh,
   });
 
@@ -180,6 +195,8 @@ class _ProfileContent extends StatelessWidget {
                 const SizedBox(height: 20),
                 _OrgsSection(orgs: orgs, loading: orgsLoading, l10n: l10n),
               ],
+              const SizedBox(height: 20),
+              _buildRepositories(context, l10n),
               const SizedBox(height: 20),
               AppSection(
                 title: l10n.account,
@@ -260,6 +277,165 @@ class _ProfileContent extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildRepositories(BuildContext context, AppLocalizations l10n) {
+    if (reposLoading && repos.isEmpty) {
+      final palette = context.palette;
+      return AppSection(
+        title: l10n.repositories,
+        children: [
+          AppSkeleton(
+            child: Column(
+              children: List.generate(3, (index) {
+                return Padding(
+                  padding: const EdgeInsets.fromLTRB(14, 11, 14, 11),
+                  child: Row(
+                    children: [
+                      Container(
+                        width: 26,
+                        height: 26,
+                        decoration: BoxDecoration(
+                          color: palette.surfaceMuted,
+                          borderRadius: BorderRadius.circular(7),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      const Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SkeletonLine(widthFactor: 0.32, height: 9),
+                            SizedBox(height: 5),
+                            SkeletonLine(widthFactor: 0.55, height: 8),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            ),
+          ),
+        ],
+      );
+    }
+
+    if (reposError != null && repos.isEmpty) {
+      return AppSection(
+        title: l10n.repositories,
+        children: [_InlineRepoError(onRetry: onRetryRepos)],
+      );
+    }
+
+    if (repos.isEmpty) return const SizedBox.shrink();
+
+    return AppSection(
+      title: l10n.repositories,
+      trailing: FButton(
+        variant: FButtonVariant.ghost,
+        size: FButtonSizeVariant.sm,
+        onPress: () => Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => UserReposPage(username: user.login ?? ''),
+          ),
+        ),
+        child: Text(l10n.viewAll),
+      ),
+      children: [
+        for (final repo in repos.take(5))
+          AppTile(
+            leading: Container(
+              width: 26,
+              height: 26,
+              decoration: BoxDecoration(
+                color: context.palette.brandSoft,
+                borderRadius: BorderRadius.circular(7),
+              ),
+              child: Icon(
+                repo.private == true ? FIcons.lock : FIcons.folderGit,
+                size: 13,
+                color: context.palette.brand,
+              ),
+            ),
+            title: repo.name ?? repo.full_name ?? '',
+            subtitle: repo.description?.trim().isNotEmpty == true
+                ? repo.description!.trim()
+                : (repo.owner?.login ?? user.login ?? ''),
+            showChevron: false,
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (repo.language != null) LanguageDot(language: repo.language),
+                if (repo.language != null) const SizedBox(width: 10),
+                Icon(
+                  FIcons.star,
+                  size: 11,
+                  color: context.palette.textSecondary,
+                ),
+                const SizedBox(width: 3),
+                Text(
+                  '${repo.stars_count ?? 0}',
+                  style: TextStyle(
+                    fontSize: 10.5,
+                    color: context.palette.textSecondary,
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Icon(
+                  FIcons.chevronRight,
+                  size: 13,
+                  color: context.palette.textSecondary.withValues(alpha: 0.7),
+                ),
+              ],
+            ),
+            onPress: () {
+              final owner = repo.owner?.login ?? user.login ?? '';
+              final name = repo.name ?? '';
+              if (owner.isNotEmpty && name.isNotEmpty) {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => RepoDetailPage(owner: owner, repo: name),
+                  ),
+                );
+              }
+            },
+          ),
+      ],
+    );
+  }
+}
+
+class _InlineRepoError extends StatelessWidget {
+  const _InlineRepoError({required this.onRetry});
+
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    final l10n = AppLocalizations.of(context)!;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(14, 10, 10, 10),
+      child: Row(
+        children: [
+          Icon(FIcons.circleAlert, size: 14, color: palette.danger),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              l10n.failedToLoadRepositories,
+              style: TextStyle(fontSize: 11.5, color: palette.textSecondary),
+            ),
+          ),
+          FButton(
+            variant: FButtonVariant.ghost,
+            size: FButtonSizeVariant.sm,
+            onPress: onRetry,
+            child: Text(l10n.retry),
+          ),
+        ],
+      ),
     );
   }
 }

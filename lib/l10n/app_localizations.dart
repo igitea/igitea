@@ -1325,6 +1325,12 @@ abstract class AppLocalizations {
   /// **'Failed to load profile'**
   String get failedToLoadProfile;
 
+  /// No description provided for @failedToLoadRepositories.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load repositories'**
+  String get failedToLoadRepositories;
+
   /// No description provided for @unknownUser.
   ///
   /// In en, this message translates to:

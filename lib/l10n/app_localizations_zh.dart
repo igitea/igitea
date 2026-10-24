@@ -669,6 +669,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get failedToLoadProfile => '加载个人主页失败';
 
   @override
+  String get failedToLoadRepositories => '加载仓库失败';
+
+  @override
   String get unknownUser => '未知用户';
 
   @override

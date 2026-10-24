@@ -671,6 +671,9 @@ class AppLocalizationsJa extends AppLocalizations {
   String get failedToLoadProfile => 'プロフィールの読み込みに失敗しました';
 
   @override
+  String get failedToLoadRepositories => 'Failed to load repositories';
+
+  @override
   String get unknownUser => '不明なユーザー';
 
   @override

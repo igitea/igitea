@@ -677,6 +677,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get failedToLoadProfile => 'Не удалось загрузить профиль';
 
   @override
+  String get failedToLoadRepositories => 'Failed to load repositories';
+
+  @override
   String get unknownUser => 'Неизвестный пользователь';
 
   @override

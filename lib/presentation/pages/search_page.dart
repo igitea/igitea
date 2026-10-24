@@ -1,7 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 
-import '../../core/animations/animated_wrapper.dart';
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
@@ -13,10 +14,12 @@ import '../models/issue_filter_state.dart';
 import '../models/repo_filter_state.dart';
 import '../widgets/forui/app_filter_chip.dart';
 import '../widgets/forui/app_state_views.dart';
+import '../widgets/forui/app_tile.dart';
 import '../widgets/issue_filter_bottom_sheet.dart';
 import '../theme/app_palette.dart';
 import '../widgets/forui/app_chrome.dart';
-import '../widgets/premium_card.dart';
+import '../widgets/forui/app_section.dart';
+import '../widgets/language_dot.dart';
 import '../widgets/repo_filter_bottom_sheet.dart';
 import '../widgets/user_avatar.dart';
 import 'issue_detail_page.dart';
@@ -36,6 +39,8 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> {
   final _searchController = TextEditingController();
+  Timer? _searchDebounce;
+  String _query = '';
   int _tabIndex = 0;
   final ValueNotifier<RepoFilterState> _repoFilterState = ValueNotifier(
     const RepoFilterState(),
@@ -48,6 +53,7 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   void dispose() {
+    _searchDebounce?.cancel();
     _searchController.dispose();
     super.dispose();
   }
@@ -165,7 +171,12 @@ class _SearchPageState extends State<SearchPage> {
                     child: AppSegmentedControl(
                       index: _tabIndex,
                       labels: [l10n.repositories, l10n.issues, l10n.users],
-                      onChanged: (index) => setState(() => _tabIndex = index),
+                      onChanged: (index) {
+                        setState(() => _tabIndex = index);
+                        if (_searchController.text.trim().isNotEmpty) {
+                          _onSearch();
+                        }
+                      },
                     ),
                   ),
                   const Spacer(),
@@ -202,7 +213,19 @@ class _SearchPageState extends State<SearchPage> {
         Padding(
           padding: const EdgeInsets.fromLTRB(20, 12, 20, 4),
           child: FTextField(
-            control: FTextFieldControl.managed(controller: _searchController),
+            control: FTextFieldControl.managed(
+              controller: _searchController,
+              onChange: (value) {
+                _searchDebounce?.cancel();
+                final query = value.text.trim();
+                setState(() => _query = query);
+                if (query.isEmpty) return;
+                _searchDebounce = Timer(
+                  const Duration(milliseconds: 400),
+                  _onSearch,
+                );
+              },
+            ),
             focusNode: SearchPage.searchFocusNode,
             hint: l10n.search,
             textInputAction: TextInputAction.search,
@@ -365,13 +388,20 @@ class _SearchPageState extends State<SearchPage> {
             },
           ),
         Expanded(
-          child: switch (_tabIndex) {
-            1 => _IssueSearchResults(),
-            2 => _UserSearchResults(
-              currentQuery: _searchController.text.trim(),
-            ),
-            _ => _RepoSearchResults(),
-          },
+          child: _query.isEmpty
+              ? AppEmpty(
+                  icon: FIcons.search,
+                  title: switch (_tabIndex) {
+                    1 => l10n.enterSearchQueryIssues,
+                    2 => l10n.enterSearchQueryUsers,
+                    _ => l10n.enterSearchQueryRepos,
+                  },
+                )
+              : switch (_tabIndex) {
+                  1 => _IssueSearchResults(),
+                  2 => _UserSearchResults(currentQuery: _query),
+                  _ => _RepoSearchResults(),
+                },
         ),
       ],
     );
@@ -412,42 +442,88 @@ class _RepoSearchResults extends StatelessWidget {
     if (repos.isEmpty) {
       return AppEmpty(icon: FIcons.folderGit, title: l10n.noRepositoriesFound);
     }
-    return ListView.builder(
-      padding:
-          UIConstants.pagePadding +
-          const EdgeInsets.symmetric(vertical: UIConstants.sm),
-      itemCount: repos.length,
-      itemBuilder: (context, index) {
-        final repo = repos[index];
-        return FadeInWrapper(
-          delay: Duration(milliseconds: index * 30),
-          child: _SearchRepoCard(repo: repo),
-        );
-      },
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+      children: [
+        AppSection(
+          title: '',
+          showHeader: false,
+          children: [for (final repo in repos) _SearchRepoRow(repo: repo)],
+        ),
+      ],
     );
   }
 }
 
-class _SearchRepoCard extends StatefulWidget {
+class _SearchRepoRow extends StatefulWidget {
   final Repository repo;
 
-  const _SearchRepoCard({required this.repo});
+  const _SearchRepoRow({required this.repo});
 
   @override
-  State<_SearchRepoCard> createState() => _SearchRepoCardState();
+  State<_SearchRepoRow> createState() => _SearchRepoRowState();
 }
 
-class _SearchRepoCardState extends State<_SearchRepoCard> {
+class _SearchRepoRowState extends State<_SearchRepoRow> {
   bool _navigating = false;
 
   @override
   Widget build(BuildContext context) {
     final repo = widget.repo;
-    final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context)!;
+    final palette = context.palette;
+    final description = repo.description?.trim() ?? '';
+    final owner = repo.owner?.login ?? '';
 
-    return PremiumListCard(
-      onTap: () {
+    return AppTile(
+      leading: repo.owner != null
+          ? UserAvatar(user: repo.owner!, radius: 14)
+          : Container(
+              width: 28,
+              height: 28,
+              decoration: BoxDecoration(
+                color: palette.brandSoft,
+                borderRadius: BorderRadius.circular(7),
+              ),
+              child: Icon(
+                repo.private == true ? FIcons.lock : FIcons.folderGit,
+                size: 13,
+                color: palette.brand,
+              ),
+            ),
+      title: repo.full_name ?? repo.name ?? '',
+      subtitle: description.isNotEmpty ? description : owner,
+      showChevron: false,
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (repo.private == true) ...[
+            Icon(FIcons.lock, size: 11, color: palette.textSecondary),
+            const SizedBox(width: 8),
+          ],
+          if (repo.language != null) LanguageDot(language: repo.language),
+          if (repo.language != null) const SizedBox(width: 10),
+          Icon(FIcons.star, size: 11, color: palette.textSecondary),
+          const SizedBox(width: 3),
+          Text(
+            '${repo.stars_count ?? 0}',
+            style: TextStyle(fontSize: 10.5, color: palette.textSecondary),
+          ),
+          const SizedBox(width: 10),
+          Icon(FIcons.gitFork, size: 11, color: palette.textSecondary),
+          const SizedBox(width: 3),
+          Text(
+            '${repo.forks_count ?? 0}',
+            style: TextStyle(fontSize: 10.5, color: palette.textSecondary),
+          ),
+          const SizedBox(width: 4),
+          Icon(
+            FIcons.chevronRight,
+            size: 13,
+            color: palette.textSecondary.withValues(alpha: 0.7),
+          ),
+        ],
+      ),
+      onPress: () {
         if (_navigating) return;
         _navigating = true;
         Navigator.of(context)
@@ -461,104 +537,6 @@ class _SearchRepoCardState extends State<_SearchRepoCard> {
             )
             .then((_) => _navigating = false);
       },
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              if (repo.owner != null)
-                UserAvatar(user: repo.owner!, radius: UIConstants.avatarSm)
-              else
-                Icon(
-                  repo.private == true ? FIcons.lock : FIcons.globe,
-                  size: UIConstants.iconMd,
-                  color: theme.colorScheme.primary,
-                ),
-              const SizedBox(width: UIConstants.sm),
-              Expanded(
-                child: Text(
-                  repo.full_name ?? repo.name ?? '',
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              if (repo.private == true) ...[
-                const SizedBox(width: UIConstants.sm),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6,
-                    vertical: 1,
-                  ),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.errorContainer,
-                    borderRadius: BorderRadius.circular(
-                      UIConstants.badgeRadius,
-                    ),
-                  ),
-                  child: Text(
-                    l10n.private,
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: theme.colorScheme.onErrorContainer,
-                    ),
-                  ),
-                ),
-              ],
-            ],
-          ),
-          if (repo.description != null && repo.description!.isNotEmpty) ...[
-            const SizedBox(height: UIConstants.sm),
-            Text(
-              repo.description!,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ],
-          const SizedBox(height: UIConstants.sm),
-          Row(
-            children: [
-              if (repo.language != null) ...[
-                Container(
-                  width: 10,
-                  height: 10,
-                  decoration: const BoxDecoration(
-                    color: Colors.blue,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-                const SizedBox(width: UIConstants.xs),
-                Text(repo.language!, style: theme.textTheme.labelSmall),
-                const SizedBox(width: UIConstants.md),
-              ],
-              Icon(
-                FIcons.star,
-                size: UIConstants.iconSm,
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-              const SizedBox(width: UIConstants.xs),
-              Text(
-                '${repo.stars_count ?? 0}',
-                style: theme.textTheme.labelSmall,
-              ),
-              const SizedBox(width: UIConstants.md),
-              Icon(
-                FIcons.gitFork,
-                size: UIConstants.iconSm,
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-              const SizedBox(width: UIConstants.xs),
-              Text(
-                '${repo.forks_count ?? 0}',
-                style: theme.textTheme.labelSmall,
-              ),
-            ],
-          ),
-        ],
-      ),
     );
   }
 }
@@ -603,46 +581,82 @@ class _IssueSearchResults extends StatelessWidget {
     if (issues.isEmpty) {
       return AppEmpty(icon: FIcons.circleDot, title: l10n.noIssuesFound);
     }
-    return ListView.builder(
-      padding:
-          UIConstants.pagePadding +
-          const EdgeInsets.symmetric(vertical: UIConstants.sm),
-      itemCount: issues.length,
-      itemBuilder: (context, index) {
-        final issue = issues[index];
-        return FadeInWrapper(
-          delay: Duration(milliseconds: index * 30),
-          child: _SearchIssueCard(issue: issue),
-        );
-      },
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+      children: [
+        AppSection(
+          title: '',
+          showHeader: false,
+          children: [for (final issue in issues) _SearchIssueRow(issue: issue)],
+        ),
+      ],
     );
   }
 }
 
-class _SearchIssueCard extends StatefulWidget {
+class _SearchIssueRow extends StatefulWidget {
   final Issue issue;
 
-  const _SearchIssueCard({required this.issue});
+  const _SearchIssueRow({required this.issue});
 
   @override
-  State<_SearchIssueCard> createState() => _SearchIssueCardState();
+  State<_SearchIssueRow> createState() => _SearchIssueRowState();
 }
 
-class _SearchIssueCardState extends State<_SearchIssueCard> {
+class _SearchIssueRowState extends State<_SearchIssueRow> {
   bool _navigating = false;
 
   @override
   Widget build(BuildContext context) {
     final issue = widget.issue;
-    final theme = Theme.of(context);
+    final palette = context.palette;
     final l10n = AppLocalizations.of(context)!;
     final isOpen = issue.state?.isOpen == true;
+    final repoFullName = issue.repository?.full_name ?? '';
 
-    return PremiumListCard(
-      onTap: () {
+    return AppTile(
+      leading: Container(
+        width: 26,
+        height: 26,
+        decoration: BoxDecoration(
+          color: isOpen ? palette.successSoft : palette.purpleSoft,
+          borderRadius: BorderRadius.circular(7),
+        ),
+        child: Icon(
+          isOpen ? FIcons.circleDot : FIcons.circleCheck,
+          size: 13,
+          color: isOpen ? palette.success : palette.purple,
+        ),
+      ),
+      title: issue.title ?? l10n.untitled,
+      subtitle: [
+        if (repoFullName.isNotEmpty) repoFullName,
+        if (issue.number != null) '#${issue.number}',
+        if (issue.user?.login != null) issue.user!.login!,
+      ].join(' · '),
+      showChevron: false,
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if ((issue.comments ?? 0) > 0) ...[
+            Icon(FIcons.messageSquare, size: 11, color: palette.textSecondary),
+            const SizedBox(width: 3),
+            Text(
+              '${issue.comments}',
+              style: TextStyle(fontSize: 10.5, color: palette.textSecondary),
+            ),
+            const SizedBox(width: 8),
+          ],
+          Icon(
+            FIcons.chevronRight,
+            size: 13,
+            color: palette.textSecondary.withValues(alpha: 0.7),
+          ),
+        ],
+      ),
+      onPress: () {
         if (_navigating) return;
-        final repoUrl = issue.repository?.full_name ?? '';
-        final parts = repoUrl.split('/');
+        final parts = repoFullName.split('/');
         final owner = parts.isNotEmpty ? parts.first : '';
         final repo = parts.length > 1 ? parts[1] : '';
         if (owner.isNotEmpty && repo.isNotEmpty && issue.number != null) {
@@ -660,73 +674,6 @@ class _SearchIssueCardState extends State<_SearchIssueCard> {
               .then((_) => _navigating = false);
         }
       },
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                decoration: BoxDecoration(
-                  color: isOpen
-                      ? Colors.green.withValues(alpha: 0.2)
-                      : Colors.purple.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(UIConstants.chipRadius),
-                ),
-                child: Text(
-                  isOpen ? l10n.open : l10n.closed,
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: isOpen ? Colors.green : Colors.purple,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              const SizedBox(width: UIConstants.sm),
-              Expanded(
-                child: Text(
-                  issue.title ?? l10n.untitled,
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: UIConstants.sm),
-          Row(
-            children: [
-              if (issue.user != null) ...[
-                UserAvatar(user: issue.user!, radius: UIConstants.avatarXs),
-                const SizedBox(width: UIConstants.xs),
-                Text(
-                  issue.user!.login ?? '',
-                  style: theme.textTheme.labelSmall,
-                ),
-              ],
-              const Spacer(),
-              if (issue.comments != null) ...[
-                Icon(
-                  FIcons.messageSquare,
-                  size: UIConstants.iconXs,
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-                const SizedBox(width: UIConstants.xs),
-                Text('${issue.comments}', style: theme.textTheme.labelSmall),
-              ],
-            ],
-          ),
-          if (issue.repository?.full_name != null) ...[
-            const SizedBox(height: UIConstants.sm),
-            Text(
-              issue.repository!.full_name!,
-              style: theme.textTheme.labelSmall?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            ),
-          ],
-        ],
-      ),
     );
   }
 }
@@ -757,91 +704,69 @@ class _UserSearchResults extends StatelessWidget {
           );
         }
         if (users.isEmpty) {
-          return AppEmpty(
-            icon: FIcons.search,
-            title: l10n.enterSearchQueryUsers,
-          );
-        }
-        return ListView.builder(
-          padding:
-              UIConstants.pagePadding +
-              const EdgeInsets.symmetric(vertical: UIConstants.sm),
-          itemCount: users.length,
-          itemBuilder: (context, index) {
-            final user = users[index];
-            return FadeInWrapper(
-              delay: Duration(milliseconds: index * 30),
-              child: _SearchUserCard(user: user),
+          if (currentQuery.isEmpty) {
+            return AppEmpty(
+              icon: FIcons.search,
+              title: l10n.enterSearchQueryUsers,
             );
-          },
+          }
+          return AppEmpty(icon: FIcons.userX, title: l10n.noUsersFound);
+        }
+        return ListView(
+          padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+          children: [
+            AppSection(
+              title: '',
+              showHeader: false,
+              children: [for (final user in users) _SearchUserRow(user: user)],
+            ),
+          ],
         );
       },
     );
   }
 }
 
-class _SearchUserCard extends StatefulWidget {
+class _SearchUserRow extends StatefulWidget {
   final User user;
 
-  const _SearchUserCard({required this.user});
+  const _SearchUserRow({required this.user});
 
   @override
-  State<_SearchUserCard> createState() => _SearchUserCardState();
+  State<_SearchUserRow> createState() => _SearchUserRowState();
 }
 
-class _SearchUserCardState extends State<_SearchUserCard> {
+class _SearchUserRowState extends State<_SearchUserRow> {
   bool _navigating = false;
 
   @override
   Widget build(BuildContext context) {
     final user = widget.user;
-    final theme = Theme.of(context);
-
-    return PremiumListCard(
-      onTap: () {
+    return AppTile(
+      leading: UserAvatar(user: user, radius: 14),
+      title: user.full_name?.isNotEmpty == true
+          ? user.full_name!
+          : user.login ?? '',
+      subtitle: user.login != null ? '@${user.login}' : null,
+      showChevron: false,
+      trailing: Icon(
+        FIcons.chevronRight,
+        size: 13,
+        color: context.palette.textSecondary.withValues(alpha: 0.7),
+      ),
+      onPress: () {
         if (_navigating) return;
         final username = user.login ?? '';
-        if (username.isNotEmpty) {
-          _navigating = true;
-          Navigator.of(context)
-              .push(
-                MaterialPageRoute(
-                  builder: (_) => UserProfilePage(username: username),
-                ),
-              )
-              .then((_) => _navigating = false);
-        }
+        if (username.isEmpty) return;
+        _navigating = true;
+        Navigator.of(context)
+            .push(
+              MaterialPageRoute(
+                builder: (_) => UserProfilePage(username: username),
+              ),
+            )
+            .then((_) => _navigating = false);
       },
-      child: Row(
-        children: [
-          UserAvatar(user: user, radius: UIConstants.avatarMd),
-          const SizedBox(width: UIConstants.md),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  user.full_name ?? user.login ?? '',
-                  style: theme.textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w500,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                ),
-                if (user.login != null) ...[
-                  const SizedBox(height: UIConstants.xs),
-                  Text(
-                    '@${user.login}',
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
-              ],
-            ),
-          ),
-          const Icon(FIcons.chevronRight, size: 18),
-        ],
-      ),
     );
   }
 }
