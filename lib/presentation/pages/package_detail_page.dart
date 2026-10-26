@@ -12,6 +12,7 @@ import '../widgets/forui/app_section.dart';
 import '../widgets/forui/app_state_views.dart';
 import '../widgets/forui/app_tile.dart';
 import 'repo_detail_page.dart';
+import '../theme/app_theme.dart';
 
 class PackageDetailPage extends StatefulWidget {
   final String owner;
@@ -423,6 +424,7 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
                       command,
                       style: theme.textTheme.bodySmall?.copyWith(
                         fontFamily: 'monospace',
+                        fontFamilyFallback: kMonoFontFallback,
                       ),
                     ),
                   ),
@@ -480,6 +482,7 @@ class _PackageDetailPageState extends State<PackageDetailPage> {
                     url,
                     style: theme.textTheme.bodySmall?.copyWith(
                       fontFamily: 'monospace',
+                      fontFamilyFallback: kMonoFontFallback,
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
                     maxLines: 2,

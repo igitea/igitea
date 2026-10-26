@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 
 import '../theme/app_palette.dart';
+import '../theme/app_theme.dart';
 
 /// A shared, design-system-aware Markdown style.
 ///
@@ -50,6 +51,7 @@ MarkdownStyleSheet appMarkdownStyle(BuildContext context) {
     strong: TextStyle(fontWeight: FontWeight.w600, color: palette.textPrimary),
     code: TextStyle(
       fontFamily: 'monospace',
+      fontFamilyFallback: kMonoFontFallback,
       fontSize: 12,
       backgroundColor: Colors.transparent,
       color: palette.textPrimary,

@@ -8,6 +8,7 @@ import '../../l10n/app_localizations.dart';
 import '../widgets/forui/app_page.dart';
 import '../widgets/forui/app_state_views.dart';
 import 'pr_diff_viewer_page.dart';
+import '../theme/app_theme.dart';
 
 class PrFilesPage extends StatefulWidget {
   final String owner;
@@ -140,6 +141,7 @@ class _PrFilesPageState extends State<PrFilesPage> {
                                 filename,
                                 style: theme.textTheme.bodyMedium?.copyWith(
                                   fontFamily: 'monospace',
+                                  fontFamilyFallback: kMonoFontFallback,
                                   fontWeight: FontWeight.w500,
                                 ),
                                 maxLines: 1,

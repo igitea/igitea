@@ -2582,4 +2582,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get forkAction => 'Fork';
+
+  @override
+  String get errorNotFoundFriendly =>
+      'This isn\'t available. It may have been removed or turned off for this repository.';
+
+  @override
+  String get errorForbiddenFriendly =>
+      'You don\'t have permission to view this.';
 }

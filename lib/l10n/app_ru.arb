@@ -727,5 +727,7 @@
   "yourStarredRepos": "Избранные репозитории",
   "yourOrganizations": "Ваши организации",
   "loadMoreActivity": "Загрузить ещё",
-  "forkAction": "Форк"
+  "forkAction": "Форк",
+  "errorNotFoundFriendly": "Недоступно. Возможно, элемент удалён или отключён в этом репозитории.",
+  "errorForbiddenFriendly": "У вас нет прав на просмотр."
 }

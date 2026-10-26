@@ -9,6 +9,7 @@ import '../../l10n/app_localizations.dart';
 import '../widgets/forui/app_page.dart';
 import '../widgets/forui/app_state_views.dart';
 import '../widgets/forui/app_tile.dart';
+import '../theme/app_theme.dart';
 
 class GpgKeysPage extends StatefulWidget {
   const GpgKeysPage({super.key});
@@ -232,6 +233,7 @@ class _GpgKeysPageState extends State<GpgKeysPage> {
                 key.public_key ?? '',
                 style: theme.textTheme.bodySmall?.copyWith(
                   fontFamily: 'monospace',
+                  fontFamilyFallback: kMonoFontFallback,
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),

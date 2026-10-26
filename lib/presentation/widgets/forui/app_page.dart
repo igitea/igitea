@@ -58,9 +58,15 @@ class AppPage extends StatelessWidget {
       childPad: childPad,
       // A transparent Material ancestor keeps legacy Material widgets (InkWell,
       // ListTile, Chip, ...) working on pages that are not fully migrated yet.
-      child: Material(
-        color: Colors.transparent,
-        child: _Constrained(maxWidth: maxContentWidth, child: child),
+      // The header already reserves the status-bar inset; leaving it in the
+      // body makes every unpadded scroll view add a second, empty strip.
+      child: MediaQuery.removePadding(
+        context: context,
+        removeTop: true,
+        child: Material(
+          color: Colors.transparent,
+          child: _Constrained(maxWidth: maxContentWidth, child: child),
+        ),
       ),
     );
   }

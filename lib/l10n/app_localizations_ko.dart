@@ -2558,4 +2558,11 @@ class AppLocalizationsKo extends AppLocalizations {
 
   @override
   String get forkAction => '포크';
+
+  @override
+  String get errorNotFoundFriendly =>
+      '이 항목을 사용할 수 없습니다. 삭제되었거나 이 저장소에서 비활성화되었을 수 있습니다.';
+
+  @override
+  String get errorForbiddenFriendly => '이 항목을 볼 권한이 없습니다.';
 }

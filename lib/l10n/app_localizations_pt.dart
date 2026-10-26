@@ -2587,4 +2587,11 @@ class AppLocalizationsPt extends AppLocalizations {
 
   @override
   String get forkAction => 'Fork';
+
+  @override
+  String get errorNotFoundFriendly =>
+      'Não disponível. Pode ter sido removido ou desativado neste repositório.';
+
+  @override
+  String get errorForbiddenFriendly => 'Você não tem permissão para ver isto.';
 }

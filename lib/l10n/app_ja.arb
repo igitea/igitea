@@ -727,5 +727,7 @@
   "yourStarredRepos": "スター付きリポジトリ",
   "yourOrganizations": "組織一覧",
   "loadMoreActivity": "さらに読み込む",
-  "forkAction": "フォーク"
+  "forkAction": "フォーク",
+  "errorNotFoundFriendly": "この項目は利用できません。削除されたか、このリポジトリで無効になっている可能性があります。",
+  "errorForbiddenFriendly": "これを表示する権限がありません。"
 }

@@ -61,6 +61,7 @@ import 'label_list_page.dart';
 import 'actions_list_page.dart';
 import 'repo_stargazers_page.dart';
 import '../widgets/label_badge.dart';
+import '../theme/app_theme.dart';
 
 class RepoDetailPage extends StatefulWidget {
   final String owner;
@@ -180,7 +181,24 @@ class _RepoDetailPageState extends State<RepoDetailPage> {
     );
   }
 
-  List<_SectionItem> _sections(AppLocalizations l10n) => [
+  /// Repository sections, without the ones the repository has switched off
+  /// (Gitea answers 404 for a disabled unit, which would read as an error).
+  List<_SectionItem> _sections(AppLocalizations l10n, Repository repo) {
+    final hidden = <String>{
+      if (repo.has_code == false) 'code',
+      if (repo.has_issues == false) ...{'issues', 'milestones'},
+      if (repo.has_pull_requests == false) 'pullRequests',
+      if (repo.has_releases == false) 'releases',
+      if (repo.has_wiki == false) 'wiki',
+      if (repo.has_actions == false) 'actions',
+    };
+    return [
+      for (final section in _allSections(l10n))
+        if (!hidden.contains(section.id)) section,
+    ];
+  }
+
+  List<_SectionItem> _allSections(AppLocalizations l10n) => [
     _SectionItem(id: 'code', title: l10n.code, icon: FIcons.code),
     _SectionItem(id: 'issues', title: l10n.issues, icon: FIcons.circleDot),
     _SectionItem(id: 'milestones', title: l10n.milestones, icon: FIcons.flag),
@@ -225,7 +243,7 @@ class _RepoDetailPageState extends State<RepoDetailPage> {
         repoName: widget.repo,
         languages: _languages,
         l10n: l10n,
-        sections: _sections(l10n),
+        sections: _sections(l10n, repo),
         onSection: (id) =>
             _navigateToSection(context, id, repo.default_branch, l10n),
         onOpenSettings: () => Navigator.of(
@@ -236,7 +254,7 @@ class _RepoDetailPageState extends State<RepoDetailPage> {
       );
     }
 
-    final sections = _sections(l10n);
+    final sections = _sections(l10n, repo);
 
     return ListView(
       padding: const EdgeInsets.only(bottom: 24),
@@ -1174,18 +1192,23 @@ class _RepoHeader extends StatelessWidget {
                           if (repo.default_branch != null &&
                               repo.default_branch!.isNotEmpty) ...[
                             const _MetaDot(),
-                            Icon(
-                              FIcons.gitBranch,
-                              size: 11,
-                              color: palette.textSecondary,
-                            ),
-                            const SizedBox(width: 3),
-                            Text(
-                              repo.default_branch!,
-                              style: TextStyle(
-                                fontSize: 11.5,
-                                color: palette.textSecondary,
-                              ),
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  FIcons.gitBranch,
+                                  size: 11,
+                                  color: palette.textSecondary,
+                                ),
+                                const SizedBox(width: 3),
+                                Text(
+                                  repo.default_branch!,
+                                  style: TextStyle(
+                                    fontSize: 11.5,
+                                    color: palette.textSecondary,
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ],
@@ -3087,9 +3110,7 @@ class _ReadmePreviewState extends State<_ReadmePreview> {
 
     final content = _content?.trim() ?? '';
     if (content.isEmpty) return const SizedBox.shrink();
-    final preview = content.length > 2600
-        ? '${content.substring(0, 2600)}\n\n…'
-        : content;
+    final preview = _readmePreview(content);
 
     return AppSurface(
       padding: const EdgeInsets.fromLTRB(24, 18, 24, 24),
@@ -3127,9 +3148,87 @@ class _ReadmePreviewState extends State<_ReadmePreview> {
             ],
           ),
           const SizedBox(height: 8),
-          AppMarkdown(data: preview),
+          _FadedPreview(
+            maxHeight: DesktopLayout.isCompact(context) ? 360 : 760,
+            child: AppMarkdown(data: preview),
+          ),
         ],
       ),
+    );
+  }
+
+  /// Trims long READMEs at a paragraph break and closes any code fence the cut
+  /// left open, so the rest of the preview is not rendered as code.
+  static String _readmePreview(String content) {
+    const limit = 2600;
+    if (content.length <= limit) return content;
+    var cut = content.lastIndexOf('\n\n', limit);
+    if (cut < limit ~/ 2) cut = limit;
+    var preview = content.substring(0, cut).trimRight();
+    if ('```'.allMatches(preview).length.isOdd) preview += '\n```';
+    return preview;
+  }
+}
+
+/// Clips [child] to [maxHeight] and fades its bottom edge when it overflows.
+class _FadedPreview extends StatefulWidget {
+  const _FadedPreview({required this.maxHeight, required this.child});
+
+  final double maxHeight;
+  final Widget child;
+
+  @override
+  State<_FadedPreview> createState() => _FadedPreviewState();
+}
+
+class _FadedPreviewState extends State<_FadedPreview> {
+  final _controller = ScrollController();
+  bool _overflows = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _measure());
+  }
+
+  @override
+  void didUpdateWidget(covariant _FadedPreview oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _measure());
+  }
+
+  void _measure() {
+    if (!mounted || !_controller.hasClients) return;
+    final overflows = _controller.position.maxScrollExtent > 0;
+    if (overflows != _overflows) setState(() => _overflows = overflows);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final content = ConstrainedBox(
+      constraints: BoxConstraints(maxHeight: widget.maxHeight),
+      child: SingleChildScrollView(
+        controller: _controller,
+        physics: const NeverScrollableScrollPhysics(),
+        child: widget.child,
+      ),
+    );
+    if (!_overflows) return content;
+    return ShaderMask(
+      blendMode: BlendMode.dstIn,
+      shaderCallback: (rect) => const LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        stops: [0.78, 1],
+        colors: [Colors.black, Colors.transparent],
+      ).createShader(rect),
+      child: content,
     );
   }
 }
@@ -3342,6 +3441,7 @@ class _CommitItem extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 10,
                   fontFamily: 'monospace',
+                  fontFamilyFallback: kMonoFontFallback,
                   color: palette.textSecondary,
                 ),
               ),

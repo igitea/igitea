@@ -15,6 +15,7 @@ import '../../l10n/app_localizations.dart';
 import '../widgets/forui/app_page.dart';
 import '../widgets/forui/app_state_views.dart';
 import '../widgets/forui/app_tile.dart';
+import '../theme/app_theme.dart';
 
 int _toInt(dynamic value) => switch (value) {
   num n => n.toInt(),
@@ -431,6 +432,7 @@ class _ActionRunDetailPageState extends State<ActionRunDetailPage> {
                           _logs[jobId]!,
                           style: const TextStyle(
                             fontFamily: 'monospace',
+                            fontFamilyFallback: kMonoFontFallback,
                             fontSize: 12,
                           ),
                         )

@@ -2593,4 +2593,12 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get forkAction => 'Forker';
+
+  @override
+  String get errorNotFoundFriendly =>
+      'Indisponible. Cet élément a peut-être été supprimé ou désactivé pour ce dépôt.';
+
+  @override
+  String get errorForbiddenFriendly =>
+      'Vous n\'avez pas l\'autorisation de voir ceci.';
 }

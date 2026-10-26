@@ -17,6 +17,17 @@ String friendlyErrorMessage(BuildContext context, String message) {
       lower.contains('failed host lookup')) {
     return l10n.networkError;
   }
+  if (lower == 'not found' ||
+      lower.contains('http 404') ||
+      lower.contains("couldn't be found") ||
+      lower.contains('could not be found')) {
+    return l10n.errorNotFoundFriendly;
+  }
+  if (lower == 'forbidden' ||
+      lower.contains('http 403') ||
+      lower.contains('permission denied')) {
+    return l10n.errorForbiddenFriendly;
+  }
   return message;
 }
 

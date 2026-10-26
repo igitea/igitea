@@ -8,6 +8,7 @@ import '../../core/utils/diff_parser.dart';
 import '../../l10n/app_localizations.dart';
 import '../widgets/forui/app_page.dart';
 import '../widgets/forui/app_state_views.dart';
+import '../theme/app_theme.dart';
 
 class PrDiffViewerPage extends StatefulWidget {
   final String owner;
@@ -169,6 +170,7 @@ class _PrDiffViewerPageState extends State<PrDiffViewerPage> {
               file.newPath.isNotEmpty ? file.newPath : file.oldPath,
               style: theme.textTheme.bodySmall?.copyWith(
                 fontFamily: 'monospace',
+                fontFamilyFallback: kMonoFontFallback,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -190,6 +192,7 @@ class _PrDiffViewerPageState extends State<PrDiffViewerPage> {
         hunk.header,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
           fontFamily: 'monospace',
+          fontFamilyFallback: kMonoFontFallback,
           color: Theme.of(context).colorScheme.primary,
         ),
       ),
@@ -225,6 +228,7 @@ class _PrDiffViewerPageState extends State<PrDiffViewerPage> {
             lineNum,
             style: theme.textTheme.labelSmall?.copyWith(
               fontFamily: 'monospace',
+              fontFamilyFallback: kMonoFontFallback,
               color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
             ),
           ),
@@ -233,6 +237,7 @@ class _PrDiffViewerPageState extends State<PrDiffViewerPage> {
             prefix,
             style: theme.textTheme.bodySmall?.copyWith(
               fontFamily: 'monospace',
+              fontFamilyFallback: kMonoFontFallback,
               fontWeight: FontWeight.w700,
               color: line.type == DiffLineType.added
                   ? Colors.green
@@ -247,6 +252,7 @@ class _PrDiffViewerPageState extends State<PrDiffViewerPage> {
               line.content,
               style: theme.textTheme.bodySmall?.copyWith(
                 fontFamily: 'monospace',
+                fontFamilyFallback: kMonoFontFallback,
               ),
             ),
           ),

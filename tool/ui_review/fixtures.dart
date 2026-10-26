@@ -345,6 +345,30 @@ flutter run
 > Works with Gitea 1.20 and newer.
 ''';
 
+const _goSource = '''package main
+
+import (
+\t"context"
+\t"fmt"
+\t"os"
+)
+
+// run starts the cache server and blocks until ctx is done.
+func run(ctx context.Context, dir string, port uint16) error {
+\tif dir == "" {
+\t\tdir = os.TempDir()
+\t}
+\tfor attempt := 0; attempt < 3; attempt++ {
+\t\tif err := serve(ctx, dir, port); err != nil {
+\t\t\tfmt.Fprintf(os.Stderr, "attempt %d failed: %v\\n", attempt, err)
+\t\t\tcontinue
+\t\t}
+\t\treturn nil
+\t}
+\treturn fmt.Errorf("cache server did not start")
+}
+''';
+
 final _comments = [
   {
     'id': 1,
@@ -521,6 +545,16 @@ Object? _route(String method, String path, Map<String, String> query) {
       };
     }
     if (rest.startsWith('raw/')) return _readme;
+    if (rest == 'contents/main.go') {
+      return {
+        'name': 'main.go',
+        'path': 'main.go',
+        'type': 'file',
+        'size': _goSource.length,
+        'encoding': 'base64',
+        'content': base64Encode(utf8.encode(_goSource)),
+      };
+    }
     if (rest == 'contents' || rest.startsWith('contents/')) return _contents;
     if (rest == 'issues') {
       final type = query['type'];

@@ -7,6 +7,7 @@ import '../../l10n/app_localizations.dart';
 import '../widgets/forui/app_page.dart';
 import '../widgets/forui/app_state_views.dart';
 import 'action_run_detail_page.dart';
+import '../theme/app_theme.dart';
 
 int _toInt(dynamic value) => switch (value) {
   num n => n.toInt(),
@@ -494,6 +495,7 @@ class _ActionsListPageState extends State<ActionsListPage>
                               run['head_branch'] as String,
                               style: theme.textTheme.labelSmall?.copyWith(
                                 fontFamily: 'monospace',
+                                fontFamilyFallback: kMonoFontFallback,
                                 color: theme.colorScheme.onSurfaceVariant,
                               ),
                             ),

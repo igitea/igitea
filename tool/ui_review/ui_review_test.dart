@@ -26,6 +26,7 @@ import 'package:igitea/presentation/pages/login_page.dart';
 import 'package:igitea/presentation/pages/organization_detail_page.dart';
 import 'package:igitea/presentation/pages/pr_detail_page.dart';
 import 'package:igitea/presentation/pages/repo_detail_page.dart';
+import 'package:igitea/presentation/pages/repo_file_page.dart';
 import 'package:igitea/presentation/pages/settings_page.dart';
 import 'package:igitea/presentation/theme/app_theme.dart';
 import 'package:igitea/presentation/widgets/desktop/app_scroll_behavior.dart';
@@ -110,7 +111,6 @@ Future<void> _loadFonts() async {
     '/System/Library/Fonts/Menlo.ttc',
   ]) {
     if (File(mono).existsSync()) {
-      await load('monospace', [mono]);
       await load('Menlo', [mono]);
       await load('SF Mono', [mono]);
       break;
@@ -149,6 +149,12 @@ final scenarios = <String, Widget Function()>{
   'pull': () => const PRDetailPage(owner: 'charley', repo: 'igitea', index: 44),
   'settings': () => const SettingsPage(),
   'org': () => const OrganizationDetailPage(orgName: 'infra'),
+  'file': () => const RepoFilePage(
+    owner: 'charley',
+    repo: 'igitea',
+    path: 'main.go',
+    name: 'main.go',
+  ),
 };
 
 const _tabIndex = {'inbox': 1, 'explore': 2, 'profile': 3};

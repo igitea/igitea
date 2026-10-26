@@ -12,6 +12,7 @@ import '../widgets/forui/app_page.dart';
 import '../widgets/forui/app_state_views.dart';
 import '../widgets/user_avatar.dart';
 import 'commit_detail_page.dart';
+import '../theme/app_theme.dart';
 
 class _BlameRange {
   final int startLine;
@@ -257,6 +258,7 @@ class _FileBlamePageState extends State<FileBlamePage> {
                           style: Theme.of(context).textTheme.labelSmall
                               ?.copyWith(
                                 fontFamily: 'monospace',
+                                fontFamilyFallback: kMonoFontFallback,
                                 color: Theme.of(context).colorScheme.primary,
                               ),
                           overflow: TextOverflow.ellipsis,
@@ -282,6 +284,7 @@ class _FileBlamePageState extends State<FileBlamePage> {
               '$lineNum',
               style: Theme.of(context).textTheme.labelSmall?.copyWith(
                 fontFamily: 'monospace',
+                fontFamilyFallback: kMonoFontFallback,
                 color: Theme.of(
                   context,
                 ).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
@@ -302,9 +305,10 @@ class _FileBlamePageState extends State<FileBlamePage> {
             ),
             child: Text(
               _lines[index],
-              style: Theme.of(
-                context,
-              ).textTheme.bodySmall?.copyWith(fontFamily: 'monospace'),
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                fontFamily: 'monospace',
+                fontFamilyFallback: kMonoFontFallback,
+              ),
             ),
           ),
         ),
@@ -344,6 +348,7 @@ class _FileBlamePageState extends State<FileBlamePage> {
                   '${index + 1}',
                   style: Theme.of(context).textTheme.labelSmall?.copyWith(
                     fontFamily: 'monospace',
+                    fontFamilyFallback: kMonoFontFallback,
                     color: Theme.of(
                       context,
                     ).colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
@@ -360,9 +365,10 @@ class _FileBlamePageState extends State<FileBlamePage> {
               Expanded(
                 child: Text(
                   _lines[index],
-                  style: Theme.of(
-                    context,
-                  ).textTheme.bodySmall?.copyWith(fontFamily: 'monospace'),
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    fontFamily: 'monospace',
+                    fontFamilyFallback: kMonoFontFallback,
+                  ),
                 ),
               ),
             ],

@@ -7,6 +7,16 @@ import '../../core/animations/app_animations.dart';
 import '../../core/animations/page_transitions.dart';
 import 'app_palette.dart';
 
+/// Fallbacks for `fontFamily: 'monospace'`, which only resolves on Android and
+/// Linux; Apple platforms and Windows need a named monospaced face.
+const kMonoFontFallback = <String>[
+  'Menlo',
+  'SF Mono',
+  'Consolas',
+  'Courier New',
+  'Courier',
+];
+
 /// iGitea's design system.
 ///
 /// A single source of truth for color, typography and motion. Forui widgets and

@@ -727,5 +727,7 @@
   "yourStarredRepos": "Vos dépôts favoris",
   "yourOrganizations": "Vos organisations",
   "loadMoreActivity": "Charger plus d'activité",
-  "forkAction": "Forker"
+  "forkAction": "Forker",
+  "errorNotFoundFriendly": "Indisponible. Cet élément a peut-être été supprimé ou désactivé pour ce dépôt.",
+  "errorForbiddenFriendly": "Vous n'avez pas l'autorisation de voir ceci."
 }

@@ -5038,6 +5038,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Fork'**
   String get forkAction;
+
+  /// No description provided for @errorNotFoundFriendly.
+  ///
+  /// In en, this message translates to:
+  /// **'This isn\'t available. It may have been removed or turned off for this repository.'**
+  String get errorNotFoundFriendly;
+
+  /// No description provided for @errorForbiddenFriendly.
+  ///
+  /// In en, this message translates to:
+  /// **'You don\'t have permission to view this.'**
+  String get errorForbiddenFriendly;
 }
 
 class _AppLocalizationsDelegate

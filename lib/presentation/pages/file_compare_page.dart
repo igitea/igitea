@@ -7,6 +7,7 @@ import '../../core/di/injection.dart';
 import '../../core/utils/diff_parser.dart';
 import '../../l10n/app_localizations.dart';
 import '../widgets/forui/app_page.dart';
+import '../theme/app_theme.dart';
 
 class FileComparePage extends StatefulWidget {
   final String owner;
@@ -175,6 +176,7 @@ class _FileComparePageState extends State<FileComparePage> {
             file.newPath,
             style: theme.textTheme.bodySmall?.copyWith(
               fontFamily: 'monospace',
+              fontFamilyFallback: kMonoFontFallback,
               fontWeight: FontWeight.w600,
             ),
           ),
@@ -195,6 +197,7 @@ class _FileComparePageState extends State<FileComparePage> {
         hunk.header,
         style: Theme.of(context).textTheme.labelSmall?.copyWith(
           fontFamily: 'monospace',
+          fontFamilyFallback: kMonoFontFallback,
           color: Theme.of(context).colorScheme.primary,
         ),
       ),
@@ -225,6 +228,7 @@ class _FileComparePageState extends State<FileComparePage> {
             '${line.oldLineNum?.toString().padLeft(4) ?? '    '} ${line.newLineNum?.toString().padLeft(4) ?? '    '}',
             style: theme.textTheme.labelSmall?.copyWith(
               fontFamily: 'monospace',
+              fontFamilyFallback: kMonoFontFallback,
               color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
             ),
           ),
@@ -233,6 +237,7 @@ class _FileComparePageState extends State<FileComparePage> {
             prefix,
             style: theme.textTheme.bodySmall?.copyWith(
               fontFamily: 'monospace',
+              fontFamilyFallback: kMonoFontFallback,
               fontWeight: FontWeight.w700,
               color: line.type == DiffLineType.added
                   ? Colors.green
@@ -247,6 +252,7 @@ class _FileComparePageState extends State<FileComparePage> {
               line.content,
               style: theme.textTheme.bodySmall?.copyWith(
                 fontFamily: 'monospace',
+                fontFamilyFallback: kMonoFontFallback,
               ),
             ),
           ),

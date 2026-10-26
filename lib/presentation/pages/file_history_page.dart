@@ -11,6 +11,7 @@ import '../widgets/forui/app_page.dart';
 import '../widgets/forui/app_state_views.dart';
 import '../widgets/user_avatar.dart';
 import 'commit_detail_page.dart';
+import '../theme/app_theme.dart';
 
 class FileHistoryPage extends StatefulWidget {
   final String owner;
@@ -178,6 +179,7 @@ class _FileHistoryPageState extends State<FileHistoryPage> {
                                 style: Theme.of(context).textTheme.labelSmall
                                     ?.copyWith(
                                       fontFamily: 'monospace',
+                                      fontFamilyFallback: kMonoFontFallback,
                                       color: Theme.of(
                                         context,
                                       ).colorScheme.primary,

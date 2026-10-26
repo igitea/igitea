@@ -97,22 +97,25 @@ class _TeamDetailPageState extends State<TeamDetailPage> {
       children: [
         _TeamHeader(team: team),
         Expanded(
-          child: FTabs(
-            expands: true,
-            children: [
-              FTabEntry(
-                label: AppTabLabel(l10n.info),
-                child: _InfoTab(team: team),
-              ),
-              FTabEntry(
-                label: AppTabLabel(l10n.members),
-                child: _MembersTab(teamId: widget.teamId),
-              ),
-              FTabEntry(
-                label: AppTabLabel(l10n.repositories),
-                child: _ReposTab(teamId: widget.teamId),
-              ),
-            ],
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: FTabs(
+              expands: true,
+              children: [
+                FTabEntry(
+                  label: AppTabLabel(l10n.info),
+                  child: _InfoTab(team: team),
+                ),
+                FTabEntry(
+                  label: AppTabLabel(l10n.members),
+                  child: _MembersTab(teamId: widget.teamId),
+                ),
+                FTabEntry(
+                  label: AppTabLabel(l10n.repositories),
+                  child: _ReposTab(teamId: widget.teamId),
+                ),
+              ],
+            ),
           ),
         ),
       ],
@@ -227,7 +230,7 @@ class _InfoTab extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(vertical: 16),
       children: [
         if (team.description != null && team.description!.isNotEmpty) ...[
           Text(
@@ -493,7 +496,7 @@ class _MembersTabState extends State<_MembersTab> {
                   onRefresh: () => Injection.organizationNotifier
                       .listTeamMembers(widget.teamId),
                   child: ListView.builder(
-                    padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+                    padding: const EdgeInsets.fromLTRB(0, 4, 0, 16),
                     itemCount: members.length,
                     itemBuilder: (context, index) {
                       final member = members[index];
@@ -589,7 +592,7 @@ class _ReposTabState extends State<_ReposTab> {
             onRefresh: () =>
                 Injection.organizationNotifier.listTeamRepos(widget.teamId),
             child: ListView.builder(
-              padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+              padding: const EdgeInsets.fromLTRB(0, 12, 0, 16),
               itemCount: repos.length,
               itemBuilder: (context, index) {
                 final repo = repos[index];

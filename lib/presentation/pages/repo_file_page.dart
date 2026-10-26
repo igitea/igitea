@@ -25,6 +25,7 @@ import '../widgets/forui/app_state_views.dart';
 import 'file_history_page.dart';
 import 'file_compare_page.dart';
 import 'file_blame_page.dart';
+import '../theme/app_theme.dart';
 
 class RepoFilePage extends StatefulWidget {
   final String owner;
@@ -599,6 +600,7 @@ class _RepoFilePageState extends State<RepoFilePage> {
             fontSize: 13,
             height: 1.4,
             fontFamily: 'monospace',
+            fontFamilyFallback: kMonoFontFallback,
           ),
         ),
       );
@@ -615,6 +617,7 @@ class _RepoFilePageState extends State<RepoFilePage> {
           fontSize: 13,
           height: 1.4,
           fontFamily: 'monospace',
+          fontFamilyFallback: kMonoFontFallback,
           color: isDark ? const Color(0xFFD4D4D4) : const Color(0xFF24292E),
         ),
       );
@@ -626,7 +629,10 @@ class _RepoFilePageState extends State<RepoFilePage> {
     final lang = _languageForHighlight(_fileExtension);
     final isDark = theme.brightness == Brightness.dark;
     final codeTheme = isDark ? vs2015Theme : githubTheme;
-    final content = _decodedContent!.replaceAll(RegExp(r'\n$'), '');
+    // Tabs are shown four columns wide so indented code fits a phone screen.
+    final content = _decodedContent!
+        .replaceAll(RegExp(r'\n$'), '')
+        .replaceAll('\t', '    ');
     final lines = content.split('\n');
     final lineCount = lines.length;
     final lineNumberWidth = (lineCount.toString().length * 10.0) + 16;
@@ -658,6 +664,7 @@ class _RepoFilePageState extends State<RepoFilePage> {
                 fontSize: 13,
                 height: 1.4,
                 fontFamily: 'monospace',
+                fontFamilyFallback: kMonoFontFallback,
               ),
             );
           } catch (e) {
@@ -669,6 +676,7 @@ class _RepoFilePageState extends State<RepoFilePage> {
                   fontSize: 13,
                   height: 1.4,
                   fontFamily: 'monospace',
+                  fontFamilyFallback: kMonoFontFallback,
                   color: isDark
                       ? const Color(0xFFD4D4D4)
                       : const Color(0xFF24292E),
@@ -700,6 +708,7 @@ class _RepoFilePageState extends State<RepoFilePage> {
                             fontSize: 13,
                             height: 1.4,
                             fontFamily: 'monospace',
+                            fontFamilyFallback: kMonoFontFallback,
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
                         ),

@@ -11,6 +11,7 @@ import '../state/token_notifier.dart';
 import '../widgets/forui/app_page.dart';
 import '../widgets/forui/app_state_views.dart';
 import '../widgets/forui/app_tile.dart';
+import '../theme/app_theme.dart';
 
 const _scopeGroups = [
   _ScopeGroup('User', [
@@ -184,6 +185,7 @@ class _TokensPageState extends State<TokensPage> {
                 style: Theme.of(ctx).textTheme.bodyMedium?.copyWith(
                   fontWeight: FontWeight.w600,
                   fontFamily: 'monospace',
+                  fontFamilyFallback: kMonoFontFallback,
                 ),
               ),
             ),

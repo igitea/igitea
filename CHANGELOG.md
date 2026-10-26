@@ -21,8 +21,16 @@
 - **Profile**: organisations show their name under the avatar
 - **Issue detail**: labels sit on their own row above the edit and subscribe actions
 - **UI review server** (`tool/ui_review/fake_server.dart`): serves the review fixtures as a local Gitea API so the app can be tried in a simulator
+- **Repository sections** follow the repository's settings: Code, Issues and Milestones, Pull Requests, Releases, Wiki and Actions are hidden when the repository has them turned off
+- **README preview** is clipped to a short excerpt with a soft fade on phones (taller on wide windows) and is cut at a paragraph break so an open code fence never swallows the rest
+- **Code view** shows tabs four columns wide so indented code fits a phone screen
+- **Friendlier errors**: "not found" and permission errors read as plain sentences in every language
+- **App name**: shown as "iGitea" on the iOS home screen, Android launcher, macOS menu bar, web, Windows and Linux title bars
 
 ### Fixed
+- **Monospace text on Apple platforms and Windows**: code blocks, diffs, blame, commit SHAs and tokens asked for a `monospace` font that only exists on Android and Linux, so they fell back to the proportional UI font; they now use Menlo / SF Mono / Consolas
+- **Blank strip above lists on notched phones**: pushed pages and home tabs reported the status-bar inset to their body as well as the header, so unpadded lists (such as the code view) started with an empty band
+- The branch icon and name in the repository header no longer sit far apart
 - Organisation, team and stargazer tab labels no longer wrap onto two lines on phones
 - Pale label colours such as `#a2eeef` were unreadable on light surfaces
 

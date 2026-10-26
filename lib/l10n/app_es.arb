@@ -727,5 +727,7 @@
   "yourStarredRepos": "Tus repositorios destacados",
   "yourOrganizations": "Tus organizaciones",
   "loadMoreActivity": "Cargar más actividad",
-  "forkAction": "Bifurcar"
+  "forkAction": "Bifurcar",
+  "errorNotFoundFriendly": "No está disponible. Puede que se haya eliminado o desactivado en este repositorio.",
+  "errorForbiddenFriendly": "No tienes permiso para ver esto."
 }

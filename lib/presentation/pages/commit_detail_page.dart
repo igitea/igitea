@@ -16,6 +16,7 @@ import '../widgets/forui/app_section.dart';
 import '../widgets/forui/app_state_views.dart';
 import '../widgets/forui/app_tile.dart';
 import '../widgets/user_avatar.dart';
+import '../theme/app_theme.dart';
 
 class CommitDetailPage extends StatefulWidget {
   final String owner;
@@ -264,6 +265,7 @@ class _CommitDetailPageState extends State<CommitDetailPage> {
                         filename,
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           fontFamily: 'monospace',
+                          fontFamilyFallback: kMonoFontFallback,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -304,6 +306,7 @@ class _CommitDetailPageState extends State<CommitDetailPage> {
                         h.header,
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
                           fontFamily: 'monospace',
+                          fontFamilyFallback: kMonoFontFallback,
                           color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
@@ -332,6 +335,7 @@ class _CommitDetailPageState extends State<CommitDetailPage> {
                                 style: Theme.of(context).textTheme.labelSmall
                                     ?.copyWith(
                                       fontFamily: 'monospace',
+                                      fontFamilyFallback: kMonoFontFallback,
                                       color: Theme.of(context)
                                           .colorScheme
                                           .onSurfaceVariant
@@ -340,12 +344,18 @@ class _CommitDetailPageState extends State<CommitDetailPage> {
                               ),
                               const Text(
                                 ' ',
-                                style: TextStyle(fontFamily: 'monospace'),
+                                style: TextStyle(
+                                  fontFamily: 'monospace',
+                                  fontFamilyFallback: kMonoFontFallback,
+                                ),
                               ),
                               Text(
                                 line.content,
                                 style: Theme.of(context).textTheme.bodySmall
-                                    ?.copyWith(fontFamily: 'monospace'),
+                                    ?.copyWith(
+                                      fontFamily: 'monospace',
+                                      fontFamilyFallback: kMonoFontFallback,
+                                    ),
                               ),
                             ],
                           ),

@@ -2555,6 +2555,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get forkAction => '派生';
+
+  @override
+  String get errorNotFoundFriendly => '此内容不可用，可能已被删除或在该仓库中被关闭。';
+
+  @override
+  String get errorForbiddenFriendly => '你没有查看此内容的权限。';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -4880,4 +4886,10 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get forkAction => '分叉';
+
+  @override
+  String get errorNotFoundFriendly => '此內容無法使用，可能已被刪除或在此儲存庫中被關閉。';
+
+  @override
+  String get errorForbiddenFriendly => '你沒有檢視此內容的權限。';
 }

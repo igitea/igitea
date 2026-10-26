@@ -2586,4 +2586,11 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get forkAction => 'Форк';
+
+  @override
+  String get errorNotFoundFriendly =>
+      'Недоступно. Возможно, элемент удалён или отключён в этом репозитории.';
+
+  @override
+  String get errorForbiddenFriendly => 'У вас нет прав на просмотр.';
 }

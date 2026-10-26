@@ -154,22 +154,25 @@ class _OrganizationDetailPageState extends State<OrganizationDetailPage> {
       children: [
         _OrgHeader(org: org),
         Expanded(
-          child: FTabs(
-            expands: true,
-            children: [
-              FTabEntry(
-                label: AppTabLabel(l10n.info),
-                child: _InfoTab(org: org),
-              ),
-              FTabEntry(
-                label: AppTabLabel(l10n.repositories),
-                child: _ReposTab(orgName: widget.orgName),
-              ),
-              FTabEntry(
-                label: AppTabLabel(l10n.teams),
-                child: _TeamsTab(orgName: widget.orgName),
-              ),
-            ],
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: FTabs(
+              expands: true,
+              children: [
+                FTabEntry(
+                  label: AppTabLabel(l10n.info),
+                  child: _InfoTab(org: org),
+                ),
+                FTabEntry(
+                  label: AppTabLabel(l10n.repositories),
+                  child: _ReposTab(orgName: widget.orgName),
+                ),
+                FTabEntry(
+                  label: AppTabLabel(l10n.teams),
+                  child: _TeamsTab(orgName: widget.orgName),
+                ),
+              ],
+            ),
           ),
         ),
       ],
@@ -272,7 +275,7 @@ class _InfoTab extends StatelessWidget {
     final theme = Theme.of(context);
 
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(vertical: 16),
       children: [
         // Organization Details Card
         PremiumCard(
@@ -524,7 +527,7 @@ class _ReposTabState extends State<_ReposTab> {
             onRefresh: () =>
                 Injection.organizationNotifier.listOrgRepos(widget.orgName),
             child: ListView.builder(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(vertical: 16),
               itemCount: repos.length + (state.hasMore ? 1 : 0),
               itemBuilder: (context, index) {
                 if (index == repos.length) {
@@ -735,7 +738,7 @@ class _TeamsTabState extends State<_TeamsTab> {
                 onRefresh: () =>
                     Injection.organizationNotifier.listOrgTeams(widget.orgName),
                 child: ListView.builder(
-                  padding: const EdgeInsets.all(16),
+                  padding: const EdgeInsets.symmetric(vertical: 16),
                   itemCount: teams.length,
                   itemBuilder: (context, index) {
                     final team = teams[index];

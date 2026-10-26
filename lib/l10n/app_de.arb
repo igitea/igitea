@@ -727,5 +727,7 @@
   "yourStarredRepos": "Deine markierten Repositorys",
   "yourOrganizations": "Deine Organisationen",
   "loadMoreActivity": "Weitere Aktivitäten laden",
-  "forkAction": "Forken"
+  "forkAction": "Forken",
+  "errorNotFoundFriendly": "Nicht verfügbar. Möglicherweise wurde es entfernt oder für dieses Repository deaktiviert.",
+  "errorForbiddenFriendly": "Du hast keine Berechtigung, dies anzuzeigen."
 }

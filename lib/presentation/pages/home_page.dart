@@ -112,7 +112,14 @@ class _HomePageState extends State<HomePage> {
               ),
               footer: isWide ? null : _buildBottomBar(l10n),
               childPad: false,
-              child: AnimatedTabStack(index: _selectedIndex, children: _pages),
+              child: MediaQuery.removePadding(
+                context: context,
+                removeTop: true,
+                child: AnimatedTabStack(
+                  index: _selectedIndex,
+                  children: _pages,
+                ),
+              ),
             ),
           ),
         );

@@ -2594,4 +2594,11 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get forkAction => 'Bifurcar';
+
+  @override
+  String get errorNotFoundFriendly =>
+      'No está disponible. Puede que se haya eliminado o desactivado en este repositorio.';
+
+  @override
+  String get errorForbiddenFriendly => 'No tienes permiso para ver esto.';
 }

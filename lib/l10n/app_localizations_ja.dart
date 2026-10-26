@@ -2557,4 +2557,11 @@ class AppLocalizationsJa extends AppLocalizations {
 
   @override
   String get forkAction => 'フォーク';
+
+  @override
+  String get errorNotFoundFriendly =>
+      'この項目は利用できません。削除されたか、このリポジトリで無効になっている可能性があります。';
+
+  @override
+  String get errorForbiddenFriendly => 'これを表示する権限がありません。';
 }

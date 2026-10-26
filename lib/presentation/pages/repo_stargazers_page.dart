@@ -67,26 +67,29 @@ class _RepoStargazersPageState extends State<RepoStargazersPage> {
 
     return AppPage(
       title: '${widget.owner}/${widget.repo}',
-      child: FTabs(
-        expands: true,
-        children: [
-          FTabEntry(
-            label: AppTabLabel(l10n.stargazers),
-            child: _UserList(
-              users: _stargazers,
-              loading: _stargazersLoading,
-              emptyTitle: l10n.noStargazers,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        child: FTabs(
+          expands: true,
+          children: [
+            FTabEntry(
+              label: AppTabLabel(l10n.stargazers),
+              child: _UserList(
+                users: _stargazers,
+                loading: _stargazersLoading,
+                emptyTitle: l10n.noStargazers,
+              ),
             ),
-          ),
-          FTabEntry(
-            label: AppTabLabel(l10n.subscribers),
-            child: _UserList(
-              users: _subscribers,
-              loading: _subscribersLoading,
-              emptyTitle: l10n.noSubscribers,
+            FTabEntry(
+              label: AppTabLabel(l10n.subscribers),
+              child: _UserList(
+                users: _subscribers,
+                loading: _subscribersLoading,
+                emptyTitle: l10n.noSubscribers,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -112,7 +115,7 @@ class _UserList extends StatelessWidget {
       return AppEmpty(icon: FIcons.users, title: emptyTitle);
     }
     return ListView.builder(
-      padding: const EdgeInsets.all(UIConstants.md),
+      padding: const EdgeInsets.symmetric(vertical: UIConstants.md),
       itemCount: users.length,
       itemBuilder: (context, index) {
         final user = users[index];
