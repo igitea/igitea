@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/animations/animated_wrapper.dart';
 import '../../core/constants/ui_constants.dart';
@@ -7,6 +9,7 @@ import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/repo_notifier.dart';
+import '../widgets/desktop/app_hover_region.dart';
 import '../widgets/forui/app_page.dart';
 import '../widgets/forui/app_state_views.dart';
 import '../widgets/premium_card.dart';
@@ -106,7 +109,8 @@ class _RepoList extends StatelessWidget {
     return RefreshIndicator(
       onRefresh: () => Injection.repoNotifier.searchRepos(),
       child: ListView.builder(
-        padding: UIConstants.pagePadding +
+        padding:
+            UIConstants.pagePadding +
             const EdgeInsets.symmetric(vertical: UIConstants.sm),
         itemCount: repos.length,
         itemBuilder: (context, index) {
@@ -130,15 +134,52 @@ class _RepoCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
+    final fullName = repo.full_name ?? repo.name ?? '';
+
     return PremiumListCard(
       onTap: () {
-        Navigator.of(context).push(MaterialPageRoute(
-          builder: (_) => RepoDetailPage(
-            owner: repo.owner?.login ?? '',
-            repo: repo.name ?? '',
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (_) => RepoDetailPage(
+              owner: repo.owner?.login ?? '',
+              repo: repo.name ?? '',
+            ),
           ),
-        ));
+        );
       },
+      contextMenuItems: [
+        AppMenuItem(
+          label: l10n.openRepository,
+          icon: FIcons.folderGit,
+          onSelected: () => Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (_) => RepoDetailPage(
+                owner: repo.owner?.login ?? '',
+                repo: repo.name ?? '',
+              ),
+            ),
+          ),
+        ),
+        AppMenuItem(
+          label: l10n.copyName,
+          icon: FIcons.copy,
+          onSelected: () async {
+            await Clipboard.setData(ClipboardData(text: fullName));
+            if (context.mounted) {
+              showFToast(context: context, title: Text(l10n.copied));
+            }
+          },
+        ),
+        if (repo.html_url != null)
+          AppMenuItem(
+            label: l10n.openInBrowser,
+            icon: FIcons.externalLink,
+            onSelected: () => launchUrl(
+              Uri.parse(repo.html_url!),
+              mode: LaunchMode.externalApplication,
+            ),
+          ),
+      ],
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -167,10 +208,7 @@ class _RepoCard extends StatelessWidget {
                     ),
                     if (repo.private == true) ...[
                       const SizedBox(width: UIConstants.sm),
-                      FBadge(
-                        variant: .secondary,
-                        child: Text(l10n.private),
-                      ),
+                      FBadge(variant: .secondary, child: Text(l10n.private)),
                     ],
                   ],
                 ),

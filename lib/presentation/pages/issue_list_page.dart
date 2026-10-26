@@ -1,17 +1,21 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 
 import '../../core/animations/animated_wrapper.dart';
 import '../../core/constants/ui_constants.dart';
 import '../../core/di/injection.dart';
+import '../../core/platform/desktop_layout.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../domain/entities/issue_state.dart';
 import '../../l10n/app_localizations.dart';
 import '../../presentation/state/issue_notifier.dart';
 import '../models/issue_filter_state.dart';
 import '../theme/app_palette.dart';
+import '../widgets/desktop/app_hover_region.dart';
+import '../widgets/desktop/app_three_pane.dart';
 import '../widgets/forui/app_chrome.dart';
 import '../widgets/forui/app_filter_chip.dart';
 import '../widgets/forui/app_page.dart';
@@ -41,6 +45,9 @@ class _IssueListPageState extends State<IssueListPage> {
   List<SavedFilter> _savedFilters = [];
   bool _savedFiltersExpanded = false;
   bool _filtersLoaded = false;
+  String? _selectedOwner;
+  String? _selectedRepo;
+  int? _selectedNumber;
   Timer? _searchDebounceTimer;
   final ValueNotifier<IssueFilterState> _filterState = ValueNotifier(
     const IssueFilterState(),
@@ -127,6 +134,23 @@ class _IssueListPageState extends State<IssueListPage> {
   }
 
   void _navigateToIssue(String owner, String repo, int index) {
+    if (DesktopLayout.isDesktop(context)) {
+      if (_selectedOwner == owner &&
+          _selectedRepo == repo &&
+          _selectedNumber == index) {
+        return;
+      }
+      setState(() {
+        _selectedOwner = owner;
+        _selectedRepo = repo;
+        _selectedNumber = index;
+      });
+      return;
+    }
+    _openIssuePage(owner, repo, index);
+  }
+
+  void _openIssuePage(String owner, String repo, int index) {
     if (_isNavigating) return;
     _isNavigating = true;
     Navigator.of(context)
@@ -137,6 +161,55 @@ class _IssueListPageState extends State<IssueListPage> {
           ),
         )
         .then((_) => _isNavigating = false);
+  }
+
+  void _ensureSelection(IssuesListState state) {
+    if (!DesktopLayout.isDesktop(context)) return;
+    if (state is! IssuesListLoaded) return;
+
+    final issues = state.issues;
+    final stillThere =
+        _selectedNumber != null &&
+        issues.any(
+          (issue) =>
+              issue.number == _selectedNumber &&
+              (issue.repository?.owner ?? '') == (_selectedOwner ?? '') &&
+              (issue.repository?.name ?? '') == (_selectedRepo ?? ''),
+        );
+    if (stillThere) return;
+
+    if (issues.isEmpty) {
+      if (_selectedNumber != null) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted) return;
+          setState(() {
+            _selectedOwner = null;
+            _selectedRepo = null;
+            _selectedNumber = null;
+          });
+        });
+      }
+      return;
+    }
+
+    final first = issues.first;
+    final owner = first.repository?.owner ?? '';
+    final repo = first.repository?.name ?? '';
+    if (first.number == null || owner.isEmpty || repo.isEmpty) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      if (_selectedOwner == owner &&
+          _selectedRepo == repo &&
+          _selectedNumber == first.number) {
+        return;
+      }
+      setState(() {
+        _selectedOwner = owner;
+        _selectedRepo = repo;
+        _selectedNumber = first.number;
+      });
+    });
   }
 
   void _onSearch(String query) {
@@ -210,254 +283,299 @@ class _IssueListPageState extends State<IssueListPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final desktop = DesktopLayout.isDesktop(context);
+    final wide = DesktopLayout.isWide(context);
+
     return AppPage(
       title: _filterState.value.type == 'pulls'
           ? l10n.pullRequests
           : l10n.issues,
-      maxContentWidth: 980,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(20, 14, 20, 4),
-            child: FTextField(
-              control: FTextFieldControl.managed(
-                controller: _searchController,
-                onChange: (value) => _onSearch(value.text),
-              ),
-              hint: l10n.searchIssues,
-              clearable: (value) => value.text.isNotEmpty,
-              prefixBuilder: (context, style, variants) =>
-                  FTextField.prefixIconBuilder(
-                    context,
-                    style,
-                    variants,
-                    const Icon(FIcons.search, size: 16),
+      maxContentWidth: desktop ? null : 980,
+      child: desktop
+          ? Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(width: 404, child: _buildListColumn(context, l10n)),
+                const AppVDivider(),
+                Expanded(child: _buildDetailPane(context, l10n)),
+                if (wide) ...[
+                  const AppVDivider(),
+                  SizedBox(
+                    width: DesktopLayout.contextPaneWidth,
+                    child: _selectedNumber == null
+                        ? const SizedBox.shrink()
+                        : IssueDetailMetaRail(
+                            owner: _selectedOwner!,
+                            repo: _selectedRepo!,
+                            index: _selectedNumber!,
+                          ),
                   ),
+                ],
+              ],
+            )
+          : _buildListColumn(context, l10n),
+    );
+  }
+
+  Widget _buildListColumn(BuildContext context, AppLocalizations l10n) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(20, 14, 20, 4),
+          child: FTextField(
+            control: FTextFieldControl.managed(
+              controller: _searchController,
+              onChange: (value) => _onSearch(value.text),
             ),
-          ),
-          FadeInWrapper(
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 10, 20, 6),
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final options = [
-                    ('open', l10n.open),
-                    ('closed', l10n.closed),
-                    ('all', l10n.all),
-                  ];
-                  final selected =
-                      Injection.issueNotifier.issuesListFilter ?? 'open';
-                  final index = options.indexWhere(
-                    (option) => option.$1 == selected,
-                  );
-                  return Row(
-                    children: [
-                      SizedBox(
-                        width: (constraints.maxWidth - 48).clamp(180, 260),
-                        child: AppSegmentedControl(
-                          index: index < 0 ? 0 : index,
-                          labels: [for (final option in options) option.$2],
-                          onChanged: (i) {
-                            setState(() {});
-                            Injection.issueNotifier.searchIssues(
-                              _searchQuery,
-                              state: options[i].$1,
-                              filters: _filterState.value,
-                            );
-                          },
-                        ),
-                      ),
-                      const Spacer(),
-                      AppIconButton(
-                        icon: FIcons.listFilter,
-                        label: l10n.moreFilters,
-                        selected: _filterState.value.hasFilters,
-                        onPress: _showFilterSheet,
-                      ),
-                    ],
-                  );
-                },
-              ),
-            ),
-          ),
-          ValueListenableBuilder<IssueFilterState>(
-            valueListenable: _filterState,
-            builder: (context, filter, _) {
-              if (!filter.hasFilters) return const SizedBox.shrink();
-              return FadeInWrapper(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: UIConstants.md,
-                    vertical: UIConstants.sm,
-                  ),
-                  child: Wrap(
-                    spacing: UIConstants.sm,
-                    runSpacing: UIConstants.sm,
-                    children: [
-                      ...filter.labels.map(
-                        (label) => AppFilterChip(
-                          label: label,
-                          onRemove: () {
-                            _filterState.value = filter.copyWith(
-                              labels: filter.labels.difference({label}),
-                            );
-                            _forceReload();
-                          },
-                        ),
-                      ),
-                      ...filter.milestones.map(
-                        (m) => AppFilterChip(
-                          label: m,
-                          onRemove: () {
-                            _filterState.value = filter.copyWith(
-                              milestones: filter.milestones.difference({m}),
-                            );
-                            _forceReload();
-                          },
-                        ),
-                      ),
-                      if (filter.type != null)
-                        AppFilterChip(
-                          label: filter.type!,
-                          onRemove: () {
-                            _filterState.value = filter.copyWith(
-                              clearType: true,
-                            );
-                            _forceReload();
-                          },
-                        ),
-                      if (filter.assignedToMe)
-                        AppFilterChip(
-                          label: l10n.assignedToMe,
-                          onRemove: () {
-                            _filterState.value = filter.copyWith(
-                              assignedToMe: false,
-                            );
-                            _forceReload();
-                          },
-                        ),
-                      if (filter.createdByMe)
-                        AppFilterChip(
-                          label: l10n.createdByMe,
-                          onRemove: () {
-                            _filterState.value = filter.copyWith(
-                              createdByMe: false,
-                            );
-                            _forceReload();
-                          },
-                        ),
-                      if (filter.mentionedMe)
-                        AppFilterChip(
-                          label: l10n.mentionedMe,
-                          onRemove: () {
-                            _filterState.value = filter.copyWith(
-                              mentionedMe: false,
-                            );
-                            _forceReload();
-                          },
-                        ),
-                    ],
-                  ),
+            hint: l10n.searchIssues,
+            clearable: (value) => value.text.isNotEmpty,
+            prefixBuilder: (context, style, variants) =>
+                FTextField.prefixIconBuilder(
+                  context,
+                  style,
+                  variants,
+                  const Icon(FIcons.search, size: 16),
                 ),
-              );
-            },
           ),
-          if (_filtersLoaded && _savedFilters.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: UIConstants.md),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  FTappable(
-                    onPress: () => setState(
-                      () => _savedFiltersExpanded = !_savedFiltersExpanded,
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      child: Row(
-                        children: [
-                          Icon(
-                            _savedFiltersExpanded
-                                ? FIcons.chevronUp
-                                : FIcons.chevronDown,
-                            size: 16,
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            '${l10n.savedFilters} (${_savedFilters.length})',
-                            style: Theme.of(context).textTheme.labelMedium,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  if (_savedFiltersExpanded)
+        ),
+        FadeInWrapper(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 10, 20, 6),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final options = [
+                  ('open', l10n.open),
+                  ('closed', l10n.closed),
+                  ('all', l10n.all),
+                ];
+                final selected =
+                    Injection.issueNotifier.issuesListFilter ?? 'open';
+                final index = options.indexWhere(
+                  (option) => option.$1 == selected,
+                );
+                return Row(
+                  children: [
                     SizedBox(
-                      height: 36,
-                      child: ListView.separated(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: _savedFilters.length,
-                        separatorBuilder: (_, _) => const SizedBox(width: 4),
-                        itemBuilder: (context, i) {
-                          final f = _savedFilters[i];
-                          return AppFilterChip(
-                            label: f.name,
-                            onPress: () => _applyFilter(f),
-                            onRemove: () => _deleteSavedFilter(f),
+                      width: (constraints.maxWidth - 48).clamp(180, 260),
+                      child: AppSegmentedControl(
+                        index: index < 0 ? 0 : index,
+                        labels: [for (final option in options) option.$2],
+                        onChanged: (i) {
+                          setState(() {});
+                          Injection.issueNotifier.searchIssues(
+                            _searchQuery,
+                            state: options[i].$1,
+                            filters: _filterState.value,
                           );
                         },
                       ),
                     ),
-                ],
-              ),
-            ),
-          if (_filtersLoaded &&
-              (_searchQuery.isNotEmpty ||
-                  Injection.issueNotifier.issuesListFilter != null))
-            Align(
-              alignment: Alignment.centerRight,
-              child: Padding(
-                padding: const EdgeInsets.only(right: UIConstants.md),
-                child: FButton(
-                  variant: .ghost,
-                  size: .xs,
-                  mainAxisSize: .min,
-                  prefix: const Icon(FIcons.bookmarkPlus, size: 14),
-                  onPress: _saveCurrentFilter,
-                  child: Text(l10n.saveFilter),
-                ),
-              ),
-            ),
-          Expanded(
-            child: ListenableBuilder(
-              listenable: Injection.issueNotifier,
-              builder: (context, _) {
-                final issuesState = Injection.issueNotifier.issuesListState;
-                return switch (issuesState) {
-                  IssuesListLoading() => const AppLoading(),
-                  IssuesListError(:final message) => AppError(
-                    message: message,
-                    onRetry: _forceReload,
-                  ),
-                  IssuesListLoaded(:final issues, :final hasMore) => _IssueList(
-                    issues: issues,
-                    hasMore: hasMore,
-                    loadingMore: Injection.issueNotifier.loadingMore,
-                    onRefresh: _forceReload,
-                    onLoadMore: () => Injection.issueNotifier.loadMoreIssues(),
-                    onIssueTap: _navigateToIssue,
-                    l10n: l10n,
-                    isPullRequest: _filterState.value.type == 'pulls',
-                  ),
-                  _ => const AppLoading(),
-                };
+                    const Spacer(),
+                    AppIconButton(
+                      icon: FIcons.listFilter,
+                      label: l10n.moreFilters,
+                      selected: _filterState.value.hasFilters,
+                      onPress: _showFilterSheet,
+                    ),
+                  ],
+                );
               },
             ),
           ),
-        ],
-      ),
+        ),
+        ValueListenableBuilder<IssueFilterState>(
+          valueListenable: _filterState,
+          builder: (context, filter, _) {
+            if (!filter.hasFilters) return const SizedBox.shrink();
+            return FadeInWrapper(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: UIConstants.md,
+                  vertical: UIConstants.sm,
+                ),
+                child: Wrap(
+                  spacing: UIConstants.sm,
+                  runSpacing: UIConstants.sm,
+                  children: [
+                    ...filter.labels.map(
+                      (label) => AppFilterChip(
+                        label: label,
+                        onRemove: () {
+                          _filterState.value = filter.copyWith(
+                            labels: filter.labels.difference({label}),
+                          );
+                          _forceReload();
+                        },
+                      ),
+                    ),
+                    ...filter.milestones.map(
+                      (m) => AppFilterChip(
+                        label: m,
+                        onRemove: () {
+                          _filterState.value = filter.copyWith(
+                            milestones: filter.milestones.difference({m}),
+                          );
+                          _forceReload();
+                        },
+                      ),
+                    ),
+                    if (filter.type != null)
+                      AppFilterChip(
+                        label: filter.type!,
+                        onRemove: () {
+                          _filterState.value = filter.copyWith(clearType: true);
+                          _forceReload();
+                        },
+                      ),
+                    if (filter.assignedToMe)
+                      AppFilterChip(
+                        label: l10n.assignedToMe,
+                        onRemove: () {
+                          _filterState.value = filter.copyWith(
+                            assignedToMe: false,
+                          );
+                          _forceReload();
+                        },
+                      ),
+                    if (filter.createdByMe)
+                      AppFilterChip(
+                        label: l10n.createdByMe,
+                        onRemove: () {
+                          _filterState.value = filter.copyWith(
+                            createdByMe: false,
+                          );
+                          _forceReload();
+                        },
+                      ),
+                    if (filter.mentionedMe)
+                      AppFilterChip(
+                        label: l10n.mentionedMe,
+                        onRemove: () {
+                          _filterState.value = filter.copyWith(
+                            mentionedMe: false,
+                          );
+                          _forceReload();
+                        },
+                      ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+        if (_filtersLoaded && _savedFilters.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: UIConstants.md),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                FTappable(
+                  onPress: () => setState(
+                    () => _savedFiltersExpanded = !_savedFiltersExpanded,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Row(
+                      children: [
+                        Icon(
+                          _savedFiltersExpanded
+                              ? FIcons.chevronUp
+                              : FIcons.chevronDown,
+                          size: 16,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${l10n.savedFilters} (${_savedFilters.length})',
+                          style: Theme.of(context).textTheme.labelMedium,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                if (_savedFiltersExpanded)
+                  SizedBox(
+                    height: 36,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: _savedFilters.length,
+                      separatorBuilder: (_, _) => const SizedBox(width: 4),
+                      itemBuilder: (context, i) {
+                        final f = _savedFilters[i];
+                        return AppFilterChip(
+                          label: f.name,
+                          onPress: () => _applyFilter(f),
+                          onRemove: () => _deleteSavedFilter(f),
+                        );
+                      },
+                    ),
+                  ),
+              ],
+            ),
+          ),
+        if (_filtersLoaded &&
+            (_searchQuery.isNotEmpty ||
+                Injection.issueNotifier.issuesListFilter != null))
+          Align(
+            alignment: Alignment.centerRight,
+            child: Padding(
+              padding: const EdgeInsets.only(right: UIConstants.md),
+              child: FButton(
+                variant: .ghost,
+                size: .xs,
+                mainAxisSize: .min,
+                prefix: const Icon(FIcons.bookmarkPlus, size: 14),
+                onPress: _saveCurrentFilter,
+                child: Text(l10n.saveFilter),
+              ),
+            ),
+          ),
+        Expanded(
+          child: ListenableBuilder(
+            listenable: Injection.issueNotifier,
+            builder: (context, _) {
+              final issuesState = Injection.issueNotifier.issuesListState;
+              _ensureSelection(issuesState);
+              return switch (issuesState) {
+                IssuesListLoading() => const AppLoading(),
+                IssuesListError(:final message) => AppError(
+                  message: message,
+                  onRetry: _forceReload,
+                ),
+                IssuesListLoaded(:final issues, :final hasMore) => _IssueList(
+                  issues: issues,
+                  hasMore: hasMore,
+                  loadingMore: Injection.issueNotifier.loadingMore,
+                  onRefresh: _forceReload,
+                  onLoadMore: () => Injection.issueNotifier.loadMoreIssues(),
+                  onIssueTap: _navigateToIssue,
+                  onIssueDoubleTap: _openIssuePage,
+                  selectedOwner: _selectedOwner,
+                  selectedRepo: _selectedRepo,
+                  selectedNumber: _selectedNumber,
+                  l10n: l10n,
+                  isPullRequest: _filterState.value.type == 'pulls',
+                ),
+                _ => const AppLoading(),
+              };
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDetailPane(BuildContext context, AppLocalizations l10n) {
+    if (_selectedNumber == null) {
+      return _IssuePreviewPlaceholder(l10n: l10n);
+    }
+    return IssueDetailPage(
+      key: ValueKey('issue-$_selectedOwner-$_selectedRepo-$_selectedNumber'),
+      owner: _selectedOwner!,
+      repo: _selectedRepo!,
+      index: _selectedNumber!,
+      embedded: true,
     );
   }
 }
@@ -469,6 +587,10 @@ class _IssueList extends StatefulWidget {
   final VoidCallback onRefresh;
   final VoidCallback onLoadMore;
   final void Function(String owner, String repo, int index) onIssueTap;
+  final void Function(String owner, String repo, int index) onIssueDoubleTap;
+  final String? selectedOwner;
+  final String? selectedRepo;
+  final int? selectedNumber;
   final AppLocalizations l10n;
   final bool isPullRequest;
 
@@ -479,6 +601,10 @@ class _IssueList extends StatefulWidget {
     required this.onRefresh,
     required this.onLoadMore,
     required this.onIssueTap,
+    required this.onIssueDoubleTap,
+    required this.selectedOwner,
+    required this.selectedRepo,
+    required this.selectedNumber,
     required this.l10n,
     required this.isPullRequest,
   });
@@ -534,20 +660,28 @@ class _IssueListState extends State<_IssueList> {
             return const _LoadingIndicator();
           }
           final issue = widget.issues[index];
+          final owner = issue.repository?.owner ?? '';
+          final repo = issue.repository?.name ?? '';
+          final canOpen =
+              owner.isNotEmpty && repo.isNotEmpty && issue.number != null;
+          final selected =
+              canOpen &&
+              issue.number == widget.selectedNumber &&
+              owner == widget.selectedOwner &&
+              repo == widget.selectedRepo;
+          final desktop = DesktopLayout.isDesktop(context);
           return FadeInWrapper(
             delay: Duration(milliseconds: (index * 40).clamp(0, 300)),
             child: _IssueCard(
               issue: issue,
               l10n: widget.l10n,
-              onTap: () {
-                final owner = issue.repository?.owner ?? '';
-                final repo = issue.repository?.name ?? '';
-                if (owner.isNotEmpty &&
-                    repo.isNotEmpty &&
-                    issue.number != null) {
-                  widget.onIssueTap(owner, repo, issue.number!);
-                }
-              },
+              selected: selected,
+              onTap: canOpen
+                  ? () => widget.onIssueTap(owner, repo, issue.number!)
+                  : null,
+              onDoubleTap: canOpen && desktop
+                  ? () => widget.onIssueDoubleTap(owner, repo, issue.number!)
+                  : null,
             ),
           );
         },
@@ -571,13 +705,73 @@ class _LoadingIndicator extends StatelessWidget {
 class _IssueCard extends StatelessWidget {
   final Issue issue;
   final AppLocalizations l10n;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
+  final VoidCallback? onDoubleTap;
+  final bool selected;
 
   const _IssueCard({
     required this.issue,
     required this.l10n,
     required this.onTap,
+    this.onDoubleTap,
+    this.selected = false,
   });
+
+  bool get canNavigate =>
+      (issue.repository?.owner ?? '').isNotEmpty &&
+      (issue.repository?.name ?? '').isNotEmpty &&
+      issue.number != null;
+
+  List<AppMenuItem> _menuItems(BuildContext context) {
+    final items = <AppMenuItem>[];
+    if (canNavigate && onTap != null) {
+      items.add(
+        AppMenuItem(
+          label: l10n.open,
+          icon: FIcons.externalLink,
+          onSelected: onTap!,
+        ),
+      );
+    }
+    if (canNavigate && onDoubleTap != null) {
+      items.add(
+        AppMenuItem(
+          label: l10n.openInNewPage,
+          icon: FIcons.appWindow,
+          onSelected: onDoubleTap!,
+        ),
+      );
+    }
+    if (issue.html_url != null) {
+      items.add(
+        AppMenuItem(
+          label: l10n.copyLink,
+          icon: FIcons.link2,
+          onSelected: () async {
+            await Clipboard.setData(ClipboardData(text: issue.html_url!));
+            if (context.mounted) {
+              showFToast(context: context, title: Text(l10n.copied));
+            }
+          },
+        ),
+      );
+    }
+    if (issue.number != null) {
+      items.add(
+        AppMenuItem(
+          label: l10n.copyIssueNumber,
+          icon: FIcons.copy,
+          onSelected: () async {
+            await Clipboard.setData(ClipboardData(text: '#${issue.number}'));
+            if (context.mounted) {
+              showFToast(context: context, title: Text(l10n.copied));
+            }
+          },
+        ),
+      );
+    }
+    return items;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -587,13 +781,12 @@ class _IssueCard extends StatelessWidget {
     final stateColor = isOpen ? palette.success : palette.purple;
 
     final repoFullName = issue.repository?.full_name ?? '';
-    final owner = issue.repository?.owner ?? '';
-    final repo = issue.repository?.name ?? '';
-    final canNavigate =
-        owner.isNotEmpty && repo.isNotEmpty && issue.number != null;
 
     return PremiumListCard(
       onTap: canNavigate ? onTap : null,
+      onDoubleTap: canNavigate ? onDoubleTap : null,
+      contextMenuItems: _menuItems(context),
+      selected: selected,
       padding: const EdgeInsets.fromLTRB(14, 11, 12, 11),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -789,6 +982,61 @@ class _LabelRow extends StatelessWidget {
             ),
           ),
       ],
+    );
+  }
+}
+
+class _IssuePreviewPlaceholder extends StatelessWidget {
+  const _IssuePreviewPlaceholder({required this.l10n});
+
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    final theme = Theme.of(context);
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 320),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 52,
+              height: 52,
+              decoration: BoxDecoration(
+                color: palette.surfaceMuted,
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: palette.border),
+              ),
+              child: Icon(
+                FIcons.messageSquare,
+                size: 22,
+                color: palette.textSecondary,
+              ),
+            ),
+            const SizedBox(height: 14),
+            Text(
+              l10n.noIssueSelected,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.titleSmall?.copyWith(
+                fontWeight: FontWeight.w600,
+                color: palette.textPrimary,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              l10n.selectIssueHint,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 12,
+                height: 1.5,
+                color: palette.textSecondary,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

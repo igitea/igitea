@@ -8,8 +8,12 @@ class ThemeNotifier extends ChangeNotifier {
   Locale? _locale;
   Locale? get locale => _locale;
 
+  bool _sidebarCollapsed = false;
+  bool get sidebarCollapsed => _sidebarCollapsed;
+
   static const _themeKey = 'theme_mode';
   static const _localeKey = 'locale';
+  static const _sidebarKey = 'sidebar_collapsed';
 
   Future<void> loadThemeMode() async {
     final prefs = await SharedPreferences.getInstance();
@@ -43,6 +47,20 @@ class ThemeNotifier extends ChangeNotifier {
       _locale = null;
     }
     notifyListeners();
+  }
+
+  Future<void> loadSidebarCollapsed() async {
+    final prefs = await SharedPreferences.getInstance();
+    _sidebarCollapsed = prefs.getBool(_sidebarKey) ?? false;
+    notifyListeners();
+  }
+
+  Future<void> setSidebarCollapsed(bool collapsed) async {
+    if (_sidebarCollapsed == collapsed) return;
+    _sidebarCollapsed = collapsed;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_sidebarKey, collapsed);
   }
 
   Future<void> setLocale(Locale? locale) async {

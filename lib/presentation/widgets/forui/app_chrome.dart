@@ -4,6 +4,7 @@ import 'package:forui/forui.dart';
 
 import '../../../core/animations/app_animations.dart';
 import '../../theme/app_palette.dart';
+import '../desktop/app_hover_region.dart';
 
 /// Height reserved for the macOS traffic lights when the Flutter view extends
 /// under a transparent title bar.
@@ -56,7 +57,7 @@ class BrandMark extends StatelessWidget {
 }
 
 /// A compact icon button with a hover wash and an optional tooltip.
-class AppIconButton extends StatefulWidget {
+class AppIconButton extends StatelessWidget {
   const AppIconButton({
     super.key,
     required this.icon,
@@ -77,63 +78,28 @@ class AppIconButton extends StatefulWidget {
   final bool badge;
 
   @override
-  State<AppIconButton> createState() => _AppIconButtonState();
-}
-
-class _AppIconButtonState extends State<AppIconButton> {
-  bool _hovered = false;
-
-  @override
   Widget build(BuildContext context) {
     final palette = context.palette;
-    final foreground = widget.selected || _hovered
-        ? palette.textPrimary
-        : palette.textSecondary;
-
-    Widget button = FTappable(
-      onPress: widget.onPress,
-      semanticsLabel: widget.label,
-      child: MouseRegion(
-        onEnter: (_) => setState(() => _hovered = true),
-        onExit: (_) => setState(() => _hovered = false),
-        child: AnimatedContainer(
-          duration: AppAnimations.effective(context, AppAnimations.fast),
-          curve: AppAnimations.easeOut,
-          width: widget.size,
-          height: widget.size,
-          decoration: BoxDecoration(
-            color: widget.selected
-                ? palette.brandSoft
-                : _hovered
-                ? palette.surfaceMuted
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(9),
-          ),
+    return AppHoverRegion(
+      onTap: onPress,
+      semanticsLabel: label,
+      tooltip: label,
+      selected: selected,
+      selectedColor: palette.brandSoft,
+      hoverColor: palette.surfaceMuted,
+      borderRadius: BorderRadius.circular(9),
+      contentBuilder: (context, hovered, focused) {
+        final foreground = selected || hovered || focused
+            ? palette.textPrimary
+            : palette.textSecondary;
+        return SizedBox(
+          width: size,
+          height: size,
           child: Stack(
             alignment: Alignment.center,
             children: [
-              AnimatedSwitcher(
-                duration: AppAnimations.effective(context, AppAnimations.fast),
-                switchInCurve: AppAnimations.easeOut,
-                switchOutCurve: AppAnimations.easeIn,
-                transitionBuilder: (child, animation) => FadeTransition(
-                  opacity: animation,
-                  child: ScaleTransition(
-                    scale: Tween<double>(
-                      begin: 0.92,
-                      end: 1,
-                    ).animate(animation),
-                    child: child,
-                  ),
-                ),
-                child: Icon(
-                  widget.icon,
-                  key: ValueKey(widget.icon),
-                  size: widget.iconSize,
-                  color: foreground,
-                ),
-              ),
-              if (widget.badge)
+              Icon(icon, size: iconSize, color: foreground),
+              if (badge)
                 Positioned(
                   right: 8,
                   top: 7,
@@ -149,17 +115,9 @@ class _AppIconButtonState extends State<AppIconButton> {
                 ),
             ],
           ),
-        ),
-      ),
+        );
+      },
     );
-
-    if (widget.label.isNotEmpty) {
-      button = FTooltip(
-        tipBuilder: (context, controller) => Text(widget.label),
-        child: button,
-      );
-    }
-    return button;
   }
 }
 
@@ -195,7 +153,7 @@ class KbdHint extends StatelessWidget {
 
 /// A pill-shaped search affordance for the header. Tapping it focuses the
 /// Explore tab's search field.
-class AppSearchPrompt extends StatefulWidget {
+class AppSearchPrompt extends StatelessWidget {
   const AppSearchPrompt({
     super.key,
     required this.label,
@@ -210,54 +168,42 @@ class AppSearchPrompt extends StatefulWidget {
   final double width;
 
   @override
-  State<AppSearchPrompt> createState() => _AppSearchPromptState();
-}
-
-class _AppSearchPromptState extends State<AppSearchPrompt> {
-  bool _hovered = false;
-
-  @override
   Widget build(BuildContext context) {
     final palette = context.palette;
-    return FTappable(
-      onPress: widget.onPress,
-      semanticsLabel: widget.label,
-      child: MouseRegion(
-        cursor: SystemMouseCursors.click,
-        onEnter: (_) => setState(() => _hovered = true),
-        onExit: (_) => setState(() => _hovered = false),
-        child: AnimatedContainer(
-          duration: AppAnimations.effective(context, AppAnimations.fast),
-          curve: AppAnimations.easeOut,
-          width: widget.width,
-          height: 32,
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          decoration: BoxDecoration(
-            color: _hovered
-                ? palette.surface
-                : palette.surface.withValues(alpha: 0.6),
-            borderRadius: BorderRadius.circular(9),
-            border: Border.all(
-              color: _hovered ? palette.borderStrong : palette.border,
-            ),
+    return AppHoverRegion(
+      onTap: onPress,
+      semanticsLabel: label,
+      hoverColor: Colors.transparent,
+      borderRadius: BorderRadius.circular(9),
+      focusRingRadius: BorderRadius.circular(9),
+      contentBuilder: (context, hovered, focused) => AnimatedContainer(
+        duration: AppAnimations.effective(context, AppAnimations.fast),
+        curve: AppAnimations.easeOut,
+        width: width,
+        height: 32,
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        decoration: BoxDecoration(
+          color: hovered || focused
+              ? palette.surface
+              : palette.surface.withValues(alpha: 0.6),
+          borderRadius: BorderRadius.circular(9),
+          border: Border.all(
+            color: hovered || focused ? palette.borderStrong : palette.border,
           ),
-          child: Row(
-            children: [
-              Icon(FIcons.search, size: 14, color: palette.textSecondary),
-              const SizedBox(width: 7),
-              Expanded(
-                child: Text(
-                  widget.label,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 12.5,
-                    color: palette.textSecondary,
-                  ),
-                ),
+        ),
+        child: Row(
+          children: [
+            Icon(FIcons.search, size: 14, color: palette.textSecondary),
+            const SizedBox(width: 7),
+            Expanded(
+              child: Text(
+                label,
+                overflow: TextOverflow.ellipsis,
+                style: TextStyle(fontSize: 12.5, color: palette.textSecondary),
               ),
-              KbdHint(text: widget.hint),
-            ],
-          ),
+            ),
+            KbdHint(text: hint),
+          ],
         ),
       ),
     );
@@ -363,7 +309,7 @@ class AppTopBar extends StatelessWidget {
 }
 
 /// One row in the desktop sidebar.
-class SidebarNavItem extends StatefulWidget {
+class SidebarNavItem extends StatelessWidget {
   const SidebarNavItem({
     super.key,
     required this.icon,
@@ -371,6 +317,7 @@ class SidebarNavItem extends StatefulWidget {
     required this.selected,
     required this.onPress,
     this.trailing,
+    this.compact = false,
   });
 
   final IconData icon;
@@ -378,74 +325,72 @@ class SidebarNavItem extends StatefulWidget {
   final bool selected;
   final VoidCallback onPress;
   final Widget? trailing;
-
-  @override
-  State<SidebarNavItem> createState() => _SidebarNavItemState();
-}
-
-class _SidebarNavItemState extends State<SidebarNavItem> {
-  bool _hovered = false;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
-    final foreground = widget.selected ? palette.brand : palette.textSecondary;
 
-    return FTappable(
-      onPress: widget.onPress,
-      semanticsLabel: widget.label,
-      child: MouseRegion(
-        onEnter: (_) => setState(() => _hovered = true),
-        onExit: (_) => setState(() => _hovered = false),
-        child: AnimatedContainer(
-          duration: AppAnimations.effective(context, AppAnimations.fast),
-          curve: AppAnimations.easeOut,
+    return AppHoverRegion(
+      onTap: onPress,
+      semanticsLabel: label,
+      tooltip: compact ? label : null,
+      selected: selected,
+      selectedColor: palette.brandSoft,
+      hoverColor: palette.surfaceMuted,
+      borderRadius: BorderRadius.circular(9),
+      margin: const EdgeInsets.symmetric(vertical: 1),
+      contentBuilder: (context, hovered, focused) {
+        final foreground = selected
+            ? palette.brand
+            : (hovered || focused
+                  ? palette.textPrimary
+                  : palette.textSecondary);
+        if (compact) {
+          return SizedBox(
+            height: 38,
+            child: Center(child: Icon(icon, size: 18, color: foreground)),
+          );
+        }
+        return SizedBox(
           height: 36,
-          margin: const EdgeInsets.symmetric(vertical: 1),
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          decoration: BoxDecoration(
-            color: widget.selected
-                ? palette.brandSoft
-                : _hovered
-                ? palette.surfaceMuted
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(9),
-          ),
-          child: Row(
-            children: [
-              AnimatedContainer(
-                duration: AppAnimations.effective(context, AppAnimations.fast),
-                width: 3,
-                height: widget.selected ? 15 : 0,
-                margin: EdgeInsets.only(right: widget.selected ? 8 : 0),
-                decoration: BoxDecoration(
-                  color: palette.brand,
-                  borderRadius: BorderRadius.circular(2),
-                ),
-              ),
-              Icon(widget.icon, size: 17, color: foreground),
-              const SizedBox(width: 9),
-              Expanded(
-                child: Text(
-                  widget.label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: widget.selected
-                        ? FontWeight.w600
-                        : FontWeight.w500,
-                    color: widget.selected
-                        ? palette.brand
-                        : palette.textPrimary,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: Row(
+              children: [
+                AnimatedContainer(
+                  duration: AppAnimations.effective(
+                    context,
+                    AppAnimations.fast,
+                  ),
+                  width: 3,
+                  height: selected ? 15 : 0,
+                  margin: const EdgeInsets.only(right: 8),
+                  decoration: BoxDecoration(
+                    color: palette.brand,
+                    borderRadius: BorderRadius.circular(2),
                   ),
                 ),
-              ),
-              if (widget.trailing != null) widget.trailing!,
-            ],
+                Icon(icon, size: 17, color: foreground),
+                const SizedBox(width: 9),
+                Expanded(
+                  child: Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+                      color: selected ? palette.brand : palette.textPrimary,
+                    ),
+                  ),
+                ),
+                ?trailing,
+              ],
+            ),
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }
@@ -502,32 +447,18 @@ class AppSegmentedControl extends StatelessWidget {
         children: [
           for (var i = 0; i < labels.length; i++)
             Expanded(
-              child: FTappable(
-                onPress: () => onChanged(i),
+              child: AppHoverRegion(
+                onTap: () => onChanged(i),
                 semanticsLabel: labels[i],
-                child: AnimatedContainer(
-                  duration: AppAnimations.effective(
-                    context,
-                    AppAnimations.fast,
-                  ),
-                  curve: AppAnimations.easeOut,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: i == index ? palette.surface : Colors.transparent,
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: i == index ? palette.border : Colors.transparent,
-                    ),
-                    boxShadow: i == index
-                        ? [
-                            BoxShadow(
-                              color: Colors.black.withValues(alpha: 0.05),
-                              blurRadius: 3,
-                              offset: const Offset(0, 1),
-                            ),
-                          ]
-                        : null,
-                  ),
+                selected: i == index,
+                selectedColor: palette.surface,
+                hoverColor: palette.surface.withValues(alpha: 0.55),
+                borderColor: i == index ? palette.border : Colors.transparent,
+                hoverBorderColor: i == index
+                    ? palette.border
+                    : Colors.transparent,
+                borderRadius: BorderRadius.circular(8),
+                contentBuilder: (context, hovered, focused) => Center(
                   child: Text(
                     labels[i],
                     maxLines: 1,

@@ -2502,4 +2502,85 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get activityRequestedChanges => 'requested changes on a pull request';
+
+  @override
+  String get keyboardShortcuts => 'Keyboard shortcuts';
+
+  @override
+  String get toggleSidebar => 'Toggle sidebar';
+
+  @override
+  String get switchSection => 'Switch workspace section';
+
+  @override
+  String get showShortcutSheet => 'Show keyboard shortcuts';
+
+  @override
+  String get activateItemHint => 'Activate the focused item';
+
+  @override
+  String get contextMenuHint => 'Open the context menu';
+
+  @override
+  String get rightClick => 'Right click';
+
+  @override
+  String get doubleClick => 'Double click';
+
+  @override
+  String get desktopOnlyHint =>
+      'These shortcuts apply to the desktop workspace. Mouse interactions are available on every platform that has a pointer.';
+
+  @override
+  String get navigation => 'Navigation';
+
+  @override
+  String get interaction => 'Interaction';
+
+  @override
+  String get copyLink => 'Copy link';
+
+  @override
+  String get openInNewPage => 'Open in new page';
+
+  @override
+  String get overview => 'Overview';
+
+  @override
+  String get about => 'About';
+
+  @override
+  String get copyName => 'Copy name';
+
+  @override
+  String get openRepository => 'Open repository';
+
+  @override
+  String get noIssueSelected => 'No issue selected';
+
+  @override
+  String get selectIssueHint =>
+      'Choose an issue from the list to read it without leaving this page.';
+
+  @override
+  String get pinned => 'Pinned';
+
+  @override
+  String get sourceControl => 'Source control';
+
+  @override
+  String get collaboration => 'Collaboration';
+
+  @override
+  String get insights => 'Insights';
+
+  @override
+  String get administration => 'Administration';
+
+  @override
+  String get copyIssueNumber => 'Copy issue number';
+
+  @override
+  String get myWorkSubtitle =>
+      'Repositories, reviews and issues that need your attention.';
 }

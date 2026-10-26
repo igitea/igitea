@@ -4876,6 +4876,162 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'requested changes on a pull request'**
   String get activityRequestedChanges;
+
+  /// No description provided for @keyboardShortcuts.
+  ///
+  /// In en, this message translates to:
+  /// **'Keyboard shortcuts'**
+  String get keyboardShortcuts;
+
+  /// No description provided for @toggleSidebar.
+  ///
+  /// In en, this message translates to:
+  /// **'Toggle sidebar'**
+  String get toggleSidebar;
+
+  /// No description provided for @switchSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch workspace section'**
+  String get switchSection;
+
+  /// No description provided for @showShortcutSheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Show keyboard shortcuts'**
+  String get showShortcutSheet;
+
+  /// No description provided for @activateItemHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Activate the focused item'**
+  String get activateItemHint;
+
+  /// No description provided for @contextMenuHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Open the context menu'**
+  String get contextMenuHint;
+
+  /// No description provided for @rightClick.
+  ///
+  /// In en, this message translates to:
+  /// **'Right click'**
+  String get rightClick;
+
+  /// No description provided for @doubleClick.
+  ///
+  /// In en, this message translates to:
+  /// **'Double click'**
+  String get doubleClick;
+
+  /// No description provided for @desktopOnlyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'These shortcuts apply to the desktop workspace. Mouse interactions are available on every platform that has a pointer.'**
+  String get desktopOnlyHint;
+
+  /// No description provided for @navigation.
+  ///
+  /// In en, this message translates to:
+  /// **'Navigation'**
+  String get navigation;
+
+  /// No description provided for @interaction.
+  ///
+  /// In en, this message translates to:
+  /// **'Interaction'**
+  String get interaction;
+
+  /// No description provided for @copyLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy link'**
+  String get copyLink;
+
+  /// No description provided for @openInNewPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Open in new page'**
+  String get openInNewPage;
+
+  /// No description provided for @overview.
+  ///
+  /// In en, this message translates to:
+  /// **'Overview'**
+  String get overview;
+
+  /// No description provided for @about.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get about;
+
+  /// No description provided for @copyName.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy name'**
+  String get copyName;
+
+  /// No description provided for @openRepository.
+  ///
+  /// In en, this message translates to:
+  /// **'Open repository'**
+  String get openRepository;
+
+  /// No description provided for @noIssueSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'No issue selected'**
+  String get noIssueSelected;
+
+  /// No description provided for @selectIssueHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose an issue from the list to read it without leaving this page.'**
+  String get selectIssueHint;
+
+  /// No description provided for @pinned.
+  ///
+  /// In en, this message translates to:
+  /// **'Pinned'**
+  String get pinned;
+
+  /// No description provided for @sourceControl.
+  ///
+  /// In en, this message translates to:
+  /// **'Source control'**
+  String get sourceControl;
+
+  /// No description provided for @collaboration.
+  ///
+  /// In en, this message translates to:
+  /// **'Collaboration'**
+  String get collaboration;
+
+  /// No description provided for @insights.
+  ///
+  /// In en, this message translates to:
+  /// **'Insights'**
+  String get insights;
+
+  /// No description provided for @administration.
+  ///
+  /// In en, this message translates to:
+  /// **'Administration'**
+  String get administration;
+
+  /// No description provided for @copyIssueNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy issue number'**
+  String get copyIssueNumber;
+
+  /// No description provided for @myWorkSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Repositories, reviews and issues that need your attention.'**
+  String get myWorkSubtitle;
 }
 
 class _AppLocalizationsDelegate

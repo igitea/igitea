@@ -30,8 +30,8 @@ class MainFlutterWindow: NSWindow {
     self.minSize = NSSize(width: 400, height: 600)
     if self.frame.width < 900 || self.frame.height < 700 {
       let visible = (self.screen ?? NSScreen.main)?.visibleFrame
-      let width = min(1240, (visible?.width ?? 1280) - 80)
-      let height = min(880, (visible?.height ?? 900) - 80)
+      let width = min(1360, (visible?.width ?? 1280) - 80)
+      let height = min(900, (visible?.height ?? 900) - 80)
       self.setContentSize(NSSize(width: width, height: height))
       self.center()
     }

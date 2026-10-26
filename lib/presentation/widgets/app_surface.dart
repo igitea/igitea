@@ -1,19 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:forui/forui.dart';
 
-import '../../core/animations/app_animations.dart';
 import '../theme/app_palette.dart';
+import 'desktop/app_hover_region.dart';
 
 /// A flat, hairline-bordered surface used for cards, grouped rows and panels.
 ///
-/// Hover lifts the border and shadow by a hair and never moves layout, which
-/// keeps dense desktop lists calm. When [onPress] is provided the surface also
-/// becomes a Forui tappable with keyboard focus and a hand cursor.
-class AppSurface extends StatefulWidget {
+/// Hover lifts the border by a hair and never moves layout, which keeps dense
+/// desktop lists calm. When [onPress] is provided the surface also gets a hand
+/// cursor, a focus ring and Enter/Space activation through [AppHoverRegion].
+class AppSurface extends StatelessWidget {
   const AppSurface({
     super.key,
     required this.child,
     this.onPress,
+    this.onDoubleTap,
+    this.onSecondaryTap,
+    this.onLongPress,
+    this.contextMenuItems = const [],
+    this.selected = false,
+    this.selectedColor,
     this.padding,
     this.margin,
     this.radius = 14,
@@ -25,6 +30,12 @@ class AppSurface extends StatefulWidget {
 
   final Widget child;
   final VoidCallback? onPress;
+  final VoidCallback? onDoubleTap;
+  final VoidCallback? onSecondaryTap;
+  final VoidCallback? onLongPress;
+  final List<AppMenuItem> contextMenuItems;
+  final bool selected;
+  final Color? selectedColor;
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
   final double radius;
@@ -34,55 +45,59 @@ class AppSurface extends StatefulWidget {
   final String? semanticLabel;
 
   @override
-  State<AppSurface> createState() => _AppSurfaceState();
-}
-
-class _AppSurfaceState extends State<AppSurface> {
-  bool _hovered = false;
-
-  @override
   Widget build(BuildContext context) {
     final palette = context.palette;
-    final interactive = widget.onPress != null;
-    final radius = BorderRadius.circular(widget.radius);
+    final interactive = onPress != null;
+    final borderRadius = BorderRadius.circular(radius);
 
-    Widget surface = MouseRegion(
-      onEnter: interactive ? (_) => setState(() => _hovered = true) : null,
-      onExit: interactive ? (_) => setState(() => _hovered = false) : null,
-      child: AnimatedContainer(
-        duration: AppAnimations.effective(context, AppAnimations.fast),
-        curve: AppAnimations.easeOut,
-        decoration: BoxDecoration(
-          color: widget.background ?? palette.surface,
-          borderRadius: radius,
-          border: Border.all(
-            color:
-                widget.borderColor ??
-                (_hovered && interactive
-                    ? palette.borderStrong
-                    : palette.border),
-          ),
-          boxShadow: widget.elevated ? palette.cardShadow : null,
-        ),
-        child: ClipRRect(borderRadius: radius, child: _padded(context)),
+    final body = DecoratedBox(
+      decoration: BoxDecoration(
+        color: selected
+            ? (selectedColor ?? palette.brandSoft)
+            : (background ?? palette.surface),
+        borderRadius: borderRadius,
+        border: interactive
+            ? null
+            : Border.all(color: borderColor ?? palette.border),
+        boxShadow: elevated ? palette.cardShadow : null,
       ),
+      child: ClipRRect(borderRadius: borderRadius, child: _padded()),
     );
 
-    if (widget.margin != null) {
-      surface = Padding(padding: widget.margin!, child: surface);
+    Widget surface;
+    if (interactive) {
+      surface = AppHoverRegion(
+        onTap: onPress,
+        onDoubleTap: onDoubleTap,
+        onSecondaryTap: onSecondaryTap,
+        onLongPress: onLongPress,
+        contextMenuItems: contextMenuItems,
+        selected: selected,
+        selectedColor: Colors.transparent,
+        semanticsLabel: semanticLabel,
+        hoverColor: Colors.transparent,
+        borderColor: selected
+            ? palette.brand.withValues(alpha: 0.42)
+            : (borderColor ?? palette.border),
+        hoverBorderColor: selected
+            ? palette.brand.withValues(alpha: 0.6)
+            : (borderColor ?? palette.borderStrong),
+        borderRadius: borderRadius,
+        focusRingRadius: borderRadius,
+        child: body,
+      );
+    } else {
+      surface = body;
+    }
+
+    if (margin != null) {
+      surface = Padding(padding: margin!, child: surface);
     }
     return surface;
   }
 
-  Widget _padded(BuildContext context) {
-    final body = widget.padding == null
-        ? widget.child
-        : Padding(padding: widget.padding!, child: widget.child);
-    if (widget.onPress == null) return body;
-    return FTappable(
-      onPress: widget.onPress,
-      semanticsLabel: widget.semanticLabel,
-      child: body,
-    );
+  Widget _padded() {
+    if (padding == null) return child;
+    return Padding(padding: padding!, child: child);
   }
 }

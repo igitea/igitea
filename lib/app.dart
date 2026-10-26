@@ -21,6 +21,7 @@ import 'presentation/pages/settings_page.dart';
 import 'presentation/pages/starred_repos_page.dart';
 import 'presentation/theme/app_palette.dart';
 import 'presentation/theme/app_theme.dart';
+import 'presentation/widgets/desktop/app_scroll_behavior.dart';
 import 'presentation/widgets/forui/app_chrome.dart';
 
 class IGiteaApp extends StatefulWidget {
@@ -49,6 +50,9 @@ class _IGiteaAppState extends State<IGiteaApp> {
     );
     Injection.themeNotifier.loadLocale().catchError(
       (e) => debugPrint('Locale load error: $e'),
+    );
+    Injection.themeNotifier.loadSidebarCollapsed().catchError(
+      (e) => debugPrint('Sidebar state load error: $e'),
     );
   }
 
@@ -131,6 +135,7 @@ class _IGiteaAppState extends State<IGiteaApp> {
           navigatorKey: _navigatorKey,
           title: 'iGitea',
           debugShowCheckedModeBanner: false,
+          scrollBehavior: const AppScrollBehavior(),
           locale: locale,
           localizationsDelegates: [
             ...AppLocalizations.localizationsDelegates,

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/animations/animated_wrapper.dart';
 import '../../core/di/injection.dart';
@@ -12,6 +14,7 @@ import '../../l10n/app_localizations.dart';
 import '../models/issue_filter_state.dart';
 import '../theme/app_palette.dart';
 import '../widgets/activity_tile.dart';
+import '../widgets/desktop/app_hover_region.dart';
 import '../widgets/app_skeleton.dart';
 import '../widgets/app_surface.dart';
 import '../widgets/forui/app_chrome.dart';
@@ -158,6 +161,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         child: _Hero(
                           dateText: _today(context),
                           title: l10n.myWork,
+                          subtitle: l10n.myWorkSubtitle,
                           refreshLabel: l10n.refresh,
                           onRefresh: _loadAll,
                           onAction: () =>
@@ -459,6 +463,7 @@ class _Hero extends StatelessWidget {
   const _Hero({
     required this.dateText,
     required this.title,
+    required this.subtitle,
     required this.refreshLabel,
     required this.onRefresh,
     required this.onAction,
@@ -467,6 +472,7 @@ class _Hero extends StatelessWidget {
 
   final String dateText;
   final String title;
+  final String subtitle;
   final String refreshLabel;
   final VoidCallback onRefresh;
   final VoidCallback onAction;
@@ -519,6 +525,13 @@ class _Hero extends StatelessWidget {
                 letterSpacing: -0.6,
                 color: palette.textPrimary,
               ),
+            ),
+            const SizedBox(height: 5),
+            Text(
+              subtitle,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontSize: 12, color: palette.textSecondary),
             ),
           ],
         );
@@ -712,110 +725,129 @@ class _RepoRow extends StatefulWidget {
 }
 
 class _RepoRowState extends State<_RepoRow> {
-  bool _hovered = false;
-
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final description = widget.repo.description?.trim() ?? '';
 
-    return FTappable(
-      onPress: widget.onPress,
+    return AppHoverRegion(
+      onTap: widget.onPress,
       semanticsLabel: '${widget.owner}/${widget.name}',
-      child: MouseRegion(
-        onEnter: (_) => setState(() => _hovered = true),
-        onExit: (_) => setState(() => _hovered = false),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 140),
-          color: _hovered
-              ? palette.surfaceMuted.withValues(alpha: 0.55)
-              : Colors.transparent,
-          padding: const EdgeInsets.fromLTRB(14, 10, 12, 10),
-          child: Row(
-            children: [
-              if (widget.repo.owner != null)
-                UserAvatar(user: widget.repo.owner!, radius: 14)
-              else
-                Container(
-                  width: 28,
-                  height: 28,
-                  decoration: BoxDecoration(
-                    color: palette.surfaceMuted,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(
-                    widget.repo.private == true
-                        ? FIcons.lock
-                        : FIcons.folderGit,
-                    size: 14,
-                    color: palette.textSecondary,
-                  ),
+      hoverColor: palette.surfaceMuted.withValues(alpha: 0.55),
+      borderRadius: BorderRadius.zero,
+      contextMenuItems: [
+        AppMenuItem(
+          label: l10n.open,
+          icon: FIcons.folderGit,
+          onSelected: widget.onPress,
+        ),
+        AppMenuItem(
+          label: l10n.copyName,
+          icon: FIcons.copy,
+          onSelected: () async {
+            await Clipboard.setData(
+              ClipboardData(text: '${widget.owner}/${widget.name}'),
+            );
+            if (context.mounted) {
+              showFToast(context: context, title: Text(l10n.copied));
+            }
+          },
+        ),
+        if (widget.repo.html_url != null)
+          AppMenuItem(
+            label: l10n.openInBrowser,
+            icon: FIcons.externalLink,
+            onSelected: () => launchUrl(
+              Uri.parse(widget.repo.html_url!),
+              mode: LaunchMode.externalApplication,
+            ),
+          ),
+      ],
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(14, 10, 12, 10),
+        child: Row(
+          children: [
+            if (widget.repo.owner != null)
+              UserAvatar(user: widget.repo.owner!, radius: 14)
+            else
+              Container(
+                width: 28,
+                height: 28,
+                decoration: BoxDecoration(
+                  color: palette.surfaceMuted,
+                  borderRadius: BorderRadius.circular(8),
                 ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text.rich(
-                      TextSpan(
-                        children: [
-                          if (widget.owner.isNotEmpty)
-                            TextSpan(
-                              text: '${widget.owner}/',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: palette.textSecondary,
-                              ),
-                            ),
+                child: Icon(
+                  widget.repo.private == true ? FIcons.lock : FIcons.folderGit,
+                  size: 14,
+                  color: palette.textSecondary,
+                ),
+              ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text.rich(
+                    TextSpan(
+                      children: [
+                        if (widget.owner.isNotEmpty)
                           TextSpan(
-                            text: widget.name,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              color: palette.textPrimary,
+                            text: '${widget.owner}/',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: palette.textSecondary,
                             ),
                           ),
-                        ],
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    if (description.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 2),
-                        child: Text(
-                          description,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 11.5,
-                            color: palette.textSecondary,
+                        TextSpan(
+                          text: widget.name,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: palette.textPrimary,
                           ),
                         ),
+                      ],
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (description.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Text(
+                        description,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 11.5,
+                          color: palette.textSecondary,
+                        ),
                       ),
-                  ],
-                ),
+                    ),
+                ],
               ),
-              const SizedBox(width: 12),
-              if (widget.repo.language != null)
-                LanguageDot(language: widget.repo.language),
-              if (widget.repo.language != null) const SizedBox(width: 14),
-              Icon(FIcons.star, size: 12, color: palette.textSecondary),
-              const SizedBox(width: 3),
-              Text(
-                _compact(widget.repo.stars_count ?? 0),
-                style: TextStyle(fontSize: 11, color: palette.textSecondary),
-              ),
-              const SizedBox(width: 6),
-              Icon(
-                FIcons.chevronRight,
-                size: 14,
-                color: palette.textSecondary.withValues(alpha: 0.7),
-              ),
-            ],
-          ),
+            ),
+            const SizedBox(width: 12),
+            if (widget.repo.language != null)
+              LanguageDot(language: widget.repo.language),
+            if (widget.repo.language != null) const SizedBox(width: 14),
+            Icon(FIcons.star, size: 12, color: palette.textSecondary),
+            const SizedBox(width: 3),
+            Text(
+              _compact(widget.repo.stars_count ?? 0),
+              style: TextStyle(fontSize: 11, color: palette.textSecondary),
+            ),
+            const SizedBox(width: 6),
+            Icon(
+              FIcons.chevronRight,
+              size: 14,
+              color: palette.textSecondary.withValues(alpha: 0.7),
+            ),
+          ],
         ),
       ),
     );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../core/animations/animated_wrapper.dart';
@@ -14,6 +15,9 @@ import '../../presentation/state/issue_notifier.dart';
 import '../../presentation/state/repo_notifier.dart';
 import '../../presentation/state/user_notifier.dart';
 import '../widgets/app_markdown.dart';
+import '../widgets/app_surface.dart';
+import '../widgets/desktop/app_hover_region.dart';
+import '../widgets/forui/app_chrome.dart';
 import '../theme/app_palette.dart';
 import '../widgets/forui/app_page.dart';
 import '../widgets/forui/app_state_views.dart';
@@ -47,11 +51,16 @@ class IssueDetailPage extends StatefulWidget {
   final String repo;
   final int index;
 
+  /// Renders without the [AppPage] scaffold so the issue can sit inside a
+  /// desktop list-detail pane.
+  final bool embedded;
+
   const IssueDetailPage({
     super.key,
     required this.owner,
     required this.repo,
     required this.index,
+    this.embedded = false,
   });
 
   @override
@@ -69,17 +78,29 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      Injection.issueNotifier.getIssue(widget.owner, widget.repo, widget.index);
-      Injection.issueNotifier.listComments(
-        widget.owner,
-        widget.repo,
-        widget.index,
-      );
-      Injection.repoNotifier.getRepo(widget.owner, widget.repo);
-      _checkSubscription();
-      _refreshIssueReactions();
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadDetail());
+  }
+
+  @override
+  void didUpdateWidget(covariant IssueDetailPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.owner != widget.owner ||
+        oldWidget.repo != widget.repo ||
+        oldWidget.index != widget.index) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _loadDetail());
+    }
+  }
+
+  Future<void> _loadDetail() async {
+    Injection.issueNotifier.getIssue(widget.owner, widget.repo, widget.index);
+    Injection.issueNotifier.listComments(
+      widget.owner,
+      widget.repo,
+      widget.index,
+    );
+    Injection.repoNotifier.getRepo(widget.owner, widget.repo);
+    await _checkSubscription();
+    await _refreshIssueReactions();
   }
 
   void _onScroll() {
@@ -283,6 +304,22 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    if (widget.embedded) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _EmbeddedIssueHeader(
+            owner: widget.owner,
+            repo: widget.repo,
+            index: widget.index,
+            onRefresh: () => _onRefresh(),
+            onOpenBrowser: _openInBrowser,
+            onEdit: _openEditor,
+          ),
+          Expanded(child: _buildBody(l10n)),
+        ],
+      );
+    }
     return AppPage(
       title: l10n.issueNumber(widget.index),
       subtitle: '${widget.owner}/${widget.repo}',
@@ -292,15 +329,7 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
           FHeaderAction(
             icon: const Icon(FIcons.externalLink),
             semanticsLabel: l10n.openInBrowser,
-            onPress: () {
-              final state = Injection.issueNotifier.state as IssueDetailLoaded;
-              if (state.issue.html_url != null) {
-                launchUrl(
-                  Uri.parse(state.issue.html_url!),
-                  mode: LaunchMode.externalApplication,
-                );
-              }
-            },
+            onPress: _openInBrowser,
           ),
         if (Injection.issueNotifier.state is IssueDetailLoaded)
           FHeaderAction(
@@ -309,23 +338,54 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
             onPress: _confirmDeleteIssue,
           ),
       ],
-      child: RefreshIndicator(
-        onRefresh: _onRefresh,
-        child: ListenableBuilder(
-          listenable: Injection.issueNotifier,
-          builder: (context, _) {
-            final state = Injection.issueNotifier.state;
-            return switch (state) {
-              IssueLoading() => const SlowLoadingIndicator(),
-              IssueError(:final message) => AppError(
-                message: message,
-                onRetry: () => Injection.issueNotifier.getIssue(
-                  widget.owner,
-                  widget.repo,
-                  widget.index,
-                ),
+      child: _buildBody(l10n),
+    );
+  }
+
+  void _openInBrowser() {
+    final state = Injection.issueNotifier.state;
+    if (state is! IssueDetailLoaded) return;
+    final url = state.issue.html_url;
+    if (url == null) return;
+    launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+  }
+
+  void _openEditor(Issue issue) {
+    Navigator.of(context)
+        .push(
+          MaterialPageRoute(
+            builder: (_) => EditIssuePage(
+              owner: widget.owner,
+              repo: widget.repo,
+              index: widget.index,
+              issue: issue,
+            ),
+          ),
+        )
+        .then((_) {
+          if (mounted) _onRefresh();
+        });
+  }
+
+  Widget _buildBody(AppLocalizations l10n) {
+    return RefreshIndicator(
+      onRefresh: _onRefresh,
+      child: ListenableBuilder(
+        listenable: Injection.issueNotifier,
+        builder: (context, _) {
+          final state = Injection.issueNotifier.state;
+          return switch (state) {
+            IssueLoading() => const SlowLoadingIndicator(),
+            IssueError(:final message) => AppError(
+              message: message,
+              onRetry: () => Injection.issueNotifier.getIssue(
+                widget.owner,
+                widget.repo,
+                widget.index,
               ),
-              IssueDetailLoaded(:final issue) => _IssueContent(
+            ),
+            IssueDetailLoaded(:final issue) when issue.number == widget.index =>
+              _IssueContent(
                 issue: issue,
                 owner: widget.owner,
                 repo: widget.repo,
@@ -339,10 +399,10 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
                 onToggleReaction: _toggleIssueReaction,
                 canEdit: _canEdit(),
               ),
-              _ => const Center(child: FCircularProgress(size: .sm)),
-            };
-          },
-        ),
+            IssueDetailLoaded() => const SlowLoadingIndicator(),
+            _ => const Center(child: FCircularProgress(size: .sm)),
+          };
+        },
       ),
     );
   }
@@ -552,86 +612,87 @@ class _IssueContent extends StatelessWidget {
               ),
             ),
 
-          _buildInfoRow(
-            context,
-            icon: FIcons.calendarDays,
-            label: l10n.dueDate,
-            child: issue.due_date != null
-                ? Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        issue.due_date!.toLocal().toString().split(' ')[0],
-                        style: _isOverdue(issue)
-                            ? TextStyle(
-                                color: theme.colorScheme.error,
-                                fontWeight: FontWeight.w600,
-                              )
-                            : null,
-                      ),
-                      if (_isOverdue(issue)) ...[
-                        const SizedBox(width: 4),
-                        Icon(
-                          FIcons.triangleAlert,
-                          size: 14,
-                          color: theme.colorScheme.error,
-                        ),
-                        const SizedBox(width: 2),
-                        Text(
-                          l10n.overdue,
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: theme.colorScheme.error,
-                          ),
-                        ),
-                      ],
-                      if (canEdit) ...[
-                        const SizedBox(width: 8),
-                        FTappable(
-                          onPress: () => _editDueDate(context, issue),
-                          semanticsLabel: l10n.editDueDate,
-                          child: Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Icon(
-                              FIcons.pencilLine,
-                              size: 16,
-                              color: theme.colorScheme.primary,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        FTappable(
-                          onPress: () => _clearDueDate(),
-                          semanticsLabel: l10n.clearDueDate,
-                          child: Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Icon(
-                              FIcons.x,
-                              size: 16,
-                              color: theme.colorScheme.error,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ],
-                  )
-                : canEdit
-                ? FTappable(
-                    onPress: () => _editDueDate(context, issue),
-                    child: Row(
+          if (issue.due_date != null || canEdit)
+            _buildInfoRow(
+              context,
+              icon: FIcons.calendarDays,
+              label: l10n.dueDate,
+              child: issue.due_date != null
+                  ? Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          l10n.setDueDate,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: theme.colorScheme.primary,
-                            fontWeight: FontWeight.w500,
-                          ),
+                          issue.due_date!.toLocal().toString().split(' ')[0],
+                          style: _isOverdue(issue)
+                              ? TextStyle(
+                                  color: theme.colorScheme.error,
+                                  fontWeight: FontWeight.w600,
+                                )
+                              : null,
                         ),
+                        if (_isOverdue(issue)) ...[
+                          const SizedBox(width: 4),
+                          Icon(
+                            FIcons.triangleAlert,
+                            size: 14,
+                            color: theme.colorScheme.error,
+                          ),
+                          const SizedBox(width: 2),
+                          Text(
+                            l10n.overdue,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: theme.colorScheme.error,
+                            ),
+                          ),
+                        ],
+                        if (canEdit) ...[
+                          const SizedBox(width: 8),
+                          FTappable(
+                            onPress: () => _editDueDate(context, issue),
+                            semanticsLabel: l10n.editDueDate,
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Icon(
+                                FIcons.pencilLine,
+                                size: 16,
+                                color: theme.colorScheme.primary,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          FTappable(
+                            onPress: () => _clearDueDate(),
+                            semanticsLabel: l10n.clearDueDate,
+                            child: Padding(
+                              padding: const EdgeInsets.all(12),
+                              child: Icon(
+                                FIcons.x,
+                                size: 16,
+                                color: theme.colorScheme.error,
+                              ),
+                            ),
+                          ),
+                        ],
                       ],
-                    ),
-                  )
-                : const SizedBox.shrink(),
-          ),
+                    )
+                  : canEdit
+                  ? FTappable(
+                      onPress: () => _editDueDate(context, issue),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            l10n.setDueDate,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.primary,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : const SizedBox.shrink(),
+            ),
 
           const SizedBox(height: 8),
           Row(
@@ -2037,6 +2098,491 @@ class _DependenciesSectionState extends State<_DependenciesSection> {
               ),
           ],
         ],
+      ),
+    );
+  }
+}
+
+class _EmbeddedIssueHeader extends StatelessWidget {
+  const _EmbeddedIssueHeader({
+    required this.owner,
+    required this.repo,
+    required this.index,
+    required this.onRefresh,
+    required this.onOpenBrowser,
+    required this.onEdit,
+  });
+
+  final String owner;
+  final String repo;
+  final int index;
+  final VoidCallback onRefresh;
+  final VoidCallback onOpenBrowser;
+  final ValueChanged<Issue> onEdit;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    final l10n = AppLocalizations.of(context)!;
+
+    return ListenableBuilder(
+      listenable: Injection.issueNotifier,
+      builder: (context, _) {
+        final state = Injection.issueNotifier.state;
+        final issue = state is IssueDetailLoaded && state.issue.number == index
+            ? state.issue
+            : null;
+        final isOpen = issue?.state?.isOpen ?? true;
+
+        return Container(
+          height: 46,
+          padding: const EdgeInsets.only(left: 16, right: 8),
+          decoration: BoxDecoration(
+            color: palette.canvas,
+            border: Border(bottom: BorderSide(color: palette.border)),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                isOpen ? FIcons.circleDot : FIcons.circleCheck,
+                size: 14,
+                color: isOpen ? palette.success : palette.purple,
+              ),
+              const SizedBox(width: 7),
+              Flexible(
+                child: Text(
+                  '$owner/$repo',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 11.5,
+                    color: palette.textSecondary,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                '#$index',
+                style: TextStyle(
+                  fontSize: 12.5,
+                  fontWeight: FontWeight.w700,
+                  color: palette.textPrimary,
+                ),
+              ),
+              const Spacer(),
+              AppIconButton(
+                icon: FIcons.refreshCw,
+                label: l10n.refresh,
+                size: 30,
+                iconSize: 15,
+                onPress: onRefresh,
+              ),
+              if (issue?.html_url != null)
+                AppIconButton(
+                  icon: FIcons.externalLink,
+                  label: l10n.openInBrowser,
+                  size: 30,
+                  iconSize: 15,
+                  onPress: onOpenBrowser,
+                ),
+              if (issue != null)
+                AppIconButton(
+                  icon: FIcons.pencil,
+                  label: l10n.edit,
+                  size: 30,
+                  iconSize: 15,
+                  onPress: () => onEdit(issue),
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+/// The metadata rail shown beside an issue in the desktop list-detail layout.
+class IssueDetailMetaRail extends StatelessWidget {
+  const IssueDetailMetaRail({
+    super.key,
+    required this.owner,
+    required this.repo,
+    required this.index,
+  });
+
+  final String owner;
+  final String repo;
+  final int index;
+
+  String? _issueUrl(Issue? issue) {
+    if (issue?.html_url != null) return issue!.html_url;
+    final auth = Injection.authNotifier.state;
+    if (auth is AuthAuthenticated) {
+      return '${auth.baseUrl}/$owner/$repo/issues/$index';
+    }
+    return null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    final l10n = AppLocalizations.of(context)!;
+
+    return ListenableBuilder(
+      listenable: Injection.issueNotifier,
+      builder: (context, _) {
+        final state = Injection.issueNotifier.state;
+        final loaded = state is IssueDetailLoaded ? state.issue : null;
+        final repoMeta = loaded?.repository;
+        final sameRepo =
+            repoMeta == null ||
+            ((repoMeta.name == null || repoMeta.name == repo) &&
+                (repoMeta.owner == null || repoMeta.owner == owner));
+        final issue = loaded != null && loaded.number == index && sameRepo
+            ? loaded
+            : null;
+        final url = _issueUrl(issue);
+
+        return ListView(
+          padding: const EdgeInsets.fromLTRB(16, 20, 16, 28),
+          children: [
+            Text(
+              l10n.details.toUpperCase(),
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.8,
+                color: palette.textSecondary.withValues(alpha: 0.8),
+              ),
+            ),
+            const SizedBox(height: 8),
+            if (issue == null)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 28),
+                child: Center(child: FCircularProgress(size: .sm)),
+              )
+            else
+              AppSurface(
+                padding: const EdgeInsets.all(14),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _MetaField(
+                      label: l10n.status,
+                      child: Row(
+                        children: [
+                          Icon(
+                            issue.state?.isOpen == true
+                                ? FIcons.circleDot
+                                : FIcons.circleCheck,
+                            size: 13,
+                            color: issue.state?.isOpen == true
+                                ? palette.success
+                                : palette.purple,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            issue.state?.isOpen == true
+                                ? l10n.open
+                                : l10n.closed,
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: issue.state?.isOpen == true
+                                  ? palette.success
+                                  : palette.purple,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (issue.user != null)
+                      _MetaField(
+                        label: l10n.author,
+                        child: Row(
+                          children: [
+                            UserAvatar(user: issue.user!, radius: 10),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                issue.user!.login ?? '',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(fontSize: 12),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    if (issue.assignees != null && issue.assignees!.isNotEmpty)
+                      _MetaField(
+                        label: l10n.assignees,
+                        child: Wrap(
+                          spacing: 6,
+                          runSpacing: 6,
+                          children: [
+                            for (final assignee in issue.assignees!)
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  UserAvatar(user: assignee, radius: 9),
+                                  const SizedBox(width: 4),
+                                  Text(
+                                    assignee.login ?? '',
+                                    style: const TextStyle(fontSize: 11.5),
+                                  ),
+                                ],
+                              ),
+                          ],
+                        ),
+                      ),
+                    if (issue.labels != null && issue.labels!.isNotEmpty)
+                      _MetaField(
+                        label: l10n.labels,
+                        child: Wrap(
+                          spacing: 5,
+                          runSpacing: 5,
+                          children: [
+                            for (final label in issue.labels!)
+                              _MetaLabel(label: label),
+                          ],
+                        ),
+                      ),
+                    if (issue.milestone?.title != null)
+                      _MetaField(
+                        label: l10n.milestone,
+                        child: Row(
+                          children: [
+                            Icon(
+                              FIcons.flag,
+                              size: 12,
+                              color: palette.textSecondary,
+                            ),
+                            const SizedBox(width: 6),
+                            Expanded(
+                              child: Text(
+                                issue.milestone!.title!,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(fontSize: 12),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    if ((issue.comments ?? 0) > 0)
+                      _MetaField(
+                        label: l10n.comments,
+                        child: Text(
+                          '${issue.comments}',
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    if (issue.created_at != null)
+                      _MetaField(
+                        label: l10n.createdAt,
+                        child: Text(
+                          MaterialLocalizations.of(
+                            context,
+                          ).formatShortDate(issue.created_at!),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: palette.textSecondary,
+                          ),
+                        ),
+                      ),
+                    if (issue.updated_at != null)
+                      _MetaField(
+                        label: l10n.updatedAt,
+                        child: Text(
+                          MaterialLocalizations.of(
+                            context,
+                          ).formatShortDate(issue.updated_at!),
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: palette.textSecondary,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            const SizedBox(height: 18),
+            Text(
+              l10n.quickActions.toUpperCase(),
+              style: TextStyle(
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                letterSpacing: 0.8,
+                color: palette.textSecondary.withValues(alpha: 0.8),
+              ),
+            ),
+            const SizedBox(height: 8),
+            AppSurface(
+              padding: const EdgeInsets.all(8),
+              child: Column(
+                children: [
+                  if (url != null)
+                    _MetaAction(
+                      icon: FIcons.copy,
+                      label: l10n.copyLink,
+                      onPress: () async {
+                        await Clipboard.setData(ClipboardData(text: url));
+                        if (context.mounted) {
+                          showFToast(
+                            context: context,
+                            title: Text(l10n.copied),
+                          );
+                        }
+                      },
+                    ),
+                  if (url != null)
+                    _MetaAction(
+                      icon: FIcons.externalLink,
+                      label: l10n.openInBrowser,
+                      onPress: () => launchUrl(
+                        Uri.parse(url),
+                        mode: LaunchMode.externalApplication,
+                      ),
+                    ),
+                  if (issue != null)
+                    _MetaAction(
+                      icon: FIcons.pencil,
+                      label: l10n.edit,
+                      onPress: () => Navigator.of(context)
+                          .push(
+                            MaterialPageRoute(
+                              builder: (_) => EditIssuePage(
+                                owner: owner,
+                                repo: repo,
+                                index: index,
+                                issue: issue,
+                              ),
+                            ),
+                          )
+                          .then((_) {
+                            if (context.mounted) {
+                              Injection.issueNotifier.getIssue(
+                                owner,
+                                repo,
+                                index,
+                              );
+                            }
+                          }),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _MetaField extends StatelessWidget {
+  const _MetaField({required this.label, required this.child});
+
+  final String label;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 11),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label.toUpperCase(),
+            style: TextStyle(
+              fontSize: 9,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.6,
+              color: context.palette.textSecondary.withValues(alpha: 0.8),
+            ),
+          ),
+          const SizedBox(height: 4),
+          child,
+        ],
+      ),
+    );
+  }
+}
+
+class _MetaLabel extends StatelessWidget {
+  const _MetaLabel({required this.label});
+
+  final Label label;
+
+  Color _color() {
+    final raw = label.color;
+    if (raw == null || raw.isEmpty) return Colors.grey;
+    try {
+      return Color(int.parse('FF${raw.replaceFirst('#', '')}', radix: 16));
+    } catch (_) {
+      return Colors.grey;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final color = _color();
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(color: color.withValues(alpha: 0.35), width: 0.5),
+      ),
+      child: Text(
+        label.name ?? '',
+        style: TextStyle(
+          fontSize: 10.5,
+          fontWeight: FontWeight.w600,
+          color: color,
+        ),
+      ),
+    );
+  }
+}
+
+class _MetaAction extends StatelessWidget {
+  const _MetaAction({
+    required this.icon,
+    required this.label,
+    required this.onPress,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onPress;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    return AppHoverRegion(
+      onTap: onPress,
+      semanticsLabel: label,
+      hoverColor: palette.surfaceMuted,
+      borderRadius: BorderRadius.circular(7),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        child: Row(
+          children: [
+            Icon(icon, size: 14, color: palette.textSecondary),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                label,
+                style: TextStyle(fontSize: 12, color: palette.textPrimary),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

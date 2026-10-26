@@ -1,14 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ui' show FontFeature;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/animations/animated_wrapper.dart';
 import '../../core/animations/app_animations.dart';
 import '../../core/constants/ui_constants.dart';
+import '../../core/platform/desktop_layout.dart';
 import '../../core/di/injection.dart';
 import '../../core/errors/failures.dart';
 import '../../core/utils/either.dart';
@@ -24,6 +25,8 @@ import '../models/issue_filter_state.dart';
 import '../widgets/issue_filter_bottom_sheet.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/forui/app_filter_chip.dart';
+import '../widgets/desktop/app_hover_region.dart';
+import '../widgets/desktop/app_three_pane.dart';
 import '../widgets/forui/app_page.dart';
 import '../widgets/forui/app_section.dart';
 import '../widgets/forui/app_state_views.dart';
@@ -47,6 +50,7 @@ import 'milestone_detail_page.dart';
 import 'pr_detail_page.dart';
 import 'release_detail_page.dart';
 import 'repo_file_page.dart';
+import 'repo_settings_page.dart';
 import 'tag_detail_page.dart';
 import 'wiki_list_page.dart';
 import 'create_issue_page.dart';
@@ -94,8 +98,10 @@ class _RepoDetailPageState extends State<RepoDetailPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final desktop = DesktopLayout.isRepositoryDesktop(context);
     return AppPage(
       title: '${widget.owner}/${widget.repo}',
+      maxContentWidth: desktop ? null : 1120,
       actions: [
         ListenableBuilder(
           listenable: Injection.repoNotifier,
@@ -131,6 +137,30 @@ class _RepoDetailPageState extends State<RepoDetailPage> {
                   icon: const Icon(FIcons.gitFork),
                   onPress: () => _showForkDialog(context, l10n),
                 ),
+                if (Injection.repoNotifier.state case RepoLoaded(:final repo))
+                  FHeaderAction(
+                    icon: const Icon(FIcons.externalLink),
+                    semanticsLabel: l10n.openInBrowser,
+                    onPress: () {
+                      final url = repo.html_url;
+                      if (url != null) {
+                        launchUrl(
+                          Uri.parse(url),
+                          mode: LaunchMode.externalApplication,
+                        );
+                      }
+                    },
+                  ),
+                if (Injection.repoNotifier.state case RepoLoaded(:final repo))
+                  FHeaderAction(
+                    icon: const Icon(FIcons.settings),
+                    semanticsLabel: l10n.settings,
+                    onPress: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => RepoSettingsPage(repo: repo),
+                      ),
+                    ),
+                  ),
               ],
             );
           },
@@ -156,47 +186,63 @@ class _RepoDetailPageState extends State<RepoDetailPage> {
     );
   }
 
+  List<_SectionItem> _sections(AppLocalizations l10n) => [
+    _SectionItem(id: 'code', title: l10n.code, icon: FIcons.code),
+    _SectionItem(id: 'issues', title: l10n.issues, icon: FIcons.circleDot),
+    _SectionItem(id: 'milestones', title: l10n.milestones, icon: FIcons.flag),
+    _SectionItem(
+      id: 'pullRequests',
+      title: l10n.pullRequests,
+      icon: FIcons.gitPullRequest,
+    ),
+    _SectionItem(id: 'releases', title: l10n.releases, icon: FIcons.tag),
+    _SectionItem(
+      id: 'commits',
+      title: l10n.commits,
+      icon: FIcons.gitCommitHorizontal,
+    ),
+    _SectionItem(id: 'branches', title: l10n.branches, icon: FIcons.gitBranch),
+    _SectionItem(id: 'tags', title: l10n.tags, icon: FIcons.tag),
+    _SectionItem(
+      id: 'branch_protection',
+      title: l10n.branchProtection,
+      icon: FIcons.shield,
+    ),
+    _SectionItem(id: 'wiki', title: l10n.wiki, icon: FIcons.bookOpen),
+    _SectionItem(id: 'webhooks', title: l10n.webhooks, icon: FIcons.webhook),
+    _SectionItem(
+      id: 'collaborators',
+      title: l10n.collaborators,
+      icon: FIcons.users,
+    ),
+    _SectionItem(id: 'labels', title: l10n.labels, icon: FIcons.tag),
+    _SectionItem(id: 'actions', title: l10n.actions, icon: FIcons.play),
+  ];
+
   Widget _buildContent(
     BuildContext context,
     Repository repo,
     AppLocalizations l10n,
   ) {
-    final sections = [
-      _SectionItem(id: 'code', title: l10n.code, icon: FIcons.code),
-      _SectionItem(id: 'issues', title: l10n.issues, icon: FIcons.circleDot),
-      _SectionItem(id: 'milestones', title: l10n.milestones, icon: FIcons.flag),
-      _SectionItem(
-        id: 'pullRequests',
-        title: l10n.pullRequests,
-        icon: FIcons.gitPullRequest,
-      ),
-      _SectionItem(id: 'releases', title: l10n.releases, icon: FIcons.tag),
-      _SectionItem(
-        id: 'commits',
-        title: l10n.commits,
-        icon: FIcons.gitCommitHorizontal,
-      ),
-      _SectionItem(
-        id: 'branches',
-        title: l10n.branches,
-        icon: FIcons.gitBranch,
-      ),
-      _SectionItem(id: 'tags', title: l10n.tags, icon: FIcons.tag),
-      _SectionItem(
-        id: 'branch_protection',
-        title: l10n.branchProtection,
-        icon: FIcons.shield,
-      ),
-      _SectionItem(id: 'wiki', title: l10n.wiki, icon: FIcons.bookOpen),
-      _SectionItem(id: 'webhooks', title: l10n.webhooks, icon: FIcons.webhook),
-      _SectionItem(
-        id: 'collaborators',
-        title: l10n.collaborators,
-        icon: FIcons.users,
-      ),
-      _SectionItem(id: 'labels', title: l10n.labels, icon: FIcons.tag),
-      _SectionItem(id: 'actions', title: l10n.actions, icon: FIcons.play),
-    ];
+    if (DesktopLayout.isRepositoryDesktop(context)) {
+      return _RepoDesktopWorkspace(
+        repo: repo,
+        owner: widget.owner,
+        repoName: widget.repo,
+        languages: _languages,
+        l10n: l10n,
+        sections: _sections(l10n),
+        onSection: (id) =>
+            _navigateToSection(context, id, repo.default_branch, l10n),
+        onOpenSettings: () => Navigator.of(
+          context,
+        ).push(MaterialPageRoute(builder: (_) => RepoSettingsPage(repo: repo))),
+        onRefresh: () =>
+            Injection.repoNotifier.getRepo(widget.owner, widget.repo),
+      );
+    }
+
+    final sections = _sections(l10n);
 
     return ListView(
       padding: const EdgeInsets.only(bottom: 24),
@@ -359,6 +405,612 @@ class _RepoDetailPageState extends State<RepoDetailPage> {
   }
 }
 
+class _RepoDesktopWorkspace extends StatefulWidget {
+  const _RepoDesktopWorkspace({
+    required this.repo,
+    required this.owner,
+    required this.repoName,
+    required this.languages,
+    required this.l10n,
+    required this.sections,
+    required this.onSection,
+    required this.onOpenSettings,
+    required this.onRefresh,
+  });
+
+  final Repository repo;
+  final String owner;
+  final String repoName;
+  final Map<String, int> languages;
+  final AppLocalizations l10n;
+  final List<_SectionItem> sections;
+  final ValueChanged<String> onSection;
+  final VoidCallback onOpenSettings;
+  final VoidCallback onRefresh;
+
+  @override
+  State<_RepoDesktopWorkspace> createState() => _RepoDesktopWorkspaceState();
+}
+
+class _RepoDesktopWorkspaceState extends State<_RepoDesktopWorkspace> {
+  final ScrollController _centerController = ScrollController();
+
+  @override
+  void dispose() {
+    _centerController.dispose();
+    super.dispose();
+  }
+
+  void _scrollToTop() {
+    if (!_centerController.hasClients) return;
+    _centerController.animateTo(
+      0,
+      duration: AppAnimations.normal,
+      curve: AppAnimations.easeOut,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AppThreePane(
+      leading: _RepoNavRail(
+        repo: widget.repo,
+        l10n: widget.l10n,
+        sections: widget.sections,
+        onSection: widget.onSection,
+        onOverview: _scrollToTop,
+      ),
+      center: _RepoOverviewPane(
+        repo: widget.repo,
+        owner: widget.owner,
+        repoName: widget.repoName,
+        languages: widget.languages,
+        l10n: widget.l10n,
+        controller: _centerController,
+        onOpenSettings: widget.onOpenSettings,
+        onRefresh: widget.onRefresh,
+      ),
+      trailing: _RepoContextPane(
+        repo: widget.repo,
+        owner: widget.owner,
+        repoName: widget.repoName,
+        languages: widget.languages,
+        l10n: widget.l10n,
+        onOpenSettings: widget.onOpenSettings,
+        onRefresh: widget.onRefresh,
+      ),
+    );
+  }
+}
+
+class _RepoNavRail extends StatelessWidget {
+  const _RepoNavRail({
+    required this.repo,
+    required this.l10n,
+    required this.sections,
+    required this.onSection,
+    required this.onOverview,
+  });
+
+  final Repository repo;
+  final AppLocalizations l10n;
+  final List<_SectionItem> sections;
+  final ValueChanged<String> onSection;
+  final VoidCallback onOverview;
+
+  static const _groups = <String, List<String>>{
+    'sourceControl': ['code'],
+    'collaboration': ['issues', 'pullRequests', 'milestones'],
+    'insights': ['commits', 'releases', 'branches', 'tags'],
+    'administration': [
+      'labels',
+      'collaborators',
+      'webhooks',
+      'branch_protection',
+      'actions',
+      'wiki',
+    ],
+  };
+
+  String _groupLabel(String key) => switch (key) {
+    'sourceControl' => l10n.sourceControl,
+    'collaboration' => l10n.collaboration,
+    'insights' => l10n.insights,
+    _ => l10n.administration,
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    final theme = Theme.of(context);
+    final byId = {for (final section in sections) section.id: section};
+    final name = repo.full_name ?? repo.name ?? '';
+
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(10, 22, 10, 26),
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Row(
+            children: [
+              if (repo.owner != null)
+                UserAvatar(user: repo.owner!, radius: 15)
+              else
+                Container(
+                  width: 30,
+                  height: 30,
+                  decoration: BoxDecoration(
+                    color: palette.brandSoft,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(
+                    FIcons.folderGit2,
+                    size: 15,
+                    color: palette.brand,
+                  ),
+                ),
+              const SizedBox(width: 9),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w700,
+                        color: palette.textPrimary,
+                      ),
+                    ),
+                    Text(
+                      repo.private == true ? l10n.private : l10n.public,
+                      maxLines: 1,
+                      style: TextStyle(
+                        fontSize: 10.5,
+                        color: palette.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 14),
+        SidebarNavItem(
+          icon: FIcons.layoutDashboard,
+          label: l10n.overview,
+          selected: true,
+          onPress: onOverview,
+        ),
+        for (final entry in _groups.entries) ...[
+          SidebarLabel(_groupLabel(entry.key)),
+          for (final id in entry.value)
+            if (byId[id] case final section?)
+              SidebarNavItem(
+                icon: section.icon,
+                label: section.title,
+                selected: false,
+                onPress: () => onSection(section.id),
+              ),
+        ],
+      ],
+    );
+  }
+}
+
+class _RepoOverviewPane extends StatelessWidget {
+  const _RepoOverviewPane({
+    required this.repo,
+    required this.owner,
+    required this.repoName,
+    required this.languages,
+    required this.l10n,
+    required this.controller,
+    required this.onOpenSettings,
+    required this.onRefresh,
+  });
+
+  final Repository repo;
+  final String owner;
+  final String repoName;
+  final Map<String, int> languages;
+  final AppLocalizations l10n;
+  final ScrollController controller;
+  final VoidCallback onOpenSettings;
+  final VoidCallback onRefresh;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView(
+      controller: controller,
+      padding: const EdgeInsets.only(bottom: 40),
+      children: [
+        Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 920),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _RepoHeader(
+                  repo: repo,
+                  l10n: l10n,
+                  owner: owner,
+                  repoName: repoName,
+                  languages: languages,
+                  showStats: true,
+                  showLanguages: false,
+                  showTopics: false,
+                  showCloneUrls: false,
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 14, 20, 0),
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      _RepoQuickAction(
+                        icon: FIcons.circleDot,
+                        label: l10n.newIssue,
+                        onPress: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                CreateIssuePage(owner: owner, repo: repoName),
+                          ),
+                        ),
+                      ),
+                      _RepoQuickAction(
+                        icon: FIcons.gitPullRequest,
+                        label: l10n.newPullRequest,
+                        onPress: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                CreatePRPage(owner: owner, repo: repoName),
+                          ),
+                        ),
+                      ),
+                      _RepoQuickAction(
+                        icon: FIcons.settings,
+                        label: l10n.settings,
+                        onPress: onOpenSettings,
+                      ),
+                      _RepoQuickAction(
+                        icon: FIcons.refreshCw,
+                        label: l10n.refresh,
+                        onPress: onRefresh,
+                      ),
+                      if (repo.html_url != null)
+                        _RepoQuickAction(
+                          icon: FIcons.externalLink,
+                          label: l10n.openInBrowser,
+                          onPress: () => launchUrl(
+                            Uri.parse(repo.html_url!),
+                            mode: LaunchMode.externalApplication,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                  child: _ReadmePreview(
+                    owner: owner,
+                    repo: repoName,
+                    ref: repo.default_branch,
+                    l10n: l10n,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _RepoContextPane extends StatelessWidget {
+  const _RepoContextPane({
+    required this.repo,
+    required this.owner,
+    required this.repoName,
+    required this.languages,
+    required this.l10n,
+    required this.onOpenSettings,
+    required this.onRefresh,
+  });
+
+  final Repository repo;
+  final String owner;
+  final String repoName;
+  final Map<String, int> languages;
+  final AppLocalizations l10n;
+  final VoidCallback onOpenSettings;
+  final VoidCallback onRefresh;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    final theme = Theme.of(context);
+    final localization = MaterialLocalizations.of(context);
+    final description = repo.description?.trim() ?? '';
+
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(16, 22, 16, 32),
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                l10n.about,
+                style: theme.textTheme.titleSmall?.copyWith(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: 0.2,
+                  color: palette.textPrimary,
+                ),
+              ),
+            ),
+            if (repo.html_url != null)
+              AppIconButton(
+                icon: FIcons.externalLink,
+                label: l10n.openInBrowser,
+                size: 26,
+                iconSize: 14,
+                onPress: () => launchUrl(
+                  Uri.parse(repo.html_url!),
+                  mode: LaunchMode.externalApplication,
+                ),
+              ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        AppSurface(
+          padding: const EdgeInsets.all(14),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                description.isEmpty ? l10n.noDescriptionProvided : description,
+                style: TextStyle(
+                  fontSize: 12,
+                  height: 1.5,
+                  color: description.isEmpty
+                      ? palette.textSecondary
+                      : palette.textPrimary,
+                ),
+              ),
+              if (repo.website != null && repo.website!.isNotEmpty) ...[
+                const SizedBox(height: 10),
+                AppHoverRegion(
+                  onTap: () => launchUrl(
+                    Uri.parse(repo.website!),
+                    mode: LaunchMode.externalApplication,
+                  ),
+                  hoverColor: Colors.transparent,
+                  borderRadius: BorderRadius.circular(6),
+                  child: Row(
+                    children: [
+                      Icon(
+                        FIcons.globe,
+                        size: 13,
+                        color: palette.textSecondary,
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          repo.website!,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            fontSize: 11.5,
+                            color: palette.brand,
+                            decoration: TextDecoration.underline,
+                            decorationColor: palette.brand.withValues(
+                              alpha: 0.4,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+              const SizedBox(height: 12),
+              Container(height: 1, color: palette.border),
+              const SizedBox(height: 12),
+              _ContextStats(repo: repo, l10n: l10n),
+              if (languages.isNotEmpty) ...[
+                const SizedBox(height: 12),
+                Container(height: 1, color: palette.border),
+                const SizedBox(height: 10),
+                _LanguageBar(languages: languages),
+              ],
+              const SizedBox(height: 12),
+              Container(height: 1, color: palette.border),
+              const SizedBox(height: 10),
+              _TopicsRow(
+                repo: repo,
+                l10n: l10n,
+                owner: owner,
+                repoName: repoName,
+              ),
+              const SizedBox(height: 12),
+              Container(height: 1, color: palette.border),
+              const SizedBox(height: 10),
+              _CloneUrls(repo: repo, l10n: l10n),
+              if (repo.created_at != null || repo.updated_at != null) ...[
+                const SizedBox(height: 10),
+                Container(height: 1, color: palette.border),
+                const SizedBox(height: 10),
+                if (repo.created_at != null)
+                  _ContextMetaRow(
+                    icon: FIcons.calendar,
+                    label: l10n.createdAt,
+                    value: localization.formatShortDate(repo.created_at!),
+                  ),
+                if (repo.updated_at != null)
+                  _ContextMetaRow(
+                    icon: FIcons.clock,
+                    label: l10n.updatedAt,
+                    value: localization.formatShortDate(repo.updated_at!),
+                  ),
+              ],
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _RepoQuickAction extends StatelessWidget {
+  const _RepoQuickAction({
+    required this.icon,
+    required this.label,
+    required this.onPress,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onPress;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    return AppHoverRegion(
+      onTap: onPress,
+      semanticsLabel: label,
+      hoverColor: palette.surfaceMuted.withValues(alpha: 0.7),
+      borderColor: palette.border,
+      hoverBorderColor: palette.borderStrong,
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 14, color: palette.textSecondary),
+            const SizedBox(width: 6),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+                color: palette.textPrimary,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ContextStats extends StatelessWidget {
+  const _ContextStats({required this.repo, required this.l10n});
+
+  final Repository repo;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    final stats = [
+      (FIcons.star, '${repo.stars_count ?? 0}', l10n.stars),
+      (FIcons.gitFork, '${repo.forks_count ?? 0}', l10n.forks),
+      (FIcons.eye, '${repo.watchers_count ?? 0}', l10n.watchers),
+      (FIcons.circleDot, '${repo.open_issues_count ?? 0}', l10n.issues),
+    ];
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final itemWidth = (constraints.maxWidth - 12) / 2;
+        return Wrap(
+          spacing: 12,
+          runSpacing: 10,
+          children: [
+            for (final stat in stats)
+              SizedBox(
+                width: itemWidth,
+                child: Row(
+                  children: [
+                    Icon(
+                      stat.$1,
+                      size: 13,
+                      color: context.palette.textSecondary,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      stat.$2,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(width: 5),
+                    Expanded(
+                      child: Text(
+                        stat.$3,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 10.5,
+                          color: context.palette.textSecondary,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+class _ContextMetaRow extends StatelessWidget {
+  const _ContextMetaRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 5),
+      child: Row(
+        children: [
+          Icon(icon, size: 12, color: palette.textSecondary),
+          const SizedBox(width: 6),
+          Expanded(
+            child: Text(
+              label,
+              style: TextStyle(fontSize: 11, color: palette.textSecondary),
+            ),
+          ),
+          Text(
+            value,
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w500,
+              color: palette.textPrimary,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _RepoHeader extends StatelessWidget {
   final Repository repo;
   final AppLocalizations l10n;
@@ -366,12 +1018,23 @@ class _RepoHeader extends StatelessWidget {
   final String repoName;
   final Map<String, int> languages;
 
+  /// Sections rendered inside the header. The desktop workspace moves the
+  /// languages, topics and clone URLs into the context pane.
+  final bool showStats;
+  final bool showLanguages;
+  final bool showTopics;
+  final bool showCloneUrls;
+
   const _RepoHeader({
     required this.repo,
     required this.l10n,
     required this.owner,
     required this.repoName,
     required this.languages,
+    this.showStats = true,
+    this.showLanguages = true,
+    this.showTopics = true,
+    this.showCloneUrls = true,
   });
 
   @override
@@ -496,9 +1159,16 @@ class _RepoHeader extends StatelessWidget {
                 ),
               ),
             ],
-            const SizedBox(height: 18),
-            _StatsRow(repo: repo, l10n: l10n, owner: owner, repoName: repoName),
-            if (languages.isNotEmpty) ...[
+            if (showStats) ...[
+              const SizedBox(height: 18),
+              _StatsRow(
+                repo: repo,
+                l10n: l10n,
+                owner: owner,
+                repoName: repoName,
+              ),
+            ],
+            if (showLanguages && languages.isNotEmpty) ...[
               const SizedBox(height: 16),
               Container(height: 1, color: palette.border),
               const SizedBox(height: 12),
@@ -518,17 +1188,21 @@ class _RepoHeader extends StatelessWidget {
               const SizedBox(height: 8),
               _LanguageBar(languages: languages),
             ],
-            const SizedBox(height: 16),
-            Container(height: 1, color: palette.border),
-            const SizedBox(height: 14),
-            _TopicsRow(
-              repo: repo,
-              l10n: l10n,
-              owner: owner,
-              repoName: repoName,
-            ),
-            const SizedBox(height: 14),
-            _CloneUrls(repo: repo, l10n: l10n),
+            if (showTopics || showCloneUrls) ...[
+              if (showStats || (showLanguages && languages.isNotEmpty))
+                const SizedBox(height: 16),
+              Container(height: 1, color: palette.border),
+              const SizedBox(height: 14),
+              if (showTopics)
+                _TopicsRow(
+                  repo: repo,
+                  l10n: l10n,
+                  owner: owner,
+                  repoName: repoName,
+                ),
+              if (showTopics && showCloneUrls) const SizedBox(height: 14),
+              if (showCloneUrls) _CloneUrls(repo: repo, l10n: l10n),
+            ],
           ],
         ),
       ),
@@ -3020,8 +3694,6 @@ class _MilestoneRow extends StatefulWidget {
 }
 
 class _MilestoneRowState extends State<_MilestoneRow> {
-  bool _hovered = false;
-
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
@@ -3033,120 +3705,115 @@ class _MilestoneRowState extends State<_MilestoneRow> {
     final progress = total > 0 ? closed / total : 0.0;
     final done = total > 0 && closed == total;
 
-    return FTappable(
-      onPress: widget.onPress,
-      child: MouseRegion(
-        onEnter: (_) => setState(() => _hovered = true),
-        onExit: (_) => setState(() => _hovered = false),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 140),
-          color: _hovered
-              ? palette.surfaceMuted.withValues(alpha: 0.55)
-              : Colors.transparent,
-          padding: const EdgeInsets.fromLTRB(14, 12, 12, 12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Icon(
-                    FIcons.flag,
-                    size: 14,
-                    color: done ? palette.success : palette.textSecondary,
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      milestone.title ?? '',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: palette.textPrimary,
-                      ),
+    return AppHoverRegion(
+      onTap: widget.onPress,
+      hoverColor: palette.surfaceMuted.withValues(alpha: 0.55),
+      borderRadius: BorderRadius.zero,
+      semanticsLabel: milestone.title ?? '',
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(14, 12, 12, 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  FIcons.flag,
+                  size: 14,
+                  color: done ? palette.success : palette.textSecondary,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    milestone.title ?? '',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: palette.textPrimary,
                     ),
                   ),
-                  if (widget.dueText != null) ...[
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 6,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: widget.overdue
-                            ? palette.dangerSoft
-                            : palette.surfaceMuted,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            FIcons.calendarClock,
-                            size: 10,
+                ),
+                if (widget.dueText != null) ...[
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 6,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: widget.overdue
+                          ? palette.dangerSoft
+                          : palette.surfaceMuted,
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          FIcons.calendarClock,
+                          size: 10,
+                          color: widget.overdue
+                              ? palette.danger
+                              : palette.textSecondary,
+                        ),
+                        const SizedBox(width: 3),
+                        Text(
+                          widget.dueText!,
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontWeight: FontWeight.w500,
                             color: widget.overdue
                                 ? palette.danger
                                 : palette.textSecondary,
                           ),
-                          const SizedBox(width: 3),
-                          Text(
-                            widget.dueText!,
-                            style: TextStyle(
-                              fontSize: 10,
-                              fontWeight: FontWeight.w500,
-                              color: widget.overdue
-                                  ? palette.danger
-                                  : palette.textSecondary,
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 6),
-                  ],
-                  Icon(
-                    FIcons.chevronRight,
-                    size: 13,
-                    color: palette.textSecondary.withValues(alpha: 0.7),
                   ),
+                  const SizedBox(width: 6),
                 ],
-              ),
-              const SizedBox(height: 9),
-              ClipRRect(
-                borderRadius: BorderRadius.circular(3),
-                child: LinearProgressIndicator(
-                  value: progress,
-                  minHeight: 5,
-                  backgroundColor: palette.surfaceMuted,
-                  valueColor: AlwaysStoppedAnimation(
-                    done ? palette.success : palette.brand,
-                  ),
+                Icon(
+                  FIcons.chevronRight,
+                  size: 13,
+                  color: palette.textSecondary.withValues(alpha: 0.7),
+                ),
+              ],
+            ),
+            const SizedBox(height: 9),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(3),
+              child: LinearProgressIndicator(
+                value: progress,
+                minHeight: 5,
+                backgroundColor: palette.surfaceMuted,
+                valueColor: AlwaysStoppedAnimation(
+                  done ? palette.success : palette.brand,
                 ),
               ),
-              const SizedBox(height: 6),
-              Row(
-                children: [
-                  Text(
-                    '${(progress * 100).toStringAsFixed(0)}%',
-                    style: TextStyle(
-                      fontSize: 10.5,
-                      fontWeight: FontWeight.w500,
-                      color: palette.textSecondary,
-                    ),
+            ),
+            const SizedBox(height: 6),
+            Row(
+              children: [
+                Text(
+                  '${(progress * 100).toStringAsFixed(0)}%',
+                  style: TextStyle(
+                    fontSize: 10.5,
+                    fontWeight: FontWeight.w500,
+                    color: palette.textSecondary,
                   ),
-                  const Spacer(),
-                  Text(
-                    '${widget.l10n.open} $open · ${widget.l10n.closed} $closed',
-                    style: TextStyle(
-                      fontSize: 10.5,
-                      color: palette.textSecondary,
-                    ),
+                ),
+                const Spacer(),
+                Text(
+                  '${widget.l10n.open} $open · ${widget.l10n.closed} $closed',
+                  style: TextStyle(
+                    fontSize: 10.5,
+                    color: palette.textSecondary,
                   ),
-                ],
-              ),
-            ],
-          ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

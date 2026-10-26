@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 
+import '../../core/animations/app_animations.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../state/notification_notifier.dart';
 import '../theme/app_palette.dart';
 import '../widgets/forui/app_section.dart';
+import '../widgets/desktop/app_hover_region.dart';
 import '../widgets/forui/app_state_views.dart';
 import 'commit_detail_page.dart';
 import 'issue_detail_page.dart';
@@ -257,8 +259,6 @@ class _NotificationRow extends StatefulWidget {
 }
 
 class _NotificationRowState extends State<_NotificationRow> {
-  bool _hovered = false;
-
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
@@ -269,18 +269,23 @@ class _NotificationRowState extends State<_NotificationRow> {
     final repo = widget.notification.repository?.full_name ?? '';
     final time = _relativeTime(widget.notification.updated_at);
 
-    return FTappable(
-      onPress: widget.onTap,
-      child: MouseRegion(
-        onEnter: (_) => setState(() => _hovered = true),
-        onExit: (_) => setState(() => _hovered = false),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 140),
-          color: _hovered
-              ? palette.surfaceMuted.withValues(alpha: 0.55)
-              : isUnread
-              ? palette.brandSoft.withValues(alpha: 0.42)
-              : Colors.transparent,
+    return AppHoverRegion(
+      onTap: widget.onTap,
+      hoverColor: Colors.transparent,
+      borderRadius: BorderRadius.zero,
+      semanticsLabel: subject?.title ?? widget.l10n.noTitle,
+      contentBuilder: (context, hovered, focused) {
+        final hoverColor = palette.surfaceMuted.withValues(alpha: 0.55);
+        final unreadColor = palette.brandSoft.withValues(alpha: 0.42);
+        // The idle colour keeps the hover colour's RGB at alpha 0 so the
+        // fade never passes through transparent black.
+        final idleColor = isUnread
+            ? unreadColor
+            : hoverColor.withValues(alpha: 0);
+        return AnimatedContainer(
+          duration: AppAnimations.effective(context, AppAnimations.fast),
+          curve: AppAnimations.easeOut,
+          color: hovered ? hoverColor : idleColor,
           padding: const EdgeInsets.fromLTRB(14, 11, 12, 11),
           child: Row(
             children: [
@@ -350,8 +355,8 @@ class _NotificationRowState extends State<_NotificationRow> {
               ),
             ],
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 

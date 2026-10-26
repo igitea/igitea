@@ -4,6 +4,8 @@ import 'package:flutter/services.dart';
 import 'package:forui/forui.dart';
 
 import '../../core/animations/animated_tab_stack.dart';
+import '../../core/animations/app_animations.dart';
+import '../../core/platform/desktop_layout.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
@@ -11,6 +13,8 @@ import '../../domain/entities/auth_state.dart';
 import '../state/notification_notifier.dart';
 import '../../l10n/app_localizations.dart';
 import '../theme/app_palette.dart';
+import '../widgets/desktop/app_hover_region.dart';
+import '../widgets/desktop/shortcuts_dialog.dart';
 import '../widgets/forui/app_chrome.dart';
 import '../widgets/user_avatar.dart';
 import 'dashboard_page.dart';
@@ -54,6 +58,7 @@ class _HomePageState extends State<HomePage> {
       listenable: Listenable.merge([
         Injection.authNotifier,
         Injection.notificationNotifier,
+        Injection.themeNotifier,
       ]),
       builder: (context, _) {
         final authState = Injection.authNotifier.state;
@@ -73,6 +78,11 @@ class _HomePageState extends State<HomePage> {
             _shortcut(LogicalKeyboardKey.digit3): () => _select(2),
             _shortcut(LogicalKeyboardKey.digit4): () => _select(3),
             _shortcut(LogicalKeyboardKey.comma): () => _openSettings(context),
+            _shortcut(LogicalKeyboardKey.keyB): _toggleSidebar,
+            const SingleActivator(LogicalKeyboardKey.slash, shift: true): () =>
+                showAppShortcutsDialog(context),
+            const SingleActivator(LogicalKeyboardKey.f1): () =>
+                showAppShortcutsDialog(context),
           },
           child: Focus(
             autofocus: true,
@@ -84,6 +94,8 @@ class _HomePageState extends State<HomePage> {
                       selectedIndex: _selectedIndex,
                       onSelect: _select,
                       onOpenSettings: () => _openSettings(context),
+                      collapsed: Injection.themeNotifier.sidebarCollapsed,
+                      onToggle: _toggleSidebar,
                     )
                   : null,
               header: _buildHeader(
@@ -145,6 +157,19 @@ class _HomePageState extends State<HomePage> {
                 ? '⌘K'
                 : 'Ctrl K',
             onPress: _openSearch,
+          ),
+        if (isWide)
+          AppIconButton(
+            icon: FIcons.panelLeft,
+            label: l10n.toggleSidebar,
+            selected: !Injection.themeNotifier.sidebarCollapsed,
+            onPress: _toggleSidebar,
+          ),
+        if (isWide)
+          AppIconButton(
+            icon: FIcons.keyboard,
+            label: l10n.keyboardShortcuts,
+            onPress: () => showAppShortcutsDialog(context),
           ),
         if (!isWide)
           AppIconButton(
@@ -218,6 +243,12 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  void _toggleSidebar() {
+    Injection.themeNotifier.setSidebarCollapsed(
+      !Injection.themeNotifier.sidebarCollapsed,
+    );
+  }
+
   void _openSearch() {
     _select(2);
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -239,6 +270,8 @@ class _Sidebar extends StatelessWidget {
     required this.selectedIndex,
     required this.onSelect,
     required this.onOpenSettings,
+    required this.collapsed,
+    required this.onToggle,
   });
 
   final double topInset;
@@ -246,6 +279,8 @@ class _Sidebar extends StatelessWidget {
   final int selectedIndex;
   final ValueChanged<int> onSelect;
   final VoidCallback onOpenSettings;
+  final bool collapsed;
+  final VoidCallback onToggle;
 
   @override
   Widget build(BuildContext context) {
@@ -265,8 +300,12 @@ class _Sidebar extends StatelessWidget {
         : (user.login ?? '');
     final login = user.login ?? '';
 
-    return Container(
-      width: 242,
+    return AnimatedContainer(
+      duration: AppAnimations.effective(context, AppAnimations.normal),
+      curve: AppAnimations.easeOut,
+      width: collapsed
+          ? DesktopLayout.sidebarRailWidth
+          : DesktopLayout.sidebarWidth,
       decoration: BoxDecoration(
         color: palette.canvas,
         border: Border(right: BorderSide(color: palette.border)),
@@ -275,38 +314,58 @@ class _Sidebar extends StatelessWidget {
         children: [
           SizedBox(height: topInset),
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-            child: Row(
-              children: [
-                const BrandMark(),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    'iGitea',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      fontSize: 15,
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: -0.3,
-                      color: palette.textPrimary,
-                    ),
-                  ),
-                ),
-                Text(
-                  'v$appVersion',
-                  style: TextStyle(
-                    fontSize: 10,
-                    fontWeight: FontWeight.w500,
-                    color: palette.textSecondary.withValues(alpha: 0.7),
-                  ),
-                ),
-              ],
+            padding: EdgeInsets.fromLTRB(
+              collapsed ? 10 : 16,
+              12,
+              collapsed ? 10 : 16,
+              12,
             ),
+            child: collapsed
+                ? Center(child: const BrandMark())
+                : Row(
+                    children: [
+                      const BrandMark(),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          'iGitea',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w700,
+                            letterSpacing: -0.3,
+                            color: palette.textPrimary,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        'v$appVersion',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.w500,
+                          color: palette.textSecondary.withValues(alpha: 0.7),
+                        ),
+                      ),
+                      const SizedBox(width: 2),
+                      AppIconButton(
+                        icon: FIcons.panelLeft,
+                        label: l10n.toggleSidebar,
+                        size: 26,
+                        iconSize: 14,
+                        onPress: onToggle,
+                      ),
+                    ],
+                  ),
           ),
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(10, 4, 10, 12),
+              padding: EdgeInsets.fromLTRB(
+                collapsed ? 8 : 10,
+                4,
+                collapsed ? 8 : 10,
+                12,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -315,13 +374,18 @@ class _Sidebar extends StatelessWidget {
                       icon: items[i].$1,
                       label: items[i].$2,
                       selected: selectedIndex == i,
+                      compact: collapsed,
                       onPress: () => onSelect(i),
                     ),
-                  SidebarLabel(l10n.account),
+                  if (collapsed)
+                    const SizedBox(height: 8)
+                  else
+                    SidebarLabel(l10n.account),
                   SidebarNavItem(
                     icon: FIcons.settings,
                     label: l10n.settings,
                     selected: false,
+                    compact: collapsed,
                     onPress: onOpenSettings,
                   ),
                 ],
@@ -329,12 +393,18 @@ class _Sidebar extends StatelessWidget {
             ),
           ),
           Padding(
-            padding: const EdgeInsets.fromLTRB(10, 0, 10, 12),
+            padding: EdgeInsets.fromLTRB(
+              collapsed ? 8 : 10,
+              0,
+              collapsed ? 8 : 10,
+              12,
+            ),
             child: _AccountCard(
               displayName: displayName,
               login: login,
               avatar: user,
               selected: selectedIndex == 3,
+              compact: collapsed,
               onPress: () => onSelect(3),
             ),
           ),
@@ -344,13 +414,14 @@ class _Sidebar extends StatelessWidget {
   }
 }
 
-class _AccountCard extends StatefulWidget {
+class _AccountCard extends StatelessWidget {
   const _AccountCard({
     required this.displayName,
     required this.login,
     required this.avatar,
     required this.selected,
     required this.onPress,
+    required this.compact,
   });
 
   final String displayName;
@@ -358,73 +429,62 @@ class _AccountCard extends StatefulWidget {
   final User avatar;
   final bool selected;
   final VoidCallback onPress;
-
-  @override
-  State<_AccountCard> createState() => _AccountCardState();
-}
-
-class _AccountCardState extends State<_AccountCard> {
-  bool _hovered = false;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
     final theme = Theme.of(context);
 
-    return FTappable(
-      onPress: widget.onPress,
-      semanticsLabel: widget.displayName,
-      child: MouseRegion(
-        onEnter: (_) => setState(() => _hovered = true),
-        onExit: (_) => setState(() => _hovered = false),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 140),
-          curve: Curves.easeOutCubic,
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-          decoration: BoxDecoration(
-            color: widget.selected || _hovered
-                ? palette.surfaceMuted
-                : Colors.transparent,
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(
-              color: widget.selected ? palette.border : Colors.transparent,
-            ),
-          ),
-          child: Row(
-            children: [
-              UserAvatar(user: widget.avatar, radius: 13),
-              const SizedBox(width: 9),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      widget.displayName,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w600,
-                      ),
+    return AppHoverRegion(
+      onTap: onPress,
+      semanticsLabel: displayName,
+      tooltip: compact ? displayName : null,
+      selected: selected,
+      selectedColor: palette.surfaceMuted,
+      hoverColor: palette.surfaceMuted,
+      borderColor: selected ? palette.border : Colors.transparent,
+      hoverBorderColor: selected ? palette.border : Colors.transparent,
+      borderRadius: BorderRadius.circular(10),
+      padding: EdgeInsets.symmetric(horizontal: compact ? 4 : 8, vertical: 8),
+      contentBuilder: (context, hovered, focused) {
+        if (compact) {
+          return Center(child: UserAvatar(user: avatar, radius: 13));
+        }
+        return Row(
+          children: [
+            UserAvatar(user: avatar, radius: 13),
+            const SizedBox(width: 9),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    displayName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w600,
                     ),
-                    Text(
-                      '@${widget.login}',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 11,
-                        color: palette.textSecondary,
-                      ),
+                  ),
+                  Text(
+                    '@$login',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 11,
+                      color: palette.textSecondary,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-              Icon(FIcons.chevronRight, size: 14, color: palette.textSecondary),
-            ],
-          ),
-        ),
-      ),
+            ),
+            Icon(FIcons.chevronRight, size: 14, color: palette.textSecondary),
+          ],
+        );
+      },
     );
   }
 }

@@ -17,10 +17,11 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 - Clean Architecture + Repository Pattern
 - **Forui** design system (shadcn-style) with a teal brand theme, light/dark palettes and adaptive navigation
 - **Refreshed desktop-first UI**: hand-built sidebar shell, editorial dashboard, card-based repository overview, compact issue rows, skeleton loading and fade-through transitions
+- **Desktop workspace**: three-pane repository overview, a list-detail issue workspace with a metadata rail, a collapsible icon-rail sidebar, right-click context menus and a keyboard shortcut sheet
 - Token-driven palette, typography, spacing and motion with reduced-motion support
 - 120+ data models auto-generated from OpenAPI spec
 - 49+ domain use cases with `Either<Failure, T>` pattern
-- 293 tests passing, `flutter analyze` clean (no errors)
+- 303 tests passing, `flutter analyze` clean (no errors)
 - Home page redesign (GitHub Mobile style): implementation spec in `docs/igitea-home-redesign-spec.md`
 
 ### Authentication

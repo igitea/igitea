@@ -105,9 +105,23 @@ class IssueNotifier extends ChangeNotifier {
 
   IssueState _state = const IssueInitial();
   IssueState get state => _state;
+  int _issueRequestId = 0;
+  int _commentsRequestId = 0;
+
+  @visibleForTesting
+  set state(IssueState value) {
+    _state = value;
+    notifyListeners();
+  }
 
   IssuesListState _issuesListState = const IssuesListInitial();
   IssuesListState get issuesListState => _issuesListState;
+
+  @visibleForTesting
+  set issuesListState(IssuesListState value) {
+    _issuesListState = value;
+    notifyListeners();
+  }
 
   CommentsState _commentsState = const CommentsInitial();
   CommentsState get commentsState => _commentsState;
@@ -192,8 +206,8 @@ class IssueNotifier extends ChangeNotifier {
     _createCommentUseCase = createCommentUseCase;
     _searchIssuesUseCase = searchIssuesUseCase;
     _listLabelsUseCase = listLabelsUseCase;
-_listMilestonesUseCase = listMilestonesUseCase;
-     _createMilestoneUseCase = createMilestoneUseCase;
+    _listMilestonesUseCase = listMilestonesUseCase;
+    _createMilestoneUseCase = createMilestoneUseCase;
     _editMilestoneUseCase = editMilestoneUseCase;
     _deleteMilestoneUseCase = deleteMilestoneUseCase;
     _editLabelUseCase = editLabelUseCase;
@@ -218,36 +232,40 @@ _listMilestonesUseCase = listMilestonesUseCase;
   }
 
   Future<void> getIssue(String owner, String repo, int index) async {
+    final requestId = ++_issueRequestId;
     _state = const IssueLoading();
     notifyListeners();
 
     final result = await _getIssueUseCase.call(
       GetIssueParams(owner: owner, repo: repo, index: index),
     );
+    if (requestId != _issueRequestId) return;
     switch (result) {
       case Left<Failure, Issue>(:final value):
         _state = IssueError(value.message);
         notifyListeners();
       case Right<Failure, Issue>(:final value):
-         _state = IssueDetailLoaded(value);
-         notifyListeners();
-     }
-   }
+        _state = IssueDetailLoaded(value);
+        notifyListeners();
+    }
+  }
 
-   Future<void> reloadIssue(String owner, String repo, int index) async {
-     final result = await _getIssueUseCase.call(
-       GetIssueParams(owner: owner, repo: repo, index: index),
-     );
-     switch (result) {
-       case Right<Failure, Issue>(:final value):
-         _state = IssueDetailLoaded(value);
-         notifyListeners();
-       case Left<Failure, Issue>():
-         break;
-     }
-   }
+  Future<void> reloadIssue(String owner, String repo, int index) async {
+    final requestId = ++_issueRequestId;
+    final result = await _getIssueUseCase.call(
+      GetIssueParams(owner: owner, repo: repo, index: index),
+    );
+    if (requestId != _issueRequestId) return;
+    switch (result) {
+      case Right<Failure, Issue>(:final value):
+        _state = IssueDetailLoaded(value);
+        notifyListeners();
+      case Left<Failure, Issue>():
+        break;
+    }
+  }
 
-   Future<void> createIssue(
+  Future<void> createIssue(
     String owner,
     String repo,
     Map<String, dynamic> body,
@@ -400,19 +418,30 @@ _listMilestonesUseCase = listMilestonesUseCase;
   }
 
   Future<void> listComments(String owner, String repo, int index) async {
+    final requestId = ++_commentsRequestId;
     _commentsState = const CommentsLoading();
     _commentPage = 1;
     notifyListeners();
 
     final result = await _listCommentsUseCase.call(
-      ListCommentsParams(owner: owner, repo: repo, index: index, page: 1, limit: _commentLimit),
+      ListCommentsParams(
+        owner: owner,
+        repo: repo,
+        index: index,
+        page: 1,
+        limit: _commentLimit,
+      ),
     );
+    if (requestId != _commentsRequestId) return;
     switch (result) {
       case Left<Failure, List<Comment>>(:final value):
         _commentsState = CommentsError(value.message);
         notifyListeners();
       case Right<Failure, List<Comment>>(:final value):
-        _commentsState = CommentsLoaded(value, hasMore: value.length >= _commentLimit);
+        _commentsState = CommentsLoaded(
+          value,
+          hasMore: value.length >= _commentLimit,
+        );
         notifyListeners();
     }
   }
@@ -422,19 +451,30 @@ _listMilestonesUseCase = listMilestonesUseCase;
     final current = _commentsState;
     if (current is! CommentsLoaded || !current.hasMore) return;
 
+    final requestId = _commentsRequestId;
     _commentLoadingMore = true;
     notifyListeners();
     _commentPage++;
 
     final result = await _listCommentsUseCase.call(
-      ListCommentsParams(owner: owner, repo: repo, index: index, page: _commentPage, limit: _commentLimit),
+      ListCommentsParams(
+        owner: owner,
+        repo: repo,
+        index: index,
+        page: _commentPage,
+        limit: _commentLimit,
+      ),
     );
+    if (requestId != _commentsRequestId) {
+      _commentLoadingMore = false;
+      return;
+    }
     switch (result) {
       case Right<Failure, List<Comment>>(:final value):
-        _commentsState = CommentsLoaded(
-          [...current.comments, ...value],
-          hasMore: value.length >= _commentLimit,
-        );
+        _commentsState = CommentsLoaded([
+          ...current.comments,
+          ...value,
+        ], hasMore: value.length >= _commentLimit);
       case Left<Failure, List<Comment>>():
         _commentPage--;
     }
@@ -459,15 +499,28 @@ _listMilestonesUseCase = listMilestonesUseCase;
     }
   }
 
-  Future<void> _refreshCommentsSilently(String owner, String repo, int index) async {
+  Future<void> _refreshCommentsSilently(
+    String owner,
+    String repo,
+    int index,
+  ) async {
     final result = await _listCommentsUseCase.call(
-      ListCommentsParams(owner: owner, repo: repo, index: index, page: 1, limit: _commentLimit),
+      ListCommentsParams(
+        owner: owner,
+        repo: repo,
+        index: index,
+        page: 1,
+        limit: _commentLimit,
+      ),
     );
     switch (result) {
       case Left<Failure, List<Comment>>():
         break;
       case Right<Failure, List<Comment>>(:final value):
-        _commentsState = CommentsLoaded(value, hasMore: value.length >= _commentLimit);
+        _commentsState = CommentsLoaded(
+          value,
+          hasMore: value.length >= _commentLimit,
+        );
         _commentPage = 1;
         notifyListeners();
     }
@@ -492,7 +545,11 @@ _listMilestonesUseCase = listMilestonesUseCase;
     }
   }
 
-  Future<Either<Failure, void>> deleteIssue(String owner, String repo, int index) async {
+  Future<Either<Failure, void>> deleteIssue(
+    String owner,
+    String repo,
+    int index,
+  ) async {
     return _deleteIssueUseCase.call(
       DeleteIssueParams(owner: owner, repo: repo, index: index),
     );

@@ -17,10 +17,11 @@
 - Clean Architecture + Repository Pattern
 - **Forui** 设计系统（shadcn 风格）：品牌青绿主题、亮/暗色板、自适应导航
 - **桌面优先的界面焕新**：自建侧边栏外壳、编辑式仪表盘、卡片化仓库概览、紧凑 Issue 行、骨架屏与淡入淡出转场
+- **桌面工作区**：三栏仓库概览、带元数据栏的 Issue 列表-详情工作区、可折叠图标栏侧边栏、右键上下文菜单与快捷键面板
 - 基于设计令牌的色板、字体、间距与动效体系，并支持系统「减少动态效果」
 - 120+ 个数据模型，基于 OpenAPI 规范自动生成
 - 49+ 个领域用例，采用 `Either<Failure, T>` 模式
-- 293 个测试通过，`flutter analyze` 无错误
+- 303 个测试通过，`flutter analyze` 无错误
 - 首页改造（GitHub Mobile 风格）：实施规格见 `docs/igitea-home-redesign-spec.md`
 
 ### 认证

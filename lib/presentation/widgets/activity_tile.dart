@@ -4,6 +4,7 @@ import 'package:forui/forui.dart';
 import '../../data/models/generated/generated_models.dart';
 import '../../l10n/app_localizations.dart';
 import '../theme/app_palette.dart';
+import 'desktop/app_hover_region.dart';
 
 /// Map an Activity op_type to a human-readable action text.
 String describeActivity(Activity activity, AppLocalizations l10n) {
@@ -75,8 +76,6 @@ class ActivityTile extends StatefulWidget {
 }
 
 class _ActivityTileState extends State<ActivityTile> {
-  bool _hovered = false;
-
   Color _color(AppPalette palette) {
     return switch (widget.activity.op_type) {
       'create_issue' || 'approve_pull_request' => palette.success,
@@ -102,74 +101,69 @@ class _ActivityTileState extends State<ActivityTile> {
     final action = describeActivity(widget.activity, l10n);
     final color = _color(palette);
 
-    return FTappable(
-      onPress: widget.onTap,
-      child: MouseRegion(
-        onEnter: (_) => setState(() => _hovered = true),
-        onExit: (_) => setState(() => _hovered = false),
-        child: AnimatedContainer(
-          duration: const Duration(milliseconds: 140),
-          color: _hovered
-              ? palette.surfaceMuted.withValues(alpha: 0.55)
-              : Colors.transparent,
-          padding: const EdgeInsets.fromLTRB(14, 9, 12, 9),
-          child: Row(
-            children: [
-              Container(
-                width: 26,
-                height: 26,
-                decoration: BoxDecoration(
-                  color: color.withValues(alpha: palette.isDark ? 0.16 : 0.09),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(
-                  activityIcon(widget.activity),
-                  size: 13,
-                  color: color,
-                ),
+    return AppHoverRegion(
+      onTap: widget.onTap,
+      hoverColor: palette.surfaceMuted.withValues(alpha: 0.55),
+      borderRadius: BorderRadius.zero,
+      semanticsLabel: '$action ${widget.activity.repo?.full_name ?? ''}',
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(14, 9, 12, 9),
+        child: Row(
+          children: [
+            Container(
+              width: 26,
+              height: 26,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: palette.isDark ? 0.16 : 0.09),
+                borderRadius: BorderRadius.circular(8),
               ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      ref.isNotEmpty ? '$action · $ref' : action,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(
-                        fontSize: 12.5,
-                        fontWeight: FontWeight.w500,
-                        color: palette.textPrimary,
-                      ),
+              child: Icon(
+                activityIcon(widget.activity),
+                size: 13,
+                color: color,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    ref.isNotEmpty ? '$action · $ref' : action,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 12.5,
+                      fontWeight: FontWeight.w500,
+                      color: palette.textPrimary,
                     ),
-                    if (repoName.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(top: 1),
-                        child: Text(
-                          repoName,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontSize: 11,
-                            color: palette.textSecondary,
-                          ),
+                  ),
+                  if (repoName.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 1),
+                      child: Text(
+                        repoName,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: palette.textSecondary,
                         ),
                       ),
-                  ],
-                ),
+                    ),
+                ],
               ),
-              const SizedBox(width: 8),
-              Text(
-                widget.timeText,
-                style: TextStyle(
-                  fontSize: 10.5,
-                  color: palette.textSecondary.withValues(alpha: 0.85),
-                ),
+            ),
+            const SizedBox(width: 8),
+            Text(
+              widget.timeText,
+              style: TextStyle(
+                fontSize: 10.5,
+                color: palette.textSecondary.withValues(alpha: 0.85),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

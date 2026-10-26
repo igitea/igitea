@@ -2,6 +2,24 @@
 
 ## [Unreleased]
 
+### Added
+- **Desktop workspace**: a three-pane repository overview (grouped section rail, README/overview centre, About/context rail), a list-detail issue workspace with an inline preview and metadata rail on wide windows, and a collapsible icon-rail sidebar that remembers its state
+- **Desktop interaction layer**: `AppHoverRegion` with hover-intent debouncing, single-layer hover washes, focus rings, Enter/Space activation, right-click context menus and double-click open; applied across the shell, repository rows, issue cards, notifications and activity feeds
+- **Keyboard help**: a `?` / `⌘/` shortcut sheet listing navigation and pointer shortcuts; `⌘B` toggles the sidebar
+- **Desktop shell plumbing**: `DesktopLayout` window-size breakpoints, repository/issue pane breakpoints, a desktop scroll behaviour with scrollbars, and a wider default macOS window
+- Widget tests for hover intent, context menus, double-click, keyboard activation, the three-pane repository workspace, the issue list-detail workspace and the sidebar shortcut
+
+### Changed
+- **Hover polish**: dense rows now use a 30ms enter / 60ms exit intent delay and paint the highlight behind the content, so sweeping the pointer no longer flickers icons, text or borders
+- **Repository context**: languages, topics, clone URLs and metadata moved into a dedicated right-hand pane on desktop; the centre keeps the README and quick actions
+- **Issue detail**: embedded list-detail mode that hides the standalone page chrome and guards against stale issue flashes when switching rows
+- **Selection states**: selected cards use a tinted surface and brand border; the active issue row is now visually marked
+- **Dashboard**: the hero card gained a desktop-appropriate subtitle
+- Removed duplicate quick actions from the repository context rail
+
+### Fixed
+- **Hover flicker**: hover washes now animate alpha from a transparent version of the target colour instead of `Colors.transparent`. Interpolating from transparent black to a light wash produced a single dark-grey frame on every button, sidebar row and list card; hover states now fade cleanly without strobing.
+
 ## [0.40.0] - 2026-10-24
 
 ### Changed
