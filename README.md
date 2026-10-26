@@ -22,7 +22,7 @@ A cross-platform Flutter client for [Gitea](https://gitea.io), built from the Op
 - Token-driven palette, typography, spacing and motion with reduced-motion support
 - 120+ data models auto-generated from OpenAPI spec
 - 49+ domain use cases with `Either<Failure, T>` pattern
-- 311 tests passing, `flutter analyze` clean (no errors)
+- 314 tests passing, `flutter analyze` clean (no errors)
 - Home page redesign (GitHub Mobile style): implementation spec in `docs/igitea-home-redesign-spec.md`
 
 ### Authentication

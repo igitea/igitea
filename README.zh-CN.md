@@ -22,7 +22,7 @@
 - 基于设计令牌的色板、字体、间距与动效体系，并支持系统「减少动态效果」
 - 120+ 个数据模型，基于 OpenAPI 规范自动生成
 - 49+ 个领域用例，采用 `Either<Failure, T>` 模式
-- 311 个测试通过，`flutter analyze` 无错误
+- 314 个测试通过，`flutter analyze` 无错误
 - 首页改造（GitHub Mobile 风格）：实施规格见 `docs/igitea-home-redesign-spec.md`
 
 ### 认证

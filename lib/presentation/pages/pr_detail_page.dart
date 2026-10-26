@@ -17,6 +17,7 @@ import '../widgets/forui/app_state_views.dart';
 import '../widgets/user_avatar.dart';
 import 'create_review_dialog.dart';
 import '../widgets/label_badge.dart';
+import '../widgets/comment_composer.dart';
 
 const _reactionEmojis = {
   '+1': '\u{1f44d}',
@@ -223,40 +224,78 @@ class _PRDetailPageState extends State<PRDetailPage> {
           ),
         ],
       ],
-      child: RefreshIndicator(
-        onRefresh: _onRefresh,
-        child: ListenableBuilder(
-          listenable: Listenable.merge([
-            Injection.repoNotifier,
-            Injection.issueNotifier,
-          ]),
-          builder: (context, _) {
-            final state = Injection.repoNotifier.pullRequestDetailState;
-            return switch (state) {
-              PullRequestDetailLoading() => const AppLoading(),
-              PullRequestDetailError(:final message) => AppError(
-                message: message,
-                onRetry: () => Injection.repoNotifier.getPullRequest(
-                  widget.owner,
-                  widget.repo,
-                  widget.index,
-                ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(child: _buildThread()),
+          ListenableBuilder(
+            listenable: Injection.repoNotifier,
+            builder: (context, _) {
+              if (Injection.repoNotifier.pullRequestDetailState
+                  is! PullRequestDetailDataLoaded) {
+                return const SizedBox.shrink();
+              }
+              return CommentComposer(
+                controller: _commentController,
+                onSend: _sendComment,
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _sendComment(String body) async {
+    await Injection.issueNotifier.createComment(
+      widget.owner,
+      widget.repo,
+      widget.index,
+      {'body': body},
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_scrollController.hasClients) return;
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 320),
+        curve: Curves.easeOutCubic,
+      );
+    });
+  }
+
+  Widget _buildThread() {
+    return RefreshIndicator(
+      onRefresh: _onRefresh,
+      child: ListenableBuilder(
+        listenable: Listenable.merge([
+          Injection.repoNotifier,
+          Injection.issueNotifier,
+        ]),
+        builder: (context, _) {
+          final state = Injection.repoNotifier.pullRequestDetailState;
+          return switch (state) {
+            PullRequestDetailLoading() => const AppLoading(),
+            PullRequestDetailError(:final message) => AppError(
+              message: message,
+              onRetry: () => Injection.repoNotifier.getPullRequest(
+                widget.owner,
+                widget.repo,
+                widget.index,
               ),
-              PullRequestDetailDataLoaded(:final pullRequest) => _PRContent(
-                pr: pullRequest,
-                owner: widget.owner,
-                repo: widget.repo,
-                index: widget.index,
-                commentController: _commentController,
-                scrollController: _scrollController,
-                reviews: _reviews,
-                prReactions: _prReactions,
-                onToggleReaction: _togglePrReaction,
-              ),
-              _ => const AppLoading(),
-            };
-          },
-        ),
+            ),
+            PullRequestDetailDataLoaded(:final pullRequest) => _PRContent(
+              pr: pullRequest,
+              owner: widget.owner,
+              repo: widget.repo,
+              index: widget.index,
+              scrollController: _scrollController,
+              reviews: _reviews,
+              prReactions: _prReactions,
+              onToggleReaction: _togglePrReaction,
+            ),
+            _ => const AppLoading(),
+          };
+        },
       ),
     );
   }
@@ -267,7 +306,6 @@ class _PRContent extends StatelessWidget {
   final String owner;
   final String repo;
   final int index;
-  final TextEditingController commentController;
   final ScrollController scrollController;
   final List<PullReview> reviews;
   final List<Reaction> prReactions;
@@ -278,7 +316,6 @@ class _PRContent extends StatelessWidget {
     required this.owner,
     required this.repo,
     required this.index,
-    required this.commentController,
     required this.scrollController,
     required this.reviews,
     required this.prReactions,
@@ -552,33 +589,6 @@ class _PRContent extends StatelessWidget {
                 _ => const SizedBox.shrink(),
               };
             },
-          ),
-
-          const SizedBox(height: 16),
-          FTextField(
-            control: FTextFieldControl.managed(controller: commentController),
-            hint: l10n.writeComment,
-            textCapitalization: TextCapitalization.sentences,
-            maxLines: 4,
-            minLines: 2,
-          ),
-          const SizedBox(height: 8),
-          Align(
-            alignment: Alignment.centerRight,
-            child: FButton(
-              size: .sm,
-              prefix: const Icon(FIcons.send, size: 14),
-              onPress: () {
-                final text = commentController.text.trim();
-                if (text.isNotEmpty) {
-                  Injection.issueNotifier.createComment(owner, repo, index, {
-                    'body': text,
-                  });
-                  commentController.clear();
-                }
-              },
-              child: Text(l10n.comment),
-            ),
           ),
 
           const SizedBox(height: 16),

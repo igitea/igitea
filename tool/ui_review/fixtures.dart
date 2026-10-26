@@ -575,7 +575,12 @@ Object? _route(String method, String path, Map<String, String> query) {
     }
     final pullMatch = RegExp(r'^pulls/(\d+)$').firstMatch(rest);
     if (pullMatch != null) return _pullRequest(_pulls.first);
-    if (RegExp(r'^issues/\d+/comments$').hasMatch(rest)) return _comments;
+    if (RegExp(r'^issues/\d+/comments$').hasMatch(rest)) {
+      return [
+        for (var i = 0; i < 7; i++)
+          for (final c in _comments) {...c, 'id': i * 10 + (c['id'] as int)},
+      ];
+    }
     if (RegExp(r'^issues/\d+/timeline$').hasMatch(rest)) return [];
     if (RegExp(r'^issues/\d+/reactions$').hasMatch(rest)) {
       return [

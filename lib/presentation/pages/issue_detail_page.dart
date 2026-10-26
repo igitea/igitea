@@ -25,6 +25,7 @@ import '../widgets/forui/app_tile.dart';
 import '../widgets/slow_loading_indicator.dart';
 import '../widgets/user_avatar.dart';
 import 'edit_issue_page.dart';
+import '../widgets/comment_composer.dart';
 import '../widgets/label_badge.dart';
 
 const _reactionEmojis = {
@@ -369,6 +370,46 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
   }
 
   Widget _buildBody(AppLocalizations l10n) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Expanded(child: _buildThread(l10n)),
+        ListenableBuilder(
+          listenable: Injection.issueNotifier,
+          builder: (context, _) {
+            final state = Injection.issueNotifier.state;
+            final loaded =
+                state is IssueDetailLoaded &&
+                state.issue.number == widget.index;
+            if (!loaded) return const SizedBox.shrink();
+            return CommentComposer(
+              controller: _commentController,
+              onSend: _sendComment,
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Future<void> _sendComment(String body) async {
+    await Injection.issueNotifier.createComment(
+      widget.owner,
+      widget.repo,
+      widget.index,
+      {'body': body},
+    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_scrollController.hasClients) return;
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 320),
+        curve: Curves.easeOutCubic,
+      );
+    });
+  }
+
+  Widget _buildThread(AppLocalizations l10n) {
     return RefreshIndicator(
       onRefresh: _onRefresh,
       child: ListenableBuilder(
@@ -391,7 +432,6 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
                 owner: widget.owner,
                 repo: widget.repo,
                 index: widget.index,
-                commentController: _commentController,
                 scrollController: _scrollController,
                 isSubscribed: _isSubscribed,
                 subscriptionLoading: _subscriptionLoading,
@@ -414,7 +454,6 @@ class _IssueContent extends StatelessWidget {
   final String owner;
   final String repo;
   final int index;
-  final TextEditingController commentController;
   final ScrollController scrollController;
   final bool isSubscribed;
   final bool subscriptionLoading;
@@ -428,7 +467,6 @@ class _IssueContent extends StatelessWidget {
     required this.owner,
     required this.repo,
     required this.index,
-    required this.commentController,
     required this.scrollController,
     required this.isSubscribed,
     required this.subscriptionLoading,
@@ -768,38 +806,6 @@ class _IssueContent extends StatelessWidget {
                 _ => const SizedBox.shrink(),
               };
             },
-          ),
-
-          const SizedBox(height: 16),
-          FTextField(
-            control: FTextFieldControl.managed(controller: commentController),
-            hint: l10n.writeComment,
-            textCapitalization: TextCapitalization.sentences,
-            maxLines: 3,
-            minLines: 1,
-            suffixBuilder: (context, style, variants) => Padding(
-              padding: const EdgeInsets.only(right: 6),
-              child: FTappable(
-                onPress: () {
-                  final text = commentController.text.trim();
-                  if (text.isNotEmpty) {
-                    Injection.issueNotifier.createComment(owner, repo, index, {
-                      'body': text,
-                    });
-                    commentController.clear();
-                  }
-                },
-                semanticsLabel: l10n.comment,
-                child: Padding(
-                  padding: const EdgeInsets.all(6),
-                  child: Icon(
-                    FIcons.send,
-                    size: 18,
-                    color: theme.colorScheme.primary,
-                  ),
-                ),
-              ),
-            ),
           ),
 
           const SizedBox(height: 16),
