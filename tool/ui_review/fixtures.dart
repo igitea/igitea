@@ -420,6 +420,10 @@ final _commits = [
     },
 ];
 
+/// Resolves a request against the fake backend; null means not found.
+Object? routeFake(String method, String path, Map<String, String> query) =>
+    _route(method, path, query);
+
 Object? _route(String method, String path, Map<String, String> query) {
   if (method != 'GET') return {};
   final p = path.replaceFirst(RegExp(r'^/api/v1'), '');
@@ -444,7 +448,10 @@ Object? _route(String method, String path, Map<String, String> query) {
     case '/settings/api':
       return {'max_response_items': 50, 'default_paging_num': 30};
     case '/settings/ui':
-      return {'default_theme': 'gitea-auto', 'allowed_reactions': ['+1']};
+      return {
+        'default_theme': 'gitea-auto',
+        'allowed_reactions': ['+1'],
+      };
     case '/settings/attachment':
       return {'enabled': true, 'max_size': 4, 'max_files': 5};
     case '/settings/repository':

@@ -518,3 +518,19 @@ class AppSegmentedControl extends StatelessWidget {
     );
   }
 }
+
+/// A tab label that stays on one line, shrinking slightly instead of wrapping
+/// when a phone-width tab bar runs out of room.
+class AppTabLabel extends StatelessWidget {
+  const AppTabLabel(this.text, {super.key});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Text(text, maxLines: 1, softWrap: false),
+    );
+  }
+}

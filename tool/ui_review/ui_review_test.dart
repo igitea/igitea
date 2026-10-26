@@ -23,6 +23,7 @@ import 'package:igitea/presentation/pages/home_page.dart';
 import 'package:igitea/presentation/pages/issue_detail_page.dart';
 import 'package:igitea/presentation/pages/issue_list_page.dart';
 import 'package:igitea/presentation/pages/login_page.dart';
+import 'package:igitea/presentation/pages/organization_detail_page.dart';
 import 'package:igitea/presentation/pages/pr_detail_page.dart';
 import 'package:igitea/presentation/pages/repo_detail_page.dart';
 import 'package:igitea/presentation/pages/settings_page.dart';
@@ -147,6 +148,7 @@ final scenarios = <String, Widget Function()>{
       const IssueDetailPage(owner: 'charley', repo: 'igitea', index: 42),
   'pull': () => const PRDetailPage(owner: 'charley', repo: 'igitea', index: 44),
   'settings': () => const SettingsPage(),
+  'org': () => const OrganizationDetailPage(orgName: 'infra'),
 };
 
 const _tabIndex = {'inbox': 1, 'explore': 2, 'profile': 3};

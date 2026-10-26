@@ -10,6 +10,7 @@ import '../widgets/forui/app_state_views.dart';
 import '../widgets/forui/app_tile.dart';
 import '../widgets/user_avatar.dart';
 import 'user_profile_page.dart';
+import '../widgets/forui/app_chrome.dart';
 
 class RepoStargazersPage extends StatefulWidget {
   final String owner;
@@ -70,7 +71,7 @@ class _RepoStargazersPageState extends State<RepoStargazersPage> {
         expands: true,
         children: [
           FTabEntry(
-            label: Text(l10n.stargazers),
+            label: AppTabLabel(l10n.stargazers),
             child: _UserList(
               users: _stargazers,
               loading: _stargazersLoading,
@@ -78,7 +79,7 @@ class _RepoStargazersPageState extends State<RepoStargazersPage> {
             ),
           ),
           FTabEntry(
-            label: Text(l10n.subscribers),
+            label: AppTabLabel(l10n.subscribers),
             child: _UserList(
               users: _subscribers,
               loading: _subscribersLoading,

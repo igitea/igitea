@@ -18,6 +18,7 @@ import 'org_webhook_list_page.dart';
 import 'repo_detail_page.dart';
 import 'team_detail_page.dart';
 import 'create_team_page.dart';
+import '../widgets/forui/app_chrome.dart';
 
 class OrganizationDetailPage extends StatefulWidget {
   final String orgName;
@@ -29,7 +30,6 @@ class OrganizationDetailPage extends StatefulWidget {
 }
 
 class _OrganizationDetailPageState extends State<OrganizationDetailPage> {
-
   @override
   void initState() {
     super.initState();
@@ -64,12 +64,12 @@ class _OrganizationDetailPageState extends State<OrganizationDetailPage> {
                     onPress: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => EditOrgPage(org: loaded)),
+                        MaterialPageRoute(
+                          builder: (_) => EditOrgPage(org: loaded),
+                        ),
                       ).then((result) {
                         if (result == true) {
-                          Injection.organizationNotifier.getOrg(
-                            widget.orgName,
-                          );
+                          Injection.organizationNotifier.getOrg(widget.orgName);
                         }
                       });
                     },
@@ -103,8 +103,9 @@ class _OrganizationDetailPageState extends State<OrganizationDetailPage> {
                             onPress: () => Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) =>
-                                    OrgActionsSecretsPage(org: loaded.name ?? ''),
+                                builder: (_) => OrgActionsSecretsPage(
+                                  org: loaded.name ?? '',
+                                ),
                               ),
                             ),
                           ),
@@ -156,13 +157,16 @@ class _OrganizationDetailPageState extends State<OrganizationDetailPage> {
           child: FTabs(
             expands: true,
             children: [
-              FTabEntry(label: Text(l10n.info), child: _InfoTab(org: org)),
               FTabEntry(
-                label: Text(l10n.repositories),
+                label: AppTabLabel(l10n.info),
+                child: _InfoTab(org: org),
+              ),
+              FTabEntry(
+                label: AppTabLabel(l10n.repositories),
                 child: _ReposTab(orgName: widget.orgName),
               ),
               FTabEntry(
-                label: Text(l10n.teams),
+                label: AppTabLabel(l10n.teams),
                 child: _TeamsTab(orgName: widget.orgName),
               ),
             ],
@@ -888,4 +892,3 @@ class _TeamBadge extends StatelessWidget {
     );
   }
 }
-

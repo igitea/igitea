@@ -12,6 +12,7 @@ import '../widgets/forui/app_tile.dart';
 import '../widgets/user_avatar.dart';
 import 'edit_team_page.dart';
 import 'repo_detail_page.dart';
+import '../widgets/forui/app_chrome.dart';
 
 class TeamDetailPage extends StatefulWidget {
   final int teamId;
@@ -23,7 +24,6 @@ class TeamDetailPage extends StatefulWidget {
 }
 
 class _TeamDetailPageState extends State<TeamDetailPage> {
-
   @override
   void initState() {
     super.initState();
@@ -101,15 +101,15 @@ class _TeamDetailPageState extends State<TeamDetailPage> {
             expands: true,
             children: [
               FTabEntry(
-                label: Text(l10n.info),
+                label: AppTabLabel(l10n.info),
                 child: _InfoTab(team: team),
               ),
               FTabEntry(
-                label: Text(l10n.members),
+                label: AppTabLabel(l10n.members),
                 child: _MembersTab(teamId: widget.teamId),
               ),
               FTabEntry(
-                label: Text(l10n.repositories),
+                label: AppTabLabel(l10n.repositories),
                 child: _ReposTab(teamId: widget.teamId),
               ),
             ],
@@ -636,4 +636,3 @@ class _ReposTabState extends State<_ReposTab> {
     );
   }
 }
-

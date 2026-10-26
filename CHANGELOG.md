@@ -20,8 +20,10 @@
 - **Repository header**: on phones fork, open in browser and settings fold into a "More" menu
 - **Profile**: organisations show their name under the avatar
 - **Issue detail**: labels sit on their own row above the edit and subscribe actions
+- **UI review server** (`tool/ui_review/fake_server.dart`): serves the review fixtures as a local Gitea API so the app can be tried in a simulator
 
 ### Fixed
+- Organisation, team and stargazer tab labels no longer wrap onto two lines on phones
 - Pale label colours such as `#a2eeef` were unreadable on light surfaces
 
 ## [0.41.0] - 2026-10-26
