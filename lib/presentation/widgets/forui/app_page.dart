@@ -16,6 +16,10 @@ class AppPage extends StatelessWidget {
   final List<Widget> actions;
   final Widget? footer;
 
+  /// A full-width bar pinned under the content, such as a comment composer.
+  /// Unlike [footer] it stays above the on-screen keyboard.
+  final Widget? bottomBar;
+
   /// Whether the scaffold should apply its default padding around [child].
   final bool childPad;
 
@@ -32,6 +36,7 @@ class AppPage extends StatelessWidget {
     this.subtitle,
     this.actions = const [],
     this.footer,
+    this.bottomBar,
     this.childPad = false,
     this.canPop = true,
     this.maxContentWidth = 1120,
@@ -65,7 +70,20 @@ class AppPage extends StatelessWidget {
         removeTop: true,
         child: Material(
           color: Colors.transparent,
-          child: _Constrained(maxWidth: maxContentWidth, child: child),
+          child: bottomBar == null
+              ? _Constrained(maxWidth: maxContentWidth, child: child)
+              : Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Expanded(
+                      child: _Constrained(
+                        maxWidth: maxContentWidth,
+                        child: child,
+                      ),
+                    ),
+                    bottomBar!,
+                  ],
+                ),
         ),
       ),
     );

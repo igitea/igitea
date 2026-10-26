@@ -224,25 +224,21 @@ class _PRDetailPageState extends State<PRDetailPage> {
           ),
         ],
       ],
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Expanded(child: _buildThread()),
-          ListenableBuilder(
-            listenable: Injection.repoNotifier,
-            builder: (context, _) {
-              if (Injection.repoNotifier.pullRequestDetailState
-                  is! PullRequestDetailDataLoaded) {
-                return const SizedBox.shrink();
-              }
-              return CommentComposer(
-                controller: _commentController,
-                onSend: _sendComment,
-              );
-            },
-          ),
-        ],
+      bottomBar: ListenableBuilder(
+        listenable: Injection.repoNotifier,
+        builder: (context, _) {
+          if (Injection.repoNotifier.pullRequestDetailState
+              is! PullRequestDetailDataLoaded) {
+            return const SizedBox.shrink();
+          }
+          return CommentComposer(
+            controller: _commentController,
+            onSend: _sendComment,
+            maxWidth: 980,
+          );
+        },
       ),
+      child: _buildThread(),
     );
   }
 

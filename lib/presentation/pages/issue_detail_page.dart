@@ -318,7 +318,8 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
             onOpenBrowser: _openInBrowser,
             onEdit: _openEditor,
           ),
-          Expanded(child: _buildBody(l10n)),
+          Expanded(child: _buildThread(l10n)),
+          _buildComposer(),
         ],
       );
     }
@@ -340,7 +341,8 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
             onPress: _confirmDeleteIssue,
           ),
       ],
-      child: _buildBody(l10n),
+      bottomBar: _buildComposer(maxWidth: 980),
+      child: _buildThread(l10n),
     );
   }
 
@@ -369,26 +371,20 @@ class _IssueDetailPageState extends State<IssueDetailPage> {
         });
   }
 
-  Widget _buildBody(AppLocalizations l10n) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Expanded(child: _buildThread(l10n)),
-        ListenableBuilder(
-          listenable: Injection.issueNotifier,
-          builder: (context, _) {
-            final state = Injection.issueNotifier.state;
-            final loaded =
-                state is IssueDetailLoaded &&
-                state.issue.number == widget.index;
-            if (!loaded) return const SizedBox.shrink();
-            return CommentComposer(
-              controller: _commentController,
-              onSend: _sendComment,
-            );
-          },
-        ),
-      ],
+  Widget _buildComposer({double? maxWidth}) {
+    return ListenableBuilder(
+      listenable: Injection.issueNotifier,
+      builder: (context, _) {
+        final state = Injection.issueNotifier.state;
+        final loaded =
+            state is IssueDetailLoaded && state.issue.number == widget.index;
+        if (!loaded) return const SizedBox.shrink();
+        return CommentComposer(
+          controller: _commentController,
+          onSend: _sendComment,
+          maxWidth: maxWidth,
+        );
+      },
     );
   }
 

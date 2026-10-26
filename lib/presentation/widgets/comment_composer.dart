@@ -19,9 +19,14 @@ class CommentComposer extends StatefulWidget {
     super.key,
     required this.controller,
     required this.onSend,
+    this.maxWidth,
   });
 
   final TextEditingController controller;
+
+  /// Keeps the field aligned with a width-capped reading column while the bar
+  /// itself spans the window.
+  final double? maxWidth;
 
   /// Posts the trimmed comment body; the field clears once it completes.
   final Future<void> Function(String body) onSend;
@@ -86,48 +91,63 @@ class _CommentComposerState extends State<CommentComposer> {
         top: false,
         child: Padding(
           padding: const EdgeInsets.fromLTRB(16, 10, 12, 10),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Expanded(
-                child: CallbackShortcuts(
-                  bindings: {
-                    const SingleActivator(LogicalKeyboardKey.enter, meta: true):
-                        _send,
-                    const SingleActivator(
-                      LogicalKeyboardKey.enter,
-                      control: true,
-                    ): _send,
-                  },
-                  child: FTextField(
-                    control: FTextFieldControl.managed(
-                      controller: widget.controller,
+          child: _maybeConstrain(
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Expanded(
+                  child: CallbackShortcuts(
+                    bindings: {
+                      const SingleActivator(
+                        LogicalKeyboardKey.enter,
+                        meta: true,
+                      ): _send,
+                      const SingleActivator(
+                        LogicalKeyboardKey.enter,
+                        control: true,
+                      ): _send,
+                    },
+                    child: FTextField(
+                      control: FTextFieldControl.managed(
+                        controller: widget.controller,
+                      ),
+                      hint: l10n.writeComment,
+                      textCapitalization: TextCapitalization.sentences,
+                      minLines: 1,
+                      maxLines: 6,
                     ),
-                    hint: l10n.writeComment,
-                    textCapitalization: TextCapitalization.sentences,
-                    minLines: 1,
-                    maxLines: 6,
                   ),
                 ),
-              ),
-              const SizedBox(width: 8),
-              if (!touch && _canSend) ...[
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 11),
-                  child: KbdHint(text: isMac ? '⌘↩' : 'Ctrl ↩'),
+                const SizedBox(width: 8),
+                if (!touch && _canSend) ...[
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 11),
+                    child: KbdHint(text: isMac ? '⌘↩' : 'Ctrl ↩'),
+                  ),
+                  const SizedBox(width: 6),
+                ],
+                _SendButton(
+                  enabled: _canSend,
+                  sending: _sending,
+                  label: l10n.comment,
+                  size: touch ? 44 : 38,
+                  onPress: _send,
                 ),
-                const SizedBox(width: 6),
               ],
-              _SendButton(
-                enabled: _canSend,
-                sending: _sending,
-                label: l10n.comment,
-                size: touch ? 44 : 38,
-                onPress: _send,
-              ),
-            ],
+            ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _maybeConstrain(Widget child) {
+    final maxWidth = widget.maxWidth;
+    if (maxWidth == null) return child;
+    return Center(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(maxWidth: maxWidth),
+        child: child,
       ),
     );
   }
