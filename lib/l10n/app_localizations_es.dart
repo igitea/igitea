@@ -2600,5 +2600,5 @@ class AppLocalizationsEs extends AppLocalizations {
       'No está disponible. Puede que se haya eliminado o desactivado en este repositorio.';
 
   @override
-  String get errorForbiddenFriendly => 'No tienes permiso para ver esto.';
+  String get errorForbiddenFriendly => 'No tiene permiso para ver esto.';
 }

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Matches the app canvas so the launch window and first frame line up. -->
+    <color name="launch_background">#FF0B0F0E</color>
+</resources>

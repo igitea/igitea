@@ -2586,7 +2586,7 @@ class AppLocalizationsPt extends AppLocalizations {
       'Repositories, reviews and issues that need your attention.';
 
   @override
-  String get forkAction => 'Fork';
+  String get forkAction => 'Bifurcar';
 
   @override
   String get errorNotFoundFriendly =>

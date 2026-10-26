@@ -26,8 +26,13 @@
 - **代码查看**：制表符按 4 列显示，缩进较深的代码也能在手机上看清
 - **更友好的错误提示**：「not found」与权限错误在所有语言中都显示为易懂的句子
 - **应用名称**：iOS 主屏、Android 启动器、macOS 菜单栏、Web、Windows 与 Linux 标题栏统一显示为「iGitea」
+- **统一的应用图标**：iOS、Android（自适应与旧版）、macOS、Windows、Web 以及 Play 商店/MSIX 素材统一使用应用内的青绿色代码方块标志，由 `tool/icons/generate_icons.py` 生成；移除了未再使用的茶壶图标源文件
+- **启动屏**：iOS 与 Android 启动屏在亮/暗色模式下使用应用底色，不再白屏闪烁
+- **仪表盘入口**：内容宽度小于 760pt 时改用分组列表，iPad mini 与竖屏 iPad 不再截断「已加星标的仓库」
+- 界面审查工具新增 iPad mini 与 13 英寸 iPad Pro 尺寸
 
 ### 修复
+- **iOS 与 macOS 图标集**：多个尺寸复用了 1x 图片（图标模糊），iOS 图标还带有 App Store 不接受的透明通道；现在每个尺寸都按精确像素生成，并在系统要求处保持不透明
 - **Apple 平台与 Windows 上的等宽字体**：代码块、Diff、Blame、提交 SHA 与 Token 使用的 `monospace` 字体只在 Android 与 Linux 上存在，其他平台回退为比例字体；现在改用 Menlo / SF Mono / Consolas
 - **刘海屏手机列表顶部的空白条**：二级页面与首页标签页的正文仍带有状态栏内边距，导致未设置内边距的列表（如代码查看）顶部出现空白
 - 仓库头部的分支图标与分支名不再间隔过大

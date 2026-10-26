@@ -750,6 +750,6 @@
   "savedFilters": "已儲存的篩選",
   "saveFilter": "儲存篩選",
   "forkAction": "分叉",
-  "errorNotFoundFriendly": "此內容無法使用，可能已被刪除或在此儲存庫中被關閉。",
+  "errorNotFoundFriendly": "此內容無法使用，可能已被刪除或在此倉庫中被關閉。",
   "errorForbiddenFriendly": "你沒有檢視此內容的權限。"
 }

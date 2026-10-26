@@ -224,6 +224,14 @@ flutter analyze
 flutter test
 ```
 
+### 应用图标
+
+所有平台的图标由同一个脚本生成。在 `tool/icons/generate_icons.py` 中修改颜色或图形后运行：
+
+```bash
+python3 tool/icons/generate_icons.py
+```
+
 ### 界面审查
 
 使用模拟的 Gitea 后端，在手机、平板（竖屏/横屏）和桌面尺寸下渲染关键页面，PNG 输出到 `tool/ui_review/out/`：

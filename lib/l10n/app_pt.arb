@@ -727,7 +727,7 @@
   "yourStarredRepos": "Seus repositórios favoritos",
   "yourOrganizations": "Suas organizações",
   "loadMoreActivity": "Carregar mais atividades",
-  "forkAction": "Fork",
+  "forkAction": "Bifurcar",
   "errorNotFoundFriendly": "Não disponível. Pode ter sido removido ou desativado neste repositório.",
   "errorForbiddenFriendly": "Você não tem permissão para ver isto."
 }

@@ -729,5 +729,5 @@
   "loadMoreActivity": "Cargar más actividad",
   "forkAction": "Bifurcar",
   "errorNotFoundFriendly": "No está disponible. Puede que se haya eliminado o desactivado en este repositorio.",
-  "errorForbiddenFriendly": "No tienes permiso para ver esto."
+  "errorForbiddenFriendly": "No tiene permiso para ver esto."
 }

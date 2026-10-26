@@ -226,6 +226,14 @@ flutter analyze
 flutter test
 ```
 
+### App icons
+
+All platform icons come from one generator. Edit the colours or glyph in `tool/icons/generate_icons.py`, then run:
+
+```bash
+python3 tool/icons/generate_icons.py
+```
+
 ### UI review
 
 Render key screens against a fake Gitea backend at phone, tablet (portrait and landscape) and desktop sizes. PNGs land in `tool/ui_review/out/`:

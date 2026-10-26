@@ -61,6 +61,18 @@ const devices = [
     TargetPlatform.iOS,
     padding: EdgeInsets.only(top: 24, bottom: 20),
   ),
+  Device(
+    'ipad_mini',
+    Size(744, 1133),
+    TargetPlatform.iOS,
+    padding: EdgeInsets.only(top: 24, bottom: 20),
+  ),
+  Device(
+    'ipad_pro_land',
+    Size(1376, 1032),
+    TargetPlatform.iOS,
+    padding: EdgeInsets.only(top: 24, bottom: 20),
+  ),
   Device('desktop', Size(1440, 900), TargetPlatform.macOS),
 ];
 

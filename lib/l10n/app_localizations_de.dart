@@ -2595,13 +2595,13 @@ class AppLocalizationsDe extends AppLocalizations {
       'Repositories, reviews and issues that need your attention.';
 
   @override
-  String get forkAction => 'Forken';
+  String get forkAction => 'Abspalten';
 
   @override
   String get errorNotFoundFriendly =>
-      'Nicht verfügbar. Möglicherweise wurde es entfernt oder für dieses Repository deaktiviert.';
+      'Nicht verfügbar. Möglicherweise wurde es entfernt oder für dieses Repositorium deaktiviert.';
 
   @override
   String get errorForbiddenFriendly =>
-      'Du hast keine Berechtigung, dies anzuzeigen.';
+      'Sie haben keine Berechtigung, dies anzuzeigen.';
 }

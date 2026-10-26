@@ -269,7 +269,7 @@ class _DashboardPageState extends State<DashboardPage> {
       builder: (context, constraints) {
         // Five destinations never split evenly into two or three columns, so
         // narrow windows get a grouped list instead of a ragged grid.
-        if (constraints.maxWidth < 600) {
+        if (constraints.maxWidth < 760) {
           return AppSection(
             title: '',
             showHeader: false,

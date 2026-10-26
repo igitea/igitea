@@ -2585,7 +2585,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'Repositories, reviews and issues that need your attention.';
 
   @override
-  String get forkAction => 'Форк';
+  String get forkAction => 'Форкнуть';
 
   @override
   String get errorNotFoundFriendly =>

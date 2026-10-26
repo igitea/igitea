@@ -2554,7 +2554,7 @@ class AppLocalizationsZh extends AppLocalizations {
       'Repositories, reviews and issues that need your attention.';
 
   @override
-  String get forkAction => '派生';
+  String get forkAction => '分叉';
 
   @override
   String get errorNotFoundFriendly => '此内容不可用，可能已被删除或在该仓库中被关闭。';
@@ -4888,7 +4888,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get forkAction => '分叉';
 
   @override
-  String get errorNotFoundFriendly => '此內容無法使用，可能已被刪除或在此儲存庫中被關閉。';
+  String get errorNotFoundFriendly => '此內容無法使用，可能已被刪除或在此倉庫中被關閉。';
 
   @override
   String get errorForbiddenFriendly => '你沒有檢視此內容的權限。';
