@@ -19,6 +19,7 @@
 - **Issue list**: the type chip is localized, a review-requested chip was added, and "Save filter" moved into the filter toolbar as an icon button
 - **Repository header**: on phones fork, open in browser and settings fold into a "More" menu
 - **Profile**: organisations show their name under the avatar
+- **Issue detail**: labels sit on their own row above the edit and subscribe actions
 
 ### Fixed
 - Pale label colours such as `#a2eeef` were unreadable on light surfaces

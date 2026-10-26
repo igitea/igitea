@@ -506,11 +506,14 @@ class _IssueContent extends StatelessWidget {
             ),
           const SizedBox(height: 16),
 
+          if (issue.labels?.isNotEmpty == true) ...[
+            LabelRow(labels: issue.labels!, maxShow: 12, dense: false),
+            const SizedBox(height: 12),
+          ],
           Wrap(
             spacing: 8,
             runSpacing: 8,
             children: [
-              ...(issue.labels ?? []).map((label) => LabelBadge(label: label)),
               if (canEdit)
                 FButton(
                   variant: .outline,
