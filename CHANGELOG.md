@@ -30,6 +30,7 @@
 - **Launch screens** on iOS and Android use the app's canvas colour in light and dark mode instead of flashing white
 - **Dashboard tiles** switch to the grouped list below 760pt of content width, so iPad mini and portrait iPad no longer truncate "Starred Repositories"
 - UI review harness covers iPad mini and 13-inch iPad Pro sizes
+- **Android debug builds** may reach a Gitea server on the development machine (`10.0.2.2`, `127.0.0.1`, `localhost`) over plain HTTP; release builds are unchanged
 
 ### Fixed
 - **iOS and macOS icon sets**: several slots reused 1x images (blurry icons) and iOS icons carried an alpha channel, which the App Store rejects; every size is now generated at its exact pixel size, opaque where the OS requires it
