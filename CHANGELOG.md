@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.41.0] - 2026-10-26
+
 ### Added
 - **Desktop workspace**: a three-pane repository overview (grouped section rail, README/overview centre, About/context rail), a list-detail issue workspace with an inline preview and metadata rail on wide windows, and a collapsible icon-rail sidebar that remembers its state
 - **Desktop interaction layer**: `AppHoverRegion` with hover-intent debouncing, single-layer hover washes, focus rings, Enter/Space activation, right-click context menus and double-click open; applied across the shell, repository rows, issue cards, notifications and activity feeds
