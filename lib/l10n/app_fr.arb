@@ -726,5 +726,6 @@
   "recentActivitySubtitle": "Voir l'activité récente",
   "yourStarredRepos": "Vos dépôts favoris",
   "yourOrganizations": "Vos organisations",
-  "loadMoreActivity": "Charger plus d'activité"
+  "loadMoreActivity": "Charger plus d'activité",
+  "forkAction": "Forker"
 }

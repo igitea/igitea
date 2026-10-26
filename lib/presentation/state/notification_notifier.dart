@@ -43,6 +43,14 @@ class NotificationNotifier extends ChangeNotifier {
   NotificationState _state = const NotificationInitial();
   NotificationState get state => _state;
 
+  /// Whether the loaded inbox has unread threads.
+  bool get hasUnread => switch (_state) {
+    NotificationListLoaded(:final notifications) => notifications.any(
+      (n) => n.unread == true,
+    ),
+    _ => false,
+  };
+
   int _notifPage = 1;
   bool _notifLoadingMore = false;
   bool get notifLoadingMore => _notifLoadingMore;

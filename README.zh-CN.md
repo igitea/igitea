@@ -18,10 +18,11 @@
 - **Forui** 设计系统（shadcn 风格）：品牌青绿主题、亮/暗色板、自适应导航
 - **桌面优先的界面焕新**：自建侧边栏外壳、编辑式仪表盘、卡片化仓库概览、紧凑 Issue 行、骨架屏与淡入淡出转场
 - **桌面工作区**：三栏仓库概览、带元数据栏的 Issue 列表-详情工作区、可折叠图标栏侧边栏、右键上下文菜单与快捷键面板
+- **按窗口尺寸自适应、按平台调校**：横屏的 iPad 与 Android 平板获得与桌面相同的多栏工作区；竖屏平板使用带文字的导航栏；手机使用大标题、分组列表、略大的触控字号与 40–44pt 点击区域。键盘提示与仅悬浮可见的操作只在鼠标/键盘平台显示
 - 基于设计令牌的色板、字体、间距与动效体系，并支持系统「减少动态效果」
 - 120+ 个数据模型，基于 OpenAPI 规范自动生成
 - 49+ 个领域用例，采用 `Either<Failure, T>` 模式
-- 303 个测试通过，`flutter analyze` 无错误
+- 311 个测试通过，`flutter analyze` 无错误
 - 首页改造（GitHub Mobile 风格）：实施规格见 `docs/igitea-home-redesign-spec.md`
 
 ### 认证
@@ -221,6 +222,15 @@ flutter build web
 ```bash
 flutter analyze
 flutter test
+```
+
+### 界面审查
+
+使用模拟的 Gitea 后端，在手机、平板（竖屏/横屏）和桌面尺寸下渲染关键页面，PNG 输出到 `tool/ui_review/out/`：
+
+```bash
+flutter test tool/ui_review --update-goldens
+UI_REVIEW_DARK=1 UI_REVIEW_ONLY=home,repo UI_REVIEW_DEVICE=phone,tablet flutter test tool/ui_review --update-goldens
 ```
 
 ## 项目进度

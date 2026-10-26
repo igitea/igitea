@@ -26,6 +26,7 @@ import '../widgets/user_avatar.dart';
 import 'issue_detail_page.dart';
 import '../../domain/services/saved_filter_service.dart';
 import '../../domain/models/saved_filter.dart';
+import '../widgets/label_badge.dart';
 
 class IssueListPage extends StatefulWidget {
   final IssueFilterState? initialFilter;
@@ -372,6 +373,14 @@ class _IssueListPageState extends State<IssueListPage> {
                       ),
                     ),
                     const Spacer(),
+                    if (_filtersLoaded &&
+                        (_searchQuery.isNotEmpty ||
+                            Injection.issueNotifier.issuesListFilter != null))
+                      AppIconButton(
+                        icon: FIcons.bookmarkPlus,
+                        label: l10n.saveFilter,
+                        onPress: _saveCurrentFilter,
+                      ),
                     AppIconButton(
                       icon: FIcons.listFilter,
                       label: l10n.moreFilters,
@@ -390,10 +399,7 @@ class _IssueListPageState extends State<IssueListPage> {
             if (!filter.hasFilters) return const SizedBox.shrink();
             return FadeInWrapper(
               child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: UIConstants.md,
-                  vertical: UIConstants.sm,
-                ),
+                padding: const EdgeInsets.fromLTRB(20, 2, 20, 8),
                 child: Wrap(
                   spacing: UIConstants.sm,
                   runSpacing: UIConstants.sm,
@@ -422,7 +428,9 @@ class _IssueListPageState extends State<IssueListPage> {
                     ),
                     if (filter.type != null)
                       AppFilterChip(
-                        label: filter.type!,
+                        label: filter.type == 'pulls'
+                            ? l10n.pullRequests
+                            : l10n.issues,
                         onRemove: () {
                           _filterState.value = filter.copyWith(clearType: true);
                           _forceReload();
@@ -458,6 +466,16 @@ class _IssueListPageState extends State<IssueListPage> {
                           _forceReload();
                         },
                       ),
+                    if (filter.reviewRequested)
+                      AppFilterChip(
+                        label: l10n.reviewRequested,
+                        onRemove: () {
+                          _filterState.value = filter.copyWith(
+                            reviewRequested: false,
+                          );
+                          _forceReload();
+                        },
+                      ),
                   ],
                 ),
               ),
@@ -466,7 +484,7 @@ class _IssueListPageState extends State<IssueListPage> {
         ),
         if (_filtersLoaded && _savedFilters.isNotEmpty)
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: UIConstants.md),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
@@ -512,23 +530,6 @@ class _IssueListPageState extends State<IssueListPage> {
                     ),
                   ),
               ],
-            ),
-          ),
-        if (_filtersLoaded &&
-            (_searchQuery.isNotEmpty ||
-                Injection.issueNotifier.issuesListFilter != null))
-          Align(
-            alignment: Alignment.centerRight,
-            child: Padding(
-              padding: const EdgeInsets.only(right: UIConstants.md),
-              child: FButton(
-                variant: .ghost,
-                size: .xs,
-                mainAxisSize: .min,
-                prefix: const Icon(FIcons.bookmarkPlus, size: 14),
-                onPress: _saveCurrentFilter,
-                child: Text(l10n.saveFilter),
-              ),
             ),
           ),
         Expanded(
@@ -669,7 +670,8 @@ class _IssueListState extends State<_IssueList> {
               issue.number == widget.selectedNumber &&
               owner == widget.selectedOwner &&
               repo == widget.selectedRepo;
-          final desktop = DesktopLayout.isDesktop(context);
+          final desktop =
+              DesktopLayout.isDesktop(context) && !DesktopLayout.isTouch();
           return FadeInWrapper(
             delay: Duration(milliseconds: (index * 40).clamp(0, 300)),
             child: _IssueCard(
@@ -906,7 +908,7 @@ class _IssueCard extends StatelessWidget {
             const SizedBox(height: 7),
             Padding(
               padding: const EdgeInsets.only(left: 26),
-              child: _LabelRow(labels: issue.labels!),
+              child: LabelRow(labels: issue.labels!),
             ),
           ],
         ],
@@ -922,67 +924,6 @@ class _IssueCard extends StatelessWidget {
     if (diff.inDays > 0) return l10n.daysAgo('${diff.inDays}');
     if (diff.inHours > 0) return l10n.hoursAgo('${diff.inHours}');
     return l10n.justNow;
-  }
-}
-
-class _LabelRow extends StatelessWidget {
-  final List<Label> labels;
-  const _LabelRow({required this.labels});
-
-  Color _color(String? hex) {
-    if (hex == null || hex.isEmpty) return Colors.grey;
-    try {
-      final h = hex.replaceFirst('#', '');
-      return Color(int.parse('FF$h', radix: 16));
-    } catch (_) {
-      return Colors.grey;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    const maxShow = 4;
-    final overflow = labels.length - maxShow;
-
-    return Wrap(
-      spacing: 4,
-      runSpacing: 3,
-      children: [
-        ...labels.take(maxShow).map((label) {
-          final raw = _color(label.color);
-          final c = Theme.of(context).brightness == Brightness.dark
-              ? Color.lerp(raw, Colors.white, 0.28)!
-              : raw;
-          return Container(
-            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-            decoration: BoxDecoration(
-              color: c.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(3),
-              border: Border.all(color: c.withValues(alpha: 0.35), width: 0.5),
-            ),
-            child: Text(
-              label.name ?? '',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: c,
-                height: 1.2,
-              ),
-            ),
-          );
-        }),
-        if (overflow > 0)
-          Text(
-            '+$overflow',
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w500,
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-      ],
-    );
   }
 }
 

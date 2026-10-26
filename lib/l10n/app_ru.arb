@@ -726,5 +726,6 @@
   "recentActivitySubtitle": "Просмотр последних действий",
   "yourStarredRepos": "Избранные репозитории",
   "yourOrganizations": "Ваши организации",
-  "loadMoreActivity": "Загрузить ещё"
+  "loadMoreActivity": "Загрузить ещё",
+  "forkAction": "Форк"
 }

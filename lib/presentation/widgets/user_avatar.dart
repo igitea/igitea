@@ -1,8 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:forui/forui.dart';
 import '../../core/di/injection.dart';
 import '../../data/models/generated/generated_models.dart';
+import 'avatar_fallback.dart';
 
 class UserAvatar extends StatelessWidget {
   final User user;
@@ -22,12 +22,10 @@ class UserAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final avatarUrl = _resolvedUrl;
-    final fallbackInitial = (user.login ?? '?')[0].toUpperCase();
 
     if (avatarUrl.isEmpty) {
-      return _buildFallback(theme, fallbackInitial);
+      return _buildFallback();
     }
 
     return ClipOval(
@@ -39,22 +37,13 @@ class UserAvatar extends StatelessWidget {
         maxWidthDiskCache: 256,
         memCacheWidth: (radius * 6).round(),
         fadeInDuration: Duration.zero,
-        placeholder: (_, _) => _buildFallback(theme, fallbackInitial),
-        errorWidget: (_, _, _) => _buildFallback(theme, fallbackInitial),
+        placeholder: (_, _) => _buildFallback(),
+        errorWidget: (_, _, _) => _buildFallback(),
       ),
     );
   }
 
-  Widget _buildFallback(ThemeData theme, String initial) {
-    return FAvatar.raw(
-      size: radius * 2,
-      child: Text(
-        initial,
-        style: TextStyle(
-          fontSize: radius * 0.9,
-          color: theme.colorScheme.onSurfaceVariant,
-        ),
-      ),
-    );
+  Widget _buildFallback() {
+    return AvatarFallback(name: user.login ?? '?', size: radius * 2);
   }
 }

@@ -2552,6 +2552,9 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get myWorkSubtitle =>
       'Repositories, reviews and issues that need your attention.';
+
+  @override
+  String get forkAction => '派生';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -4874,4 +4877,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get activityRequestedChanges => '對 PR 提出了修改意見';
+
+  @override
+  String get forkAction => '分叉';
 }

@@ -27,6 +27,37 @@ import 'presentation/widgets/forui/app_chrome.dart';
 class IGiteaApp extends StatefulWidget {
   const IGiteaApp({super.key});
 
+  /// Text on touch screens is set a step larger than the dense desktop scale
+  /// so lists and metadata stay comfortable at arm's length.
+  static const double touchTextBoost = 1.08;
+
+  /// Wraps the navigator with the Forui theme, toasts, tooltips and the touch
+  /// text scale. Shared with tests so they render exactly like the app.
+  static Widget wrap(
+    BuildContext context,
+    Widget? child, {
+    required bool touch,
+  }) {
+    final brightness = Theme.of(context).brightness;
+    Widget content = FTheme(
+      data: AppTheme.forui(brightness, touch: touch),
+      platform: touch ? FPlatformVariant.iOS : FPlatformVariant.macOS,
+      child: FToaster(
+        child: FTooltipGroup(child: child ?? const SizedBox.shrink()),
+      ),
+    );
+    if (touch) {
+      final media = MediaQuery.of(context);
+      content = MediaQuery(
+        data: media.copyWith(
+          textScaler: _BoostedTextScaler(media.textScaler, touchTextBoost),
+        ),
+        child: content,
+      );
+    }
+    return content;
+  }
+
   @override
   State<IGiteaApp> createState() => _IGiteaAppState();
 }
@@ -149,16 +180,8 @@ class _IGiteaAppState extends State<IGiteaApp> {
           themeAnimationCurve: AppAnimations.easeOut,
           home: home,
           onGenerateRoute: _onGenerateRoute,
-          builder: (context, child) {
-            final brightness = Theme.of(context).brightness;
-            return FTheme(
-              data: AppTheme.forui(brightness, touch: touch),
-              platform: touch ? FPlatformVariant.iOS : FPlatformVariant.macOS,
-              child: FToaster(
-                child: FTooltipGroup(child: child ?? const SizedBox.shrink()),
-              ),
-            );
-          },
+          builder: (context, child) =>
+              IGiteaApp.wrap(context, child, touch: touch),
         );
       },
     );
@@ -321,4 +344,28 @@ class _BootSplash extends StatelessWidget {
       ),
     );
   }
+}
+
+/// Multiplies the platform text scale by a fixed [factor].
+class _BoostedTextScaler extends TextScaler {
+  const _BoostedTextScaler(this.base, this.factor);
+
+  final TextScaler base;
+  final double factor;
+
+  @override
+  double scale(double fontSize) => base.scale(fontSize * factor);
+
+  @override
+  // ignore: deprecated_member_use
+  double get textScaleFactor => base.textScaleFactor * factor;
+
+  @override
+  bool operator ==(Object other) =>
+      other is _BoostedTextScaler &&
+      other.base == base &&
+      other.factor == factor;
+
+  @override
+  int get hashCode => Object.hash(base, factor);
 }

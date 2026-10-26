@@ -1,3 +1,6 @@
+import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
+
 import '../../data/datasources/remote/api_client.dart';
 import '../../data/datasources/remote/gitea_api_service.dart';
 import '../../data/repositories/admin_repository_impl.dart';
@@ -272,6 +275,11 @@ class Injection {
   static late RepoActionsNotifier repoActionsNotifier;
 
   static bool _initialized = false;
+
+  /// HTTP client used for every [ApiClient]; tests and the UI review harness
+  /// replace it with a fake backend.
+  @visibleForTesting
+  static http.Client? httpClientOverride;
 
   /// Asserts that all use cases have been initialized.
   /// Catches missing wiring in any of the 3 init paths.
@@ -670,6 +678,7 @@ class Injection {
     apiClient = ApiClient(
       baseUrl: baseUrl ?? '',
       token: token,
+      client: httpClientOverride,
     );
     if (username != null && password != null) {
       apiClient.setBasicAuth(username, password);
@@ -844,6 +853,7 @@ class Injection {
     apiClient = ApiClient(
       baseUrl: baseUrl ?? '',
       token: token,
+      client: httpClientOverride,
     );
     if (username != null && password != null) {
       apiClient.setBasicAuth(username, password);

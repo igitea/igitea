@@ -25,6 +25,7 @@ import '../widgets/forui/app_tile.dart';
 import '../widgets/slow_loading_indicator.dart';
 import '../widgets/user_avatar.dart';
 import 'edit_issue_page.dart';
+import '../widgets/label_badge.dart';
 
 const _reactionEmojis = {
   '+1': '\u{1f44d}',
@@ -509,24 +510,7 @@ class _IssueContent extends StatelessWidget {
             spacing: 8,
             runSpacing: 8,
             children: [
-              ...(issue.labels ?? []).map((label) {
-                final color = _parseColor(label.color);
-                return FBadge(
-                  style: .delta(
-                    decoration: .boxDelta(
-                      color:
-                          color?.withValues(alpha: 0.2) ??
-                          theme.colorScheme.primaryContainer,
-                    ),
-                    contentStyle: .delta(
-                      labelTextStyle: .delta(
-                        color: color ?? theme.colorScheme.onPrimaryContainer,
-                      ),
-                    ),
-                  ),
-                  child: Text(label.name ?? ''),
-                );
-              }),
+              ...(issue.labels ?? []).map((label) => LabelBadge(label: label)),
               if (canEdit)
                 FButton(
                   variant: .outline,
@@ -1161,17 +1145,6 @@ class _IssueContent extends StatelessWidget {
     if (issue.due_date == null) return false;
     return issue.state?.isOpen == true &&
         issue.due_date!.isBefore(DateTime.now());
-  }
-
-  Color? _parseColor(String? colorStr) {
-    if (colorStr == null || colorStr.isEmpty) return null;
-    try {
-      return Color(
-        int.parse(colorStr.replaceFirst('#', ''), radix: 16) + 0xFF000000,
-      );
-    } catch (_) {
-      return null;
-    }
   }
 
   void _showMilestoneEditor(BuildContext context, Issue issue) async {
@@ -2344,7 +2317,7 @@ class IssueDetailMetaRail extends StatelessWidget {
                           runSpacing: 5,
                           children: [
                             for (final label in issue.labels!)
-                              _MetaLabel(label: label),
+                              LabelBadge(dense: true, label: label),
                           ],
                         ),
                       ),
@@ -2508,43 +2481,6 @@ class _MetaField extends StatelessWidget {
           const SizedBox(height: 4),
           child,
         ],
-      ),
-    );
-  }
-}
-
-class _MetaLabel extends StatelessWidget {
-  const _MetaLabel({required this.label});
-
-  final Label label;
-
-  Color _color() {
-    final raw = label.color;
-    if (raw == null || raw.isEmpty) return Colors.grey;
-    try {
-      return Color(int.parse('FF${raw.replaceFirst('#', '')}', radix: 16));
-    } catch (_) {
-      return Colors.grey;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final color = _color();
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.14),
-        borderRadius: BorderRadius.circular(4),
-        border: Border.all(color: color.withValues(alpha: 0.35), width: 0.5),
-      ),
-      child: Text(
-        label.name ?? '',
-        style: TextStyle(
-          fontSize: 10.5,
-          fontWeight: FontWeight.w600,
-          color: color,
-        ),
       ),
     );
   }

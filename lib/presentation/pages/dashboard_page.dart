@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/animations/animated_wrapper.dart';
 import '../../core/di/injection.dart';
+import '../../core/platform/desktop_layout.dart';
 import '../../core/errors/failures.dart';
 import '../../core/utils/either.dart';
 import '../../data/models/generated/generated_models.dart';
@@ -266,11 +267,27 @@ class _DashboardPageState extends State<DashboardPage> {
 
     return LayoutBuilder(
       builder: (context, constraints) {
-        final columns = constraints.maxWidth >= 760
-            ? 5
-            : constraints.maxWidth >= 460
-            ? 3
-            : 2;
+        // Five destinations never split evenly into two or three columns, so
+        // narrow windows get a grouped list instead of a ragged grid.
+        if (constraints.maxWidth < 600) {
+          return AppSection(
+            title: '',
+            showHeader: false,
+            children: [
+              for (final tile in tiles)
+                AppTile(
+                  leading: _SoftIcon(
+                    icon: tile.icon,
+                    color: tile.color,
+                    soft: tile.soft,
+                  ),
+                  title: tile.label,
+                  onPress: tile.onPress,
+                ),
+            ],
+          );
+        }
+        const columns = 5;
         const spacing = 12.0;
         final width =
             (constraints.maxWidth - spacing * (columns - 1)) / columns;
@@ -373,11 +390,9 @@ class _DashboardPageState extends State<DashboardPage> {
     final username = _username;
     final viewAll = username == null
         ? null
-        : FButton(
-            variant: FButtonVariant.ghost,
-            size: FButtonSizeVariant.sm,
+        : AppSectionAction(
+            label: l10n.viewAll,
             onPress: () => _push(context, ActivityPage(username: username)),
-            child: Text(l10n.viewAll),
           );
 
     if (_recentLoading && _recentActivities.isEmpty) {
@@ -529,22 +544,30 @@ class _Hero extends StatelessWidget {
             const SizedBox(height: 5),
             Text(
               subtitle,
-              maxLines: 1,
+              maxLines: 2,
               overflow: TextOverflow.ellipsis,
-              style: TextStyle(fontSize: 12, color: palette.textSecondary),
+              style: TextStyle(
+                fontSize: 12,
+                height: 1.4,
+                color: palette.textSecondary,
+              ),
             ),
           ],
         );
 
+        // Touch screens refresh with pull-to-refresh, so the button is only
+        // offered where there is no such gesture.
         final actions = Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            AppIconButton(
-              icon: FIcons.refreshCw,
-              label: refreshLabel,
-              onPress: onRefresh,
-            ),
-            const SizedBox(width: 8),
+            if (!DesktopLayout.isTouch()) ...[
+              AppIconButton(
+                icon: FIcons.refreshCw,
+                label: refreshLabel,
+                onPress: onRefresh,
+              ),
+              const SizedBox(width: 8),
+            ],
             FButton(
               variant: FButtonVariant.primary,
               size: FButtonSizeVariant.sm,
@@ -553,6 +576,15 @@ class _Hero extends StatelessWidget {
               child: Text(actionLabel),
             ),
           ],
+        );
+        final compactAction = Semantics(
+          button: true,
+          label: actionLabel,
+          child: FButton.icon(
+            variant: FButtonVariant.primary,
+            onPress: onAction,
+            child: const Icon(FIcons.plus),
+          ),
         );
 
         return ClipRRect(
@@ -594,12 +626,12 @@ class _Hero extends StatelessWidget {
                 Padding(
                   padding: EdgeInsets.fromLTRB(compact ? 20 : 24, 20, 20, 20),
                   child: compact
-                      ? Column(
+                      ? Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            heading,
-                            const SizedBox(height: 16),
-                            actions,
+                            Expanded(child: heading),
+                            const SizedBox(width: 12),
+                            compactAction,
                           ],
                         )
                       : Row(

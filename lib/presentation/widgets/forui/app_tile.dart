@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 
+import '../../../core/platform/desktop_layout.dart';
 import '../../theme/app_palette.dart';
 import '../desktop/app_hover_region.dart';
 
@@ -38,7 +39,9 @@ class AppTile extends StatelessWidget {
     final interactive = onPress != null;
 
     final row = Padding(
-      padding: const EdgeInsets.fromLTRB(14, 10, 12, 10),
+      padding: DesktopLayout.isTouch()
+          ? const EdgeInsets.fromLTRB(14, 12, 12, 12)
+          : const EdgeInsets.fromLTRB(14, 10, 12, 10),
       child: Row(
         children: [
           if (leading != null) ...[leading!, const SizedBox(width: 11)],

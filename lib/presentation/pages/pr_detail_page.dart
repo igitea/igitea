@@ -16,6 +16,7 @@ import '../widgets/forui/app_page.dart';
 import '../widgets/forui/app_state_views.dart';
 import '../widgets/user_avatar.dart';
 import 'create_review_dialog.dart';
+import '../widgets/label_badge.dart';
 
 const _reactionEmojis = {
   '+1': '\u{1f44d}',
@@ -464,18 +465,9 @@ class _PRContent extends StatelessWidget {
             Wrap(
               spacing: 8,
               runSpacing: 8,
-              children: pr.labels!.map((label) {
-                final color = _parseColor(label.color);
-                return FBadge(
-                  variant: .outline,
-                  child: Text(
-                    label.name ?? '',
-                    style: color == null
-                        ? null
-                        : theme.textTheme.labelSmall?.copyWith(color: color),
-                  ),
-                );
-              }).toList(),
+              children: [
+                for (final label in pr.labels!) LabelBadge(label: label),
+              ],
             ),
           if (pr.labels != null && pr.labels!.isNotEmpty)
             const SizedBox(height: 16),
@@ -1062,17 +1054,6 @@ class _PRContent extends StatelessWidget {
     if (diff.inHours > 0) return l10n.ago('${diff.inHours}h');
     if (diff.inMinutes > 0) return l10n.ago('${diff.inMinutes}m');
     return l10n.justNow;
-  }
-
-  Color? _parseColor(String? colorStr) {
-    if (colorStr == null || colorStr.isEmpty) return null;
-    try {
-      return Color(
-        int.parse(colorStr.replaceFirst('#', ''), radix: 16) + 0xFF000000,
-      );
-    } catch (_) {
-      return null;
-    }
   }
 }
 

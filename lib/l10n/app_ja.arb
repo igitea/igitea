@@ -726,5 +726,6 @@
   "recentActivitySubtitle": "最近のアクティビティ",
   "yourStarredRepos": "スター付きリポジトリ",
   "yourOrganizations": "組織一覧",
-  "loadMoreActivity": "さらに読み込む"
+  "loadMoreActivity": "さらに読み込む",
+  "forkAction": "フォーク"
 }

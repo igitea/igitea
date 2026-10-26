@@ -5032,6 +5032,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Repositories, reviews and issues that need your attention.'**
   String get myWorkSubtitle;
+
+  /// No description provided for @forkAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Fork'**
+  String get forkAction;
 }
 
 class _AppLocalizationsDelegate

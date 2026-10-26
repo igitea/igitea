@@ -86,6 +86,11 @@ void main() {
     await tester.pump(const Duration(milliseconds: 400));
 
     expect(find.byType(AppThreePane), findsNothing);
+    await tester.scrollUntilVisible(
+      find.text('Repository Sections'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
     expect(find.text('Repository Sections'), findsOneWidget);
   });
 }

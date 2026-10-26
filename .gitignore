@@ -131,3 +131,7 @@ igitea.iml
 opencode.*
 docs/
 .screens/
+
+# UI review harness output
+tool/ui_review/out/
+tool/ui_review/failures/

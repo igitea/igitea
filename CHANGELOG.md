@@ -2,6 +2,27 @@
 
 ## [Unreleased]
 
+### Added
+- **Tablet workspaces**: layout breakpoints now follow window width on every platform, so an iPad or Android tablet in landscape gets the three-pane repository overview and the list-detail issue workspace instead of a stretched phone column
+- **Captioned tablet rail**: between 760 and 1000 points the shell collapses its sidebar to a navigation rail; on touch screens each item shows its label under the icon
+- **`LabelBadge` / `LabelRow`**: one shared issue-label pill with a tinted fill and contrast-checked text, replacing five hand-rolled variants
+- **`AvatarFallback`**: avatars without an image show the initial on a stable accent tint; organisations use rounded squares to tell them apart from people
+- **`AppSectionAction`**: a quiet brand-coloured "View all" link for section headers
+- **UI review harness** (`tool/ui_review`): renders key screens against a fake Gitea backend at phone, tablet and desktop sizes in light or dark mode
+- Tests for tablet breakpoints, the captioned rail, label contrast and avatar fallbacks
+
+### Changed
+- **Touch comfort**: text on phones and tablets is set 8% larger (on top of the system text size); icon buttons grow to 40pt, sidebar rows to 44pt and list rows gain extra padding on touch screens
+- **Platform-appropriate chrome**: keyboard hints, the shortcuts button and tooltips only appear on pointer platforms; double-click-to-open no longer delays taps on tablets
+- **Phone shell**: root screens use a large title; the theme toggle moved off the phone header (Profile shows Settings instead); the inbox bell shows an unread dot
+- **Dashboard**: on narrow windows the five work destinations become a grouped list instead of a ragged grid; the phone hero shows a two-line subtitle with a compact create button, and the refresh button is hidden where pull-to-refresh exists
+- **Issue list**: the type chip is localized, a review-requested chip was added, and "Save filter" moved into the filter toolbar as an icon button
+- **Repository header**: on phones fork, open in browser and settings fold into a "More" menu
+- **Profile**: organisations show their name under the avatar
+
+### Fixed
+- Pale label colours such as `#a2eeef` were unreadable on light surfaces
+
 ## [0.41.0] - 2026-10-26
 
 ### Added

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:forui/forui.dart';
 
 import '../../../core/animations/app_animations.dart';
+import '../../../core/platform/desktop_layout.dart';
 import '../../theme/app_palette.dart';
 import '../desktop/app_hover_region.dart';
 
@@ -80,29 +81,32 @@ class AppIconButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
+    final touch = DesktopLayout.isTouch();
+    final extent = touch && size < 40 ? 40.0 : size;
+    final glyph = touch && iconSize < 20 ? 20.0 : iconSize;
     return AppHoverRegion(
       onTap: onPress,
       semanticsLabel: label,
-      tooltip: label,
+      tooltip: touch ? null : label,
       selected: selected,
       selectedColor: palette.brandSoft,
       hoverColor: palette.surfaceMuted,
-      borderRadius: BorderRadius.circular(9),
+      borderRadius: BorderRadius.circular(touch ? 12 : 9),
       contentBuilder: (context, hovered, focused) {
         final foreground = selected || hovered || focused
             ? palette.textPrimary
             : palette.textSecondary;
         return SizedBox(
-          width: size,
-          height: size,
+          width: extent,
+          height: extent,
           child: Stack(
             alignment: Alignment.center,
             children: [
-              Icon(icon, size: iconSize, color: foreground),
+              Icon(icon, size: glyph, color: foreground),
               if (badge)
                 Positioned(
-                  right: 8,
-                  top: 7,
+                  right: extent / 4,
+                  top: extent / 4 - 1,
                   child: Container(
                     width: 5,
                     height: 5,
@@ -157,13 +161,15 @@ class AppSearchPrompt extends StatelessWidget {
   const AppSearchPrompt({
     super.key,
     required this.label,
-    required this.hint,
     required this.onPress,
+    this.hint,
     this.width = 220,
   });
 
   final String label;
-  final String hint;
+
+  /// Keyboard shortcut shown at the trailing edge; omitted on touch screens.
+  final String? hint;
   final VoidCallback onPress;
   final double width;
 
@@ -180,7 +186,7 @@ class AppSearchPrompt extends StatelessWidget {
         duration: AppAnimations.effective(context, AppAnimations.fast),
         curve: AppAnimations.easeOut,
         width: width,
-        height: 32,
+        height: DesktopLayout.isTouch() ? 38 : 32,
         padding: const EdgeInsets.symmetric(horizontal: 10),
         decoration: BoxDecoration(
           color: hovered || focused
@@ -202,7 +208,7 @@ class AppSearchPrompt extends StatelessWidget {
                 style: TextStyle(fontSize: 12.5, color: palette.textSecondary),
               ),
             ),
-            KbdHint(text: hint),
+            if (hint != null) KbdHint(text: hint!),
           ],
         ),
       ),
@@ -221,6 +227,7 @@ class AppTopBar extends StatelessWidget {
     this.topInset = 0,
     this.showBorder = true,
     this.height = 56,
+    this.large = false,
   });
 
   final String title;
@@ -231,6 +238,9 @@ class AppTopBar extends StatelessWidget {
   final bool showBorder;
   final double height;
 
+  /// A bolder, larger title for root screens on phones.
+  final bool large;
+
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
@@ -238,7 +248,11 @@ class AppTopBar extends StatelessWidget {
 
     return Container(
       height: topInset + height,
-      padding: EdgeInsets.only(top: topInset, left: 20, right: 14),
+      padding: EdgeInsets.only(
+        top: topInset,
+        left: leading == null ? (large ? 18 : 20) : 10,
+        right: large ? 8 : 14,
+      ),
       decoration: showBorder
           ? BoxDecoration(
               border: Border(bottom: BorderSide(color: palette.border)),
@@ -247,7 +261,7 @@ class AppTopBar extends StatelessWidget {
           : null,
       child: Row(
         children: [
-          if (leading != null) ...[leading!, const SizedBox(width: 8)],
+          if (leading != null) ...[leading!, const SizedBox(width: 4)],
           Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -258,9 +272,9 @@ class AppTopBar extends StatelessWidget {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: theme.textTheme.titleMedium?.copyWith(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    letterSpacing: -0.2,
+                    fontSize: large ? 22 : 16,
+                    fontWeight: large ? FontWeight.w700 : FontWeight.w600,
+                    letterSpacing: large ? -0.5 : -0.2,
                     color: palette.textPrimary,
                   ),
                 ),
@@ -330,11 +344,12 @@ class SidebarNavItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final palette = context.palette;
+    final touch = DesktopLayout.isTouch();
 
     return AppHoverRegion(
       onTap: onPress,
       semanticsLabel: label,
-      tooltip: compact ? label : null,
+      tooltip: compact && !touch ? label : null,
       selected: selected,
       selectedColor: palette.brandSoft,
       hoverColor: palette.surfaceMuted,
@@ -346,6 +361,28 @@ class SidebarNavItem extends StatelessWidget {
             : (hovered || focused
                   ? palette.textPrimary
                   : palette.textSecondary);
+        if (compact && touch) {
+          return SizedBox(
+            height: 58,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(icon, size: 21, color: foreground),
+                const SizedBox(height: 4),
+                Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+                    color: selected ? palette.brand : palette.textSecondary,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
         if (compact) {
           return SizedBox(
             height: 38,
@@ -353,7 +390,7 @@ class SidebarNavItem extends StatelessWidget {
           );
         }
         return SizedBox(
-          height: 36,
+          height: touch ? 44 : 36,
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 10),
             child: Row(
@@ -371,15 +408,15 @@ class SidebarNavItem extends StatelessWidget {
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
-                Icon(icon, size: 17, color: foreground),
-                const SizedBox(width: 9),
+                Icon(icon, size: touch ? 19 : 17, color: foreground),
+                SizedBox(width: touch ? 11 : 9),
                 Expanded(
                   child: Text(
                     label,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: 13,
+                      fontSize: touch ? 15 : 13,
                       fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
                       color: selected ? palette.brand : palette.textPrimary,
                     ),
@@ -436,7 +473,7 @@ class AppSegmentedControl extends StatelessWidget {
   Widget build(BuildContext context) {
     final palette = context.palette;
     return Container(
-      height: 34,
+      height: DesktopLayout.isTouch() ? 38 : 34,
       padding: const EdgeInsets.all(3),
       decoration: BoxDecoration(
         color: palette.surfaceMuted,
@@ -464,7 +501,7 @@ class AppSegmentedControl extends StatelessWidget {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      fontSize: 12.5,
+                      fontSize: DesktopLayout.isTouch() ? 13.5 : 12.5,
                       fontWeight: i == index
                           ? FontWeight.w600
                           : FontWeight.w500,

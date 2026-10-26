@@ -9,7 +9,7 @@ Cross-platform Flutter client for Gitea, built from OpenAPI spec. Phases 1–12 
 ```bash
 flutter pub get          # fetch dependencies
 flutter analyze         # type/lint check (~120s)
-flutter test            # all tests (~303 passing)
+flutter test            # all tests (~311 passing)
 flutter test test/widget/  # widget tests only
 flutter gen-l10n        # regenerate i18n files after ARB changes
 ```

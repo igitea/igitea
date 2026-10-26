@@ -1,18 +1,19 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 
-/// Window-size and platform rules for the desktop workspace.
+/// Window-size and platform rules for the adaptive workspace.
 ///
 /// Layout decisions are based on the current window width, never on the
-/// physical device type: desktop windows can be resized freely and the web
-/// build runs on both large and small displays.
+/// device type: an iPad in landscape gets the same multi-pane workspace as a
+/// laptop window of the same size. The platform only decides interaction
+/// details — hit-target size, hover affordances and keyboard hints.
 abstract final class DesktopLayout {
   DesktopLayout._();
 
-  /// Below this width the app uses its phone/tablet composition.
+  /// Below this width the app uses its phone composition.
   static const double compactBreakpoint = 760;
 
-  /// At or above this width a desktop window gets the multi-pane workspace.
+  /// At or above this width a window gets the multi-pane workspace.
   static const double desktopBreakpoint = 1000;
 
   /// The repository workspace needs a little more room for three panes.
@@ -26,6 +27,9 @@ abstract final class DesktopLayout {
 
   /// Sidebar width when collapsed to an icon rail.
   static const double sidebarRailWidth = 76;
+
+  /// Rail width on touch screens, where items carry a caption under the icon.
+  static const double touchRailWidth = 84;
 
   /// Navigation rail inside a detail page (repository sections).
   static const double navRailWidth = 232;
@@ -44,34 +48,33 @@ abstract final class DesktopLayout {
         target == TargetPlatform.linux;
   }
 
-  /// Whether the current window is wide enough for the desktop workspace.
+  /// Whether the app runs on a touch-first device (phone or tablet).
   ///
-  /// Web is included because a browser window on a laptop behaves like a
-  /// desktop window; phones fall below the breakpoint and keep the mobile
-  /// composition.
-  static bool isDesktop(BuildContext context) {
-    final width = MediaQuery.sizeOf(context).width;
-    return width >= desktopBreakpoint && (kIsWeb || isDesktopPlatform());
-  }
+  /// Touch screens get larger hit targets and no hover-only or keyboard-only
+  /// affordances. Web is treated as a pointer platform.
+  static bool isTouch([TargetPlatform? platform]) =>
+      !kIsWeb && !isDesktopPlatform(platform);
+
+  /// Whether the window is wide enough for the multi-pane workspace.
+  static bool isDesktop(BuildContext context) =>
+      MediaQuery.sizeOf(context).width >= desktopBreakpoint;
 
   /// Whether the repository workspace should use its three-pane layout.
-  static bool isRepositoryDesktop(BuildContext context) {
-    final width = MediaQuery.sizeOf(context).width;
-    return width >= repositoryBreakpoint && (kIsWeb || isDesktopPlatform());
-  }
+  static bool isRepositoryDesktop(BuildContext context) =>
+      MediaQuery.sizeOf(context).width >= repositoryBreakpoint;
 
   /// Whether the window is wide enough for a third pane.
   static bool isWide(BuildContext context) =>
-      isDesktop(context) && MediaQuery.sizeOf(context).width >= wideBreakpoint;
+      MediaQuery.sizeOf(context).width >= wideBreakpoint;
 
-  /// Whether the window is in the phone/tablet range.
+  /// Whether the window is in the phone range.
   static bool isCompact(BuildContext context) =>
       MediaQuery.sizeOf(context).width < compactBreakpoint;
 
-  /// A short and testable form of [isDesktop] for callers without a context.
-  static bool isDesktopWidth(double width, {TargetPlatform? platform}) =>
-      width >= desktopBreakpoint &&
-      (platform != null
-          ? isDesktopPlatform(platform)
-          : (kIsWeb || isDesktopPlatform()));
+  /// Whether the app shell should collapse its sidebar to a rail because the
+  /// window is tablet-sized (between compact and desktop widths).
+  static bool prefersRail(BuildContext context) {
+    final width = MediaQuery.sizeOf(context).width;
+    return width >= compactBreakpoint && width < desktopBreakpoint;
+  }
 }

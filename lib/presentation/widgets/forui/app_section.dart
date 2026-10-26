@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:forui/forui.dart';
 
 import '../../theme/app_palette.dart';
 import '../app_surface.dart';
+import '../desktop/app_hover_region.dart';
 
 /// A titled group of rows rendered as one surface card.
 ///
@@ -37,7 +39,7 @@ class AppSection extends StatelessWidget {
       children: [
         if (showHeader && title.isNotEmpty) ...[
           Padding(
-            padding: const EdgeInsets.fromLTRB(3, 0, 3, 8),
+            padding: const EdgeInsets.fromLTRB(4, 0, 0, 8),
             child: Row(
               children: [
                 Expanded(
@@ -85,6 +87,45 @@ class _SectionDivider extends StatelessWidget {
       height: 1,
       margin: const EdgeInsets.symmetric(horizontal: 14),
       color: color,
+    );
+  }
+}
+
+/// A quiet text link for a section header, such as "View all".
+class AppSectionAction extends StatelessWidget {
+  const AppSectionAction({
+    super.key,
+    required this.label,
+    required this.onPress,
+  });
+
+  final String label;
+  final VoidCallback onPress;
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = context.palette;
+    return AppHoverRegion(
+      onTap: onPress,
+      semanticsLabel: label,
+      hoverColor: palette.brandSoft,
+      borderRadius: BorderRadius.circular(6),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+      contentBuilder: (context, hovered, focused) => Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: palette.brand,
+            ),
+          ),
+          const SizedBox(width: 2),
+          Icon(FIcons.chevronRight, size: 13, color: palette.brand),
+        ],
+      ),
     );
   }
 }

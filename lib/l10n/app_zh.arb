@@ -784,5 +784,6 @@
   "activityStarred": "收藏了",
   "activityForked": "Fork 了",
   "activityApprovedPr": "通过了 PR 审查",
-  "activityRequestedChanges": "对 PR 提出了修改意见"
+  "activityRequestedChanges": "对 PR 提出了修改意见",
+  "forkAction": "派生"
 }

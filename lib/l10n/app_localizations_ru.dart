@@ -2583,4 +2583,7 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get myWorkSubtitle =>
       'Repositories, reviews and issues that need your attention.';
+
+  @override
+  String get forkAction => 'Форк';
 }

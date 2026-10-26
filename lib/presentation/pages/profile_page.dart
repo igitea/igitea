@@ -333,15 +333,13 @@ class _ProfileContent extends StatelessWidget {
 
     return AppSection(
       title: l10n.repositories,
-      trailing: FButton(
-        variant: FButtonVariant.ghost,
-        size: FButtonSizeVariant.sm,
+      trailing: AppSectionAction(
+        label: l10n.viewAll,
         onPress: () => Navigator.of(context).push(
           MaterialPageRoute(
             builder: (_) => UserReposPage(username: user.login ?? ''),
           ),
         ),
-        child: Text(l10n.viewAll),
       ),
       children: [
         for (final repo in repos.take(5))
@@ -791,24 +789,24 @@ class _OrgsSection extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         SizedBox(
-          height: 56,
+          height: 82,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
             padding: EdgeInsets.zero,
             itemCount: orgs.length,
-            separatorBuilder: (_, _) => const SizedBox(width: UIConstants.md),
+            separatorBuilder: (_, _) => const SizedBox(width: UIConstants.sm),
             itemBuilder: (context, index) {
               final org = orgs[index];
+              final displayName =
+                  [org.full_name, org.name, org.username]
+                      .whereType<String>()
+                      .where((s) => s.isNotEmpty)
+                      .firstOrNull ??
+                  '';
               return FadeInWrapper(
                 delay: Duration(milliseconds: index * 30),
                 child: FTooltip(
-                  tipBuilder: (context, controller) => Text(
-                    [org.full_name, org.name, org.username]
-                            .whereType<String>()
-                            .where((s) => s.isNotEmpty)
-                            .firstOrNull ??
-                        '',
-                  ),
+                  tipBuilder: (context, controller) => Text(displayName),
                   child: FTappable(
                     onPress: () {
                       Navigator.push(
@@ -825,7 +823,26 @@ class _OrgsSection extends StatelessWidget {
                         ),
                       );
                     },
-                    child: OrgAvatar(org: org, radius: UIConstants.avatarXl),
+                    child: SizedBox(
+                      width: 76,
+                      child: Column(
+                        children: [
+                          OrgAvatar(org: org, radius: 24),
+                          const SizedBox(height: 7),
+                          Text(
+                            org.username ?? displayName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 11.5,
+                              fontWeight: FontWeight.w500,
+                              color: context.palette.textPrimary,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               );

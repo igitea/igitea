@@ -66,8 +66,8 @@ class _HomePageState extends State<HomePage> {
           return const SizedBox.shrink();
         }
 
-        final size = MediaQuery.sizeOf(context);
-        final isWide = size.width >= 760;
+        final isWide = !DesktopLayout.isCompact(context);
+        final railForced = DesktopLayout.prefersRail(context);
         final topInset = windowTopInset(context);
 
         return CallbackShortcuts(
@@ -94,7 +94,10 @@ class _HomePageState extends State<HomePage> {
                       selectedIndex: _selectedIndex,
                       onSelect: _select,
                       onOpenSettings: () => _openSettings(context),
-                      collapsed: Injection.themeNotifier.sidebarCollapsed,
+                      collapsed:
+                          railForced ||
+                          Injection.themeNotifier.sidebarCollapsed,
+                      canToggle: !railForced,
                       onToggle: _toggleSidebar,
                     )
                   : null,
@@ -103,6 +106,7 @@ class _HomePageState extends State<HomePage> {
                 l10n,
                 authState,
                 isWide: isWide,
+                canToggleSidebar: !railForced,
                 topInset: topInset,
                 canMarkAllRead: _hasNotifications,
               ),
@@ -140,38 +144,43 @@ class _HomePageState extends State<HomePage> {
     AppLocalizations l10n,
     AuthAuthenticated authState, {
     required bool isWide,
+    required bool canToggleSidebar,
     required double topInset,
     required bool canMarkAllRead,
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final touch = DesktopLayout.isTouch();
 
     return AppTopBar(
       topInset: topInset,
       title: _title(l10n),
-      height: 52,
+      height: isWide ? 52 : 50,
+      large: !isWide,
       actions: [
-        if (isWide)
+        if (isWide && _selectedIndex != 2)
           AppSearchPrompt(
             label: l10n.search,
-            hint: defaultTargetPlatform == TargetPlatform.macOS
+            hint: touch
+                ? null
+                : defaultTargetPlatform == TargetPlatform.macOS
                 ? '⌘K'
                 : 'Ctrl K',
             onPress: _openSearch,
           ),
-        if (isWide)
+        if (isWide && canToggleSidebar)
           AppIconButton(
             icon: FIcons.panelLeft,
             label: l10n.toggleSidebar,
             selected: !Injection.themeNotifier.sidebarCollapsed,
             onPress: _toggleSidebar,
           ),
-        if (isWide)
+        if (isWide && !touch)
           AppIconButton(
             icon: FIcons.keyboard,
             label: l10n.keyboardShortcuts,
             onPress: () => showAppShortcutsDialog(context),
           ),
-        if (!isWide)
+        if (!isWide && _selectedIndex != 2)
           AppIconButton(
             icon: FIcons.search,
             label: l10n.search,
@@ -181,6 +190,7 @@ class _HomePageState extends State<HomePage> {
           AppIconButton(
             icon: FIcons.bell,
             label: l10n.inbox,
+            badge: Injection.notificationNotifier.hasUnread,
             onPress: () => _select(1),
           ),
         if (_selectedIndex == 1 && canMarkAllRead)
@@ -189,15 +199,22 @@ class _HomePageState extends State<HomePage> {
             label: l10n.markAllRead,
             onPress: _markAllRead,
           ),
-        AppIconButton(
-          icon: isDark ? FIcons.sun : FIcons.moon,
-          label: l10n.theme,
-          onPress: () {
-            Injection.themeNotifier.setThemeMode(
-              isDark ? ThemeMode.light : ThemeMode.dark,
-            );
-          },
-        ),
+        if (isWide)
+          AppIconButton(
+            icon: isDark ? FIcons.sun : FIcons.moon,
+            label: l10n.theme,
+            onPress: () {
+              Injection.themeNotifier.setThemeMode(
+                isDark ? ThemeMode.light : ThemeMode.dark,
+              );
+            },
+          ),
+        if (!isWide && _selectedIndex == 3)
+          AppIconButton(
+            icon: FIcons.settings,
+            label: l10n.settings,
+            onPress: () => _openSettings(context),
+          ),
       ],
     );
   }
@@ -271,6 +288,7 @@ class _Sidebar extends StatelessWidget {
     required this.onSelect,
     required this.onOpenSettings,
     required this.collapsed,
+    required this.canToggle,
     required this.onToggle,
   });
 
@@ -280,6 +298,7 @@ class _Sidebar extends StatelessWidget {
   final ValueChanged<int> onSelect;
   final VoidCallback onOpenSettings;
   final bool collapsed;
+  final bool canToggle;
   final VoidCallback onToggle;
 
   @override
@@ -287,6 +306,7 @@ class _Sidebar extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final palette = context.palette;
     final theme = Theme.of(context);
+    final touch = DesktopLayout.isTouch();
 
     final items = [
       (FIcons.house, l10n.home),
@@ -304,7 +324,9 @@ class _Sidebar extends StatelessWidget {
       duration: AppAnimations.effective(context, AppAnimations.normal),
       curve: AppAnimations.easeOut,
       width: collapsed
-          ? DesktopLayout.sidebarRailWidth
+          ? (touch
+                ? DesktopLayout.touchRailWidth
+                : DesktopLayout.sidebarRailWidth)
           : DesktopLayout.sidebarWidth,
       decoration: BoxDecoration(
         color: palette.canvas,
@@ -347,14 +369,16 @@ class _Sidebar extends StatelessWidget {
                           color: palette.textSecondary.withValues(alpha: 0.7),
                         ),
                       ),
-                      const SizedBox(width: 2),
-                      AppIconButton(
-                        icon: FIcons.panelLeft,
-                        label: l10n.toggleSidebar,
-                        size: 26,
-                        iconSize: 14,
-                        onPress: onToggle,
-                      ),
+                      if (canToggle && !touch) ...[
+                        const SizedBox(width: 2),
+                        AppIconButton(
+                          icon: FIcons.panelLeft,
+                          label: l10n.toggleSidebar,
+                          size: 26,
+                          iconSize: 14,
+                          onPress: onToggle,
+                        ),
+                      ],
                     ],
                   ),
           ),

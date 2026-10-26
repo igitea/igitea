@@ -726,5 +726,6 @@
   "recentActivitySubtitle": "Aktuelle Aktivität anzeigen",
   "yourStarredRepos": "Deine markierten Repositorys",
   "yourOrganizations": "Deine Organisationen",
-  "loadMoreActivity": "Weitere Aktivitäten laden"
+  "loadMoreActivity": "Weitere Aktivitäten laden",
+  "forkAction": "Forken"
 }

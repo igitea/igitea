@@ -60,6 +60,7 @@ import 'webhook_list_page.dart';
 import 'label_list_page.dart';
 import 'actions_list_page.dart';
 import 'repo_stargazers_page.dart';
+import '../widgets/label_badge.dart';
 
 class RepoDetailPage extends StatefulWidget {
   final String owner;
@@ -133,34 +134,27 @@ class _RepoDetailPageState extends State<RepoDetailPage> {
                           widget.repo,
                         ),
                 ),
-                FHeaderAction(
-                  icon: const Icon(FIcons.gitFork),
-                  onPress: () => _showForkDialog(context, l10n),
-                ),
-                if (Injection.repoNotifier.state case RepoLoaded(:final repo))
+                if (DesktopLayout.isCompact(context))
+                  _buildOverflowMenu(context, l10n)
+                else ...[
                   FHeaderAction(
-                    icon: const Icon(FIcons.externalLink),
-                    semanticsLabel: l10n.openInBrowser,
-                    onPress: () {
-                      final url = repo.html_url;
-                      if (url != null) {
-                        launchUrl(
-                          Uri.parse(url),
-                          mode: LaunchMode.externalApplication,
-                        );
-                      }
-                    },
+                    icon: const Icon(FIcons.gitFork),
+                    semanticsLabel: l10n.forkAction,
+                    onPress: () => _showForkDialog(context, l10n),
                   ),
-                if (Injection.repoNotifier.state case RepoLoaded(:final repo))
-                  FHeaderAction(
-                    icon: const Icon(FIcons.settings),
-                    semanticsLabel: l10n.settings,
-                    onPress: () => Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => RepoSettingsPage(repo: repo),
-                      ),
+                  if (Injection.repoNotifier.state case RepoLoaded(:final repo))
+                    FHeaderAction(
+                      icon: const Icon(FIcons.externalLink),
+                      semanticsLabel: l10n.openInBrowser,
+                      onPress: () => _openInBrowser(repo),
                     ),
-                  ),
+                  if (Injection.repoNotifier.state case RepoLoaded(:final repo))
+                    FHeaderAction(
+                      icon: const Icon(FIcons.settings),
+                      semanticsLabel: l10n.settings,
+                      onPress: () => _openSettings(context, repo),
+                    ),
+                ],
               ],
             );
           },
@@ -357,6 +351,59 @@ class _RepoDetailPageState extends State<RepoDetailPage> {
         ),
       ),
     );
+  }
+
+  /// Phones keep star and watch in the header and fold the rest into a menu.
+  Widget _buildOverflowMenu(BuildContext context, AppLocalizations l10n) {
+    final repo = switch (Injection.repoNotifier.state) {
+      RepoLoaded(:final repo) => repo,
+      _ => null,
+    };
+    return FPopoverMenu(
+      menuAnchor: Alignment.topRight,
+      childAnchor: Alignment.bottomRight,
+      menu: [
+        FItemGroup(
+          children: [
+            FItem(
+              prefix: const Icon(FIcons.gitFork),
+              title: Text(l10n.forkAction),
+              onPress: () => _showForkDialog(context, l10n),
+            ),
+            if (repo != null)
+              FItem(
+                prefix: const Icon(FIcons.externalLink),
+                title: Text(l10n.openInBrowser),
+                onPress: () => _openInBrowser(repo),
+              ),
+            if (repo != null)
+              FItem(
+                prefix: const Icon(FIcons.settings),
+                title: Text(l10n.settings),
+                onPress: () => _openSettings(context, repo),
+              ),
+          ],
+        ),
+      ],
+      builder: (context, controller, child) => FHeaderAction(
+        icon: const Icon(FIcons.ellipsis),
+        semanticsLabel: l10n.more,
+        onPress: controller.toggle,
+      ),
+    );
+  }
+
+  void _openInBrowser(Repository repo) {
+    final url = repo.html_url;
+    if (url != null) {
+      launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    }
+  }
+
+  void _openSettings(BuildContext context, Repository repo) {
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => RepoSettingsPage(repo: repo)));
   }
 
   Future<void> _showForkDialog(
@@ -2353,7 +2400,7 @@ class _IssueItem extends StatelessWidget {
                 ),
                 if (issue.labels != null && issue.labels!.isNotEmpty) ...[
                   const SizedBox(height: UIConstants.xs),
-                  _LabelRow(labels: issue.labels!),
+                  LabelRow(labels: issue.labels!),
                 ],
               ],
             ),
@@ -2372,64 +2419,6 @@ class _IssueItem extends StatelessWidget {
     if (diff.inHours > 0) return l10n.ago('${diff.inHours}h');
     if (diff.inMinutes > 0) return l10n.ago('${diff.inMinutes}m');
     return l10n.justNow;
-  }
-}
-
-class _LabelRow extends StatelessWidget {
-  final List<Label> labels;
-  const _LabelRow({required this.labels});
-
-  Color _color(String? hex) {
-    if (hex == null || hex.isEmpty) return Colors.grey;
-    try {
-      final h = hex.replaceFirst('#', '');
-      return Color(int.parse('FF$h', radix: 16));
-    } catch (_) {
-      return Colors.grey;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    const maxShow = 4;
-    final overflow = labels.length - maxShow;
-
-    return Wrap(
-      spacing: 4,
-      runSpacing: 3,
-      children: [
-        ...labels.take(maxShow).map((label) {
-          final c = _color(label.color);
-          return Container(
-            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-            decoration: BoxDecoration(
-              color: c.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(3),
-              border: Border.all(color: c.withValues(alpha: 0.35), width: 0.5),
-            ),
-            child: Text(
-              label.name ?? '',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
-                color: c,
-                height: 1.2,
-              ),
-            ),
-          );
-        }),
-        if (overflow > 0)
-          Text(
-            '+$overflow',
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w500,
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-      ],
-    );
   }
 }
 
@@ -3121,9 +3110,8 @@ class _ReadmePreviewState extends State<_ReadmePreview> {
                 ),
               ),
               const Spacer(),
-              FButton(
-                variant: FButtonVariant.ghost,
-                size: FButtonSizeVariant.sm,
+              AppSectionAction(
+                label: widget.l10n.viewAll,
                 onPress: () => Navigator.of(context).push(
                   MaterialPageRoute(
                     builder: (_) => RepoFilePage(
@@ -3135,7 +3123,6 @@ class _ReadmePreviewState extends State<_ReadmePreview> {
                     ),
                   ),
                 ),
-                child: Text(widget.l10n.viewAll),
               ),
             ],
           ),
