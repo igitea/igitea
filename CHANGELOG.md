@@ -20,6 +20,7 @@
 - **Issue list**: the type chip is localized, a review-requested chip was added, and "Save filter" moved into the filter toolbar as an icon button
 - **Repository header**: on phones fork, open in browser and settings fold into a "More" menu
 - **Profile**: organisations show their name under the avatar
+- **Tab bars** on organisation, team and stargazer pages are inset to line up with the cards below instead of running edge to edge on phones
 - **Issue detail**: labels sit on their own row above the edit and subscribe actions
 - **UI review server** (`tool/ui_review/fake_server.dart`): serves the review fixtures as a local Gitea API so the app can be tried in a simulator
 - **Repository sections** follow the repository's settings: Code, Issues and Milestones, Pull Requests, Releases, Wiki and Actions are hidden when the repository has them turned off
@@ -34,6 +35,7 @@
 - **Android debug builds** may reach a Gitea server on the development machine (`10.0.2.2`, `127.0.0.1`, `localhost`) over plain HTTP; release builds are unchanged
 
 ### Fixed
+- UI review harness renders code in monospace again (the test engine does not walk font fallbacks, so `monospace` is registered for reviews only)
 - **iOS and macOS icon sets**: several slots reused 1x images (blurry icons) and iOS icons carried an alpha channel, which the App Store rejects; every size is now generated at its exact pixel size, opaque where the OS requires it
 - **Monospace text on Apple platforms and Windows**: code blocks, diffs, blame, commit SHAs and tokens asked for a `monospace` font that only exists on Android and Linux, so they fell back to the proportional UI font; they now use Menlo / SF Mono / Consolas
 - **Blank strip above lists on notched phones**: pushed pages and home tabs reported the status-bar inset to their body as well as the header, so unpadded lists (such as the code view) started with an empty band

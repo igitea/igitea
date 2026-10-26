@@ -123,6 +123,11 @@ Future<void> _loadFonts() async {
     '/System/Library/Fonts/Menlo.ttc',
   ]) {
     if (File(mono).existsSync()) {
+      // flutter_tester draws an unregistered primary family as Ahem blocks
+      // instead of walking fontFamilyFallback, so code needs 'monospace'
+      // registered here; on Apple devices the app reaches Menlo via
+      // kMonoFontFallback.
+      await load('monospace', [mono]);
       await load('Menlo', [mono]);
       await load('SF Mono', [mono]);
       break;
