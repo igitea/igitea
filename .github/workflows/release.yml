@@ -17,6 +17,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # Gradle 8.14 supports Java up to 24; the runner's default JDK is newer.
+      # Match the JDK 21 that Android Studio bundles for local builds.
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
       - name: Set up Flutter
         uses: flutter-actions/setup-flutter@v4
         with:

@@ -35,6 +35,7 @@
 - **Android 调试版**可以通过明文 HTTP 访问开发机上的 Gitea 服务（`10.0.2.2`、`127.0.0.1`、`localhost`）；正式版不受影响
 
 ### 修复
+- **CI 中的 Android 正式版构建**：发布工作流固定使用 JDK 21；运行器默认的新版 JDK（25）不被 Gradle 8.14 支持，导致构建失败
 - 界面审查工具中的代码重新以等宽字体渲染（测试引擎不会查找字体回退，因此仅在审查时注册 `monospace`）
 - **iOS 与 macOS 图标集**：多个尺寸复用了 1x 图片（图标模糊），iOS 图标还带有 App Store 不接受的透明通道；现在每个尺寸都按精确像素生成，并在系统要求处保持不透明
 - **Apple 平台与 Windows 上的等宽字体**：代码块、Diff、Blame、提交 SHA 与 Token 使用的 `monospace` 字体只在 Android 与 Linux 上存在，其他平台回退为比例字体；现在改用 Menlo / SF Mono / Consolas

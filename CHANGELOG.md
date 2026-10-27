@@ -35,6 +35,7 @@
 - **Android debug builds** may reach a Gitea server on the development machine (`10.0.2.2`, `127.0.0.1`, `localhost`) over plain HTTP; release builds are unchanged
 
 ### Fixed
+- **Android release build in CI**: the release workflow now pins JDK 21; the runner's newer default JDK (25) is not supported by Gradle 8.14 and failed the build
 - UI review harness renders code in monospace again (the test engine does not walk font fallbacks, so `monospace` is registered for reviews only)
 - **iOS and macOS icon sets**: several slots reused 1x images (blurry icons) and iOS icons carried an alpha channel, which the App Store rejects; every size is now generated at its exact pixel size, opaque where the OS requires it
 - **Monospace text on Apple platforms and Windows**: code blocks, diffs, blame, commit SHAs and tokens asked for a `monospace` font that only exists on Android and Linux, so they fell back to the proportional UI font; they now use Menlo / SF Mono / Consolas
