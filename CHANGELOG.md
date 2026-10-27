@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.42.0] - 2026-10-27
+
 ### Added
 - **Pinned comment composer** on issue and pull request pages (standalone and in the desktop/tablet split view): the field stays at the bottom while long threads scroll, grows to six lines, sends with ⌘/Ctrl + Enter on desktop, rides above the on-screen keyboard and scrolls to the new comment after sending
 - **Tablet workspaces**: layout breakpoints now follow window width on every platform, so an iPad or Android tablet in landscape gets the three-pane repository overview and the list-detail issue workspace instead of a stretched phone column
